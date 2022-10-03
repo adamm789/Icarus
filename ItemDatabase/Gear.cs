@@ -5,6 +5,7 @@ using Lumina;
 using Lumina.Data;
 using Lumina.Excel;
 using Lumina.Excel.GeneratedSheets;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +22,7 @@ namespace ItemDatabase
     {
         public EquipmentSlot Slot { get; protected set; }
         public string Code { get; protected set; } = "";
+        public string VariantCode { get; protected set; }
 
         protected ushort _base;
         protected ushort _variant;
@@ -71,6 +73,7 @@ namespace ItemDatabase
                 _directory = "chara/accessory/";
             }
             Code = _baseString;
+            VariantCode = $"{_baseString}{_slotName}_v{_variant}";
         }
 
         public override string GetMdlPath()

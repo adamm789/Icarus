@@ -92,12 +92,16 @@ namespace Icarus.Services.GameFiles
             return null;
         }
 
+        // TODO: Split into ModelFileService, MaterialFileService, etc?
+        #region Models
         public ModelGameFile? GetModelFileData(string path)
         {
             //var mdl = _lumina.GetFile<MdlFile>(path);
             //var file = _lumina.GetFileMetadata(path);
             (var model, var xivMdl) = TryGetOriginalModel(path);
 
+            // TODO: Currently picks the first one
+            // How to handle variants (if I can)
             var results = _itemListService.Search(path);
             var name = $"{path} (?)";
             if (results.Count > 0)
@@ -118,19 +122,6 @@ namespace Icarus.Services.GameFiles
             };
 
             return ret;
-        }
-
-        public XivTexFormat GetTextureData(IItem? itemArg = null)
-        {
-            var item = GetItem(itemArg);
-            if (item == null) return XivTexFormat.INVALID;
-            var tex = item.GetTexPath(XivTexType.Multi);
-            if (_lumina.FileExists(item.GetTexPath(XivTexType.Multi)))
-            {
-                var texFile = _lumina.GetFile<TexFile>(item.GetTexPath(XivTexType.Multi));
-                var format = texFile.Header.Format;
-            }
-            return XivTexFormat.INVALID;
         }
 
         public ModelGameFile? GetModelFileData(IItem? itemArg = null, XivRace race = XivRace.Hyur_Midlander_Male)
@@ -167,6 +158,16 @@ namespace Icarus.Services.GameFiles
 
             return ret;
         }
+
+        public List<XivRace> GetAllRaceMdls(IItem? itemArg)
+        {
+            var item = GetItem(itemArg);
+            if (item == null) return new List<XivRace>();
+            return _itemListService.GetAllRaceMdls(item);
+        }
+
+        #endregion
+        #region Materials
 
         public async Task<MaterialGameFile?> GetMaterialFileData(string path)
         {
@@ -242,13 +243,26 @@ namespace Icarus.Services.GameFiles
             return null;
         }
 
-        public List<XivRace> GetAllRaceMdls(IItem? itemArg)
+        #endregion
+        #region Textures
+
+        // TODO GetTextureData(IItem);
+        public XivTexFormat GetTextureData(IItem? itemArg = null)
         {
             var item = GetItem(itemArg);
-            if (item == null) return new List<XivRace>();
-            return _itemListService.GetAllRaceMdls(item);
+            if (item == null) return XivTexFormat.INVALID;
+            var tex = item.GetTexPath(XivTexType.Multi);
+            if (_lumina.FileExists(item.GetTexPath(XivTexType.Multi)))
+            {
+                var texFile = _lumina.GetFile<TexFile>(item.GetTexPath(XivTexType.Multi));
+                var format = texFile.Header.Format;
+                // Transform format to XivTexFormat?
+            }
+            return XivTexFormat.INVALID;
         }
+        #endregion
 
+        #region Private Functions
         private (TTModel, XivMdl) TryGetOriginalModel(string path, XivRace race = XivRace.Hyur_Midlander_Male)
         {
             var mdl = TryGetOriginalWithLumina(path);
@@ -291,5 +305,6 @@ namespace Icarus.Services.GameFiles
             }
             throw new ArgumentException($"The model for {path} could not be found.");
         }
+        #endregion
     }
 }

@@ -34,6 +34,9 @@
             <DataTemplate DataType="{x:Type modviewmodels:MaterialModViewModel}">
                 <local:AdvancedEditorModView/>
             </DataTemplate>
+            <DataTemplate DataType="{x:Type modviewmodels:TextureModViewModel}">
+                <local:AdvancedEditorModView/>
+            </DataTemplate>
             <DataTemplate DataType="{x:Type modviewmodels:ReadOnlyModViewModel}" >
                 <local:AdvancedEditorModView/>
             </DataTemplate>

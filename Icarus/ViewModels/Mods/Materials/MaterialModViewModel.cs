@@ -103,13 +103,7 @@ namespace Icarus.ViewModels.Mods
                 return;
             }
             DestinationPath = path.GetMtrlPath();
-            /*
-            if (modData == null)
-            {
-                return;
-            }
-            DestinationPath = modData.Path;
-            */
+            
         }        
 
         private ShaderInfo _shaderInfo => _shaderInfoViewModel.ShaderInfo;

@@ -182,6 +182,27 @@ namespace ItemDatabase
             return ret;
         }
 
+        public List<IItem> Search(string str, string variantCode = "")
+        {
+            var results = Search(str);
+            var ret = new List<IItem>();
+            foreach (var r in results)
+            {
+                if (r is IGear g)
+                {
+                    if (g.VariantCode == variantCode)
+                    {
+                        ret.Add(r);
+                    }
+                }
+                else if (String.IsNullOrEmpty(variantCode))
+                {
+                    ret.Add(r);
+                }
+            }
+            return ret;
+        }
+
 
         /// <summary>
         /// Adds SmallClothes and The Emperor series

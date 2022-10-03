@@ -112,12 +112,35 @@ namespace Icarus.ViewModels.Mods
             OptionsViewModel.UpdateTargetRace(race);
         }
 
+        
         public override string DestinationPath
         {
             get => base.DestinationPath;
-            set => TrySetDestinationPath(value);
+            set
+            {
+                if (!fromItem)
+                {
+                    if (TrySetDestinationPath(value))
+                    {
+                        _mod.Path = value;
+                        OnPropertyChanged();
+                    }
+                }
+                else
+                {
+                    _mod.Path = value;
+                    OnPropertyChanged();
+                }
+            }
         }
+        
 
+        /// <summary>
+        /// Tries to get data from the user-provided path
+        /// Must match in-game exactly
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
         public override bool TrySetDestinationPath(string path)
         {
             if (path == base.DestinationPath) return false;
@@ -131,30 +154,30 @@ namespace Icarus.ViewModels.Mods
             {
                 SetModData(modData);
             }
-            base.DestinationPath = path;
+            //base.DestinationPath = path;
             OnPropertyChanged(nameof(HasSkin));
             return true;
         }
 
+        bool fromItem = false;
+
+        /// <summary>
+        /// Gets data from ItemList
+        /// </summary>
+        /// <param name="itemArg"></param>
+        /// <returns></returns>
         public override Task SetDestinationItem(IItem? itemArg = null)
         {
-            var item = itemArg;
-            if (itemArg == null)
+            fromItem = true;
+            var modData = _gameFileService.GetModelFileData();
+            if (modData != null)
             {
-                item = _itemListService.SelectedItem;
-            }
-            if (item is IGear gear)
-            {
-                DestinationPath = gear.GetMdlPath(TargetRace);
-            }
-            else if (item != null)
-            {
-                DestinationPath = item.GetMdlPath();
+                SetModData(modData);
             }
 
+            fromItem = false;
             return Task.CompletedTask;
         }
-
 
         private void SetModData(IGameFile data)
         {
@@ -172,7 +195,6 @@ namespace Icarus.ViewModels.Mods
         {
 
         }
-
 
         private void UpdateAttributes(ModelGameFile modelData)
         {

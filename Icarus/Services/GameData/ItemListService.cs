@@ -13,6 +13,7 @@ using ItemDatabase.Enums;
 using Icarus.Services.Interfaces;
 using System.Collections.ObjectModel;
 using xivModdingFramework.General.Enums;
+using Icarus.Mods.Interfaces;
 
 namespace Icarus.Services.GameFiles
 {
@@ -62,7 +63,35 @@ namespace Icarus.Services.GameFiles
             }
             return Data.GetAllRaceMdls(item);
         }
-        public List<IItem> Search(string str) => Data.Search(str);
+        public List<IItem> Search(string str)
+        {
+            var ret = new List<IItem>();
+            if (Data == null)
+            {
+                _logService.Error("Item list has not been built. Could not perform search.");
+            }
+            else
+            {
+                ret = Data.Search(str);
+                _logService.Information($"Searched for {str}. Found {ret.Count} matching entries.");
+            }
+            return ret;
+        }
+
+        public List<IItem> Search(string str, string variantCode)
+        {
+            var ret = new List<IItem>();
+            if (Data == null)
+            {
+                _logService.Error("Item list has not been built. Could not perform search.");
+            }
+            else
+            {
+                ret = Data.Search(str, variantCode);
+                _logService.Information($"Searched for {str}. Found {ret.Count} matching entries.");
+            }
+            return ret;
+        }
 
         protected override void OnLuminaSet()
         {

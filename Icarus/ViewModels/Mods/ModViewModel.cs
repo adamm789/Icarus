@@ -31,16 +31,16 @@ namespace Icarus.ViewModels.Mods
             _gameFileService = gameFileDataService;
             _itemListService = itemListService;
 
-            var file = new FileInfo(mod.ModFilePath);
+            var file = Path.GetFileName(mod.ModFilePath);
             if (file != null)
             {
-                FileName = file.Name;
+                FileName = file;
             }
             else
             {
                 FileName = mod.ModFilePath;
             }
-            //DisplayedHeader = FilePath;
+            //DisplayedHeader = FileName;
             DisplayedHeader = mod.ModFileName;
 
             RaiseModPropertyChanged();
@@ -155,6 +155,7 @@ namespace Icarus.ViewModels.Mods
             CanExport = _mod.IsComplete();
         }
 
+        // TODO: Re-consider assignment via item
         public abstract Task SetDestinationItem(IItem? item = null);
 
         public abstract bool TrySetDestinationPath(string item);
