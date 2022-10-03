@@ -1,0 +1,43 @@
+# Icarus (Working Title)
+Work-In-Progress project that packs mods for Final Fantasy XIV.
+
+Currently supports:
+* Importing .fbx files and .ttmp2 files
+* Modding .fbx files onto <i>only equipment and accessories</i>
+* Changing material assignments
+* Exporting to a Simple TexTools modpack or a basic Penumbra mod folder structure
+* Creating, editing, and exporting to an Advanced TexTools modpack
+* Exporting files as .fbx
+* Adding attributes
+* Removing shapes
+
+# Usage
+Set game path  
+"Browse" to your fbx or ttmp2 file  
+"Copy" item from the search on the left  
+Export to TexTools modpack or Penumbra file structure   
+
+If you wish to build your own copy, you will need the "converters" (for importing fbx), "Skeletons" (for scaling), and "Resources" (for exporting fbx) folders from TexTools in the root directory. They are included in the releases.
+
+# Known Issues
+If you import a ttmp2 file, some files will be called "ReadOnly." They will be skipped if exporting to any Penumbra format. However, they should be included in any TexTools export.  
+While you can theoretically assign any mdl path, that is currently untested. So use at your own risk.  
+Vanilla mtrls and the "TryGet" are pretty untested as well.  
+When exporting vanilla mdls with skins, the resulting png is incorrect.
+
+# Comments
+UI is very bare bones and honestly, quite ugly.
+
+Currently uses Lumina, so a clean install is highly recommended/required. Unintended behavior may occur if this is not the case.
+
+This is still in an early development state and will likely change dramatically over time. Crashes may occur both here and in-game. Output files have the possibility of being corrupted, but should™ be fine.
+
+# Notes
+Requires .NET 6.0 Desktop Runtime
+
+To save settings, this program adds a folder to AppData. So if you want to remove this project from your computer in its entirety, don't forget that folder.
+
+
+# Acknowledgements
+[TexTools team](https://github.com/TexTools)  
+[Lumina](https://github.com/NotAdam/Lumina)
