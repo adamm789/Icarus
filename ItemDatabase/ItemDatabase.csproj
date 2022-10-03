@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	 <TargetFramework>net6.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Configurations>Debug;Release;Tests</Configurations>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Ignore\**" />
+    <EmbeddedResource Remove="Ignore\**" />
+    <None Remove="Ignore\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Lumina.Excel" Version="6.2.1" />
+    <PackageReference Include="Serilog" Version="2.11.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\xivModdingFramework\xivModdingFramework\xivModdingFramework.csproj" />
+  </ItemGroup>
+
+</Project>

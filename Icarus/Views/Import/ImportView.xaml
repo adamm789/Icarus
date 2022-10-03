@@ -1,0 +1,34 @@
+﻿<UserControl x:Class="Icarus.Views.Import.ImportView"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:importviewmodels="clr-namespace:Icarus.ViewModels.Import"
+      xmlns:modviews="clr-namespace:Icarus.Views.Mods"
+      xmlns:modviewmodels="clr-namespace:Icarus.ViewModels.Mods"
+      d:DataContext="{d:DesignInstance Type=importviewmodels:ImportViewModel}"
+      mc:Ignorable="d" 
+      d:Width="480" d:Height="320">
+
+    <Grid Margin="10,0,10,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="10*"/>
+            <ColumnDefinition Width="2*"/>
+        </Grid.ColumnDefinitions>
+
+        <!--#region Contents -->
+        <ProgressBar Grid.Row="0" Grid.Column="0"
+            Minimum="0" Maximum="100" 
+                     IsIndeterminate="{Binding IsProgressIndeterminate}">
+        </ProgressBar>
+        <TextBlock Grid.Row="0" Grid.Column="0" 
+                   Text="{Binding ImportingFile}"/>
+        <Button Grid.Row="0" Grid.Column="1" Content="Browse..."
+                    Command="{Binding OnBrowseCommand}"/>
+
+    </Grid>
+</UserControl>

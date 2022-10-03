@@ -1,0 +1,68 @@
+﻿<UserControl x:Class="Icarus.Views.Import.MeshPartView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:uc="clr-namespace:Icarus.Views" 
+             xmlns:import="clr-namespace:Icarus.ViewModels.Import" 
+             xmlns:models="clr-namespace:Icarus.ViewModels.Models"
+                          xmlns:dd="urn:gong-wpf-dragdrop"
+
+             d:DataContext="{d:DesignInstance Type=models:MeshPartViewModel}"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="400">
+    <Grid dd:DragDrop.IsDropTarget="True"
+          dd:DragDrop.DropHandler="{Binding}">
+        <Grid.Resources>
+            <DataTemplate x:Key="StretchedHeaderTemplate">
+                <Border Loaded="OnStretchedHeaderTemplateLoaded"
+                        HorizontalAlignment="Stretch">
+                    <ContentPresenter Content="{TemplateBinding Content}"/>
+                </Border>
+            </DataTemplate>
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Name}"/>
+            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding NumAttributes}"/>
+
+            <TextBox Grid.Row="1" Grid.Column="0" Text="{Binding AttributeTextBox, UpdateSourceTrigger=PropertyChanged}">
+                <TextBox.InputBindings>
+                    <KeyBinding Key="Return" Command="{Binding AddAttributeCommand}"/>
+                </TextBox.InputBindings>
+            </TextBox>
+            <Button Grid.Row="1" Grid.Column="1" Command="{Binding AddAttributeCommand}" Content="Add"/>
+        </Grid>
+
+        <ListBox ItemsSource="{Binding Attributes}" PreviewMouseWheel="ListView_PreviewMouseWheel" Grid.Row="1">
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                </Style>
+            </ListBox.ItemContainerStyle>
+            <ListBox.ItemTemplate>
+                <DataTemplate DataType="{x:Type models:AttributeViewModel}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="{Binding DisplayedName}"/>
+                        <Button Grid.Column="1" Command="{Binding RemoveCommand}" Content="Remove"/>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </Grid>
+</UserControl>

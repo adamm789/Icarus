@@ -1,0 +1,66 @@
+﻿<UserControl x:Class="Icarus.Views.Mods.DataContainers.ModPackPageView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Icarus.Views.Mods.DataContainers" 
+             xmlns:mods="clr-namespace:Icarus.Mods"
+             xmlns:modviewmodels="clr-namespace:Icarus.ViewModels.Mods"
+             xmlns:datacontainers="clr-namespace:Icarus.ViewModels.Mods.DataContainers"
+             d:DataContext="{d:DesignInstance Type=datacontainers:ModPackPageViewModel}"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid HorizontalAlignment="Stretch">
+        <Grid.Resources>
+            <Style TargetType="{x:Type ListBoxItem}">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                            <Grid Background="{TemplateBinding Background}">
+                                <ContentPresenter 
+                                    ContentTemplate="{TemplateBinding ContentTemplate}"
+                                    Content="{TemplateBinding Content}"
+                                    HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                    Margin="{TemplateBinding Padding}">
+                                </ContentPresenter>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <DataTemplate DataType="{x:Type datacontainers:ModGroupViewModel}">
+                <local:ModGroupView/>
+            </DataTemplate>
+        </Grid.Resources>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" Margin="0,0,0,5">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="Group Name:" Grid.Column="0" Margin="0,0,5,0"/>
+            <TextBox Text="{Binding NewGroupName, UpdateSourceTrigger=PropertyChanged}" Grid.Row="0" Grid.Column="1">
+                <TextBox.InputBindings>
+                    <KeyBinding Key="Return" Command="{Binding AddGroupCommand}"/>
+                </TextBox.InputBindings>
+            </TextBox>
+
+            <Button Command="{Binding AddGroupCommand}" Grid.Row="0" Grid.Column="2">Add</Button>
+            <Button Command="{Binding RemoveCommand}" Grid.Row="0" Grid.Column="3">Remove</Button>
+        </Grid>
+
+        <ListView ItemsSource="{Binding ModGroups}" Grid.Row="1" 
+                 HorizontalContentAlignment="Stretch"
+                 VerticalContentAlignment="Stretch"
+                 ScrollViewer.CanContentScroll="False"
+                 VirtualizingStackPanel.IsVirtualizing="True">
+        </ListView>
+    </Grid>
+</UserControl>

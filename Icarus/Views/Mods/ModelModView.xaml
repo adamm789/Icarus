@@ -1,0 +1,63 @@
+﻿<UserControl x:Class="Icarus.Views.Mods.ModelModView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Icarus.Views.Mods" 
+             xmlns:modelviews="clr-namespace:Icarus.Views.Models" 
+             xmlns:modviewmodels="clr-namespace:Icarus.ViewModels.Mods"
+             xmlns:importviewmodels="clr-namespace:Icarus.ViewModels.Import" 
+             xmlns:import="clr-namespace:Icarus.Views.Import"
+             xmlns:h="clr-namespace:xivModdingFramework.Models.Helpers;assembly=xivModdingFramework" 
+             xmlns:enums="clr-namespace:xivModdingFramework.General.Enums;assembly=xivModdingFramework"
+             xmlns:models="clr-namespace:Icarus.ViewModels.Models"
+             xmlns:ui="clr-namespace:Icarus.UI"
+             xmlns:dd="urn:gong-wpf-dragdrop"
+             d:DataContext="{d:DesignInstance Type=modviewmodels:ModelModViewModel}"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid >
+        <Grid.Resources>
+            <ui:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" True="Visible" False="Hidden"/>
+            <DataTemplate x:Key="StretchedHeaderTemplate">
+                <Border Loaded="OnStretchedHeaderTemplateLoaded" HorizontalAlignment="Stretch">
+                    <ContentPresenter Content="{TemplateBinding Content}"/>
+                </Border>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type importviewmodels:ModelModifierOptionsViewModel}">
+                <modelviews:ModelModifierOptionsView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type models:MeshGroupViewModel}">
+                <import:MeshGroupView/>
+            </DataTemplate>
+        </Grid.Resources>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <local:ModView Grid.Row="0" Grid.ColumnSpan="3"/>
+
+        <Button Grid.Row="1" Grid.Column="0" Content="Copy From Search"
+                    Command="{Binding SetDestinationCommand}"/>
+        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding DestinationName}" IsReadOnly="True" Margin="5,0,5,0"/>
+
+        <ComboBox Grid.Row="1" Grid.Column="2" ItemsSource="{Binding Source={x:Static enums:XivRaces.PlayableRaces}}" 
+                  SelectedValue="{Binding TargetRace, Mode=TwoWay}"
+                  Visibility="{Binding HasSkin, Converter={StaticResource BooleanToVisibilityConverter}}">
+        </ComboBox>
+
+        <ContentControl Content="{Binding OptionsViewModel}" Grid.Row="2" Grid.ColumnSpan="3"/>
+        <ListBox Grid.Row="3" Grid.ColumnSpan="3" ItemsSource="{Binding MeshGroups}" HorizontalContentAlignment="Stretch"
+                 PreviewMouseWheel="ListView_PreviewMouseWheel" ScrollViewer.CanContentScroll="False">
+        </ListBox>
+    </Grid>
+</UserControl>

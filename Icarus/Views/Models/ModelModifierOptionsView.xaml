@@ -1,0 +1,75 @@
+﻿<UserControl x:Class="Icarus.Views.Models.ModelModifierOptionsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Icarus.Views.Import" 
+             xmlns:import="clr-namespace:Icarus.ViewModels.Import"
+             xmlns:enums="clr-namespace:xivModdingFramework.General.Enums;assembly=xivModdingFramework"
+             xmlns:ui="clr-namespace:Icarus.UI"
+
+             d:DataContext="{d:DesignInstance Type=import:ModelModifierOptionsViewModel}"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             FontSize="14">
+    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
+        <Grid.Resources>
+            <ui:BooleanToVisibilityConverter 
+                x:Key="BooleanToVisibilityConverter"
+                True="Visible"
+                False="Hidden"/>
+            <Style TargetType="CheckBox">
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+            </Style>
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <CheckBox Grid.Row="0" Grid.Column="0" IsChecked="{Binding UseOriginalShapeData, Mode=TwoWay}">
+            <CheckBox.ToolTip>
+                <TextBlock Text="{x:Static import:ModelModifierOptionsViewModel.UseOriginalShapeDataTooltip}"/>
+            </CheckBox.ToolTip>
+            <TextBlock Text="{x:Static import:ModelModifierOptionsViewModel.UseOriginalShapeDataName}"/>
+        </CheckBox>
+        <CheckBox Grid.Row="1" Grid.Column="0" IsChecked="{Binding ForceUVQuadrant, Mode=TwoWay}">
+            <TextBlock Text="{x:Static import:ModelModifierOptionsViewModel.ForceUVQuadrantName}"/>
+        </CheckBox>
+
+        <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding ClearUV2, Mode=TwoWay}">
+            <TextBlock Text="{x:Static import:ModelModifierOptionsViewModel.ClearUV2Name}"/>
+        </CheckBox>
+        <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding CloneUV2, Mode=TwoWay}">
+            <TextBlock Text="{x:Static import:ModelModifierOptionsViewModel.CloneUV2Name}"/>
+        </CheckBox>
+
+        <CheckBox Grid.Row="0" Grid.Column="2" IsChecked="{Binding ClearVColor, Mode=TwoWay}">
+            <TextBlock Text="{x:Static import:ModelModifierOptionsViewModel.ClearVColorName}"/>
+        </CheckBox>
+        <CheckBox Grid.Row="1" Grid.Column="2" IsChecked="{Binding ClearVAlpha, Mode=TwoWay}">
+            <TextBlock Text="{x:Static import:ModelModifierOptionsViewModel.ClearVColorName}"/>
+        </CheckBox>
+
+        <CheckBox Grid.Row="2" Grid.Column="0" IsChecked="{Binding AutoScale, Mode=TwoWay}">
+            <TextBlock Text="{x:Static import:ModelModifierOptionsViewModel.AutoScaleName}"/>
+        </CheckBox>
+
+        <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding OverrideRace, Mode=TwoWay}">
+            <TextBlock Text="Override Incoming Race" IsEnabled="True"/>
+        </CheckBox>
+        <ComboBox Grid.Row="2" Grid.Column="2" x:Name="ImportRace"
+                  ItemsSource="{Binding Source={x:Static enums:XivRaces.PlayableRaces}}"
+                  SelectedValue="{Binding SourceRace, Mode=TwoWay}"
+                  IsEnabled="{Binding OverrideRace}"
+                  Visibility="{Binding OverrideRace, Converter={StaticResource BooleanToVisibilityConverter}}">
+        </ComboBox>
+    </Grid>
+</UserControl>

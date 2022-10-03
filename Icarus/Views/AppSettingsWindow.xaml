@@ -1,0 +1,62 @@
+﻿<Window x:Class="Icarus.Views.AppSettingsWindow"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:viewmodels="clr-namespace:Icarus.ViewModels"
+             d:DataContext="{d:DesignInstance Type=viewmodels:AppSettingsViewModel}"
+             mc:Ignorable="d" 
+             Title="Settings"
+             Width="600" Height="250"
+        FontSize="14">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="Game Path (Lumina)" Grid.Row="0" Grid.Column="0"/>
+        <TextBox Text="{Binding GameDirectoryLumina}" Grid.Row="0" Grid.Column="1"/>
+        <Button Command="{Binding SetGamePathCommand}" CommandParameter="Lumina"
+            Content="Browse" Grid.Row="0" Grid.Column="2"/>
+
+        <!--
+        <TextBlock Text="Game Path (TexTools)" Grid.Row="1" Grid.Column="0" Visibility="Collapsed"/>
+        <TextBox Text="{Binding GameDirectoryTexTools}" Grid.Row="1" Grid.Column="1" Visibility="Collapsed"/>
+        <Button Command="{Binding SetGamePathCommand}" CommandParameter="TexTools"
+            Content="Browse" Grid.Row="1" Grid.Column="2" Visibility="Collapsed"/>
+-->
+        
+        <TextBlock Text="Search Directory" Grid.Row="2" Grid.Column="0"/>
+        <TextBox Text="{Binding BrowseDirectory}" Grid.Row="2" Grid.Column="1"/>
+        <Button Command="{Binding SetDirectoryCommand}" CommandParameter="Browse"
+            Content="Browse" Grid.Row="2" Grid.Column="2"/>
+
+        <TextBlock Text="Output Directory" Grid.Row="3" Grid.Column="0"/>
+        <TextBox Text="{Binding OutputDirectory}" Grid.Row="3" Grid.Column="1"/>
+        <Button Command="{Binding SetDirectoryCommand}" CommandParameter="Output"
+            Content="Browse" Grid.Row="3" Grid.Column="3"/>
+
+        <!-- TODO: More settings? -->
+        <CheckBox Content="Advanced Settings" Grid.Row="4" Grid.Column="0"
+                     IsChecked="{Binding AdvancedSettings}"
+                  Visibility="Collapsed"></CheckBox>
+        <!--
+        <CheckBox Content="Use Lumina" Grid.Row="4" Grid.Column="1"
+                  IsChecked="{Binding UseLumina}"
+                  Visibility="Collapsed"></CheckBox>
+        -->
+        <!-- TODO: Create a personal ToggleSwitch? -->
+
+        <Button Content="Save" DockPanel.Dock="Right" Grid.Row="4" Grid.Column="2"
+                Command="{Binding SaveSettingsCommand}"></Button>
+    </Grid>
+</Window>

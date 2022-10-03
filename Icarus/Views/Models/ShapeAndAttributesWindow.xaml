@@ -1,0 +1,81 @@
+﻿<Window x:Class="Icarus.Views.Models.ShapeAndAttributeWindow"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:models="clr-namespace:Icarus.ViewModels.Models"
+             xmlns:importviews="clr-namespace:Icarus.Views.Import"
+             xmlns:local="clr-namespace:Icarus.Views.Models" 
+                     xmlns:dd="urn:gong-wpf-dragdrop"
+
+        d:DataContext="{d:DesignInstance Type=models:MeshGroupViewModel}"
+        mc:Ignorable="d" 
+             Height="450" Width="800"
+        Title="{Binding Name}">
+    <Grid>
+        <Grid.Resources>
+            <DataTemplate DataType="{x:Type models:ShapeViewModel}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="{Binding Name}"/>
+                    <Button Grid.Column="1" Command="{Binding RemoveCommand}" Content="Remove"/>
+                </Grid>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type models:MeshPartViewModel}">
+                <importviews:MeshPartView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type models:AttributePresetsViewModel}">
+                <local:AttributePresetsView dd:DragDrop.IsDragSource="True"/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type models:AttributeViewModel}">
+                <TextBlock Text="{Binding DisplayedName}" dd:DragDrop.IsDragSource="True"/>
+            </DataTemplate>
+        </Grid.Resources>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="3*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Text="Shapes" HorizontalAlignment="Center"/>
+            <ListBox Grid.Row="1" ItemsSource="{Binding Shapes}">
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+            </ListBox>
+        </Grid>
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Text="Parts" HorizontalAlignment="Center"/>
+            <ListBox Grid.Row="1" ItemsSource="{Binding MeshParts}" HorizontalContentAlignment="Center" ScrollViewer.CanContentScroll="False" dd:DragDrop.IsDropTarget="True">
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+            </ListBox>
+        </Grid>
+        <TabControl Grid.Column="2">
+            <TabItem Header="Presets">
+                <ListView ItemsSource="{Binding AttributePresets}" HorizontalContentAlignment="Stretch" ScrollViewer.CanContentScroll="False"/>
+            </TabItem>
+            <TabItem Header="Standard">
+                <ListView ItemsSource="{Binding SlotAttributes}" HorizontalContentAlignment="Stretch" ScrollViewer.CanContentScroll="False"/>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>

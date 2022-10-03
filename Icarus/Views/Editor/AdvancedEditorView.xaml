@@ -1,0 +1,66 @@
+﻿<UserControl x:Class="Icarus.Views.Editor.AdvancedEditorView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Icarus.Views.Editor"
+             xmlns:exporterviews="clr-namespace:Icarus.Views.Export"
+             xmlns:viewmodels="clr-namespace:Icarus.ViewModels"
+             xmlns:exporterviewmodels="clr-namespace:Icarus.ViewModels.Export"
+             xmlns:modviewmodels="clr-namespace:Icarus.ViewModels.Mods"
+             xmlns:modviews="clr-namespace:Icarus.Views.Mods.DataContainers"
+             xmlns:mods="clr-namespace:Icarus.Views.Mods"
+             xmlns:editors="clr-namespace:Icarus.Views.Editor"
+             d:DataContext="{d:DesignInstance Type=viewmodels:MainWindowViewModel}"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid IsEnabled="{Binding CanExport}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="4*"/>
+            <ColumnDefinition Width="9*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.Resources>
+            <DataTemplate DataType="{x:Type exporterviewmodels:ExportViewModel}">
+                <exporterviews:ExportAdvanced/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type modviewmodels:ModelModViewModel}">
+                <local:AdvancedEditorModView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type modviewmodels:MaterialModViewModel}">
+                <local:AdvancedEditorModView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type modviewmodels:ReadOnlyModViewModel}" >
+                <local:AdvancedEditorModView/>
+            </DataTemplate>
+        </Grid.Resources>
+
+        <ContentControl DataContext="{Binding ModsListViewModel}" Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Margin="5">
+            <mods:FilteredModsView/>
+        </ContentControl>
+
+        <TabControl Grid.Row="0" Grid.Column="1">
+            <TabItem Header="Pages">
+
+                <ContentControl Grid.Row="0" Grid.Column="1" DataContext="{Binding ModPackViewModel}">
+                    <modviews:ModPackView/>
+                </ContentControl>
+            </TabItem>
+            <TabItem Header="Pack">
+
+                <ContentControl DataContext="{Binding ModPackViewModel}">
+                    <editors:ModPackEditor></editors:ModPackEditor>
+            </ContentControl>
+            </TabItem>
+
+
+        </TabControl>
+
+
+        <ContentControl Grid.Row="2" Grid.Column="1" Content="{Binding ExportViewModel}" Margin="5"/>
+    </Grid>
+</UserControl>

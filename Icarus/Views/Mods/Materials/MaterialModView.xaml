@@ -1,0 +1,86 @@
+﻿<UserControl x:Class="Icarus.Views.Mods.MaterialModView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Icarus.Views.Mods" 
+             xmlns:mods="clr-namespace:Icarus.ViewModels.Mods"
+             xmlns:ui="clr-namespace:Icarus.UI"
+             d:DataContext="{d:DesignInstance Type=mods:MaterialModViewModel}"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid.Resources>
+            <DataTemplate DataType="{x:Type mods:ColorSetRowViewModel}">
+                <local:ColorSetRowView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type mods:ShaderInfoViewModel}">
+                <local:MaterialTexPathsView/>
+            </DataTemplate>
+            <ui:BooleanToVisibilityConverter 
+                x:Key="BooleanToVisibilityConverter"
+                True="Visible"
+                False="Collapsed"/>
+        </Grid.Resources>
+
+        <local:ModView Grid.Row="0" Grid.ColumnSpan="3"/>
+
+        <Button Grid.Row="1" Grid.Column="0" Content="Copy From Search"
+                    Command="{Binding SetDestinationCommand}" Margin="2,0,2,0"/>
+        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding DestinationName, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
+
+        <Button Grid.Row="1" Grid.Column="2" Command="{Binding OpenMaterialEditorCommand}" Content="Edit"/>
+        <!--
+        <ListView ItemsSource="{Binding Textures}" Grid.Row="3" Grid.ColumnSpan="2"
+                  PreviewMouseWheel="ListView_PreviewMouseWheel" ScrollViewer.CanContentScroll="False"/>
+        -->
+        <!--
+        <ContentControl Grid.Row="4" Grid.ColumnSpan="2" Content="{Binding ShaderInfoViewModel}"/>
+        -->
+
+        <Grid Grid.Row="3" Grid.ColumnSpan="2" DataContext="{Binding ShaderInfoViewModel}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Preset"/>
+            <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding ShaderPresetEnum}" SelectedValue="{Binding Preset}"/>
+            
+            <local:MaterialTexPathsView Grid.Row="1" Grid.ColumnSpan="2"/>
+        </Grid>
+
+        <!--
+        <ListView Grid.Row="5" Grid.ColumnSpan="2"
+            ItemsSource="{Binding MultiNormalPathList}" PreviewMouseWheel="ListView_PreviewMouseWheel"
+            Visibility="{Binding IsMultiNormal, Converter={StaticResource BooleanToVisibilityConverter}}">
+        </ListView>
+        <ListView Grid.Row="5" Grid.ColumnSpan="2"
+            ItemsSource="{Binding DiffuseSpecularPathList}" PreviewMouseWheel="ListView_PreviewMouseWheel"
+            Visibility="{Binding IsMultiNormal, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+        </ListView>
+        -->
+        <!--
+        <ListView Grid.Row="4" ItemsSource="{Binding ColorSetViewModels}" HorizontalContentAlignment="Stretch">
+
+        </ListView>
+        -->
+    </Grid>
+</UserControl>

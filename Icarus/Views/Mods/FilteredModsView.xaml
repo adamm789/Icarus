@@ -1,0 +1,64 @@
+﻿<UserControl x:Class="Icarus.Views.Mods.FilteredModsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Icarus.Views.Mods" 
+             xmlns:mods="clr-namespace:Icarus.ViewModels.Mods" 
+             xmlns:datacontainers="clr-namespace:Icarus.ViewModels.Mods.DataContainers"
+             xmlns:dd="urn:gong-wpf-dragdrop"
+             d:DataContext="{d:DesignInstance Type=datacontainers:ModPackModsListViewModel}"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.Resources>
+            <!--
+            <Style TargetType="{x:Type Button}">
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="VerticalAlignment" Value="Stretch"/>
+                <Setter Property="Margin" Value="0,2,0,2"/>
+            </Style>
+            <Style TargetType="{x:Type TextBox}">
+                <Setter Property="Margin" Value="10,2,10,2"/>
+            </Style>
+            -->
+            <Style TargetType="{x:Type ListView}">
+                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+                <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
+                <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True"/>
+                <Setter Property="dd:DragDrop.IsDragSource" Value="True"/>
+                <Setter Property="dd:DragDrop.IsDropTarget" Value="True"/>
+                <Setter Property="dd:DragDrop.DropHandler" Value="{Binding}"/>
+            </Style>
+
+            <Style TargetType="{x:Type ListViewItem}">
+                <Setter Property="BorderBrush" Value="Black"/>
+                <Setter Property="BorderThickness" Value="2"/>
+                <Setter Property="Margin" Value="0,3,0,3"/>
+            </Style>
+        </Grid.Resources>
+
+        <TabControl Grid.Row="0">
+            <TabItem Header="{Binding AllModsHeader}">
+                <ListView ItemsSource="{Binding SimpleModsList}"/>
+            </TabItem>
+            <TabItem Header="{Binding MaterialModsHeader}">
+                <ListView ItemsSource="{Binding MaterialMods}"/>
+            </TabItem>
+            <TabItem Header="{Binding TextureModsHeader}">
+                <ListView ItemsSource="{Binding TextureMods}"/>
+            </TabItem>
+            <TabItem Header="{Binding ModelModsHeader}">
+                <ListView ItemsSource="{Binding ModelMods}"/>
+            </TabItem>
+            <TabItem Header="{Binding MetadataModsHeader}">
+                <ListView ItemsSource="{Binding MetadataMods}"/>
+            </TabItem>
+            <TabItem Header="{Binding ReadOnlyModsHeader}"
+                     ToolTip="For some reason, these mods could not be imported. These entries cannot be edited.">
+                <ListView ItemsSource="{Binding ReadOnlyMods}"/>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</UserControl>

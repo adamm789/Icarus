@@ -1,0 +1,70 @@
+﻿<UserControl x:Class="Icarus.Views.Import.MeshGroupView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:uc="clr-namespace:Icarus.Views" 
+             xmlns:importviewmodels="clr-namespace:Icarus.ViewModels.Import" 
+             xmlns:importviews="clr-namespace:Icarus.Views.Import"
+             xmlns:models="clr-namespace:Icarus.ViewModels.Models"
+             xmlns:modelviews="clr-namespace:Icarus.Views.Models"
+             d:DataContext="{d:DesignInstance Type=models:MeshGroupViewModel}"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="400">
+    <Grid>
+        <Grid.Resources>
+            <DataTemplate DataType="{x:Type models:MeshGroupMaterialViewModel}">
+                <modelviews:MeshGroupMaterialView/>
+            </DataTemplate>
+        </Grid.Resources>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Name}"/>
+        <Button Grid.Row="0" Grid.Column="1" Content="Edit Shapes/Attributes"
+                VerticalContentAlignment="Stretch"
+                Command="{Binding EditShapeAndAttributesCommand}"/>
+
+        <ContentControl Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Content="{Binding MaterialViewModel}"/>
+
+        <!--
+        <Grid Grid.Row="1" Grid.Column="0">
+            <ListBox ItemsSource="{Binding Shapes}"
+                 ScrollViewer.CanContentScroll="False">
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+                <ListBox.ItemTemplate>
+                    <DataTemplate DataType="{x:Type models:ShapeViewModel}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="{Binding Name}"/>
+                            <Button  Grid.Column="1"  Command="{Binding RemoveCommand}" Content="Remove"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
+        
+        <ListBox ItemsSource="{Binding MeshParts}" Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" PreviewMouseWheel="ListView_PreviewMouseWheel">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <importviews:MeshPartView/>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        -->
+    </Grid>
+</UserControl>
