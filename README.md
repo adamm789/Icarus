@@ -23,7 +23,8 @@ If you wish to build your own copy, you will need the "converters" (for importin
 If you import a ttmp2 file, some files will be called "ReadOnly." They will be skipped if exporting to any Penumbra format. However, they should be included in any TexTools export.  
 While you can theoretically assign any mdl path, that is currently untested. So use at your own risk.  
 Vanilla mtrls and the "TryGet" are pretty untested as well.  
-When exporting vanilla mdls with skins, the resulting png is incorrect.
+When exporting vanilla mdls with skins, the resulting png is incorrect.  
+When importing via fbx, attributes are not automatically set. While intentional, down the line, there may be a setting to change that.  
 
 # Comments
 UI is very bare bones and honestly, quite ugly.
