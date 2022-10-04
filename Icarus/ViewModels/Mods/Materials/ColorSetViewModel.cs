@@ -32,6 +32,15 @@ namespace Icarus.ViewModels.Mods
             return WindowsColor.FromArgb(c.A, c.R, c.G, c.B);
         }
 
+        // TODO: Get an edited Colorset row
+        public List<SharpDXColor> GetRow()
+        {
+            var retVal = new List<SharpDXColor>();
+            //retVal.Add(new SharpDXColor(Diffuse.Color));
+
+            return retVal;
+        }
+
         SolidColorBrush _diffuse;
         public SolidColorBrush Diffuse
         {

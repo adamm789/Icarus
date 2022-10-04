@@ -20,10 +20,11 @@ namespace Icarus.ViewModels.Mods
 
         public ShaderInfoViewModel(MaterialMod material)
         {
+            // TODO: Do I need to also not directly change the material ShaderInfo?
             ShaderInfo = material.ShaderInfo;
             _materialMod = material;
 
-            NormalTex = new MaterialTexViewModel(_materialMod.NormalTexPath);
+            //NormalTex = new MaterialTexViewModel(_materialMod.NormalTexPath);
 
             NormalTexPath = material.NormalTexPath;
             SpecularTexPath = material.SpecularTexPath;
@@ -38,6 +39,7 @@ namespace Icarus.ViewModels.Mods
             PathProperyChanged();
         }
 
+        // TODO: Prevent user from settings options that are mutually excelusive
         public ShaderInfo ShaderInfo { get; }
 
         public MtrlShader MtrlShader
@@ -66,26 +68,30 @@ namespace Icarus.ViewModels.Mods
             set { ShaderInfo.RenderBackfaces = value; OnPropertyChanged(); }
         }
 
+        /*
         MaterialTexViewModel _normalTex;
         public MaterialTexViewModel NormalTex
         {
             get { return _normalTex; }
             set { _normalTex = value; OnPropertyChanged(); }
         }
+        */
 
         // TODO: Figure out how to handle editing texture paths
-        /*
+        
         public string NormalTexPath
         {
             get { return _materialMod.NormalTexPath; }
             set { _materialMod.NormalTexPath = value; OnPropertyChanged(); }
         }
-        */
+        
+        /*
         public string NormalTexPath
         {
             get { return _normalTex.Path; }
             set { _normalTex.Path = value; OnPropertyChanged(); }
         }
+        */
 
         public string MultiTexPath
         {
@@ -110,14 +116,14 @@ namespace Icarus.ViewModels.Mods
             get { return _materialMod.ReflectionTexPath; }
             set { _materialMod.ReflectionTexPath = value; OnPropertyChanged(); }
         }
-        private void PathProperyChanged()
+        public void PathProperyChanged()
         {
             OnPropertyChanged(nameof(HasMulti));
             OnPropertyChanged(nameof(HasDiffuse));
             OnPropertyChanged(nameof(HasSpecular));
             OnPropertyChanged(nameof(HasReflection));
 
-            NormalTexPath = _materialMod.NormalTexPath;
+            //NormalTexPath = _materialMod.NormalTexPath;
 
             OnPropertyChanged(nameof(NormalTexPath));
             OnPropertyChanged(nameof(MultiTexPath));

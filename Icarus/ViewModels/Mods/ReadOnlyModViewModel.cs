@@ -3,6 +3,7 @@ using Icarus.Services.GameFiles;
 using Icarus.Services.Interfaces;
 using Icarus.ViewModels.Util;
 using ItemDatabase.Interfaces;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,12 +26,15 @@ namespace Icarus.ViewModels.Mods
 
         public override async Task SetDestinationItem(IItem? item = null)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
+            Log.Information("Cannot set item on ReadOnlyMod.");
+            return;
         }
 
-        public override bool TrySetDestinationPath(string item)
+        public override async Task<bool> TrySetDestinationPath(string path)
         {
-            throw new NotImplementedException();
+            Log.Information("Cannoy set path on ReadOnlyMod.");
+            return false;
         }
     }
 }

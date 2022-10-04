@@ -21,6 +21,15 @@ namespace Icarus.Services.GameFiles
         readonly SettingsService _settingsService;
         readonly ILogService _logService;
 
+        public LuminaService(SettingsService settingsService, ILogService logService)
+        {
+            _settingsService = settingsService;
+            _logService = logService;
+
+            eh = new(OnPropertyChanged);
+            _settingsService.PropertyChanged += eh;
+        }
+
         bool _isLuminaSet = false;
         public bool IsLuminaSet
         {
@@ -30,16 +39,6 @@ namespace Icarus.Services.GameFiles
                 _isLuminaSet = value;
                 OnPropertyChanged();
             }
-        }
-
-        public LuminaService(SettingsService settingsService, ILogService logService)
-        {
-            _settingsService = settingsService;
-            _logService = logService;
-
-            eh = new(OnPropertyChanged);
-            _settingsService.PropertyChanged += eh;
-
         }
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)

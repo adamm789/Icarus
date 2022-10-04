@@ -31,7 +31,11 @@ namespace Icarus.Services
             AddRequiredServices();
 
             Ioc.Default.ConfigureServices(_services.BuildServiceProvider());
+
             Ioc.Default.GetRequiredService<IGameFileService>();
+            Ioc.Default.GetRequiredService<ConverterService>();
+            Ioc.Default.GetRequiredService<ExportService>();
+            Ioc.Default.GetRequiredService<ItemListService>();
         }
 
         protected virtual void AddUIServices()

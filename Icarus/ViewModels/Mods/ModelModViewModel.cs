@@ -112,64 +112,11 @@ namespace Icarus.ViewModels.Mods
             OptionsViewModel.UpdateTargetRace(race);
         }
 
-        
-        public override string DestinationPath
-        {
-            get => base.DestinationPath;
-            set
-            {
-                if (!fromItem)
-                {
-                    if (TrySetDestinationPath(value))
-                    {
-                        _mod.Path = value;
-                        OnPropertyChanged();
-                    }
-                }
-                else
-                {
-                    _mod.Path = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-        
-
-        /// <summary>
-        /// Tries to get data from the user-provided path
-        /// Must match in-game exactly
-        /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        public override bool TrySetDestinationPath(string path)
-        {
-            if (path == base.DestinationPath) return false;
-            var modData = Task.Run(() => _gameFileService.TryGetFileData(path, TargetRace)).Result;
-            if (modData == null)
-            {
-                Log.Warning($"Could not set {path}");
-                return false;
-            }
-            else
-            {
-                SetModData(modData);
-            }
-            //base.DestinationPath = path;
-            OnPropertyChanged(nameof(HasSkin));
-            return true;
-        }
-
-        bool fromItem = false;
-
-        /// <summary>
-        /// Gets data from ItemList
-        /// </summary>
-        /// <param name="itemArg"></param>
-        /// <returns></returns>
+        /*
         public override Task SetDestinationItem(IItem? itemArg = null)
         {
             fromItem = true;
-            var modData = _gameFileService.GetModelFileData();
+            var modData = _gameFileService.GetModelFileData(itemArg);
             if (modData != null)
             {
                 SetModData(modData);
@@ -178,7 +125,8 @@ namespace Icarus.ViewModels.Mods
             fromItem = false;
             return Task.CompletedTask;
         }
-
+        */
+        /*
         private void SetModData(IGameFile data)
         {
             if (data is ModelGameFile modelData)
@@ -191,9 +139,15 @@ namespace Icarus.ViewModels.Mods
                 RaiseModPropertyChanged();
             }
         }
-        private void UpdateAttributes(string path)
-        {
+        */
 
+        protected override void SetModData(IGameFile gameFile)
+        {
+            if (gameFile is ModelGameFile modelGameFile)
+            {
+                base.SetModData(modelGameFile);
+                UpdateAttributes(modelGameFile);
+            }
         }
 
         private void UpdateAttributes(ModelGameFile modelData)

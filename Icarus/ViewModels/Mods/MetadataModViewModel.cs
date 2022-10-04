@@ -13,14 +13,10 @@ namespace Icarus.ViewModels.Mods
     {
         public MetadataModViewModel(IMod mod, ItemListService itemListService, GameFileService gameFileDataService) : base(mod, itemListService, gameFileDataService)
         {
+
         }
 
         public override Task SetDestinationItem(IItem? item = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool TrySetDestinationPath(string item)
         {
             throw new NotImplementedException();
         }

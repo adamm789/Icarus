@@ -9,7 +9,9 @@
              xmlns:mtrl="clr-namespace:xivModdingFramework.Materials.DataContainers;assembly=xivModdingFramework"
         d:DataContext="{d:DesignInstance Type=mods:MaterialModViewModel}"
         mc:Ignorable="d" 
-             d:DesignHeight="250" d:DesignWidth="300">
+             d:DesignHeight="250" d:DesignWidth="300"
+        MinHeight="350" MinWidth="500"
+        MaxHeight="500" MaxWidth="650">
     <StackPanel>
         <StackPanel.Resources>
             <DataTemplate DataType="{x:Type mods:ColorSetRowViewModel}">

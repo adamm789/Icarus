@@ -12,10 +12,30 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="converters\**" />
     <Compile Remove="Ignore\**" />
+    <Compile Remove="input\**" />
+    <Compile Remove="output\**" />
+    <Compile Remove="Resources\**" />
+    <Compile Remove="Skeletons\**" />
+    <EmbeddedResource Remove="converters\**" />
     <EmbeddedResource Remove="Ignore\**" />
+    <EmbeddedResource Remove="input\**" />
+    <EmbeddedResource Remove="output\**" />
+    <EmbeddedResource Remove="Resources\**" />
+    <EmbeddedResource Remove="Skeletons\**" />
+    <None Remove="converters\**" />
     <None Remove="Ignore\**" />
+    <None Remove="input\**" />
+    <None Remove="output\**" />
+    <None Remove="Resources\**" />
+    <None Remove="Skeletons\**" />
+    <Page Remove="converters\**" />
     <Page Remove="Ignore\**" />
+    <Page Remove="input\**" />
+    <Page Remove="output\**" />
+    <Page Remove="Resources\**" />
+    <Page Remove="Skeletons\**" />
   </ItemGroup>
 	
   <ItemGroup>

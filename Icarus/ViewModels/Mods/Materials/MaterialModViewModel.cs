@@ -5,6 +5,8 @@ using Icarus.Services.Interfaces;
 using Icarus.ViewModels.Util;
 using Icarus.Views.Mods;
 using ItemDatabase.Interfaces;
+using ItemDatabase.Paths;
+using Serilog;
 using SharpDX;
 using System;
 using System.Collections.Generic;
@@ -21,17 +23,16 @@ namespace Icarus.ViewModels.Mods
 {
     public class MaterialModViewModel : ModViewModel
     {
+        // TODO: Overhaul MaterialModViewModel so that it does not constantly update the associated MaterialMod and consequently the XiVMtrl
+        // There are destructive operations in xivMtrl.SetShaderInfo()
+
+
         // TODO: Need to handle case of importing .dds file
         // TODO: call SetCanExport... at some point
 
         MaterialMod _materialMod;
         IWindowService _windowService;
         ShaderInfoViewModel _shaderInfoViewModel;
-        public ShaderInfoViewModel ShaderInfoViewModel
-        {
-            get { return _shaderInfoViewModel; }
-            set { _shaderInfoViewModel = value; OnPropertyChanged(); }
-        }
 
         // TODO: Include a section that shows the overall edits to all items
         // e.g. Group and display the mods that affect e6111
@@ -59,6 +60,12 @@ namespace Icarus.ViewModels.Mods
             }
         }
 
+        public override MaterialMod GetMod()
+        {
+            _materialMod.ShaderInfo = _shaderInfo;
+            return _materialMod;
+        }
+
         private Color GetColorSetDataRange(List<Half> values, int index)
         {
             return ListToColor(values.GetRange(index, 4));
@@ -79,39 +86,43 @@ namespace Icarus.ViewModels.Mods
             get { return _colorSetViewModels; }
             set { _colorSetViewModels = value; OnPropertyChanged(); }
         }
-        
-        public override string DestinationPath
+
+        public ShaderInfoViewModel ShaderInfoViewModel
         {
-            get { return _mod.Path; }
-            set
-            {
-                if (MaterialMod.IsValidMtrlPath(value))
-                {
-                    _mod.Path = value;
-                    OnPropertyChanged();
-                    ShaderInfoViewModel.UpdatePaths(value);
-                }
-            }
+            get { return _shaderInfoViewModel; }
+            set { _shaderInfoViewModel = value; OnPropertyChanged(); }
         }
-        
+
+        /*
         public override async Task SetDestinationItem(IItem? item = null)
         {
             var modData = await _gameFileService.GetMaterialFileData(item);
-            var path = _itemListService.SelectedItem;
-            if (path == null)
+            if (modData == null)
             {
                 return;
             }
-            DestinationPath = path.GetMtrlPath();
-            
-        }        
+            DestinationPath = modData.Path;
+        }
+        */
 
         private ShaderInfo _shaderInfo => _shaderInfoViewModel.ShaderInfo;
 
-        public override bool TrySetDestinationPath(string item)
+        /*
+        public override async Task<bool> TrySetDestinationPath(string path)
         {
-            throw new NotImplementedException();
+            var modData = await _gameFileService.TryGetFileData(path);
+            if (modData == null)
+            {
+                Log.Warning($"Could not set {path} as a material.");
+                return false;
+            }
+            else
+            {
+                DestinationPath = modData.Path;
+            }
+            return true;
         }
+        */
 
         DelegateCommand _openMaterialEditorCommand;
         public DelegateCommand OpenMaterialEditorCommand
@@ -122,6 +133,12 @@ namespace Icarus.ViewModels.Mods
         public void OpenMaterialEditor()
         {
             _windowService.ShowWindow<MaterialEditorWindow>(this);
+        }
+
+        public override void RaiseModPropertyChanged()
+        {
+            ShaderInfoViewModel.PathProperyChanged();
+            base.RaiseModPropertyChanged();
         }
     }
 }

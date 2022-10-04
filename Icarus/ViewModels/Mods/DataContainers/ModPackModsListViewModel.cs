@@ -22,12 +22,12 @@ namespace Icarus.ViewModels.Mods.DataContainers
     public class ModPackModsListViewModel : NotifyPropertyChanged, IModsListViewModel, IDropTarget
     {
         public ModPack ModPack { get; }
-        ViewModelService _modFileService;
+        ViewModelService _viewModelService;
 
         public ModPackModsListViewModel(ModPack modPack, ViewModelService modFileService)
         {
             ModPack = modPack;
-            _modFileService = modFileService;
+            _viewModelService = modFileService;
 
             UpdateHeaders();
         }
@@ -61,7 +61,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
 
         public int Add(IMod mod)
         {
-            var modViewModel = _modFileService.GetModViewModel(mod);
+            var modViewModel = _viewModelService.GetModViewModel(mod);
             if (modViewModel != null)
             {
                 Add(modViewModel);

@@ -13,20 +13,13 @@ namespace Icarus.Services.Interfaces
 {
     public interface IGameFileService : IServiceProvider
     {
-        ModelGameFile? GetModelFileData(string str);
-        ModelGameFile? GetModelFileData(IItem? item = null, XivRace race = XivRace.Hyur_Midlander_Male);
-        Task<MaterialGameFile?> GetMaterialFileData(string str);
-        Task<MaterialGameFile?> GetMaterialFileData(IItem? item);
-
-        public XivTexFormat GetTextureData(IItem? itemArg = null);
-
+        Task<IGameFile?> GetFileData(IItem? itemArg = null, Type? type = null);
         /// <summary>
         /// Try to get game file associated with the given path
         /// </summary>
         /// <param name="path"></param>
-        /// <param name="race"></param>
         /// <returns></returns>
-        Task<IGameFile?> TryGetFileData(string path, XivRace race = XivRace.Hyur_Midlander_Male);
+        Task<IGameFile?> TryGetFileData(string path);
 
         /// <summary>
         /// Gets a list of races that have a unique mdl file of the given item
@@ -34,5 +27,15 @@ namespace Icarus.Services.Interfaces
         /// <param name="itemArg"></param>
         /// <returns></returns>
         List<XivRace> GetAllRaceMdls(IItem? item = null);
+
+
+        ModelGameFile? GetModelFileData(IItem? item = null, XivRace race = XivRace.Hyur_Midlander_Male);
+
+        ModelGameFile? GetModelFileData(string str);
+        Task<MaterialGameFile?> GetMaterialFileData(IItem? item);
+
+        Task<MaterialGameFile?> GetMaterialFileData(string str);
+
+        public XivTexFormat GetTextureData(IItem? itemArg = null);
     }
 }

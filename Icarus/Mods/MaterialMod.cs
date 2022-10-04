@@ -19,6 +19,8 @@ using xivModdingFramework.Textures.FileTypes;
 
 namespace Icarus.Mods
 {
+    // Entry points?
+    // Vanilla mtrl, .dds
     public class MaterialMod : Mod
     {
         // TODO: Start here (I think): https://github.com/TexTools/FFXIV_TexTools_UI/blob/37290b2897c79dd1e913bb4ff90285f0e620ca9d/FFXIV_TexTools/ViewModels/TextureViewModel.cs#L1588
@@ -65,21 +67,71 @@ namespace Icarus.Mods
             Init(xivMtrl);
         }
 
+        private void Init(XivMtrl xivMtrl)
+        {
+            ShaderInfo = xivMtrl.GetShaderInfo();
+            XivMtrl = xivMtrl;
+            Path = xivMtrl.MTRLPath;
+
+            _variant = XivPathParser.GetMtrlVariant(Path);
+
+            NormalTexPath = xivMtrl.GetMapInfo(XivTexType.Normal, false).Path;
+
+            if (ShaderInfo.HasSpec)
+            {
+                SpecularTexPath = xivMtrl.GetMapInfo(XivTexType.Specular, false).Path;
+            }
+            else
+            {
+                SpecularTexPath = XivPathParser.GetTexPath(Path, XivTexType.Specular);
+            }
+
+            if (ShaderInfo.HasMulti)
+            {
+                MultiTexPath = xivMtrl.GetMapInfo(XivTexType.Multi, false).Path;
+            }
+            else
+            {
+                MultiTexPath = XivPathParser.GetTexPath(Path, XivTexType.Multi);
+            }
+
+            if (ShaderInfo.HasDiffuse)
+            {
+                DiffuseTexPath = xivMtrl.GetMapInfo(XivTexType.Diffuse, false).Path;
+            }
+            else
+            {
+                DiffuseTexPath = XivPathParser.GetTexPath(Path, XivTexType.Diffuse);
+            }
+
+            if (ShaderInfo.HasReflection)
+            {
+                ReflectionTexPath = xivMtrl.GetMapInfo(XivTexType.Reflection, false).Path;
+            }
+            else
+            {
+                ReflectionTexPath = XivPathParser.GetTexPath(Path, XivTexType.Reflection);
+            }
+        }
+
+        
+
         /// <summary>
         /// Updates the Mtrl to the current settings
         /// </summary>
         public void UpdateMtrl()
         {
-            Log.Verbose("Updating mtrl.");
+            Log.Information($"Updating mtrl: {Name}");
             // Adapted from: https://github.com/TexTools/FFXIV_TexTools_UI/blob/37290b2897c79dd1e913bb4ff90285f0e620ca9d/FFXIV_TexTools/ViewModels/MaterialEditorViewModel.cs#L255
 
+            XivMtrl.MTRLPath = Path;
             var oldNormal = XivMtrl.GetMapInfo(XivTexType.Normal);
             var newNormal = GetMapInfo(XivTexType.Normal, oldNormal.Format, NormalTexPath);
 
-            MapInfo newMulti = null;
-            MapInfo newDiffuse = null;
-            MapInfo newSpecular = null;
-            MapInfo newReflection = null;
+            MapInfo? newMulti = null;
+            MapInfo? newDiffuse = null;
+            MapInfo? newSpecular = null;
+            MapInfo? newReflection = null;
 
             if (ShaderInfo.HasMulti)
             {
@@ -100,8 +152,16 @@ namespace Icarus.Mods
             }
 
             XivMtrl.MTRLPath = Path;
-            XivMtrl.SetShaderInfo(ShaderInfo, true);
 
+            Log.Debug("Calling SetShaderInfo. InvalidOperationExceptions will probably occur. Can be ignored.");
+
+            // TODO: Maybe have to re-assign these?
+            var colorSetCount = XivMtrl.ColorSetCount;
+            var colorSetData = XivMtrl.ColorSetData;
+            var colorSetDyeData = XivMtrl.ColorSetDyeData;
+
+            XivMtrl.SetShaderInfo(ShaderInfo, true);
+            
             XivMtrl.SetMapInfo(XivTexType.Normal, newNormal);
             XivMtrl.SetMapInfo(XivTexType.Specular, newSpecular);
             XivMtrl.SetMapInfo(XivTexType.Multi, newMulti);
@@ -111,44 +171,36 @@ namespace Icarus.Mods
 
         public void SetMtrlPath(string str, bool forced = true)
         {
-            XivMtrl.MTRLPath = str;
-            Path = str;
-
             try
             {
-                //var normal = texPaths.Get(XivTexType.Normal);
                 var normal = XivPathParser.GetTexPath(str, XivTexType.Normal);
+                var specular = XivPathParser.GetTexPath(str, XivTexType.Specular);
+                var multi = XivPathParser.GetTexPath(str, XivTexType.Multi);
+                var diffuse = XivPathParser.GetTexPath(str, XivTexType.Diffuse);
+                var reflection = XivPathParser.GetTexPath(str, XivTexType.Reflection);
+
                 NormalTexPath = normal;
 
-                //var specular = texPaths.Get(XivTexType.Specular);
-                var specular = XivPathParser.GetTexPath(str, XivTexType.Specular);
                 if (forced || !String.IsNullOrWhiteSpace(specular))
                 {
                     SpecularTexPath = specular;
                 }
 
-                //var multi = texPaths.Get(XivTexType.Multi);
-                var multi = XivPathParser.GetTexPath(str, XivTexType.Multi);
                 if (forced || !String.IsNullOrWhiteSpace(multi))
                 {
                     MultiTexPath = multi;
                 }
 
-                //var diffuse = texPaths.Get(XivTexType.Diffuse);
-                var diffuse = XivPathParser.GetTexPath(str, XivTexType.Diffuse);
                 if (forced || !String.IsNullOrWhiteSpace(diffuse))
                 {
                     DiffuseTexPath = diffuse;
                 }
 
-                //var reflection = texPaths.Get(XivTexType.Reflection);
-                var reflection = XivPathParser.GetTexPath(str, XivTexType.Reflection);
                 if (forced || !String.IsNullOrWhiteSpace(reflection))
                 {
                     ReflectionTexPath = reflection;
                 }
-
-                UpdateMtrl();
+                Path = str;
             }
             catch (ArgumentException)
             {
@@ -157,68 +209,9 @@ namespace Icarus.Mods
             }
         }
 
-        private void Init(XivMtrl xivMtrl)
-        {
-            ShaderInfo = xivMtrl.GetShaderInfo();
-            XivMtrl = xivMtrl;
-            Path = xivMtrl.MTRLPath;
-
-            _variant = XivPathParser.GetMtrlVariant(Path);
-
-            NormalTexPath = xivMtrl.GetMapInfo(XivTexType.Normal, false).Path;
-
-            if (ShaderInfo.HasSpec)
-            {
-                SpecularTexPath = xivMtrl.GetMapInfo(XivTexType.Specular, false).Path;
-            }
-            else
-            {
-                //SpecularTexPath = texPaths.Get(XivTexType.Specular);
-                SpecularTexPath = XivPathParser.GetTexPath(Path, XivTexType.Specular);
-            }
-
-            if (ShaderInfo.HasMulti)
-            {
-                MultiTexPath = xivMtrl.GetMapInfo(XivTexType.Multi, false).Path;
-            }
-            else
-            {
-                //MultiTexPath = texPaths.Get(XivTexType.Multi);
-                MultiTexPath = XivPathParser.GetTexPath(Path, XivTexType.Multi);
-            }
-
-            if (ShaderInfo.HasDiffuse)
-            {
-                DiffuseTexPath = xivMtrl.GetMapInfo(XivTexType.Diffuse, false).Path;
-            }
-            else
-            {
-                //DiffuseTexPath = texPaths.Get(XivTexType.Diffuse);
-                DiffuseTexPath = XivPathParser.GetTexPath(Path, XivTexType.Diffuse);
-            }
-
-            if (ShaderInfo.HasReflection)
-            {
-                ReflectionTexPath = xivMtrl.GetMapInfo(XivTexType.Reflection, false).Path;
-            }
-            else
-            {
-                //ReflectionTexPath = texPaths.Get(XivTexType.Reflection);
-                ReflectionTexPath = XivPathParser.GetTexPath(Path, XivTexType.Reflection);
-            }
-            //ParsePath(XivMtrl.MTRLPath);
-        }
-
         public XivMtrl GetMtrl()
         {
-            //UpdateMtrl();
-            /*
-            if (HasChanged())
-            {
-                // TODO: Auto-update material?
-                Log.Warning("Mtrl has not been updated.");
-            }
-            */
+            UpdateMtrl();
             return XivMtrl;
         }
 
@@ -267,6 +260,7 @@ namespace Icarus.Mods
             return false;
         }
 
+        // TODO: Ability to copy colorset data or leave it alone
         public override void SetModData(IGameFile gameFile)
         {
             if (gameFile is not MaterialGameFile)
@@ -290,15 +284,6 @@ namespace Icarus.Mods
             {
                 _variant = "a";
             }
-        }
-
-        static Regex gearRegex = new Regex(@"chara/equipment/e[0-9]{4}/material/v[0-9]{4}/mt_(c[0-9]{4})(e[0-9]{4})_([a-z]+)_([a-z]+).mtrl");
-
-        // TODO: Consider non-gear materials
-
-        public static bool IsValidMtrlPath(string str)
-        {
-            return gearRegex.IsMatch(str);
         }
     }
 }

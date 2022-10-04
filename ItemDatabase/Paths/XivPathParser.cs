@@ -189,7 +189,7 @@ namespace ItemDatabase.Paths
                 }
             }
             return XivRace.Hyur_Midlander_Male;
-            
+
         }
 
         public static string GetRaceString(XivRace race)
@@ -294,6 +294,7 @@ namespace ItemDatabase.Paths
 
         #region Tex
 
+        // TODO: Apparently there's "Shared textures" and "Unique textures"
         public static string GetTexPath(string input, XivTexType type)
         {
             if (type is XivTexType.Reflection)
@@ -301,24 +302,41 @@ namespace ItemDatabase.Paths
                 // I guess XivTexType.Reflection is always the same?
                 return "chara/common/texture/catchlight_1.tex";
             }
-            var matches = fullEquipmentRegexMtrl.Matches(input);
-            if (matches.Count == 1 && matches[0].Groups.Count == 7)
+            if (fullEquipmentRegexMtrl.IsMatch(input))
             {
-                var dir = matches[0].Groups[1].Value;
-                var variantNum = int.Parse(matches[0].Groups[2].Value);
-                var raceCode = matches[0].Groups[3].Value;
-                var equipCode = matches[0].Groups[4].Value;
-                var slotCode = matches[0].Groups[5].Value;
-                var mtrlVariant = matches[0].Groups[6].Value;
-
-                var variantNumString = variantNum.ToString().PadLeft(2, '0');
-                if (mtrlVariant == "")
+                var fullPathMatches = fullEquipmentRegexMtrl.Matches(input);
+                if (fullPathMatches.Count == 1 && fullPathMatches[0].Groups.Count == 7)
                 {
-                    mtrlVariant = "a";
-                }
-                string mtrlVariantString = $"_{mtrlVariant}";
+                    var dir = fullPathMatches[0].Groups[1].Value;
+                    var variantNum = int.Parse(fullPathMatches[0].Groups[2].Value);
+                    var raceCode = fullPathMatches[0].Groups[3].Value;
+                    var equipCode = fullPathMatches[0].Groups[4].Value;
+                    var slotCode = fullPathMatches[0].Groups[5].Value;
+                    var mtrlVariant = fullPathMatches[0].Groups[6].Value;
 
-                var ret = $"{dir}/{equipCode}/texture/v{variantNumString}_{raceCode}{equipCode}_{slotCode}{mtrlVariantString}";
+                    var variantNumString = variantNum.ToString().PadLeft(2, '0');
+                    if (mtrlVariant == "")
+                    {
+                        mtrlVariant = "a";
+                    }
+                    string mtrlVariantString = $"_{mtrlVariant}";
+
+                    var ret = $"{dir}/{equipCode}/texture/v{variantNumString}_{raceCode}{equipCode}_{slotCode}{mtrlVariantString}";
+                    switch (type)
+                    {
+                        case XivTexType.Normal: return ret + "_n.tex";
+                        case XivTexType.Multi: return ret + "_m.tex";
+                        case XivTexType.Diffuse: return ret + "_d.tex";
+                        case XivTexType.Specular: return ret + "_s.tex";
+                    }
+                }
+            }
+
+            if (gearRegexFileNameMtrl.IsMatch(input))
+            {
+                var fileNameMatches = gearRegexFileNameMtrl.Matches(input);
+                var arr = mtrlRegex.Split(input);
+                var ret = arr[0];
                 switch (type)
                 {
                     case XivTexType.Normal: return ret + "_n.tex";

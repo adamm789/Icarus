@@ -60,6 +60,8 @@ namespace Icarus.Services
 
         public string ProjectDirectory { get; protected set; }
         public string ConverterFolder { get; protected set; }
+
+        // TODO: Changing Lumina directories will not update until the next restart
         public string GameDirectoryLumina
         {
             get { return DefaultSettings.GameDirectoryLumina; }

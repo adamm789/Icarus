@@ -1,4 +1,5 @@
-﻿using Icarus.Mods.GameFiles;
+﻿using Icarus.Mods;
+using Icarus.Mods.GameFiles;
 using Icarus.Mods.Interfaces;
 using Icarus.Services.Interfaces;
 using Icarus.Util;
@@ -70,8 +71,22 @@ namespace Icarus.Services.GameFiles
             }
         }
 
+        public async Task<IGameFile?> GetFileData(IItem? itemArg = null, Type? type = null)
+        {
+            if (type == typeof(ModelMod))
+            {
+                return GetModelFileData(itemArg);
+            }
+            else if (type == typeof(MaterialMod))
+            {
+                return await GetMaterialFileData(itemArg);
+            }
+
+            return null;
+        }
+
         // TODO: race?
-        public async Task<IGameFile?> TryGetFileData(string path, XivRace race = XivRace.Hyur_Midlander_Male)
+        public async Task<IGameFile?> TryGetFileData(string path)
         {
             if (XivPathParser.IsMdl(path))
             {
@@ -171,41 +186,33 @@ namespace Icarus.Services.GameFiles
 
         public async Task<MaterialGameFile?> GetMaterialFileData(string path)
         {
-            var xivMtrl = await TryGetOriginalMaterial(path);
-            if (xivMtrl == null)
-            {
-                return null;
-            }
-            var category = XivPathParser.GetCategory(path);
+            var xivMtrl = await TryGetMaterialFromPath(path);
             var results = _itemListService.Search(path);
-            var name = path;
+
             if (results.Count > 0)
             {
-                name = results[0].Name;
+                return await GetMaterialFileData(results[0]);
             }
-            // TODO: Try/Catch, null checks, etc.
-            var retVal = new MaterialGameFile()
+            if (xivMtrl != null)
             {
-                Name = name,
-                Path = path,
-                Category = category,
-                XivMtrl = xivMtrl
-            };
+                var category = XivPathParser.GetCategory(path);
+                var name = path;
+                if (results.Count > 0)
+                {
+                    name = results[0].Name;
+                }
+                // TODO: Try/Catch, null checks, etc.
+                var retVal = new MaterialGameFile()
+                {
+                    Name = name,
+                    Path = path,
+                    Category = category,
+                    XivMtrl = xivMtrl
+                };
 
-            return retVal;
-            /*
-            var itemList = _itemListService.Search(path);
-            var name = "";
-            if (itemList.Count > 0)
-            {
-                name = itemList.First().Name;
+                return retVal;
             }
-            var retVal = new MaterialGameFile()
-            {
-                Name = name
-            };
-            return retVal;
-            */
+            return null;
         }
 
         public async Task<MaterialGameFile?> GetMaterialFileData(IItem? itemArg = null)
@@ -231,14 +238,21 @@ namespace Icarus.Services.GameFiles
             return retVal;
         }
 
-        public async Task<XivMtrl?> TryGetOriginalMaterial(string path)
+        private async Task<XivMtrl?> TryGetMaterialFromPath(string path)
         {
             _logService.Information($"Trying to get material: {path}.");
-            if (_lumina.FileExists(path))
+            try
             {
-                var mtrlFile = _lumina.GetFile<MtrlFile>(path);
-                var xivMtrl = await MtrlExtensions.GetMtrlData(_frameworkGameDirectory, mtrlFile.Data, path);
-                return xivMtrl;
+                if (_lumina.FileExists(path))
+                {
+                    var mtrlFile = _lumina.GetFile<MtrlFile>(path);
+                    var xivMtrl = await MtrlExtensions.GetMtrlData(_frameworkGameDirectory, mtrlFile.Data, path);
+                    return xivMtrl;
+                }
+            }
+            catch (ArgumentOutOfRangeException ex)
+            {
+
             }
             return null;
         }

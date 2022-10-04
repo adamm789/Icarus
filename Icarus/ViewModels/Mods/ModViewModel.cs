@@ -14,16 +14,19 @@ using xivModdingFramework.Mods.DataContainers;
 
 using Mod = Icarus.Mods.Mod;
 using System.Windows;
+using Serilog;
 
 namespace Icarus.ViewModels.Mods
 {
     public abstract class ModViewModel : NotifyPropertyChanged
     {
         protected IMod _mod;
-        //protected readonly ModFileService _modFileService;
         protected readonly IGameFileService _gameFileService;
         protected readonly ItemListService _itemListService;
         public bool IsReadOnly => this is ReadOnlyModViewModel;
+
+        // Whether or not the source of a changing DestinationPath is internal of from the user
+        protected bool fromItem = false;
 
         public ModViewModel(IMod mod, ItemListService itemListService, IGameFileService gameFileDataService)
         {
@@ -43,7 +46,7 @@ namespace Icarus.ViewModels.Mods
             //DisplayedHeader = FileName;
             DisplayedHeader = mod.ModFileName;
 
-            RaiseModPropertyChanged();
+            //RaiseModPropertyChanged();
         }
 
         string _displayedHeader = "";
@@ -57,7 +60,6 @@ namespace Icarus.ViewModels.Mods
         {
             return _mod;
         }
-
 
         string _identifier = "";
         public string Identifier
@@ -86,10 +88,17 @@ namespace Icarus.ViewModels.Mods
         /// </summary>
         public virtual string DestinationPath
         {
-            // TODO: Allow user to manally put in destination path if desired?
-            // TODO: If allowed, update information upon valid destination path change
             get { return _mod.Path; }
-            set { _mod.Path = value; OnPropertyChanged(); }
+            set
+            {
+                if (!fromItem)
+                {
+                    var couldSetDestinationPath = Task.Run(() => TrySetDestinationPath(value)).Result;
+                    if (!couldSetDestinationPath) return;
+                }
+                _mod.Path = value;
+                OnPropertyChanged();
+            }
         }
 
         /// <summary>
@@ -138,6 +147,7 @@ namespace Icarus.ViewModels.Mods
         }
 
         DelegateCommand? _setDestinationCommand;
+
         public DelegateCommand? SetDestinationCommand
         {
             get { return _setDestinationCommand ??= new DelegateCommand(o => SetDestinationItem()); }
@@ -156,8 +166,46 @@ namespace Icarus.ViewModels.Mods
         }
 
         // TODO: Re-consider assignment via item
-        public abstract Task SetDestinationItem(IItem? item = null);
+        public virtual async Task SetDestinationItem(IItem? itemArg = null)
+        {
+            fromItem = true;
+            var data = await _gameFileService.GetFileData(itemArg, _mod.GetType());
+            if (data != null)
+            {
+                SetModData(data);
+            }
 
-        public abstract bool TrySetDestinationPath(string item);
+            fromItem = false;
+            return;// Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Tries to get data from the user-provided path
+        /// Must match in-game exactly
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns>Whether or not the file data was successfully found.</returns>
+        public virtual async Task<bool> TrySetDestinationPath(string path)
+        {
+            if (path == DestinationPath) return false;
+            var modData = await _gameFileService.TryGetFileData(path);
+            if (modData == null)
+            {
+                Log.Warning($"Could not set {path} as {GetType().Name}");
+                return false;
+            }
+            else
+            {
+                SetModData(modData);
+            }
+            return true;
+        }
+
+        protected virtual void SetModData(IGameFile gameFile)
+        {
+            _mod.SetModData(gameFile);
+            DestinationPath = gameFile.Path;
+            RaiseModPropertyChanged();
+        }
     }
 }

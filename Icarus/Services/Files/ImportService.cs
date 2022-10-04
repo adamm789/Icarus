@@ -188,7 +188,6 @@ namespace Icarus.Services.Files
                 var mtrl = new Mtrl(new DirectoryInfo(_gameDirectory));
                 var xivMtrl = await mtrl.GetMtrlData(bytes, "");
                 var materialMod = new MaterialMod(xivMtrl);
-
                 */
             }
             return modPack;

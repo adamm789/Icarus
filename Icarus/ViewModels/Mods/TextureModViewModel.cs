@@ -49,11 +49,5 @@ namespace Icarus.ViewModels.Mods
             return Task.CompletedTask;
             //throw new NotImplementedException();
         }
-
-        public override bool TrySetDestinationPath(string item)
-        {
-            //DestinationPath = item;
-            return true;
-        }
     }
 }

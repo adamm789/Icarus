@@ -20,10 +20,5 @@ namespace Icarus.ViewModels.Mods
         {
             throw new NotImplementedException();
         }
-
-        public override bool TrySetDestinationPath(string item)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
