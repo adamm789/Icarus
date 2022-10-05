@@ -9,7 +9,8 @@ Currently supports:
 * Creating, editing, and exporting to an Advanced TexTools modpack
 * Exporting files as .fbx
 * Adding attributes
-* Removing shapes
+* Removing shapes  
+* Tentative mtrl files  
 
 # Usage
 Set game path  
@@ -20,11 +21,12 @@ Export to TexTools modpack or Penumbra file structure
 If you wish to build your own copy, you will need the "converters" (for importing fbx), "Skeletons" (for scaling), and "Resources" (for exporting fbx) folders from TexTools in the root directory. They are included in the releases.
 
 # Known Issues
-If you import a ttmp2 file, some files will be called "ReadOnly." They will be skipped if exporting to any Penumbra format. However, they should be included in any TexTools export.  
-While you can theoretically assign any mdl path, that is currently untested. So use at your own risk.  
-Vanilla mtrls and the "TryGet" are pretty untested as well.  
-When exporting vanilla mdls with skins, the resulting png is incorrect.  
-When importing via fbx, attributes are not automatically set. While intentional, down the line, there may be a setting to change that.  
+* If you import a ttmp2 file, some files will be called "ReadOnly." They will be skipped if exporting to any Penumbra format. However, they should be included in any TexTools export.  
+* While you can theoretically assign any destination path, this is a courtesy. Use at your own risk.  
+* "TryGet" allows inputting an internal game path to get the vanilla item. This is again provided as a courtesy. Use at your own risk.
+* When exporting vanilla mdls with skins, the resulting png is incorrect.  
+* When importing via fbx, attributes are not automatically set. While intentional, down the line, there may be a setting to change that.  
+* Models with custom skeletons will not export to fbx correctly. They appear to work fine in-game.
 
 # Comments
 UI is very bare bones and honestly, quite ugly.
