@@ -47,7 +47,6 @@ namespace Icarus.ViewModels.Mods
             DestinationPath = item.GetTexPath(XivTexType.Multi);
 
             return Task.CompletedTask;
-            //throw new NotImplementedException();
         }
     }
 }

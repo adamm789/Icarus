@@ -25,28 +25,15 @@ namespace ItemDatabase.Paths
         static readonly Regex wristRegex = new(@"_wrs");
         static readonly Regex rightRingRegex = new(@"_rir");
         static readonly Regex leftRingRegex = new(@"_ril");
-
         static readonly Regex genderRaceCode = new(@"c[0-9]{4}[a,e][0-9]{4}_[a-z]+");
 
         static readonly Regex mdlRegex = new(@".mdl$");
         static readonly Regex mtrlRegex = new(@".mtrl$");
 
-        /*
-        static Regex headRegex = new(@"e[0-9]{4}_met");
-        static Regex bodyRegex = new(@"e[0-9]{4}_top");
-        static Regex handRegex = new(@"e[0-9]{4}_glv");
-        static Regex legRegex = new(@"e[0-9]{4}_dwn");
-        static Regex feetRegex = new(@"e[0-9]{4}_sho");
-        static Regex earRegex = new(@"a[0-9]{4}_ear");
-        static Regex neckRegex = new(@"a[0-9]_nek");
-        static Regex wristRegex = new(@"a[0-9]{4}_wrs");
-        static Regex rightRingRegex = new(@"a[0-9]{4}_rir");
-        static Regex leftRingRegex = new(@"a[0-9]{4}_ril");
-        */
-
-        static readonly Regex fullEquipmentRegexMtrl = new(@"^(chara/equipment)/e[0-9]{4}\/material\/v([0-9]{4})\/mt_(c[0-9]{4})(e[0-9]{4})_([a-z]+)_{0,1}([a-z]*).mtrl$");
+        static readonly Regex fullGearRegexMtrl = new(@"^(chara/equipment)/e[0-9]{4}\/material\/v([0-9]{4})\/mt_(c[0-9]{4})(e[0-9]{4})_([a-z]+)_{0,1}([a-z]*).mtrl$");
         static readonly Regex gearRegexFileNameMtrl = new(@"(\/){0,1}mt_c[0-9]{4}[a,e][0-9]{4}_[a-z]+_{0,1}([a-z]*).mtrl$");
 
+        // Arbitary regex for supported paths
         static readonly Regex canParseRegex = new(@"c[0-9]{4}[a,b,e][0-9]{4}");
 
         public static bool CanParsePath(string input)
@@ -92,6 +79,7 @@ namespace ItemDatabase.Paths
             return Regex.IsMatch(path, @".mtrl$");
         }
 
+        // TODO: 
         public static XivTexType GetTexType(string path)
         {
             var texTypeRegex = new Regex(@"([a-z]).tex$");
@@ -176,6 +164,7 @@ namespace ItemDatabase.Paths
             return skinMtrl.IsMatch(input);
         }
 
+        // TODO: Bibo textures... Maybe?
         public static XivRace GetRaceFromString(string input)
         {
             if (skinRegex.IsMatch(input))
@@ -188,8 +177,8 @@ namespace ItemDatabase.Paths
                     return race;
                 }
             }
-            return XivRace.Hyur_Midlander_Male;
 
+            return XivRace.Hyur_Midlander_Male;
         }
 
         public static string GetRaceString(XivRace race)
@@ -248,7 +237,7 @@ namespace ItemDatabase.Paths
         public static string PathCorrectMtrl(string input)
         {
             var retVal = input;
-            var matches = fullEquipmentRegexMtrl.Matches(input);
+            var matches = fullGearRegexMtrl.Matches(input);
             if (matches.Count == 1 && matches[0].Groups.Count == 7)
             {
                 var mtrlVariant = matches[0].Groups[6].Value;
@@ -259,7 +248,6 @@ namespace ItemDatabase.Paths
             }
             return retVal;
         }
-
 
         public static string GetMtrlFileName(string input, string variant = "a", XivRace race = XivRace.Hyur_Midlander_Male)
         {
@@ -297,16 +285,26 @@ namespace ItemDatabase.Paths
 
 
         // TODO: Apparently there's "Shared textures" and "Unique textures"
-        public static string GetTexPath(string input, XivTexType type)
+        /// <summary>
+        /// Accepts a mtrl path and returns a tex path of the given type
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static string GetTexPath(string input, XivTexType type, bool isBibo = false)
         {
+            if (String.IsNullOrWhiteSpace(input)) return "";
+
+            input = input.ToLower();
             if (type is XivTexType.Reflection)
             {
                 // I guess XivTexType.Reflection is always the same?
+                // When I edit a material in TT, it can change it to _o, ala the other TexTypes
                 return "chara/common/texture/catchlight_1.tex";
             }
-            if (fullEquipmentRegexMtrl.IsMatch(input))
+            if (fullGearRegexMtrl.IsMatch(input))
             {
-                var fullPathMatches = fullEquipmentRegexMtrl.Matches(input);
+                var fullPathMatches = fullGearRegexMtrl.Matches(input);
                 if (fullPathMatches.Count == 1 && fullPathMatches[0].Groups.Count == 7)
                 {
                     var dir = fullPathMatches[0].Groups[1].Value;
@@ -348,6 +346,11 @@ namespace ItemDatabase.Paths
                 }
             }
             //throw new ArgumentException($"Could not parse mtrl: {input} into {type} texture.");
+
+            if (input.Contains("bibo"))
+            {
+
+            }
             return "";
         }
 

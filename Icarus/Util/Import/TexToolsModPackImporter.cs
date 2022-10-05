@@ -91,7 +91,7 @@ namespace Icarus.Services.Files
 
             if (modPack == null)
             {
-                var err = string.Format("Could not deserialize {0}.", filePath);
+                var err = $"Could not deserialize {filePath}.";
                 Log.Error(err);
                 throw new ArgumentNullException(err);
             }
@@ -108,7 +108,7 @@ namespace Icarus.Services.Files
                         var file = await Extract(mods, pack);
                         if (file == null)
                         {
-                            Log.Error("Could not extract mod {name}.", mods.Name);
+                            Log.Error($"Could not extract mod {mods.Name}.");
                         }
                         else
                         {
@@ -317,6 +317,7 @@ namespace Icarus.Services.Files
                     return mtrlMod;
                 } catch (NotImplementedException ex)
                 {
+                    Log.Error(ex, "");
                     return null;
                 }
 

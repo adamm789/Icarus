@@ -88,7 +88,8 @@ namespace Icarus.Util
                 }
             } catch (Exception ex)
             {
-                _logService.Error($"Exception thrown during WriteToBytes with {mod.Name}.\n{ex.Message}");
+                _logService.Error(ex, $"Exception thrown during WriteToBytes with {mod.Name}.");
+                return Array.Empty<byte>();
             }
 
             _logService.Warning($"Currently unknown export method. Skipping {mod.Name}.");
@@ -100,6 +101,7 @@ namespace Icarus.Util
         public async Task<byte[]> WriteTextureToBytes(TextureMod mod, bool shouldCompress)
         {
             throw new NotImplementedException("Could not WriteTextureToBytes");
+
             var ddsContainer = new DDSContainer();
             var isDds = Path.GetExtension(mod.ModFilePath).ToLower() == ".dds";
             var texFormat = mod.TexFormat;

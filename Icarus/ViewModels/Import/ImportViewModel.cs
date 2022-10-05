@@ -29,21 +29,16 @@ namespace Icarus.ViewModels.Import
         public static string ReplacementPathLabel = "In-Game";
         public static string OpenEditorLabel = "Open Editor";
 
-        readonly IModsListViewModel _modsList;
         readonly IModPackViewModel _modPackViewModel;
         readonly ImportService _importService;
-        readonly IGameFileService _gameFileDataService;
         readonly ILogService _logService;
         readonly ISettingsService _settingsService;
 
-        public ImportViewModel(IModsListViewModel modsList, IModPackViewModel modPack, ImportService importService, IGameFileService gameFileDataService,
-            ISettingsService settingsService, ILogService logService)
+        public ImportViewModel(IModPackViewModel modPack, ImportService importService, ISettingsService settingsService, ILogService logService)
         {
             _settingsService = settingsService;
-            _modsList = modsList;
             _modPackViewModel = modPack;
             _importService = importService;
-            _gameFileDataService = gameFileDataService;
             _logService = logService;
 
             var eh = new PropertyChangedEventHandler(OnPropertyChanged);

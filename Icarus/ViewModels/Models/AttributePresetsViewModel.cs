@@ -14,7 +14,7 @@ using xivModdingFramework.Models.DataContainers;
 
 namespace Icarus.ViewModels.Models
 {
-    // TODO: Double check highlander male body attributes
+    // TODO: Ability to create custom attribute presets?
     public class AttributePresetsViewModel : NotifyPropertyChanged
     {
         public AttributePresetsViewModel(string header, Dictionary<int, List<XivAttribute>> dict)
@@ -35,7 +35,6 @@ namespace Icarus.ViewModels.Models
         public string Header { get; set; }
 
         public ObservableCollection<PartAttributesViewModel> Presets { get; set; } = new();
-        public ObservableCollection<AttributeViewModel> BodyPartPresets { get; set; } = new();
 
         DelegateCommand? _copyPresetCommand;
         public DelegateCommand? CopyPresetCommand

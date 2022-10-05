@@ -14,10 +14,35 @@ namespace Icarus.Services
 {
     public class LogService : ServiceBase<LogService>, ILogService
     {
-        public void Error(string s) => Log.Error(s);
-        public void Warning(string s) => Log.Warning(s);
-        public void Information(string s) => Log.Information(s);
         public void Verbose(string s) => Log.Verbose(s);
+        public void Verbose(Exception ex, string s = "") => Log.Verbose(ex, s);
+        public void Debug(string s) => Log.Debug(s);
+        public void Debug(Exception ex, string s = "") => Log.Debug(ex, s);
+        public void Information(string s) => Log.Information(s);
+        public void Warning(string s) => Log.Warning(s);
+        //public void Warning(Exception ex, string s = "") => Log.Warning(ex, s);
+        public void Warning(Exception ex, string s = "")
+        {
+            if (!String.IsNullOrWhiteSpace(s))
+            {
+                Log.Warning(s);
+            }
+            Log.Debug(ex, "");
+        }
+        public void Error(string s) => Log.Error(s);
+        //public void Error(Exception ex, string s = "") => Log.Error(ex, s);
+        public void Error(Exception ex, string s = "")
+        {
+            if (!String.IsNullOrWhiteSpace(s))
+            {
+                Log.Error(s);
+            }
+            Log.Debug(ex, "");
+        }
+        public void Fatal(string s) => Log.Fatal(s);
+        public void Fatal(Exception ex, string s = "") => Log.Fatal(ex, s);
+
+
         readonly SettingsService _settingsService;
 
         public LogService(SettingsService settingsService)

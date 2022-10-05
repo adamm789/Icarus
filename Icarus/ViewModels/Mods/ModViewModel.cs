@@ -43,10 +43,22 @@ namespace Icarus.ViewModels.Mods
             {
                 FileName = mod.ModFilePath;
             }
-            //DisplayedHeader = FileName;
-            DisplayedHeader = mod.ModFileName;
+
+            if (mod.IsInternal)
+            {
+                DisplayedHeader = mod.Path;
+            }
+            else
+            {
+                DisplayedHeader = FileName;
+            }
 
             //RaiseModPropertyChanged();
+        }
+
+        public virtual IMod GetMod()
+        {
+            return _mod;
         }
 
         string _displayedHeader = "";
@@ -54,11 +66,6 @@ namespace Icarus.ViewModels.Mods
         {
             get { return _displayedHeader; }
             set { _displayedHeader = value; OnPropertyChanged(); }
-        }
-
-        public virtual IMod GetMod()
-        {
-            return _mod;
         }
 
         string _identifier = "";
@@ -98,11 +105,6 @@ namespace Icarus.ViewModels.Mods
                 }
                 _mod.Path = value;
                 RaiseDestinationPathChanged();
-                /*
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(DestinationName));
-                SetCanExport();
-                */
             }
         }
 
@@ -114,15 +116,6 @@ namespace Icarus.ViewModels.Mods
             get { return _mod.Name; }
             set { _mod.Name = value; OnPropertyChanged(); }
         }
-
-        /*
-        IItem? _destinationItem;
-        public IItem? DestinationItem
-        {
-            get { return _destinationItem; }
-            protected set { _destinationItem = value; OnPropertyChanged(); }
-        }
-        */
 
         bool _canExport = true;
         public bool CanExport
@@ -170,7 +163,6 @@ namespace Icarus.ViewModels.Mods
             CanExport = _mod.IsComplete();
         }
 
-        // TODO: Re-consider assignment via item
         public virtual async Task SetDestinationItem(IItem? itemArg = null)
         {
             fromItem = true;
@@ -182,7 +174,7 @@ namespace Icarus.ViewModels.Mods
             }
 
             fromItem = false;
-            return;// Task.CompletedTask;
+            return;
         }
 
         /// <summary>
@@ -191,7 +183,7 @@ namespace Icarus.ViewModels.Mods
         /// </summary>
         /// <param name="path"></param>
         /// <returns>Whether or not the file data was successfully found.</returns>
-        public virtual async Task<bool> TrySetDestinationPath(string path)
+        protected virtual async Task<bool> TrySetDestinationPath(string path)
         {
             if (path == DestinationPath) return false;
             var modData = await _gameFileService.TryGetFileData(path);
@@ -207,7 +199,7 @@ namespace Icarus.ViewModels.Mods
             return true;
         }
 
-        protected virtual void SetModData(IGameFile gameFile)
+        public virtual void SetModData(IGameFile gameFile)
         {
             _mod.SetModData(gameFile);
             //RaiseModPropertyChanged();

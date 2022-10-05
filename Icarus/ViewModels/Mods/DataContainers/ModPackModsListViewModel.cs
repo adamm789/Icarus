@@ -25,6 +25,11 @@ namespace Icarus.ViewModels.Mods.DataContainers
         ViewModelService _viewModelService;
 
         // Used to determine if a mtrl or tex exists in the mod list (or is vanilla)
+        // Lots of cases...
+        // New material, new texture, new model
+        // DestinationPath change in material, texture, and model
+        // Preset change in material.ShaderInfo
+
         Dictionary<ModViewModel, List<NotifyPropertyChanged>> mtrlDictionary = new();
         Dictionary<ModViewModel, List<NotifyPropertyChanged>> texDictionary = new();
 
@@ -58,20 +63,23 @@ namespace Icarus.ViewModels.Mods.DataContainers
             var numAdded = 0;
             foreach (var m in mods)
             {
-                numAdded += Add(m);
+                if (Add(m) != null)
+                {
+                    numAdded++;
+                }
             }
             return numAdded;
         }
 
-        public int Add(IMod mod)
+        public ModViewModel? Add(IMod mod)
         {
             var modViewModel = _viewModelService.GetModViewModel(mod);
             if (modViewModel != null)
             {
                 Add(modViewModel);
-                return 1;
+                return modViewModel;
             }
-            return 0;
+            return null;
         }
 
         public void AddRange(IEnumerable<ModViewModel> mods)
@@ -95,11 +103,11 @@ namespace Icarus.ViewModels.Mods.DataContainers
             }
             else if (mod is TextureModViewModel texMod)
             {
-                // add
+                // add texture
             }
             else if (mod is ModelModViewModel mdlMod)
             {
-
+                // add each unique mesh group material
             }
 
             mod.Identifier = $"({identifier})";

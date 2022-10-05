@@ -8,7 +8,6 @@ using Lumina;
 using Lumina.Data.Files;
 using Lumina.Models.Materials;
 using Lumina.Models.Models;
-using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -115,10 +114,10 @@ namespace Icarus.Util.Export
                 if (shouldExportMaterial && mod.IsInternal)
                 {
                     var textureOutputPath = Path.Combine(outputPath, "textures");
-                    Log.Information("Trying to get Materials.");
+                    _logService.Information("Trying to get Materials.");
                     // TODO: Textures for (only?) skins, seems wrong
                     await Mdl.ExportMaterialsForModel(model, textureOutputPath, _gameDirectoryFramework);
-                    Log.Information("Done with getting materials.");
+                    _logService.Information("Done with getting materials.");
                 }
             }
             if (mod is MaterialMod mtrlMod)

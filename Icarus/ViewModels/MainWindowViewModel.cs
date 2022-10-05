@@ -56,16 +56,10 @@ namespace Icarus.ViewModels
 
             ImportVanillaViewModel = new(ModsListViewModel, _itemDatabaseService, gameFileDataService, logService);
             ExportViewModel = new(ModsListViewModel, _messageBoxService, _exportService);
-            
-            //ModPackViewModel = new(modPack, _modFileService);
-            //ImportVanillaViewModel = new(ModPackViewModel, _itemDatabaseService, gameFileDataService, logService);
-            //ExportViewModel = new(ModPackViewModel, _messageBoxService, _exportService);
-            //ImportViewModel = new(ModPackViewModel, _importService, gameFileDataService, settingsService, logService);
-            ImportViewModel = new(ModsListViewModel, ModPackViewModel, _importService, gameFileDataService, settingsService, logService);
+            ImportViewModel = new(ModPackViewModel, _importService, settingsService, logService);
 
             SearchViewModel = new(_itemDatabaseService, logService);
             
-
             var exportStatusChange = new PropertyChangedEventHandler(OnExportStatusChanged);
             ExportViewModel.PropertyChanged += exportStatusChange;
 
@@ -175,13 +169,13 @@ namespace Icarus.ViewModels
         {
             get { return _openPreferences ??= new DelegateCommand(o => OpenUserPreferencesWindow(), o => !IsBusy); }
         }
-        #endregion
         ImportVanillaViewModel _importVanillaViewModel;
         public ImportVanillaViewModel ImportVanillaViewModel
         {
             get { return _importVanillaViewModel; }
             set { _importVanillaViewModel = value; }
         }
+        #endregion
 
         private void SettingChanged(object sender, PropertyChangedEventArgs e)
         {

@@ -28,6 +28,7 @@ using xivModdingFramework.Textures.FileTypes;
 using Icarus.Mods.GameFiles;
 using System.Windows.Forms;
 using Icarus.Mods.Interfaces;
+using System.Diagnostics;
 
 namespace Icarus.Services.Files
 {
@@ -133,7 +134,7 @@ namespace Icarus.Services.Files
             }
             catch (InvalidOperationException ex)
             {
-                _logService.Error("Conversion did not succeed.");
+                //_logService.Error(ex, "Conversion did not succeed.");
                 string err = "";
                 err = int.Parse(ex.Message) switch
                 {
@@ -141,11 +142,11 @@ namespace Icarus.Services.Files
                     300 or 201 => "Sqlite Error.",
                     _ => "File is invalid.",
                 };
-                Log.Error(err);
+                _logService.Error(ex, $"Conversion failed. {err}");
             }
-            catch (Win32Exception)
+            catch (Win32Exception ex)
             {
-                _logService.Error("The folder /converters was not found.");
+                _logService.Error(ex, "The folder /converters was not found.");
                 //Log.Show("Please copy and paste the converters folder from TexTools into the same folder as the exe.");
             }
 
@@ -195,7 +196,15 @@ namespace Icarus.Services.Files
 
         public async Task<ModPack> ImportTexToolsModPack(string filePath)
         {
-            var retPack = await _ttmpImporter.ExtractTexToolsModPack(filePath);
+            var retPack = await _ttmpImporter.ExtractTexToolsModPack(filePath)
+                /*
+                .ContinueWith((t) =>
+            {
+                if (t.IsFaulted) throw t.Exception.InnerException;
+                return t.Result;
+            })
+                */;
+                
 
             foreach (var mod in retPack.SimpleModsList)
             {

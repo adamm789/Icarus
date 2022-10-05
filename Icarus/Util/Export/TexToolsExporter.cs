@@ -304,9 +304,9 @@ namespace Icarus.Util
                                 var datFile = XivPathParser.GetDatFile(path);
                                 byte[] bytes = await concurrentDict[modOptionMod];
 
-                                if (bytes == Array.Empty<Byte>())
+                                if (bytes == Array.Empty<byte>())
                                 {
-                                    if (bytes == Array.Empty<Byte>())
+                                    if (bytes == Array.Empty<byte>())
                                     {
                                         _logService.Error($"Could not get bytes for {name}. Skipping.");
                                         continue;
@@ -375,11 +375,11 @@ namespace Icarus.Util
             }
             catch (ArgumentException ex)
             {
-                _logService.Error(ex.Message);
+                _logService.Error(ex);
             }
             finally
             {
-                _logService.Verbose($"Deleting {tempDir}.");
+                _logService.Verbose($"Deleting temporary directory {tempDir}.");
                 Directory.Delete(tempDir, true);
             }
             return modPackPath;

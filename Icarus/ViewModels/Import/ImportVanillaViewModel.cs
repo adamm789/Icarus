@@ -138,7 +138,13 @@ namespace Icarus.ViewModels.Import
                 var modelGameFile = _gameFileDataService.GetModelFileData(SelectedItem, SelectedRace);
                 if (modelGameFile == null) return null;
                 var mod = new ModelMod(modelGameFile, true);
-                _modPackViewModel.Add(mod);
+                var modViewModel = _modPackViewModel.Add(mod);
+                if (modViewModel == null)
+                {
+                    _logService.Fatal($"Failed to get vanilla mdl: {mod.Name}");
+                    return null;
+                }
+                modViewModel.SetModData(modelGameFile);
                 return mod;
             }
             return null;
@@ -156,16 +162,14 @@ namespace Icarus.ViewModels.Import
                 return null;
             }
             var mod = new MaterialMod(materialGameFile, true);
-            _modPackViewModel.Add(mod);
+            var modViewModel = _modPackViewModel.Add(mod);
+            if (modViewModel == null)
+            {
+                _logService.Fatal($"Failed to get vanilla mtrl: {mod.Name}");
+                return null;
+            }
+            modViewModel.SetModData(materialGameFile);
             return mod;
-        }
-
-        // TODO: Try to get a vanilla item from user-provider path
-        // Will need to add textbox somewhere
-        private async Task TryGetVanillaFile()
-        {
-            // User-provided path
-            var gameFile = await _gameFileDataService.TryGetFileData("");
         }
     }
 }

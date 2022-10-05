@@ -30,11 +30,5 @@ namespace Icarus.ViewModels.Mods
             Log.Information("Cannot set item on ReadOnlyMod.");
             return;
         }
-
-        public override async Task<bool> TrySetDestinationPath(string path)
-        {
-            Log.Information("Cannoy set path on ReadOnlyMod.");
-            return false;
-        }
     }
 }

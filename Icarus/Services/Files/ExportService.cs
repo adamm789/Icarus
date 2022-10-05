@@ -95,7 +95,7 @@ namespace Icarus.Services.Files
             }
             catch (Exception ex)
             {
-                Log.Error($"Could not export modpack. \n{ex.Message}.");
+                _logService.Error(ex, $"Could not export modpack.");
                 throw;
             }
             finally

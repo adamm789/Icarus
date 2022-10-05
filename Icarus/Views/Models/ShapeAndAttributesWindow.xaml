@@ -7,11 +7,10 @@
              xmlns:importviews="clr-namespace:Icarus.Views.Import"
              xmlns:local="clr-namespace:Icarus.Views.Models" 
                      xmlns:dd="urn:gong-wpf-dragdrop"
-
         d:DataContext="{d:DesignInstance Type=models:MeshGroupViewModel}"
         mc:Ignorable="d" 
              Height="450" Width="800"
-        Title="{Binding Name}">
+        Title="Shape and Attribute Editor">
     <Grid>
         <Grid.Resources>
             <DataTemplate DataType="{x:Type models:ShapeViewModel}">
@@ -60,7 +59,13 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0" Text="Parts" HorizontalAlignment="Center"/>
+            <TextBlock Grid.Row="0" HorizontalAlignment="Center">
+                <TextBlock.Text>
+                    <MultiBinding StringFormat="{}{0} - Parts">
+                        <Binding Path="Name"/>
+                    </MultiBinding>
+                </TextBlock.Text>
+            </TextBlock>
             <ListBox Grid.Row="1" ItemsSource="{Binding MeshParts}" HorizontalContentAlignment="Center" ScrollViewer.CanContentScroll="False" dd:DragDrop.IsDropTarget="True">
                 <ListBox.ItemContainerStyle>
                     <Style TargetType="ListBoxItem">

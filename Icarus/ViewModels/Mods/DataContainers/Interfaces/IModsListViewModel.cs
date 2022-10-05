@@ -16,7 +16,7 @@ namespace Icarus.ViewModels.Mods.DataContainers.Interfaces
         bool CanExport { get; set; }
         ObservableCollection<ModViewModel> SimpleModsList { get; }
         int AddRange(IEnumerable<IMod> mods);
-        int Add(IMod mod);
+        ModViewModel? Add(IMod mod);
         void AddRange(IEnumerable<ModViewModel> mods);
         void Add(ModViewModel mod);
         bool DeleteMod(ModOptionModViewModel mod);

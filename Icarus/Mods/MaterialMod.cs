@@ -30,9 +30,6 @@ namespace Icarus.Mods
         // TODO: Put related tex files "under" the parent material?
         // TODO: Handle case of importing .dds file
 
-        string _variant = "a";
-        readonly Regex _variantRegex = new Regex(@"[0-9]{4}_[a-z]+_[a-z].mtrl");
-
         public ShaderInfo ShaderInfo { get; set; }
         public List<Half> ColorSetData { get; set; }
         public string MultiTexPath { get; set; }
@@ -73,8 +70,6 @@ namespace Icarus.Mods
             ShaderInfo = xivMtrl.GetShaderInfo();
             XivMtrl = xivMtrl;
             Path = xivMtrl.MTRLPath;
-
-            _variant = XivPathParser.GetMtrlVariant(Path);
 
             NormalTexPath = xivMtrl.GetMapInfo(XivTexType.Normal, false).Path;
 
@@ -157,7 +152,7 @@ namespace Icarus.Mods
 
             XivMtrl.MTRLPath = Path;
 
-            Log.Debug("Calling SetShaderInfo. InvalidOperationExceptions will probably occur. Can be ignored.");
+            Log.Debug("Calling SetShaderInfo. InvalidOperationExceptions will probably occur. And can probably be ignored.");
 
             // TODO: Maybe have to re-assign these?
             var colorSetCount = XivMtrl.ColorSetCount;
@@ -166,7 +161,7 @@ namespace Icarus.Mods
 
             XivMtrl.SetShaderInfo(ShaderInfo, true);
 
-            XivMtrl.ColorSetData = ColorSetData;
+            //XivMtrl.ColorSetData = ColorSetData;
             
             XivMtrl.SetMapInfo(XivTexType.Normal, newNormal);
             XivMtrl.SetMapInfo(XivTexType.Specular, newSpecular);
@@ -208,10 +203,9 @@ namespace Icarus.Mods
                 }
                 Path = str;
             }
-            catch (ArgumentException)
+            catch (ArgumentException ex)
             {
-                var err = $"Could not parse {str} as mtrl.";
-                Log.Error(err);
+                Log.Error($"Could not parse {str} as mtrl.\n{ex.Message}\n{ex.StackTrace}");
             }
         }
 

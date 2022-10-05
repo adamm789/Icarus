@@ -141,7 +141,7 @@ namespace Icarus.ViewModels.Mods
         }
         */
 
-        protected override void SetModData(IGameFile gameFile)
+        public override void SetModData(IGameFile gameFile)
         {
             if (gameFile is ModelGameFile modelGameFile)
             {

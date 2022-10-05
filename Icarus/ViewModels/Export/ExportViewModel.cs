@@ -48,6 +48,7 @@ namespace Icarus.ViewModels.Export
         // TODO: Implement cancellation
         // TODO: Show user feedback that export is happening
         // Unsurprisingly, export raw does not really work with ivcs models (the model itself seems fine, but no armature and no weights)
+        // It does seem to work with (at least) TexTools export
 
         public async Task Export(ExportType type)
         {
