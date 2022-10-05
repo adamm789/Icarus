@@ -19,7 +19,7 @@ namespace Icarus.Services.Interfaces
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        Task<IGameFile?> TryGetFileData(string path);
+        Task<IGameFile?> TryGetFileData(string path, string name="");
 
         /// <summary>
         /// Gets a list of races that have a unique mdl file of the given item
@@ -31,10 +31,10 @@ namespace Icarus.Services.Interfaces
 
         ModelGameFile? GetModelFileData(IItem? item = null, XivRace race = XivRace.Hyur_Midlander_Male);
 
-        ModelGameFile? GetModelFileData(string str);
+        ModelGameFile? GetModelFileData(string path, string name = "");
         Task<MaterialGameFile?> GetMaterialFileData(IItem? item);
 
-        Task<MaterialGameFile?> GetMaterialFileData(string str);
+        Task<MaterialGameFile?> GetMaterialFileData(string path, string name = "");
 
         public XivTexFormat GetTextureData(IItem? itemArg = null);
     }

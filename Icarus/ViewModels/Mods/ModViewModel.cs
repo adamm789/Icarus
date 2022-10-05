@@ -100,7 +100,7 @@ namespace Icarus.ViewModels.Mods
             {
                 if (!fromItem)
                 {
-                    var couldSetDestinationPath = Task.Run(() => TrySetDestinationPath(value)).Result;
+                    var couldSetDestinationPath = Task.Run(() => TrySetDestinationPath(value, DestinationName)).Result;
                     if (!couldSetDestinationPath) return;
                 }
                 _mod.Path = value;
@@ -148,7 +148,7 @@ namespace Icarus.ViewModels.Mods
 
         public DelegateCommand? SetDestinationCommand
         {
-            get { return _setDestinationCommand ??= new DelegateCommand(o => SetDestinationItem()); }
+            get { return _setDestinationCommand ??= new DelegateCommand(async o => await SetDestinationItem()); }
         }
 
         public virtual void RaiseDestinationPathChanged()
@@ -183,10 +183,10 @@ namespace Icarus.ViewModels.Mods
         /// </summary>
         /// <param name="path"></param>
         /// <returns>Whether or not the file data was successfully found.</returns>
-        protected virtual async Task<bool> TrySetDestinationPath(string path)
+        protected virtual async Task<bool> TrySetDestinationPath(string path, string name = "")
         {
             if (path == DestinationPath) return false;
-            var modData = await _gameFileService.TryGetFileData(path);
+            var modData = await _gameFileService.TryGetFileData(path, name);
             if (modData == null)
             {
                 Log.Warning($"Could not set {path} as {GetType().Name}");

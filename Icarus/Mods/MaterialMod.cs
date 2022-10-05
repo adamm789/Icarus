@@ -94,15 +94,20 @@ namespace Icarus.Mods
                 {
                     ColorSetDyeData = XivMtrl.ColorSetDyeData;
                 }
-
                 ShaderInfo = XivMtrl.GetShaderInfo();
+
             }
 
             Path = xivMtrl.MTRLPath;
 
             NormalTexPath = xivMtrl.GetMapInfo(XivTexType.Normal, false).Path;
+            SpecularTexPath = XivPathParser.GetTexPath(Path, XivTexType.Specular);
+            MultiTexPath = XivPathParser.GetTexPath(Path, XivTexType.Multi);
+            DiffuseTexPath = XivPathParser.GetTexPath(Path, XivTexType.Diffuse);
+            ReflectionTexPath = XivPathParser.GetTexPath(Path, XivTexType.Reflection);
 
-            if (ShaderInfo.HasSpec)
+
+            /*if (ShaderInfo.HasSpec)
             {
                 SpecularTexPath = xivMtrl.GetMapInfo(XivTexType.Specular, false).Path;
             }
@@ -137,6 +142,8 @@ namespace Icarus.Mods
             {
                 ReflectionTexPath = XivPathParser.GetTexPath(Path, XivTexType.Reflection);
             }
+            */
+
         }
 
         public override bool IsComplete()

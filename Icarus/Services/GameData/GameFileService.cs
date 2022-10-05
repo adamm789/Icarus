@@ -86,13 +86,13 @@ namespace Icarus.Services.GameFiles
         }
 
         // TODO: race?
-        public async Task<IGameFile?> TryGetFileData(string path)
+        public async Task<IGameFile?> TryGetFileData(string path, string name = "")
         {
             if (XivPathParser.IsMdl(path))
             {
                 try
                 {
-                    return GetModelFileData(path);
+                    return GetModelFileData(path, name);
                 }
                 catch (ArgumentException ex)
                 {
@@ -101,7 +101,7 @@ namespace Icarus.Services.GameFiles
             }
             if (XivPathParser.IsMtrl(path))
             {
-                return await GetMaterialFileData(path);
+                return await GetMaterialFileData(path, name);
             }
             _logService.Error($"Returning null from {path}");
             return null;
@@ -109,7 +109,7 @@ namespace Icarus.Services.GameFiles
 
         // TODO: Split into ModelFileService, MaterialFileService, etc?
         #region Models
-        public ModelGameFile? GetModelFileData(string path)
+        public ModelGameFile? GetModelFileData(string path, string itemName = "")
         {
             //var mdl = _lumina.GetFile<MdlFile>(path);
             //var file = _lumina.GetFileMetadata(path);
@@ -117,7 +117,18 @@ namespace Icarus.Services.GameFiles
 
             // TODO: Currently picks the first one
             // How to handle variants (if I can)
-            var results = _itemListService.Search(path);
+            List<IItem> results = new();
+
+            if (!String.IsNullOrWhiteSpace(itemName))
+            {
+                results = _itemListService.Search(itemName);
+            }
+            if (results.Count == 0)
+            {
+                results = _itemListService.Search(path);
+
+            }
+
             var name = $"{path} (?)";
             if (results.Count > 0)
             {
@@ -184,10 +195,19 @@ namespace Icarus.Services.GameFiles
         #endregion
         #region Materials
 
-        public async Task<MaterialGameFile?> GetMaterialFileData(string path)
+        public async Task<MaterialGameFile?> GetMaterialFileData(string path, string itemName = "")
         {
             var xivMtrl = await TryGetMaterialFromPath(path);
-            var results = _itemListService.Search(path);
+            List<IItem> results = new();
+            if (!String.IsNullOrWhiteSpace(itemName))
+            {
+                results = _itemListService.Search(itemName);
+            }
+
+            if (results.Count == 0)
+            {
+                results = _itemListService.Search(path);
+            }
 
             if (results.Count > 0)
             {

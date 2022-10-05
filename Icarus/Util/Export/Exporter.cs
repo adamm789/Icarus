@@ -286,7 +286,7 @@ namespace Icarus.Util
         /// <summary>
         /// Writes a material to bytes
         /// If ShouldCompress, the resulting file is with TexTools
-        /// If, the resulting file is used with Penumbra
+        /// If not, the resulting file is used with Penumbra
         /// </summary>
         /// <param name="file"></param>
         /// <param name="shouldCompress"></param>
