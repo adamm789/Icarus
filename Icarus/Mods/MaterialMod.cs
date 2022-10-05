@@ -30,8 +30,9 @@ namespace Icarus.Mods
         // TODO: Put related tex files "under" the parent material?
         // TODO: Handle case of importing .dds file
 
-        public ShaderInfo ShaderInfo { get; set; }
+        public ShaderInfo ShaderInfo { get; set; } = new();
         public List<Half> ColorSetData { get; set; }
+        public byte[] ColorSetDyeData { get; set; }
         public string MultiTexPath { get; set; }
         public string NormalTexPath { get; set; }
         public string SpecularTexPath { get; set; }
@@ -47,6 +48,12 @@ namespace Icarus.Mods
         public MaterialMod()
         {
 
+        }
+
+        public MaterialMod(List<Half> colorSetData, byte[]? colorSetExtraData)
+        {           
+            ColorSetData = colorSetData;
+            ColorSetDyeData = colorSetExtraData;
         }
 
         public MaterialMod(IGameFile gameFile, bool isInternal = false) : base(gameFile, isInternal)
@@ -67,8 +74,30 @@ namespace Icarus.Mods
 
         private void Init(XivMtrl xivMtrl)
         {
-            ShaderInfo = xivMtrl.GetShaderInfo();
-            XivMtrl = xivMtrl;
+            if (XivMtrl == null)
+            {
+                XivMtrl = xivMtrl;
+                if (ColorSetData != null)
+                {
+                    XivMtrl.ColorSetData = ColorSetData;
+                }
+                else
+                {
+                    ColorSetData = XivMtrl.ColorSetData;
+                }
+
+                if (ColorSetDyeData != null)
+                {
+                    XivMtrl.ColorSetDyeData = ColorSetDyeData;
+                }
+                else
+                {
+                    ColorSetDyeData = XivMtrl.ColorSetDyeData;
+                }
+
+                ShaderInfo = XivMtrl.GetShaderInfo();
+            }
+
             Path = xivMtrl.MTRLPath;
 
             NormalTexPath = xivMtrl.GetMapInfo(XivTexType.Normal, false).Path;
@@ -112,7 +141,7 @@ namespace Icarus.Mods
 
         public override bool IsComplete()
         {
-            return XivMtrl != null;
+            return XivMtrl != null && !String.IsNullOrWhiteSpace(Path);
         }
 
         /// <summary>
@@ -230,9 +259,9 @@ namespace Icarus.Mods
             return retVal;
         }
 
-        public List<SharpDX.Half> GetColorSetData()
+        public List<SharpDX.Half>? GetColorSetData()
         {
-            return XivMtrl.ColorSetData;
+            return XivMtrl?.ColorSetData;
         }
 
         public bool IsParentMaterial(string texPath)

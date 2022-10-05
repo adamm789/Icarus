@@ -30,6 +30,10 @@ namespace Icarus.Util
         private const string _currentSimpleTTMPVersion = "1.3s";
         private const string _minimumAssembly = "1.3.0.0";
 
+        public TexToolsExporter(GameData lumina, ILogService logService) : base(lumina, logService)
+        {
+        }
+
         public TexToolsExporter(ILogService logService) : base(logService)
         {
             

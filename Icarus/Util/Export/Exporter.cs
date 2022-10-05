@@ -295,6 +295,7 @@ namespace Icarus.Util
         {
             var xivMtrl = file.GetMtrl();
             var bytes = MtrlExtensions.CreateMtrlFile(xivMtrl);
+
             if (!shouldCompress)
             {
                 return bytes;

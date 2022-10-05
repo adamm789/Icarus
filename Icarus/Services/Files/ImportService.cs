@@ -29,6 +29,7 @@ using Icarus.Mods.GameFiles;
 using System.Windows.Forms;
 using Icarus.Mods.Interfaces;
 using System.Diagnostics;
+using Icarus.Util.Extensions;
 
 namespace Icarus.Services.Files
 {
@@ -39,6 +40,8 @@ namespace Icarus.Services.Files
         readonly TexToolsModPackImporter _ttmpImporter;
         readonly IGameFileService _gameFileDataService;
 
+        DirectoryInfo gameDirectoryFramework;
+
         protected Queue<string> _importFileQueue = new();
 
         public ImportService(IGameFileService gameFileDataService, SettingsService settingsService, ConverterService converterService, ILogService logService)
@@ -48,9 +51,10 @@ namespace Icarus.Services.Files
             _gameFileDataService = gameFileDataService;
 
             var projectDirectory = settingsService.ProjectDirectory;
-            var gameDirectoryFramework = Path.Combine(settingsService.GameDirectoryLumina, "ffxiv");
+            var gamePathFramework = Path.Combine(settingsService.GameDirectoryLumina, "ffxiv");
+            gameDirectoryFramework = new(gamePathFramework);
 
-            _ttmpImporter = new(projectDirectory, gameDirectoryFramework);
+            _ttmpImporter = new(projectDirectory, gamePathFramework);
         }
 
         public bool IsImporting
@@ -165,7 +169,7 @@ namespace Icarus.Services.Files
             }
             catch (Exception ex)
             {
-                Log.Error(ex.Message);
+                _logService.Error(ex);
             }
             finally
             {
@@ -176,22 +180,29 @@ namespace Icarus.Services.Files
 
         public async Task<ModPack> ImportColorset(string filePath)
         {
-            var modPack = new ModPack();
-            var directory = new DirectoryInfo(filePath);
-            var colorsetData = Tex.GetColorsetDataFromDDS(directory);
-            using (var br = new BinaryReader(new FileStream(filePath, FileMode.Open)))
+            try
             {
+                var modPack = new ModPack();
+                var directory = new DirectoryInfo(filePath);
+                var colorsetData = Tex.GetColorsetDataFromDDS(directory);
+                var colorsetDyeData = Tex.GetColorsetExtraDataFromDDS(directory);
                 /*
-                var bytes = new byte[br.BaseStream.Length];
-                br.Read(bytes);
-
-                string _gameDirectory = Path.Combine(_lumina.DataPath.FullName, "ffxiv");
-                var mtrl = new Mtrl(new DirectoryInfo(_gameDirectory));
-                var xivMtrl = await mtrl.GetMtrlData(bytes, "");
-                var materialMod = new MaterialMod(xivMtrl);
+                using (var br = new BinaryReader(new FileStream(filePath, FileMode.Open)))
+                {
+                    var bytes = new byte[br.BaseStream.Length];
+                    br.Read(bytes);
+                    var xivMtrl = await MtrlExtensions.GetMtrlData(gameDirectoryFramework, bytes, "");
+                    var materialMod = new MaterialMod(xivMtrl);
+                }
                 */
+                var materialMod = new MaterialMod(colorsetData, colorsetDyeData);
+                modPack.SimpleModsList.Add(materialMod);
+                return modPack;
+            } catch (Exception ex)
+            {
+                _logService.Error(ex);
             }
-            return modPack;
+            return new ModPack();
         }
 
         public async Task<ModPack> ImportTexToolsModPack(string filePath)

@@ -23,13 +23,6 @@ namespace Icarus.ViewModels.Mods
 {
     public class MaterialModViewModel : ModViewModel
     {
-        // TODO: Overhaul MaterialModViewModel so that it does not constantly update the associated MaterialMod and consequently the XiVMtrl
-        // There are destructive operations in xivMtrl.SetShaderInfo()
-
-
-        // TODO: Need to handle case of importing .dds file
-        // TODO: call SetCanExport... at some point
-
         MaterialMod _materialMod;
         IWindowService _windowService;
         ShaderInfoViewModel _shaderInfoViewModel;
@@ -43,21 +36,7 @@ namespace Icarus.ViewModels.Mods
             _windowService = windowService;
             ShaderInfoViewModel = new ShaderInfoViewModel(mod);
 
-            /*
-            var colorSetData = new List<List<Color>>();
-            for (var i = 0; i < 16; i++)
-            {
-                colorSetData.Add(new List<Color>());
-                colorSetData[i] = new ColorSetRowViewModel()
-                for (int j = 0; j < 4; j++)
-                {
-                    var color = GetColorSetDataRange(_materialMod.GetColorSetData(), (i * 16) + (j * 4));
-                    colorSetData[i].Add(color);
-                }
-            }
-            */
-            var colorSetData = new List<List<Color>>();
-            var colorset = _materialMod.GetColorSetData();
+            var colorset = _materialMod.ColorSetData;
 
             if (colorset.Count == 256)
             {
@@ -66,23 +45,9 @@ namespace Icarus.ViewModels.Mods
                     ColorSetViewModels.Add(new ColorSetRowViewModel(colorset.GetRange(i * 16, 16)));
                 }
             }
-        }
 
-        /*
-        public override MaterialMod GetMod()
-        {
-            _materialMod.ShaderInfo = _shaderInfo;
-            
-            var colorSetData = new List<Half>();
-            foreach(var data in ColorSetViewModels)
-            {
-                colorSetData.AddRange(data.GetList());
-            }
-            _materialMod.ColorSetData = colorSetData;
-            
-            return _materialMod;
+            SetCanExport();
         }
-        */
 
         ObservableCollection<ColorSetRowViewModel> _colorSetViewModels = new();
         public ObservableCollection<ColorSetRowViewModel> ColorSetViewModels

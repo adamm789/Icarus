@@ -45,13 +45,12 @@ namespace Icarus.Services.Files
             get { return _isBusy; }
             set { _isBusy = value; OnPropertyChanged(); }
         }
-
         protected override void OnLuminaSet()
         {
             base.OnLuminaSet();
             _rawExporter = new(_converterService, _lumina, _logService);
             _penumbraExporter = new(_logService);
-            _textoolsExporter = new(_logService);
+            _textoolsExporter = new(_lumina, _logService);
         }
 
         public string GetOutputPath(ModPack modPack, ExportType exportType)

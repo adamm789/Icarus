@@ -16,6 +16,13 @@ namespace Icarus.Util.Extensions
     public static class MtrlExtensions
     {
         //https://github.com/TexTools/xivModdingFramework/blob/81c234e7b767d56665185e07aabeeae21d895f0b/xivModdingFramework/Materials/FileTypes/Mtrl.cs#L408
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="gameDirectory">The framework game directory (ends in ffxiv)</param>
+        /// <param name="mtrlData"></param>
+        /// <param name="mtrlPath"></param>
+        /// <returns></returns>
         public static async Task<XivMtrl> GetMtrlData(DirectoryInfo gameDirectory, byte[] mtrlData, string mtrlPath)
         {
             var dat = new Dat(gameDirectory);
