@@ -24,6 +24,10 @@ namespace Icarus.ViewModels.Mods.DataContainers
         public ModPack ModPack { get; }
         ViewModelService _viewModelService;
 
+        // Used to determine if a mtrl or tex exists in the mod list (or is vanilla)
+        Dictionary<ModViewModel, List<NotifyPropertyChanged>> mtrlDictionary = new();
+        Dictionary<ModViewModel, List<NotifyPropertyChanged>> texDictionary = new();
+
         public ModPackModsListViewModel(ModPack modPack, ViewModelService modFileService)
         {
             ModPack = modPack;
@@ -83,6 +87,21 @@ namespace Icarus.ViewModels.Mods.DataContainers
             ModPack.SimpleModsList.Add(mod.GetMod());
             SimpleModsList.Add(mod);
 
+            if (mod is MaterialModViewModel mtrlMod)
+            {
+                // add mtrlMod to dictionary
+                // go through dictionary to see if mtrlMod.DestinationPath is present
+                // update mtrlMod.Exists appropriately
+            }
+            else if (mod is TextureModViewModel texMod)
+            {
+                // add
+            }
+            else if (mod is ModelModViewModel mdlMod)
+            {
+
+            }
+
             mod.Identifier = $"({identifier})";
             identifier++;
 
@@ -97,7 +116,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
         }
 
         /// <summary>
-        /// Removes a mod from the mods list as well as any reference in the modpack pages
+        /// Removes a mod from the mods list
         /// </summary>
         /// <param name="mod"></param>
         /// <returns></returns>
@@ -114,6 +133,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
 
                 if (!(b1 && b2))
                 {
+                    // Hopefully this never happens
                     throw new ArgumentException("Could not remove mod.");
                 }
 
@@ -166,7 +186,11 @@ namespace Icarus.ViewModels.Mods.DataContainers
                 var mod = sender as ModViewModel;
                 Log.Information($"Deleting mod from modslist: {mod.FileName}.");
                 DeleteMod(mod);
-                Log.Information($"Finished deleting: {mod.FileName}.");
+                Log.Verbose($"Finished deleting: {mod.FileName}.");
+            }
+            if (e.PropertyName == nameof(ModViewModel.DestinationPath))
+            {
+                // Update in dictionary
             }
         }
 
@@ -182,6 +206,10 @@ namespace Icarus.ViewModels.Mods.DataContainers
             ReadOnlyModsHeader = $"ReadOnly ({ReadOnlyMods.Cast<ModViewModel>().ToArray().Length})";
         }
 
+        /// <summary>
+        /// Checks to see if every entry in the list is complete and can be exported
+        /// </summary>
+        /// <returns></returns>
         private bool GetCanExport()
         {
             if (SimpleModsList.Count == 0)
@@ -197,7 +225,9 @@ namespace Icarus.ViewModels.Mods.DataContainers
             }
             return true;
         }
+        #endregion
 
+        #region UI
         void IDropTarget.DragOver(IDropInfo dropInfo)
         {
             var target = dropInfo.TargetItem as ModViewModel;

@@ -18,12 +18,13 @@ namespace Icarus.Views.Mods
     /// <summary>
     /// Interaction logic for MaterialEditorWindow.xaml
     /// </summary>
-    public partial class MaterialEditorWindow : Window
+    public partial class ShaderInfoWindow : Window
     {
-        public MaterialEditorWindow()
+        public ShaderInfoWindow()
         {
             InitializeComponent();
             this.PreviewKeyDown += new KeyEventHandler(HandleEsc);
+            DataContext = this;
 
         }
         private void HandleEsc(object sender, KeyEventArgs e)

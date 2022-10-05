@@ -9,45 +9,51 @@
              d:DataContext="{d:DesignInstance Type=mods:ShaderInfoViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
+    <Grid Margin="0,0,0,10">
         <Grid.Resources>
             <ui:BooleanToVisibilityConverter 
                 x:Key="BooleanToVisibilityConverter"
                 True="Visible"
                 False="Collapsed"/>
         </Grid.Resources>
-
+        <!-- To create consistant spacing -->
         <StackPanel>
-            <StackPanel Orientation="Horizontal">
+            <TextBlock/>
+            <TextBlock/>
+            <TextBlock/>
+            <TextBlock/>
+        </StackPanel>
+        <StackPanel Margin="0,5,0,0">
+            <DockPanel>
+                <TextBlock Text="Normal" DockPanel.Dock="Left"/>
+                <TextBox Text="{Binding NormalTexPath}" DockPanel.Dock="Right"/>
                 <!--
                 <TextBlock Text="Normal"/>
-                <TextBox Text="{Binding NormalTexPath}"/>
-                -->
-                <TextBlock Text="Normal"/>
                 <TextBox DataContext="{Binding NormalTex}" Text="{Binding Path}"/>
-            </StackPanel>
+                -->
+            </DockPanel>
 
-            <StackPanel Orientation="Horizontal" Visibility="{Binding HasSpecular, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <TextBlock Text="Specular"/>
-                <TextBox Text="{Binding SpecularTexPath}" />
-            </StackPanel>
-            
-            <StackPanel Orientation="Horizontal" Visibility="{Binding HasMulti, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <TextBlock Text="Multi"/>
-                <TextBox Text="{Binding MultiTexPath}" />
-            </StackPanel>
+            <DockPanel Visibility="{Binding HasSpecular, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <TextBlock Text="Specular" DockPanel.Dock="Left"/>
+                <TextBox Text="{Binding SpecularTexPath}" DockPanel.Dock="Right"/>
+            </DockPanel>
 
-            <StackPanel Orientation="Horizontal" Visibility="{Binding HasDiffuse, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <TextBlock Text="Diffuse"/>
-                <TextBox Text="{Binding DiffuseTexPath}" />
-            </StackPanel>
+            <DockPanel Visibility="{Binding HasMulti, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <TextBlock Text="Multi" DockPanel.Dock="Left"/>
+                <TextBox Text="{Binding MultiTexPath}" DockPanel.Dock="Right" />
+            </DockPanel>
 
-            <StackPanel Orientation="Horizontal" Visibility="{Binding HasReflection, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <TextBlock Text="Reflection"/>
-                <TextBox Text="{Binding ReflectionTexPath}" />
-            </StackPanel>
+            <DockPanel Visibility="{Binding HasDiffuse, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <TextBlock Text="Diffuse" DockPanel.Dock="Left"/>
+                <TextBox Text="{Binding DiffuseTexPath}" DockPanel.Dock="Right"/>
+            </DockPanel>
 
+            <DockPanel Visibility="{Binding HasReflection, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <TextBlock Text="Reflection" DockPanel.Dock="Left"/>
+                <TextBox Text="{Binding ReflectionTexPath}" DockPanel.Dock="Right"/>
+            </DockPanel>
         </StackPanel>
-    </Grid>
 
+
+    </Grid>
 </UserControl>

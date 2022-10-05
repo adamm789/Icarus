@@ -6,15 +6,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
-using SharpDXColor = SharpDX.Color;
 using WindowsColor = System.Windows.Media.Color;
 using Half = SharpDX.Half;
+using Color = SharpDX.Color;
 
 namespace Icarus.ViewModels.Mods
 {
     public class ColorSetRowViewModel : NotifyPropertyChanged
     {
-        public ColorSetRowViewModel(List<SharpDXColor> values)
+        List<Half> _colorSetData;
+        public ColorSetRowViewModel(List<Half> values)
+        {
+            _colorSetData = values;
+            Diffuse = new(GetColor(GetColorSetDataRange(values, 0)));
+            Specular = new(GetColor(GetColorSetDataRange(values, 4)));
+            Emissive = new(GetColor(GetColorSetDataRange(values, 8)));
+            Red = new(GetColor(GetColorSetDataRange(values, 12)));
+        }
+        public ColorSetRowViewModel(List<Color> values)
         {
             if (values.Count != 4)
             {
@@ -27,15 +36,34 @@ namespace Icarus.ViewModels.Mods
             Red = new(GetColor(values[3]));
         }
 
-        public WindowsColor GetColor(SharpDXColor c)
+        private Color GetColorSetDataRange(List<Half> values, int index)
+        {
+            return ListToColor(values.GetRange(index, 4));
+        }
+
+        private Color ListToColor(List<Half> values)
+        {
+            if (values.Count != 4)
+            {
+                throw new ArgumentException("List was not of length four.");
+            }
+            return new Color(values[0], values[1], values[2], values[3]);
+        }
+
+        public List<Half> GetList()
+        {
+            return _colorSetData;
+        }
+
+        public WindowsColor GetColor(Color c)
         {
             return WindowsColor.FromArgb(c.A, c.R, c.G, c.B);
         }
 
         // TODO: Get an edited Colorset row
-        public List<SharpDXColor> GetRow()
+        public List<Color> GetRow()
         {
-            var retVal = new List<SharpDXColor>();
+            var retVal = new List<Color>();
             //retVal.Add(new SharpDXColor(Diffuse.Color));
 
             return retVal;

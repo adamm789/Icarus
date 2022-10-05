@@ -43,41 +43,43 @@ namespace Icarus.ViewModels.Mods
             _windowService = windowService;
             ShaderInfoViewModel = new ShaderInfoViewModel(mod);
 
+            /*
             var colorSetData = new List<List<Color>>();
             for (var i = 0; i < 16; i++)
             {
                 colorSetData.Add(new List<Color>());
+                colorSetData[i] = new ColorSetRowViewModel()
                 for (int j = 0; j < 4; j++)
                 {
                     var color = GetColorSetDataRange(_materialMod.GetColorSetData(), (i * 16) + (j * 4));
                     colorSetData[i].Add(color);
                 }
             }
+            */
+            var colorSetData = new List<List<Color>>();
+            var colorset = _materialMod.GetColorSetData();
 
-            foreach (var set in colorSetData)
+            if (colorset.Count == 256)
             {
-                ColorSetViewModels.Add(new ColorSetRowViewModel(set));
+                for (var i = 0; i < 16; i++)
+                {
+                    ColorSetViewModels.Add(new ColorSetRowViewModel(colorset.GetRange(i * 16, 16)));
+                }
             }
         }
 
         public override MaterialMod GetMod()
         {
             _materialMod.ShaderInfo = _shaderInfo;
-            return _materialMod;
-        }
-
-        private Color GetColorSetDataRange(List<Half> values, int index)
-        {
-            return ListToColor(values.GetRange(index, 4));
-        }
-
-        private Color ListToColor(List<Half> values)
-        {
-            if (values.Count != 4)
+            
+            var colorSetData = new List<Half>();
+            foreach(var data in ColorSetViewModels)
             {
-                throw new ArgumentException("List was not of length four.");
+                colorSetData.AddRange(data.GetList());
             }
-            return new Color(values[0], values[1], values[2], values[3]);
+            _materialMod.ColorSetData = colorSetData;
+            
+            return _materialMod;
         }
 
         ObservableCollection<ColorSetRowViewModel> _colorSetViewModels = new();
@@ -93,36 +95,7 @@ namespace Icarus.ViewModels.Mods
             set { _shaderInfoViewModel = value; OnPropertyChanged(); }
         }
 
-        /*
-        public override async Task SetDestinationItem(IItem? item = null)
-        {
-            var modData = await _gameFileService.GetMaterialFileData(item);
-            if (modData == null)
-            {
-                return;
-            }
-            DestinationPath = modData.Path;
-        }
-        */
-
         private ShaderInfo _shaderInfo => _shaderInfoViewModel.ShaderInfo;
-
-        /*
-        public override async Task<bool> TrySetDestinationPath(string path)
-        {
-            var modData = await _gameFileService.TryGetFileData(path);
-            if (modData == null)
-            {
-                Log.Warning($"Could not set {path} as a material.");
-                return false;
-            }
-            else
-            {
-                DestinationPath = modData.Path;
-            }
-            return true;
-        }
-        */
 
         DelegateCommand _openMaterialEditorCommand;
         public DelegateCommand OpenMaterialEditorCommand
@@ -132,12 +105,12 @@ namespace Icarus.ViewModels.Mods
 
         public void OpenMaterialEditor()
         {
-            _windowService.ShowWindow<MaterialEditorWindow>(this);
+            _windowService.ShowWindow<ShaderInfoWindow>(this);
         }
 
         public override void RaiseModPropertyChanged()
         {
-            ShaderInfoViewModel.PathProperyChanged();
+            ShaderInfoViewModel.ShaderInfoChanged();
             base.RaiseModPropertyChanged();
         }
     }

@@ -34,6 +34,7 @@
                 x:Key="BooleanToVisibilityConverter"
                 True="Visible"
                 False="Collapsed"/>
+
         </Grid.Resources>
 
         <local:ModView Grid.Row="0" Grid.ColumnSpan="3"/>
@@ -62,8 +63,7 @@
             </Grid.ColumnDefinitions>
             
             <TextBlock Grid.Row="0" Grid.Column="0" Text="Preset"/>
-            <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding ShaderPresetEnum}" SelectedValue="{Binding Preset}"/>
-            
+            <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding ShaderPresets}" SelectedValue="{Binding Preset}"/>
             <local:MaterialTexPathsView Grid.Row="1" Grid.ColumnSpan="2"/>
         </Grid>
 

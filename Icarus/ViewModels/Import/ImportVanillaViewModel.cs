@@ -7,6 +7,7 @@ using Icarus.ViewModels.Mods;
 using Icarus.ViewModels.Mods.DataContainers.Interfaces;
 using Icarus.ViewModels.Util;
 using ItemDatabase.Interfaces;
+using ItemDatabase.Paths;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -41,8 +42,16 @@ namespace Icarus.ViewModels.Import
             if (e.PropertyName == nameof(ItemListService.SelectedItem))
             {
                 SelectedItem = (sender as ItemListService).SelectedItem;
+                HasSkin = XivPathParser.HasSkin(SelectedItem.GetMdlPath());
                 AllRacesMdls = new(_itemListService.GetAllRaceMdls());
             }
+        }
+
+        bool _hasSkin = false;
+        public bool HasSkin
+        {
+            get { return _hasSkin; }
+            set { _hasSkin = value; OnPropertyChanged(); }
         }
 
         string _text = "";

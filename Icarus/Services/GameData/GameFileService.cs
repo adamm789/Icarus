@@ -220,19 +220,30 @@ namespace Icarus.Services.GameFiles
             var item = GetItem(itemArg);
             if (item == null) return null;
 
-            var equip = item as IGear;
-            // TODO: Material when item is not equipment
-            if (equip == null) return null;
-
             var mtrl = new Mtrl(_frameworkGameDirectory);
-            var xivMtrl = await mtrl.GetMtrlData(equip.GetMtrlPath());
+
+            XivMtrl? xivMtrl;
+            string path = "";
+            var category = "";
+            // TODO: Material when item is not equipment
+            if (item is IGear equip)
+            {
+                xivMtrl = await mtrl.GetMtrlData(equip.GetMtrlPath());
+                category = equip.Slot.ToString();
+            }
+            else
+            {
+                xivMtrl = await TryGetMaterialFromPath(item.GetMtrlPath());
+                category = XivPathParser.GetCategory(item.GetMtrlPath());
+            }
+            if (xivMtrl == null) return null;
 
             var retVal = new MaterialGameFile()
             {
                 //Item = item,
                 Name = item.Name,
-                Path = equip.GetMtrlPath(),
-                Category = equip.Category.ToString(),
+                Path = item.GetMtrlPath(),
+                Category = category,
                 XivMtrl = xivMtrl,
             };
             return retVal;

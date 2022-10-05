@@ -1,0 +1,85 @@
+﻿<Window x:Class="Icarus.Views.Mods.ShaderInfoWindow"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Icarus.Views.Mods"
+             xmlns:ui="clr-namespace:Icarus.UI" 
+             xmlns:mods="clr-namespace:Icarus.ViewModels.Mods"
+             xmlns:mtrl="clr-namespace:xivModdingFramework.Materials.DataContainers;assembly=xivModdingFramework"
+        d:DataContext="{d:DesignInstance Type=mods:MaterialModViewModel}"
+        mc:Ignorable="d" 
+             d:DesignHeight="250" d:DesignWidth="300"
+        MinHeight="350" MinWidth="500"
+        MaxHeight="500" MaxWidth="650">
+    <StackPanel Margin="10">
+        <StackPanel.Resources>
+            <DataTemplate DataType="{x:Type mods:ColorSetRowViewModel}">
+                <local:ColorSetRowView/>
+            </DataTemplate>
+            <ui:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+            <ui:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"
+                True="Visible" False="Collapsed"/>
+            <ui:BooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter"
+                True="Collapsed" False="Visible"/>
+            <ui:BooleanToStringConverter
+                x:Key="TransparancyBooleanConverter"
+                True="Enabled"
+                False="Disabled"/>
+        </StackPanel.Resources>
+        <Grid DataContext="{Binding ShaderInfoViewModel}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Shader" />
+            <ComboBox Grid.Row="0" Grid.Column="1" IsEnabled="{Binding CanSetShader}"
+                      ItemsSource="{Binding ShadersList}" SelectedValue="{Binding MtrlShader, Mode=TwoWay}"/>
+
+            <TextBlock Grid.Row="0" Grid.Column="2" Text="Preset"/>
+            <ComboBox Grid.Row="0" Grid.Column="3" IsEnabled="{Binding CanSetPreset}"
+                      ItemsSource="{Binding ShaderPresets}" SelectedValue="{Binding Preset}"/>
+
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Transparency"/>
+            <ComboBox Grid.Row="1" Grid.Column="1" IsEnabled="{Binding CanSetTransparency}"
+                      ItemsSource="{Binding TransparencyValues}" SelectedValue="{Binding Transparency}"/>
+
+            <!--
+            <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding IsTransparent}"/>
+            -->
+            <!--
+            <ComboBox Grid.Row="1" Grid.Column="1">
+                <ComboBoxItem Content="Enabled" IsSelected="{Binding IsTransparent, Converter={StaticResource InverseBooleanConverter}}"/>
+                <ComboBoxItem Content="Disabled" IsSelected="{Binding IsTransparent}"/>
+            </ComboBox>
+            -->
+            
+            <TextBlock Grid.Row="1" Grid.Column="2" Text="Colorset:" IsEnabled="False"/>
+            <TextBlock Grid.Row="1" Grid.Column="3" Text="Enabled" Visibility="{Binding HasColorSet, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <TextBlock Grid.Row="1" Grid.Column="3" Text="Disabled" Visibility="{Binding HasColorSet, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
+
+            <!--
+            <CheckBox Grid.Row="1" Grid.Column="3" IsChecked="{Binding HasColorSet, Mode=OneWay}" IsEnabled="False"/>
+-->
+            
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Backfaces"/>
+            <ComboBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding BackfaceValues}" SelectedValue="{Binding Backfaces}"/>
+
+            <local:MaterialTexPathsView Grid.Row="3" Grid.ColumnSpan="4"/>
+
+        </Grid>
+        <ListView Grid.Row="4" Grid.ColumnSpan="4" ItemsSource="{Binding ColorSetViewModels}">
+        </ListView>
+    </StackPanel>
+
+</Window>

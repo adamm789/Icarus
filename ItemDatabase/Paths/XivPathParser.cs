@@ -345,7 +345,8 @@ namespace ItemDatabase.Paths
                     case XivTexType.Specular: return ret + "_s.tex";
                 }
             }
-            throw new ArgumentException($"Could not parse mtrl: {input} into {type} texture.");
+            //throw new ArgumentException($"Could not parse mtrl: {input} into {type} texture.");
+            return "";
         }
 
         #endregion

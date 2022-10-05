@@ -16,6 +16,8 @@ using xivModdingFramework.Materials.FileTypes;
 using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Textures.Enums;
 using xivModdingFramework.Textures.FileTypes;
+using Half = SharpDX.Half;
+
 
 namespace Icarus.Mods
 {
@@ -32,11 +34,15 @@ namespace Icarus.Mods
         readonly Regex _variantRegex = new Regex(@"[0-9]{4}_[a-z]+_[a-z].mtrl");
 
         public ShaderInfo ShaderInfo { get; set; }
+        public List<Half> ColorSetData { get; set; }
         public string MultiTexPath { get; set; }
         public string NormalTexPath { get; set; }
         public string SpecularTexPath { get; set; }
         public string DiffuseTexPath { get; set; }
         public string ReflectionTexPath { get; set; }
+
+        public bool IsFurniture => ShaderInfo.Shader == MtrlShader.Furniture;
+        public bool IsDyeableFurniture => ShaderInfo.Shader == MtrlShader.DyeableFurniture;
 
         // TODO: Look at all of the options when creating a new material
         private XivMtrl XivMtrl;
@@ -161,6 +167,8 @@ namespace Icarus.Mods
             var colorSetDyeData = XivMtrl.ColorSetDyeData;
 
             XivMtrl.SetShaderInfo(ShaderInfo, true);
+
+            XivMtrl.ColorSetData = ColorSetData;
             
             XivMtrl.SetMapInfo(XivTexType.Normal, newNormal);
             XivMtrl.SetMapInfo(XivTexType.Specular, newSpecular);
