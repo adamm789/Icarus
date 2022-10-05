@@ -97,7 +97,12 @@ namespace Icarus.ViewModels.Mods
                     if (!couldSetDestinationPath) return;
                 }
                 _mod.Path = value;
+                RaiseDestinationPathChanged();
+                /*
                 OnPropertyChanged();
+                OnPropertyChanged(nameof(DestinationName));
+                SetCanExport();
+                */
             }
         }
 
@@ -153,7 +158,7 @@ namespace Icarus.ViewModels.Mods
             get { return _setDestinationCommand ??= new DelegateCommand(o => SetDestinationItem()); }
         }
 
-        public virtual void RaiseModPropertyChanged()
+        public virtual void RaiseDestinationPathChanged()
         {
             OnPropertyChanged(nameof(DestinationPath));
             OnPropertyChanged(nameof(DestinationName));
@@ -173,6 +178,7 @@ namespace Icarus.ViewModels.Mods
             if (data != null)
             {
                 SetModData(data);
+                RaiseDestinationPathChanged();
             }
 
             fromItem = false;
@@ -204,8 +210,7 @@ namespace Icarus.ViewModels.Mods
         protected virtual void SetModData(IGameFile gameFile)
         {
             _mod.SetModData(gameFile);
-            DestinationPath = gameFile.Path;
-            RaiseModPropertyChanged();
+            //RaiseModPropertyChanged();
         }
     }
 }

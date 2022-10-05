@@ -60,23 +60,22 @@ namespace Icarus.ViewModels.Mods
                 };
             }
         }
+        public ShaderInfo ShaderInfo { get; }
+
 
         public void UpdatePaths(string str)
         {
             _materialMod.SetMtrlPath(str);
-            ShaderInfoChanged();
+
+            OnPropertyChanged(nameof(NormalTexPath));
+            OnPropertyChanged(nameof(MultiTexPath));
+            OnPropertyChanged(nameof(DiffuseTexPath));
+            OnPropertyChanged(nameof(SpecularTexPath));
+            OnPropertyChanged(nameof(ReflectionTexPath));
         }
 
-        // TODO: Prevent user from settings options that are mutually excelusive
-        public ShaderInfo ShaderInfo { get; }
         public void ShaderInfoChanged()
         {
-            OnPropertyChanged(nameof(HasColorSet));
-            OnPropertyChanged(nameof(HasMulti));
-            OnPropertyChanged(nameof(HasDiffuse));
-            OnPropertyChanged(nameof(HasSpecular));
-            OnPropertyChanged(nameof(HasReflection));
-
             OnPropertyChanged(nameof(CanSetTransparency));
             OnPropertyChanged(nameof(CanSetPreset));
             //CanSetTransparency = MtrlShader == MtrlShader.Standard;
@@ -84,6 +83,21 @@ namespace Icarus.ViewModels.Mods
             Preset = MtrlShaderPreset.Default;
 
             //NormalTexPath = _materialMod.NormalTexPath;
+        }
+
+        public void PresetChanged()
+        {
+            OnPropertyChanged(nameof(HasColorSet));
+            OnPropertyChanged(nameof(HasMulti));
+            OnPropertyChanged(nameof(HasDiffuse));
+            OnPropertyChanged(nameof(HasSpecular));
+            OnPropertyChanged(nameof(HasReflection));
+
+            OnPropertyChanged(nameof(NormalTexPath));
+            OnPropertyChanged(nameof(MultiTexPath));
+            OnPropertyChanged(nameof(DiffuseTexPath));
+            OnPropertyChanged(nameof(SpecularTexPath));
+            OnPropertyChanged(nameof(ReflectionTexPath));
         }
 
         #region Bindings
@@ -105,10 +119,10 @@ namespace Icarus.ViewModels.Mods
 
         public MtrlShader MtrlShader
         {
-            get { return ShaderInfo.Shader; }
+            get { return _materialMod.ShaderInfo.Shader; }
             set
             {
-                ShaderInfo.Shader = value;
+                _materialMod.ShaderInfo.Shader = value;
                 OnPropertyChanged();
                 ShaderInfoChanged();
             }
@@ -116,12 +130,12 @@ namespace Icarus.ViewModels.Mods
 
         public MtrlShaderPreset Preset
         {
-            get { return ShaderInfo.Preset; }
+            get { return _materialMod.ShaderInfo.Preset; }
             set
             {
-                ShaderInfo.Preset = value;
+                _materialMod.ShaderInfo.Preset = value;
                 OnPropertyChanged();
-                //ShaderInfoChanged();
+                PresetChanged();
             }
         }
 
@@ -129,22 +143,22 @@ namespace Icarus.ViewModels.Mods
         public bool UseSharedTextures = true;
 
         // TODO: HasColorSet and (dyeable) furniture?
-        public bool HasColorSet => ShaderInfo.HasColorset;
-        public bool HasMulti => ShaderInfo.HasMulti;
-        public bool HasDiffuse => ShaderInfo.HasDiffuse;
-        public bool HasSpecular => ShaderInfo.HasSpec;
-        public bool HasReflection => ShaderInfo.HasReflection;
+        public bool HasColorSet => _materialMod.ShaderInfo.HasColorset;
+        public bool HasMulti => _materialMod.ShaderInfo.HasMulti;
+        public bool HasDiffuse => _materialMod.ShaderInfo.HasDiffuse;
+        public bool HasSpecular => _materialMod.ShaderInfo.HasSpec;
+        public bool HasReflection => _materialMod.ShaderInfo.HasReflection;
 
         public bool TransparencyEnabled
         {
-            get { return ShaderInfo.TransparencyEnabled; }
-            set { ShaderInfo.TransparencyEnabled = value; OnPropertyChanged(); }
+            get { return _materialMod.ShaderInfo.TransparencyEnabled; }
+            set { _materialMod.ShaderInfo.TransparencyEnabled = value; OnPropertyChanged(); }
         }
 
         public bool BackfacesEnabled
         {
-            get { return ShaderInfo.RenderBackfaces; }
-            set { ShaderInfo.RenderBackfaces = value; OnPropertyChanged(); }
+            get { return _materialMod.ShaderInfo.RenderBackfaces; }
+            set { _materialMod.ShaderInfo.RenderBackfaces = value; OnPropertyChanged(); }
         }
 
         // TODO: Look at TexTools tokenized texture paths

@@ -150,6 +150,8 @@ namespace Icarus.ViewModels.Mods
             }
         }
 
+        // TODO: Double check: internal models should have their attributes set
+        // TODO: Double check: internal models should always have their original attribute presets available
         private void UpdateAttributes(ModelGameFile modelData)
         {
             var ttModel = modelData.TTModel;

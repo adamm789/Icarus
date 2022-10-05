@@ -68,6 +68,7 @@ namespace Icarus.ViewModels.Mods
             }
         }
 
+        /*
         public override MaterialMod GetMod()
         {
             _materialMod.ShaderInfo = _shaderInfo;
@@ -81,6 +82,7 @@ namespace Icarus.ViewModels.Mods
             
             return _materialMod;
         }
+        */
 
         ObservableCollection<ColorSetRowViewModel> _colorSetViewModels = new();
         public ObservableCollection<ColorSetRowViewModel> ColorSetViewModels
@@ -108,10 +110,11 @@ namespace Icarus.ViewModels.Mods
             _windowService.ShowWindow<ShaderInfoWindow>(this);
         }
 
-        public override void RaiseModPropertyChanged()
+        public override void RaiseDestinationPathChanged()
         {
-            ShaderInfoViewModel.ShaderInfoChanged();
-            base.RaiseModPropertyChanged();
+            //ShaderInfoViewModel.ShaderInfoChanged();
+            ShaderInfoViewModel.UpdatePaths(DestinationPath);
+            base.RaiseDestinationPathChanged();
         }
     }
 }

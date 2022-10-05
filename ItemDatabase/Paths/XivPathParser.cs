@@ -293,6 +293,8 @@ namespace ItemDatabase.Paths
         #endregion
 
         #region Tex
+        // Reminder: When variant is "a", it does not have it in any of the tex paths
+
 
         // TODO: Apparently there's "Shared textures" and "Unique textures"
         public static string GetTexPath(string input, XivTexType type)
@@ -315,11 +317,11 @@ namespace ItemDatabase.Paths
                     var mtrlVariant = fullPathMatches[0].Groups[6].Value;
 
                     var variantNumString = variantNum.ToString().PadLeft(2, '0');
-                    if (mtrlVariant == "")
+                    string mtrlVariantString = "";
+                    if (mtrlVariant != "" && mtrlVariant != "a")
                     {
-                        mtrlVariant = "a";
+                        mtrlVariantString = $"_{mtrlVariant}";
                     }
-                    string mtrlVariantString = $"_{mtrlVariant}";
 
                     var ret = $"{dir}/{equipCode}/texture/v{variantNumString}_{raceCode}{equipCode}_{slotCode}{mtrlVariantString}";
                     switch (type)

@@ -46,6 +46,9 @@ namespace Icarus.ViewModels.Export
 
         // TODO: Somehow show progress
         // TODO: Implement cancellation
+        // TODO: Show user feedback that export is happening
+        // Unsurprisingly, export raw does not really work with ivcs models (the model itself seems fine, but no armature and no weights)
+
         public async Task Export(ExportType type)
         {
             IsBusy = true;
@@ -64,7 +67,6 @@ namespace Icarus.ViewModels.Export
                 }
             }
             string outputPath = "";
-            // TODO: Show user (better) feedback that export is happening
             var success = true;
             if (shouldDelete)
             {

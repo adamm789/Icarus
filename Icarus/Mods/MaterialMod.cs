@@ -47,11 +47,6 @@ namespace Icarus.Mods
         // TODO: Look at all of the options when creating a new material
         private XivMtrl XivMtrl;
 
-        public override bool IsComplete()
-        {
-            return XivMtrl != null;
-        }
-
         public MaterialMod()
         {
 
@@ -120,7 +115,10 @@ namespace Icarus.Mods
             }
         }
 
-        
+        public override bool IsComplete()
+        {
+            return XivMtrl != null;
+        }
 
         /// <summary>
         /// Updates the Mtrl to the current settings
@@ -278,20 +276,6 @@ namespace Icarus.Mods
             var materialGameFile = gameFile as MaterialGameFile;
             base.SetModData(gameFile);
             Init(materialGameFile.XivMtrl);
-        }
-
-        private void SetVariant(string str)
-        {
-            if (_variantRegex.IsMatch(str))
-            {
-                var index = str.LastIndexOf('_') + 1;
-                _variant = str.Substring(index, str.Length - 5 - index);
-                Log.Debug($"Path: {str}, variant: {_variant}.");
-            }
-            else
-            {
-                _variant = "a";
-            }
         }
     }
 }
