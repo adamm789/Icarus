@@ -36,7 +36,7 @@ namespace ItemDatabase
 
         public abstract string GetMtrlPath();
 
-        public abstract string GetTexPath(XivTexType type);
+        public abstract string GetTexPath(XivTexType type, string variant="");
 
         public abstract string GetMtrlFileName();
 

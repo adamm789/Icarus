@@ -21,6 +21,9 @@ using Icarus.Util.Extensions;
 using TeximpNet.Compression;
 using TeximpNet;
 using xivModdingFramework.Materials.DataContainers;
+using xivModdingFramework.Cache;
+using System.Drawing;
+using ItemDatabase.Paths;
 
 namespace Icarus.Util
 {
@@ -86,7 +89,8 @@ namespace Icarus.Util
                         // TODO: What to do here?
                         break;
                 }
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 _logService.Error(ex, $"Exception thrown during WriteToBytes with {mod.Name}.");
                 return Array.Empty<byte>();
@@ -100,17 +104,21 @@ namespace Icarus.Util
         // TODO: Seems like I need to get the format of the given texture
         public async Task<byte[]> WriteTextureToBytes(TextureMod mod, bool shouldCompress)
         {
-            throw new NotImplementedException("Could not WriteTextureToBytes");
+            if (mod.IsInternal)
+            {
+                throw new NotImplementedException("Unknown method for internal textures.");
+            }
 
             var ddsContainer = new DDSContainer();
             var isDds = Path.GetExtension(mod.ModFilePath).ToLower() == ".dds";
-            var texFormat = mod.TexFormat;
+            var texFormat = mod.GetTexFormat();
             var externalPath = mod.ModFilePath;
             var internalPath = mod.Path;
 
-            var _dat = new Dat(_gameDirectoryFramework);
+            //var root = await XivCache.GetFirstRoot(internalPath);
             try
             {
+                /*
                 if (texFormat == XivTexFormat.INVALID)
                 {
                     if (isDds)
@@ -125,14 +133,34 @@ namespace Icarus.Util
                     }
                     else
                     {
-                        // TODO: Get current internal format
-                        var xivt = await _dat.GetType4Data(internalPath, false);
-                        texFormat = xivt.TextureFormat;
+                        // TODO: How to get tex format of an external item?
+                        try
+                        {
+                            var xivt = await _dat.GetType4Data(internalPath, false);
+                            texFormat = xivt.TextureFormat;
+                        } catch (Exception ex)
+                        {
+                            _logService.Warning($"Could not get Type4 data from {internalPath}");
+                            if (mod.TexType == XivTexType.Normal)
+                            {
+                                texFormat = XivTexFormat.DXT5;
+                            }
+                            else if (mod.TexType == XivTexType.Multi)
+                            {
+                                texFormat = XivTexFormat.DXT1;
+                            }
+                            else
+                            {
+                                texFormat = XivTexFormat.A8R8G8B8;
+                            }
+                        }
                     }
                 }
+                */
+
                 // Check if the texture being imported has been imported before
                 CompressionFormat compressionFormat = CompressionFormat.BGRA;
-
+                
                 switch (texFormat)
                 {
                     case XivTexFormat.DXT1:
@@ -151,6 +179,7 @@ namespace Icarus.Util
                         }
                         break;
                 }
+                
                 if (!isDds)
                 {
                     using (var surface = Surface.LoadFromFile(externalPath))
@@ -165,9 +194,9 @@ namespace Icarus.Util
 
                         //if (root != null)
                         //{
-                            // For things that have real roots (things that have actual models/aren't UI textures), we always want mipMaps, even if the existing texture only has one.
-                            // (Ex. The Default Mat-Add textures)
-                            maxMipCount = -1;
+                        // For things that have real roots (things that have actual models/aren't UI textures), we always want mipMaps, even if the existing texture only has one.
+                        // (Ex. The Default Mat-Add textures)
+                        maxMipCount = -1;
                         //}
 
                         using (var compressor = new Compressor())

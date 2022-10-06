@@ -29,12 +29,13 @@ namespace Icarus.Services.Interfaces
         List<XivRace> GetAllRaceMdls(IItem? item = null);
 
 
-        ModelGameFile? GetModelFileData(IItem? item = null, XivRace race = XivRace.Hyur_Midlander_Male);
+        IModelGameFile? GetModelFileData(IItem? item = null, XivRace race = XivRace.Hyur_Midlander_Male);
 
-        ModelGameFile? GetModelFileData(string path, string name = "");
-        Task<MaterialGameFile?> GetMaterialFileData(IItem? item);
+        IModelGameFile? GetModelFileData(string path, string name = "");
+        Task<IMaterialGameFile?> GetMaterialFileData(IItem? item);
 
-        Task<MaterialGameFile?> GetMaterialFileData(string path, string name = "");
+        Task<IMaterialGameFile?> GetMaterialFileData(string path, string name = "");
+        Task<ITextureGameFile?> GetTextureFileData(IItem? item = null);
 
         public XivTexFormat GetTextureData(IItem? itemArg = null);
     }

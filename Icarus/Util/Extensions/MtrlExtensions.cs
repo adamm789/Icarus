@@ -10,6 +10,8 @@ using xivModdingFramework.Materials.FileTypes;
 using xivModdingFramework.SqPack.FileTypes;
 using Index = xivModdingFramework.SqPack.FileTypes.Index;
 using Half = SharpDX.Half;
+using xivModdingFramework.Textures.DataContainers;
+using xivModdingFramework.Textures.Enums;
 
 namespace Icarus.Util.Extensions
 {
@@ -258,9 +260,9 @@ namespace Icarus.Util.Extensions
             return xivMtrl;
         }
 
+        //https://github.com/TexTools/xivModdingFramework/blob/81c234e7b767d56665185e07aabeeae21d895f0b/xivModdingFramework/Materials/FileTypes/Mtrl.cs#L753
         public static byte[] CreateMtrlFile(XivMtrl xivMtrl)
         {
-
             var mtrlBytes = new List<byte>();
 
             mtrlBytes.AddRange(BitConverter.GetBytes(xivMtrl.Signature));
@@ -284,7 +286,6 @@ namespace Icarus.Util.Extensions
             xivMtrl.TexturePathOffsetList.Clear();
             xivMtrl.MapPathOffsetList.Clear();
             xivMtrl.ColorSetPathOffsetList.Clear();
-
 
             var stringListBytes = new List<byte>();
             var texIdx = 0;
@@ -331,9 +332,6 @@ namespace Icarus.Util.Extensions
             stringListBytes.AddRange(new byte[padding]);
             xivMtrl.MaterialDataSize = (ushort)stringListBytes.Count;
 
-
-
-
             // Write the new offset list.
             for (var i = 0; i < xivMtrl.TexturePathOffsetList.Count; i++)
             {
@@ -368,7 +366,6 @@ namespace Icarus.Util.Extensions
             {
                 mtrlBytes.AddRange(xivMtrl.ColorSetDyeData);
             }
-
 
             mtrlBytes.AddRange(BitConverter.GetBytes(xivMtrl.ShaderParameterDataSize));
             mtrlBytes.AddRange(BitConverter.GetBytes(xivMtrl.TextureUsageCount));
@@ -406,8 +403,6 @@ namespace Icarus.Util.Extensions
                 mtrlBytes.AddRange(BitConverter.GetBytes(parameterStruct.TextureIndex));
             }
 
-
-
             var shaderBytes = new List<byte>();
             foreach (var shaderParam in xivMtrl.ShaderParameterList)
             {
@@ -424,8 +419,6 @@ namespace Icarus.Util.Extensions
             }
             mtrlBytes.AddRange(shaderBytes);
 
-
-
             // Backfill the actual file size data.
             xivMtrl.FileSize = (short)mtrlBytes.Count;
             IOUtil.ReplaceBytesAt(mtrlBytes, BitConverter.GetBytes(xivMtrl.FileSize), fileSizePointer);
@@ -437,7 +430,28 @@ namespace Icarus.Util.Extensions
             return mtrlBytes.ToArray();
         }
 
+        //https://github.com/TexTools/xivModdingFramework/blob/81c234e7b767d56665185e07aabeeae21d895f0b/xivModdingFramework/Materials/FileTypes/Mtrl.cs#L640
+        public static XivTex MtrlToXivTex(XivMtrl xivMtrl, TexTypePath ttp)
+        {
+            var colorSetData = new List<byte>();
 
+            foreach (var colorSetHalf in xivMtrl.ColorSetData)
+            {
+                colorSetData.AddRange(BitConverter.GetBytes(colorSetHalf.RawValue));
+            }
+
+            var xivTex = new XivTex
+            {
+                Width = 4,
+                Height = 16,
+                MipMapCount = 0,
+                TexData = colorSetData.ToArray(),
+                TextureFormat = XivTexFormat.A16B16G16R16F,
+                TextureTypeAndPath = ttp
+            };
+
+            return xivTex;
+        }
 
     }
 }

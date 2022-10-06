@@ -3,6 +3,7 @@ using Icarus.Mods.DataContainers;
 using Icarus.Mods.Interfaces;
 using Icarus.Services.Files;
 using Icarus.Services.Interfaces;
+using Icarus.Util.Extensions;
 using Icarus.ViewModels.Mods;
 using Lumina;
 using Lumina.Data.Files;
@@ -16,9 +17,11 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using xivModdingFramework.Helpers;
 using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Models.Helpers;
+using xivModdingFramework.Textures.DataContainers;
 using xivModdingFramework.Textures.FileTypes;
 
 namespace Icarus.Util.Export
@@ -101,11 +104,12 @@ namespace Icarus.Util.Export
         public async Task ExportMod(DirectoryInfo outputDirectory, IMod mod, ModOption? option = null)
         {
             string outputFileName = GetOutputFileName(mod, option);
+            var outputPath = outputDirectory.FullName;
+
             if (mod is ModelMod mdlMod)
             {
                 ApplyOptions(mdlMod);
                 await _converterService.ModelModToFbx(mdlMod, outputDirectory, outputFileName);
-                var outputPath = outputDirectory.FullName;
 
                 var model = mdlMod.ImportedModel;
 
@@ -122,7 +126,18 @@ namespace Icarus.Util.Export
             }
             if (mod is MaterialMod mtrlMod)
             {
+                // TODO: Only allow .dds file as raw exports for materials?
+                var xivMtrl = mtrlMod.GetMtrl();
+                var df = IOUtil.GetDataFileFromPath(xivMtrl.MTRLPath);
+                var ttp = new TexTypePath
+                {
+                    Path = mod.Path,
+                    Type= xivModdingFramework.Textures.Enums.XivTexType.ColorSet,
+                    DataFile = df
+                };
 
+                var texData = MtrlExtensions.MtrlToXivTex(xivMtrl, ttp);
+                TexExtensions.SaveTexAsDDS(outputPath, texData, outputDirectory);
             }
         }
     }

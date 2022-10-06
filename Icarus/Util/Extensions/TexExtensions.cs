@@ -4,7 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using xivModdingFramework.General.Enums;
+using xivModdingFramework.Helpers;
+using xivModdingFramework.Textures.DataContainers;
 using xivModdingFramework.Textures.Enums;
+using xivModdingFramework.Textures.FileTypes;
 
 namespace Icarus.Util.Extensions
 {
@@ -172,5 +176,13 @@ namespace Icarus.Util.Extensions
 
             return headerData;
         }
+
+        public static void SaveTexAsDDS(string path, XivTex xivTex, DirectoryInfo saveDirectory, XivRace race = XivRace.All_Races)
+        {
+            Directory.CreateDirectory(path);
+            var savePath = Path.Combine(path, Path.GetFileNameWithoutExtension(xivTex.TextureTypeAndPath.Path) + ".dds");
+            DDS.MakeDDS(xivTex, savePath);
+        }
+
     }
 }

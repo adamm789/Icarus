@@ -21,14 +21,9 @@ using Half = SharpDX.Half;
 
 namespace Icarus.Mods
 {
-    // Entry points?
-    // Vanilla mtrl, .dds
     public class MaterialMod : Mod
     {
-        // TODO: Start here (I think): https://github.com/TexTools/FFXIV_TexTools_UI/blob/37290b2897c79dd1e913bb4ff90285f0e620ca9d/FFXIV_TexTools/ViewModels/TextureViewModel.cs#L1588
-        // TODO: Figure out how to import whatever file type (dds?) to create a MaterialMod
         // TODO: Put related tex files "under" the parent material?
-        // TODO: Handle case of importing .dds file
 
         public ShaderInfo ShaderInfo { get; set; } = new();
         public List<Half> ColorSetData { get; set; }
@@ -76,74 +71,37 @@ namespace Icarus.Mods
         {
             if (XivMtrl == null)
             {
+                Log.Verbose($"Initializing mtrl: {xivMtrl.MTRLPath}");
                 XivMtrl = xivMtrl;
-                if (ColorSetData != null)
+                if (ColorSetData == null)
+                {
+                    Log.Verbose("Keeping old colorset data.");
+                    ColorSetData = XivMtrl.ColorSetData;
+                }
+                else
                 {
                     XivMtrl.ColorSetData = ColorSetData;
                 }
-                else
-                {
-                    ColorSetData = XivMtrl.ColorSetData;
-                }
 
-                if (ColorSetDyeData != null)
+                if (ColorSetDyeData == null)
+                {
+                    Log.Verbose("Keeping old colorset dye data.");
+                    ColorSetDyeData = XivMtrl.ColorSetDyeData;
+                }
+                else
                 {
                     XivMtrl.ColorSetDyeData = ColorSetDyeData;
                 }
-                else
-                {
-                    ColorSetDyeData = XivMtrl.ColorSetDyeData;
-                }
                 ShaderInfo = XivMtrl.GetShaderInfo();
-
             }
 
             Path = xivMtrl.MTRLPath;
 
             NormalTexPath = xivMtrl.GetMapInfo(XivTexType.Normal, false).Path;
-            SpecularTexPath = XivPathParser.GetTexPath(Path, XivTexType.Specular);
-            MultiTexPath = XivPathParser.GetTexPath(Path, XivTexType.Multi);
-            DiffuseTexPath = XivPathParser.GetTexPath(Path, XivTexType.Diffuse);
-            ReflectionTexPath = XivPathParser.GetTexPath(Path, XivTexType.Reflection);
-
-
-            /*if (ShaderInfo.HasSpec)
-            {
-                SpecularTexPath = xivMtrl.GetMapInfo(XivTexType.Specular, false).Path;
-            }
-            else
-            {
-                SpecularTexPath = XivPathParser.GetTexPath(Path, XivTexType.Specular);
-            }
-
-            if (ShaderInfo.HasMulti)
-            {
-                MultiTexPath = xivMtrl.GetMapInfo(XivTexType.Multi, false).Path;
-            }
-            else
-            {
-                MultiTexPath = XivPathParser.GetTexPath(Path, XivTexType.Multi);
-            }
-
-            if (ShaderInfo.HasDiffuse)
-            {
-                DiffuseTexPath = xivMtrl.GetMapInfo(XivTexType.Diffuse, false).Path;
-            }
-            else
-            {
-                DiffuseTexPath = XivPathParser.GetTexPath(Path, XivTexType.Diffuse);
-            }
-
-            if (ShaderInfo.HasReflection)
-            {
-                ReflectionTexPath = xivMtrl.GetMapInfo(XivTexType.Reflection, false).Path;
-            }
-            else
-            {
-                ReflectionTexPath = XivPathParser.GetTexPath(Path, XivTexType.Reflection);
-            }
-            */
-
+            SpecularTexPath = XivPathParser.GetTexPathFromMtrl(Path, XivTexType.Specular);
+            MultiTexPath = XivPathParser.GetTexPathFromMtrl(Path, XivTexType.Multi);
+            DiffuseTexPath = XivPathParser.GetTexPathFromMtrl(Path, XivTexType.Diffuse);
+            ReflectionTexPath = XivPathParser.GetTexPathFromMtrl(Path, XivTexType.Reflection);
         }
 
         public override bool IsComplete()
@@ -188,7 +146,7 @@ namespace Icarus.Mods
 
             XivMtrl.MTRLPath = Path;
 
-            Log.Debug("Calling SetShaderInfo. InvalidOperationExceptions will probably occur. And can probably be ignored.");
+            Log.Debug("Calling SetShaderInfo. InvalidOperationExceptions will probably occur and can probably be ignored.");
 
             // TODO: Maybe have to re-assign these?
             var colorSetCount = XivMtrl.ColorSetCount;
@@ -196,9 +154,8 @@ namespace Icarus.Mods
             var colorSetDyeData = XivMtrl.ColorSetDyeData;
 
             XivMtrl.SetShaderInfo(ShaderInfo, true);
+            Log.Debug("Done calling SetShaderInfo.");
 
-            //XivMtrl.ColorSetData = ColorSetData;
-            
             XivMtrl.SetMapInfo(XivTexType.Normal, newNormal);
             XivMtrl.SetMapInfo(XivTexType.Specular, newSpecular);
             XivMtrl.SetMapInfo(XivTexType.Multi, newMulti);
@@ -210,11 +167,11 @@ namespace Icarus.Mods
         {
             try
             {
-                var normal = XivPathParser.GetTexPath(str, XivTexType.Normal);
-                var specular = XivPathParser.GetTexPath(str, XivTexType.Specular);
-                var multi = XivPathParser.GetTexPath(str, XivTexType.Multi);
-                var diffuse = XivPathParser.GetTexPath(str, XivTexType.Diffuse);
-                var reflection = XivPathParser.GetTexPath(str, XivTexType.Reflection);
+                var normal = XivPathParser.GetTexPathFromMtrl(str, XivTexType.Normal);
+                var specular = XivPathParser.GetTexPathFromMtrl(str, XivTexType.Specular);
+                var multi = XivPathParser.GetTexPathFromMtrl(str, XivTexType.Multi);
+                var diffuse = XivPathParser.GetTexPathFromMtrl(str, XivTexType.Diffuse);
+                var reflection = XivPathParser.GetTexPathFromMtrl(str, XivTexType.Reflection);
 
                 NormalTexPath = normal;
 
@@ -241,7 +198,7 @@ namespace Icarus.Mods
             }
             catch (ArgumentException ex)
             {
-                Log.Error($"Could not parse {str} as mtrl.\n{ex.Message}\n{ex.StackTrace}");
+                Log.Error(ex, $"Could not parse {str} as mtrl.");
             }
         }
 

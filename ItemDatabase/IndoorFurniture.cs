@@ -48,12 +48,12 @@ namespace ItemDatabase
             return "bgcommon/hou/indoor/general/" + code +"/material/fun_b0_m" + code + "_" + variant + ".mtrl";
         }
 
-        public override string GetTexPath(XivTexType type)
+        public override string GetTexPath(XivTexType type, string variant = "")
         {
             throw new NotImplementedException();
         }
 
-        public string GetTextPath(string variant = "0a", XivTexType texture = XivTexType.Diffuse)
+        public string GetTexPath(string variant = "0a", XivTexType texture = XivTexType.Diffuse)
         {
             return "bgcommon/hou/indoor/general/" + code + "/texture/fun_b0_m" + code + "_" + variant + "_" + _textureDict[texture] + ".tex";
         }

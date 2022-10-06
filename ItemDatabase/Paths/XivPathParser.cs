@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Textures.Enums;
+using xivModdingFramework.Textures.FileTypes;
 
 namespace ItemDatabase.Paths
 {
@@ -26,6 +27,20 @@ namespace ItemDatabase.Paths
         static readonly Regex rightRingRegex = new(@"_rir");
         static readonly Regex leftRingRegex = new(@"_ril");
         static readonly Regex genderRaceCode = new(@"c[0-9]{4}[a,e][0-9]{4}_[a-z]+");
+
+        static List<Regex> gearRegex = new()
+        {
+            headRegex,
+            bodyRegex,
+            handRegex,
+            legRegex,
+            feetRegex,
+            earRegex,
+            neckRegex,
+            wristRegex,
+            rightRingRegex,
+            leftRingRegex
+        };
 
         static readonly Regex mdlRegex = new(@".mdl$");
         static readonly Regex mtrlRegex = new(@".mtrl$");
@@ -79,10 +94,16 @@ namespace ItemDatabase.Paths
             return Regex.IsMatch(path, @".mtrl$");
         }
 
+        public static bool IsTex(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path)) return false;
+            return Regex.IsMatch(path, @".tex$");
+        }
+
         // TODO: 
         public static XivTexType GetTexType(string path)
         {
-            var texTypeRegex = new Regex(@"([a-z]).tex$");
+            var texTypeRegex = new Regex(@"_([a-z]).tex$");
             if (texTypeRegex.IsMatch(path))
             {
                 var matches = texTypeRegex.Matches(path);
@@ -283,7 +304,6 @@ namespace ItemDatabase.Paths
         #region Tex
         // Reminder: When variant is "a", it does not have it in any of the tex paths
 
-
         // TODO: Apparently there's "Shared textures" and "Unique textures"
         /// <summary>
         /// Accepts a mtrl path and returns a tex path of the given type
@@ -291,7 +311,7 @@ namespace ItemDatabase.Paths
         /// <param name="input"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static string GetTexPath(string input, XivTexType type, bool isBibo = false)
+        public static string GetTexPathFromMtrl(string input, XivTexType type, bool isBibo = false)
         {
             if (String.IsNullOrWhiteSpace(input)) return "";
 
@@ -350,6 +370,63 @@ namespace ItemDatabase.Paths
             if (input.Contains("bibo"))
             {
 
+            }
+            return "";
+        }
+
+        public static string ChangeTexType(string path, XivTexType type)
+        {
+            var texTypeRegex = new Regex(@"_([a-z]).tex$");
+            if (texTypeRegex.IsMatch(path))
+            {
+                var matches = texTypeRegex.Matches(path);
+                string typeString = matches[0].Groups[1].Value;
+                switch (type)
+                {
+                    case XivTexType.Multi:
+                        typeString = "m";
+                        break;
+                    case XivTexType.Diffuse:
+                        typeString = "d";
+                        break;
+                    case XivTexType.Specular:
+                        typeString = "s";
+                        break;
+                    case XivTexType.Normal:
+                        typeString = "n";
+                        break;
+                    default:
+                        break;
+                }
+
+                var retVal = path.Substring(0, path.Length - 5);
+                retVal += typeString + ".tex";
+                return retVal;
+            }
+            return path;
+        }
+
+        public static string GetTexVariant(string path)
+        {
+            var texVariantRegex = new Regex(@"_([a-z]+)_[n,m,s,d].tex$");
+
+            if (texVariantRegex.IsMatch(path))
+            {
+                var matches = texVariantRegex.Matches(path);
+                if (matches.Count == 1 && matches[0].Groups.Count == 2)
+                {
+                    var variant = matches[0].Groups[1].Value;
+
+                    var underscoreVariant = "_" + variant;
+                    foreach (var r in gearRegex)
+                    {
+                        if (r.IsMatch(underscoreVariant))
+                        {
+                            return "";
+                        }
+                    }
+                    return variant;
+                }
             }
             return "";
         }

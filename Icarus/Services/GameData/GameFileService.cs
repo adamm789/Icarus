@@ -28,6 +28,7 @@ using xivModdingFramework.Materials.DataContainers;
 using xivModdingFramework.Materials.FileTypes;
 using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Models.FileTypes;
+using xivModdingFramework.SqPack.FileTypes;
 using xivModdingFramework.Textures.Enums;
 using Path = System.IO.Path;
 
@@ -81,8 +82,42 @@ namespace Icarus.Services.GameFiles
             {
                 return await GetMaterialFileData(itemArg);
             }
+            else if (type == typeof(TextureMod))
+            {
+                return await GetTextureFileData(itemArg);
+            }
 
             return null;
+        }
+
+        public async Task<ITextureGameFile?> GetTextureFileData(IItem? itemArg = null)
+        {
+            var item = GetItem(itemArg);
+            var materialFileData = await GetMaterialFileData(item);
+            var dat = new Dat(_frameworkGameDirectory);
+            if (materialFileData == null)
+            {
+                return null;
+            }
+            var xivMtrl = materialFileData.XivMtrl;
+            var typeFormatDict = new Dictionary<XivTexType, XivTexFormat>();
+            
+            for (var i = 0; i < xivMtrl.TexturePathList.Count; i++)
+            {
+                var texturePath = xivMtrl.TexturePathList[i];
+                var xivTex = await dat.GetType4Data(texturePath, true);
+                typeFormatDict.Add(xivMtrl.TextureTypePathList[i].Type, xivTex.TextureFormat);
+            }
+
+            var path = item.GetTexPath(XivTexType.Normal);
+            var retVal = new TextureGameFile()
+            {
+                Name = materialFileData.Name,
+                Path = path,
+                Category = materialFileData.Category,
+                TypeFormatDict = typeFormatDict
+            };
+            return retVal;
         }
 
         // TODO: race?
@@ -103,13 +138,33 @@ namespace Icarus.Services.GameFiles
             {
                 return await GetMaterialFileData(path, name);
             }
+            if (XivPathParser.IsTex(path))
+            {
+                return await GetTextureFileData(path, name);
+            }
             _logService.Error($"Returning null from {path}");
             return null;
         }
 
+        public async Task<ITextureGameFile?> GetTextureFileData(string path, string itemName = "")
+        {
+            List<IItem> results = new();
+
+            if (!String.IsNullOrWhiteSpace(itemName))
+            {
+                results = _itemListService.Search(itemName);
+            }
+            if (results.Count == 0)
+            {
+                results = _itemListService.Search(path);
+            }
+
+            return await GetTextureFileData(results[0]);
+        }
+
         // TODO: Split into ModelFileService, MaterialFileService, etc?
         #region Models
-        public ModelGameFile? GetModelFileData(string path, string itemName = "")
+        public IModelGameFile? GetModelFileData(string path, string itemName = "")
         {
             //var mdl = _lumina.GetFile<MdlFile>(path);
             //var file = _lumina.GetFileMetadata(path);
@@ -126,7 +181,6 @@ namespace Icarus.Services.GameFiles
             if (results.Count == 0)
             {
                 results = _itemListService.Search(path);
-
             }
 
             var name = $"{path} (?)";
@@ -150,7 +204,7 @@ namespace Icarus.Services.GameFiles
             return ret;
         }
 
-        public ModelGameFile? GetModelFileData(IItem? itemArg = null, XivRace race = XivRace.Hyur_Midlander_Male)
+        public IModelGameFile? GetModelFileData(IItem? itemArg = null, XivRace race = XivRace.Hyur_Midlander_Male)
         {
             var item = GetItem(itemArg);
             if (item == null) return null;
@@ -195,7 +249,7 @@ namespace Icarus.Services.GameFiles
         #endregion
         #region Materials
 
-        public async Task<MaterialGameFile?> GetMaterialFileData(string path, string itemName = "")
+        public async Task<IMaterialGameFile?> GetMaterialFileData(string path, string itemName = "")
         {
             var xivMtrl = await TryGetMaterialFromPath(path);
             List<IItem> results = new();
@@ -235,7 +289,7 @@ namespace Icarus.Services.GameFiles
             return null;
         }
 
-        public async Task<MaterialGameFile?> GetMaterialFileData(IItem? itemArg = null)
+        public async Task<IMaterialGameFile?> GetMaterialFileData(IItem? itemArg = null)
         {
             var item = GetItem(itemArg);
             if (item == null) return null;

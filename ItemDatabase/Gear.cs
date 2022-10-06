@@ -113,9 +113,9 @@ namespace ItemDatabase
             //return _directory + _baseString + "/material/" + _longVariantString + GetMtrlFileName(race, variant);
         }
 
-        public override string GetTexPath(XivTexType t)
+        public override string GetTexPath(XivTexType t, string variant="")
         {
-            return GetTexPath(t, XivRace.Hyur_Midlander_Male);
+            return GetTexPath(t, XivRace.Hyur_Midlander_Male, variant);
         }
         public virtual string GetTexPath(XivTexType t, XivRace race = XivRace.Hyur_Midlander_Male, string variant = "a")
         {
@@ -124,11 +124,12 @@ namespace ItemDatabase
                 return "";
             }
             string v = "";
-            if (variant != "a")
+            if (variant != "a" && !String.IsNullOrEmpty(variant))
             {
                 v = $"_{variant}";
             }
-            return $"{_directory}{_baseString}/texture/{_shortVariantString}_{GetRaceCode(race)}{_baseString}{_slotName}{v}_{_textureDict[t]}.tex";
+            //return $"{_directory}{_baseString}/texture/{_shortVariantString}_{GetRaceCode(race)}{_baseString}{_slotName}{v}_{_textureDict[t]}.tex";
+            return $"{_directory}{_baseString}/texture/v01_{GetRaceCode(race)}{_baseString}{_slotName}{v}_{_textureDict[t]}.tex";
             //return _directory + _baseString + "/texture/" + _shortVariantString + "_" + GetRaceCode(race) + _baseString + _slotName + "_" + _textureDict[t] + ".tex";
         }
 

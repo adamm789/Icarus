@@ -29,7 +29,7 @@ namespace ItemDatabase
             throw new NotImplementedException();
         }
 
-        public override string GetTexPath(XivTexType type)
+        public override string GetTexPath(XivTexType type, string variant = "")
         {
             throw new NotImplementedException();
         }

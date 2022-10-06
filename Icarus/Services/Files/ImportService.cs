@@ -33,7 +33,7 @@ using Icarus.Util.Extensions;
 
 namespace Icarus.Services.Files
 {
-    public class ImportService : ServiceBase<ImportService>
+    public class ImportService : LuminaDependentServiceBase<ImportService>
     {
         readonly ConverterService _converterService;
         readonly ILogService _logService;
@@ -44,17 +44,23 @@ namespace Icarus.Services.Files
 
         protected Queue<string> _importFileQueue = new();
 
-        public ImportService(IGameFileService gameFileDataService, SettingsService settingsService, ConverterService converterService, ILogService logService)
+        public ImportService(IGameFileService gameFileDataService, SettingsService settingsService, ConverterService converterService, ILogService logService, LuminaService lumina) : base(lumina)
         {
             _logService = logService;
             _converterService = converterService;
             _gameFileDataService = gameFileDataService;
 
             var projectDirectory = settingsService.ProjectDirectory;
+
             var gamePathFramework = Path.Combine(settingsService.GameDirectoryLumina, "ffxiv");
             gameDirectoryFramework = new(gamePathFramework);
-
             _ttmpImporter = new(projectDirectory, gamePathFramework);
+        }
+
+        protected override void OnLuminaSet()
+        {
+            base.OnLuminaSet();
+
         }
 
         public bool IsImporting
@@ -78,7 +84,7 @@ namespace Icarus.Services.Files
         /// Returns null if import fails
         /// </summary>
         /// <param name="filePath"></param>
-        /// <returns>A ModPack with SimpleModsList and ModPackPages potentially filled</returns>
+        /// <returns>A ModPack with SimpleModsList and potentially ModPackPages filled</returns>
         public async Task<ModPack?> ImportFile(string filePath)
         {
             var importingFile = "Importing: " + filePath;
@@ -86,9 +92,9 @@ namespace Icarus.Services.Files
             _importFileQueue.Enqueue(importingFile);
             UpdateUI();
 
-            var file = new FileInfo(filePath);
+            var ext = Path.GetExtension(filePath);
             var retModPack = new ModPack();
-            if (file.Extension == ".fbx")
+            if (ext == ".fbx")
             {
                 var model = await ImportModel(filePath);
                 if (model != null)
@@ -100,22 +106,18 @@ namespace Icarus.Services.Files
                     retModPack = null;
                 }
             }
-            else if (file.Extension == ".ttmp2")
+            else if (ext == ".ttmp2")
             {
                 retModPack = await ImportTTModPack(filePath);
             }
-            else if (file.Extension == ".dds")
+            else if (ext == ".dds")
             {
                 // TODO: How to handle dds, which, I believe, can be both a texture or a material
-                retModPack = await ImportColorset(filePath);
+                retModPack = await Task.Run(() => ImportColorset(filePath));
             }
-            else if (file.Extension == ".png")
+            else if (ext == ".png")
             {
                 retModPack = ImportTexture(filePath);
-            }
-            else if (file.Extension == ".mdl")
-            {
-
             }
             _importFileQueue.Dequeue();
             UpdateUI();
@@ -126,6 +128,10 @@ namespace Icarus.Services.Files
 
         public async Task<ModelMod?> ImportModel(string filePath)
         {
+            // Import File -> Convert to TTModel with converter.exe (TTModel Imported)
+            // Choose destination item -> XivMdl OgMdl -> TTModel Original
+            // WriteModelToBytes (Imported, OgMdl)
+            // new Mdl(Imported, OgMdl).MakeNewMdlFile
             try
             {
                 var importedModel = await _converterService.FbxToTTModel(filePath);
@@ -154,7 +160,7 @@ namespace Icarus.Services.Files
                 //Log.Show("Please copy and paste the converters folder from TexTools into the same folder as the exe.");
             }
 
-            _logService.Error($"Could not import {filePath}.");
+            _logService.Error($"Could not import {filePath} as model.");
             return null;
         }
 
@@ -169,7 +175,7 @@ namespace Icarus.Services.Files
             }
             catch (Exception ex)
             {
-                _logService.Error(ex);
+                _logService.Error(ex, $"Could not import ttmp2: {filePath}");
             }
             finally
             {
@@ -178,7 +184,7 @@ namespace Icarus.Services.Files
             return new ModPack();
         }
 
-        public async Task<ModPack> ImportColorset(string filePath)
+        public ModPack ImportColorset(string filePath)
         {
             try
             {
@@ -186,37 +192,21 @@ namespace Icarus.Services.Files
                 var directory = new DirectoryInfo(filePath);
                 var colorsetData = Tex.GetColorsetDataFromDDS(directory);
                 var colorsetDyeData = Tex.GetColorsetExtraDataFromDDS(directory);
-                /*
-                using (var br = new BinaryReader(new FileStream(filePath, FileMode.Open)))
-                {
-                    var bytes = new byte[br.BaseStream.Length];
-                    br.Read(bytes);
-                    var xivMtrl = await MtrlExtensions.GetMtrlData(gameDirectoryFramework, bytes, "");
-                    var materialMod = new MaterialMod(xivMtrl);
-                }
-                */
+
                 var materialMod = new MaterialMod(colorsetData, colorsetDyeData);
                 modPack.SimpleModsList.Add(materialMod);
                 return modPack;
             } catch (Exception ex)
             {
-                _logService.Error(ex);
+                _logService.Error(ex, $"Could not get colorset data from {filePath}");
             }
             return new ModPack();
         }
 
         public async Task<ModPack> ImportTexToolsModPack(string filePath)
         {
-            var retPack = await _ttmpImporter.ExtractTexToolsModPack(filePath)
-                /*
-                .ContinueWith((t) =>
-            {
-                if (t.IsFaulted) throw t.Exception.InnerException;
-                return t.Result;
-            })
-                */;
+            var retPack = await _ttmpImporter.ExtractTexToolsModPack(filePath);
                 
-
             foreach (var mod in retPack.SimpleModsList)
             {
                 CompleteMod(mod);
@@ -242,8 +232,6 @@ namespace Icarus.Services.Files
             else if (mod is MaterialMod mtrlMod)
             {
                 // TODO: Material mods are already complete...?
-                //var gameFile = _gameFileDataService.GetMaterialFileData(mtrlMod.Path);
-                //if (gameFile == null) return;
             }
         }
 
@@ -254,14 +242,14 @@ namespace Icarus.Services.Files
             // TODO: TextureMod
             // seems like there's really nothing I can add?
             // Texture mods don't seem too editable
-            /*
-            var texMod = new TextureMod()
+            
+            var texMod = new TextureMod(false)
             {
                 ModFileName = filePath,
                 ModFilePath = filePath
             };
             retPack.SimpleModsList.Add(texMod);
-            */
+            
             return retPack;
         }
 

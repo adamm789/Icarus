@@ -17,6 +17,5 @@ namespace Icarus.Mods.Interfaces
         TTModel? TTModel { get; }
         XivMdl? XivMdl { get; }
         XivRace TargetRace { get; }
-
     }
 }

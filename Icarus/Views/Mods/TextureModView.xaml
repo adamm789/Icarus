@@ -5,8 +5,14 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Icarus.Views.Mods"
              mc:Ignorable="d" 
+             xmlns:modviewmodels="clr-namespace:Icarus.ViewModels.Mods"
+
+             xmlns:enums="clr-namespace:xivModdingFramework.General.Enums;assembly=xivModdingFramework"
+             d:DataContext="{d:DesignInstance Type=modviewmodels:TextureModViewModel}"
+
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
+    <StackPanel>
         <local:EditableModView Grid.Row="0"/>
-    </Grid>
+        <ComboBox ItemsSource="{Binding TexTypeValues}" SelectedValue="{Binding TexType}"></ComboBox>
+    </StackPanel>
 </UserControl>

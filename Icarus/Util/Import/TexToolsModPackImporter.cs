@@ -1,47 +1,31 @@
 ﻿using Icarus.Mods;
 using Icarus.Mods.DataContainers;
 using Icarus.Mods.Interfaces;
-using Icarus.Services.GameFiles;
 using Icarus.Util;
 using Ionic.Zip;
-using Lumina;
 using Lumina.Data;
 using Lumina.Data.Files;
 using Lumina.Data.Structs;
 using Newtonsoft.Json;
 using Serilog;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using xivModdingFramework.Cache;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Models.DataContainers;
-using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Mods.DataContainers;
+using xivModdingFramework.Mods.FileTypes;
+using Icarus.Util.Extensions;
+using xivModdingFramework.Textures.DataContainers;
+using xivModdingFramework.Textures.Enums;
+using ItemDatabase.Paths;
+
 using Mod = Icarus.Mods.Mod;
 using ModPack = Icarus.Mods.DataContainers.ModPack;
 using ModGroup = Icarus.Mods.DataContainers.ModGroup;
 using ModOption = Icarus.Mods.DataContainers.ModOption;
-using Lumina.Models.Materials;
-using ItemDatabase;
-using System.Windows.Media.Media3D;
-using ItemDatabase.Interfaces;
-using SharpDX.Toolkit.Graphics;
-using xivModdingFramework.Materials.DataContainers;
-using xivModdingFramework.Materials.FileTypes;
-using xivModdingFramework.Mods.FileTypes;
-using xivModdingFramework.Textures.FileTypes;
-using xivModdingFramework.SqPack.FileTypes;
-using HelixToolkit.SharpDX.Core.Utilities;
-using Icarus.Util.Extensions;
-using xivModdingFramework.Helpers;
-using xivModdingFramework.Textures.DataContainers;
-using xivModdingFramework.Textures.Enums;
-using ItemDatabase.Paths;
 
 namespace Icarus.Services.Files
 {
@@ -146,6 +130,10 @@ namespace Icarus.Services.Files
                                         {
                                             retModPack.SimpleModsList.Add(file);
                                         }
+                                        else
+                                        {
+                                            Log.Warning($"{mods.Name} already exists. Skipping.");
+                                        }
                                     }
                                 }
                                 copyGroup.AddOption(copyOption);
@@ -169,7 +157,7 @@ namespace Icarus.Services.Files
             switch (dat.Type)
             {
                 case FileType.Model:
-                    await Task.Run(() => result = ExtractModel(mods, pack, option));
+                    result = await Task.Run(() => ExtractModel(mods, pack, option));
                     break;
                 case FileType.Texture:
                     result = await ExtractTexture(mods, pack, option);
@@ -178,10 +166,7 @@ namespace Icarus.Services.Files
                     result = await ExtractStandard(mods, pack, option);
                     break;
             }
-            if (result == null)
-            {
-                result = ExtractReadOnlyMod(mods, pack, option);
-            }
+            result ??= ExtractReadOnlyMod(mods, pack, option);
             return result;
         }
 
@@ -203,12 +188,9 @@ namespace Icarus.Services.Files
         private ModelMod? ExtractModel(ModsJson mods, SqPackStream pack, ModOptionJson? option = null)
         {
             var mdlFile = pack.ReadFile<MdlFile>(mods.ModOffset);
-
             var xivMdl = MdlWithFramework.GetRawMdlDataFramework(mods.FullPath, mdlFile.Data, mdlFile.Meshes.Length);
             var imported = TTModel.FromRaw(xivMdl);
-
             var modFileName = GetModFileName(mods, option);
-
             var ret = new ModelMod(mods.FullPath, imported)
             {
                 ModFileName = modFileName,
@@ -223,13 +205,9 @@ namespace Icarus.Services.Files
         {
             if (mods.FullPath.Contains(".tex"))
             {
-                //var meta = pack.GetFileMetadata(mods.ModOffset);
-                //var size = meta.Size;
-                //var texFile = pack.ReadFile<TexFile>(mods.ModOffset + size);
-
                 var bytes = new byte[mods.ModSize];
                 pack.BaseStream.Seek(mods.ModOffset, SeekOrigin.Begin);
-                var b = pack.BaseStream.Read(bytes, 0, mods.ModSize);
+                pack.BaseStream.Read(bytes, 0, mods.ModSize);
                 var xivTex = await DatExtensions.GetType4Data(bytes);
                 var type = XivTexType.Normal;
 
@@ -241,7 +219,6 @@ namespace Icarus.Services.Files
                     Log.Error("Using TexType Normal");
                 }
                 var dataFile = XivDataFiles.GetXivDataFile(mods.FullPath);
-                
 
                 var texTypePath = new TexTypePath()
                 {
@@ -253,7 +230,7 @@ namespace Icarus.Services.Files
                 xivTex.TextureTypeAndPath = texTypePath;
 
                 var modFileName = GetModFileName(mods, option);
-                return new TextureMod(xivTex)
+                return new TextureMod(xivTex, false)
                 {
                     ModFileName = modFileName,
                     ModFilePath = mods.FullPath,
@@ -261,35 +238,8 @@ namespace Icarus.Services.Files
                     Name = mods.Name,
                     Category = mods.Category
                 };
-                //var uncompressedSize = BitConverter.ToUInt32();
-                /*
-                try
-                {
-                    var ogFile = pack.ReadFile<TexFile>(mods.ModOffset);
-                    Log.Information("" + ogFile.Data.Length);
-                    Log.Information($"Successfully read texture: {mods.FullPath}.");
-
-                }
-                catch (Exception)
-                {
-                    Log.Error($"Could not read texture: {mods.FullPath}.");
-                }
-                */
-                //var data = new byte[mods.ModSize];
-                // TODO: Extract textures??
-                //var data = new GameData(Directory.GetParent(_gameDirectory).FullName).GetFile<TexFile>("chara/equipment/e6111/texture/v01_c0101e6111_sho_n.tex");
-
-
-                //pack.BaseStream.Read(data, (int)mods.ModOffset, mods.ModSize);
-
-                // TODO: Is (static) Dat.GetType4Data(byte[], long) still correct?
-                //var xivTex = await Dat.GetType4Data(data.Data, 0);
-                //var mod = new TextureMod(xivTex);
-                //return mod;
             }
-            // TODO: Lumina seems unable to handle some textures...
-            //var file = pack.ReadFile<TexFile>(mods.ModOffset);
-            return await Task.Run(() => ExtractReadOnlyMod(mods, pack, option));
+            return null;
         }
 
         // TODO: Something akin to: ImportStandard(byte[] bytes, ...) ?
@@ -325,21 +275,21 @@ namespace Icarus.Services.Files
             else if (mods.FullPath.Contains(".meta"))
             {
                 var file = pack.ReadFile<FileResource>(mods.ModOffset);
-
                 var meta = await ItemMetadata.Deserialize(file.Data);
-
                 var x = meta.EqdpEntries[XivRace.Hyur_Midlander_Male];
             }
             return ExtractReadOnlyMod(mods, pack);
         }
 
-
         private ReadOnlyMod? ExtractReadOnlyMod(ModsJson mods, SqPackStream pack, ModOptionJson? option = null)
         {
             var bytes = new byte[mods.ModSize];
-            pack.BaseStream.Position = mods.ModOffset;
+            var startPosition = pack.BaseStream.Position;
+
+            pack.BaseStream.Seek(mods.ModOffset, SeekOrigin.Begin);
             pack.BaseStream.Read(bytes, 0, mods.ModSize);
-            pack.BaseStream.Position = 0;
+
+            pack.BaseStream.Position = startPosition;
 
             var modFileName = GetModFileName(mods, option);
             var ret = new ReadOnlyMod()

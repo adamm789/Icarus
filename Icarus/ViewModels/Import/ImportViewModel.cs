@@ -99,14 +99,11 @@ namespace Icarus.ViewModels.Import
 
         #endregion
 
-        // Import File -> Convert to TTModel with converter.exe (TTModel Imported)
-        // Choose destination item -> XivMdl OgMdl -> TTModel Original
-        // WriteModelToBytes (Imported, OgMdl)
-        // new Mdl(Imported, OgMdl).MakeNewMdlFile
+
         private async Task ImportFile()
         {
+            //var filter = "Mdl Files | *.mdl";
             var filter = "Valid Files | *.fbx; *.ttmp2; *.dds; *.png" + "|FBX File | *.fbx" + "|TexTools ModPack | *.ttmp2" + "| dds | *.dds" + "| png | *.png";
-
             //var filter = "Valid Files | *.fbx; *.ttmp2; *.dds" + "|FBX File | *.fbx" + "|TexTools ModPack | *.ttmp2" + "| dds | *.dds";
             //var filter = "Valid Files | *.fbx; *.ttmp2" + "|FBX File | *.fbx" + "|TexTools ModPack | *.ttmp2";
 
@@ -164,7 +161,6 @@ namespace Icarus.ViewModels.Import
         {
             return await _importService.ImportFile(filePath);
         }
-        // TODO: Create an "empty" MaterialMod?
     }
 }
 

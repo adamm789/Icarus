@@ -20,7 +20,7 @@ namespace ItemDatabase.Interfaces
         string GetMdlPath();
         string GetMtrlPath();
         string GetMtrlFileName();
-        string GetTexPath(XivTexType type);
+        string GetTexPath(XivTexType type, string variant="");
         bool IsMatch(string str);
     }
 }

@@ -25,7 +25,7 @@ namespace Icarus.Mods
         public TTModel? TTModel { get; set; }
         public XivMdl? XivMdl { get; set; }
 
-        public ModelMod(ModelGameFile modelGameFile, bool isInternal = false) : base(modelGameFile, isInternal)
+        public ModelMod(IModelGameFile modelGameFile, bool isInternal = false) : base(modelGameFile, isInternal)
         {
             ImportedModel = modelGameFile.TTModel;
             TTModel = modelGameFile.TTModel;
@@ -39,12 +39,12 @@ namespace Icarus.Mods
             };
         }
 
-        public ModelMod(string filePath, TTModel imported, ModelGameFile? modelGameFile = null)
+        public ModelMod(string filePath, TTModel imported, IModelGameFile? modelGameFile = null)
         {
             Init(filePath, imported, modelGameFile);
         }
 
-        private void Init(string filePath, TTModel imported, ModelGameFile? modelGameFile = null)
+        private void Init(string filePath, TTModel imported, IModelGameFile? modelGameFile = null)
         {
             ModFilePath = filePath;
             ImportedModel = imported;
@@ -70,13 +70,13 @@ namespace Icarus.Mods
 
         public override void SetModData(IGameFile gameFile)
         {
-            if (gameFile is not ModelGameFile)
+            if (gameFile is not IModelGameFile)
             {
                 throw new ArgumentException($"ModData was not of ModelGameFile. It was {gameFile.GetType()}.");
             }
             base.SetModData(gameFile);
 
-            var modelGameFile = gameFile as ModelGameFile;
+            var modelGameFile = gameFile as IModelGameFile;
 
             ModFileName = modelGameFile.Name;
             ModFilePath = modelGameFile.Path;
