@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
 using ItemDatabase.Enums;
 using Icarus.Mods;
-using Icarus.Services.Interfaces;
 using Icarus.Util;
 using Icarus.ViewModels.Import;
 using Icarus.ViewModels.Models;
@@ -27,6 +26,7 @@ using Icarus.Mods.GameFiles;
 using SharpDX.Direct2D1;
 using xivModdingFramework.Models.FileTypes;
 using ItemDatabase.Paths;
+using Icarus.Services.GameFiles.Interfaces;
 
 namespace Icarus.ViewModels.Mods
 {
@@ -141,13 +141,14 @@ namespace Icarus.ViewModels.Mods
         }
         */
 
-        public override void SetModData(IGameFile gameFile)
+        public override bool SetModData(IGameFile? gameFile)
         {
             if (gameFile is ModelGameFile modelGameFile)
             {
-                base.SetModData(modelGameFile);
                 UpdateAttributes(modelGameFile);
+                return base.SetModData(modelGameFile);
             }
+            return false;
         }
 
         // TODO: Double check: internal models should have their attributes set

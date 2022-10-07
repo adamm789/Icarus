@@ -1,6 +1,7 @@
 ﻿using Icarus.Mods.DataContainers;
 using Icarus.Services;
 using Icarus.Services.Files;
+using Icarus.Services.GameFiles.Interfaces;
 using Icarus.Services.GameFiles;
 using Icarus.Services.Interfaces;
 using Icarus.ViewModels.Export;
@@ -15,12 +16,19 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using GongSolutions.Wpf.DragDrop;
+using System.Runtime.InteropServices.ComTypes;
+
+using IDataObject = System.Windows.IDataObject;
+using IDropTarget = GongSolutions.Wpf.DragDrop.IDropTarget;
+using System.Linq;
+using System.Windows;
 
 [assembly: InternalsVisibleTo("UnitTests")]
 
 namespace Icarus.ViewModels
 {
-    public class MainWindowViewModel : NotifyPropertyChanged
+    public class MainWindowViewModel : NotifyPropertyChanged, IDropTarget
     {
         private LuminaService _luminaService;
         private IWindowService _windowService = ServiceManager.GetRequiredService<IWindowService>();
@@ -190,6 +198,38 @@ namespace Icarus.ViewModels
         public void OpenUserPreferencesWindow()
         {
             _windowService.ShowWindow<UserPreferencesWindow>(_userPreferences);
+        }
+
+        public void DragOver(IDropInfo dropInfo)
+        {
+            var dataObject = dropInfo.Data as System.Windows.DataObject;
+            var target = dropInfo.TargetItem;
+            if (dataObject != null && dataObject.GetDataPresent(DataFormats.FileDrop))
+            {
+                var s = dataObject.GetFileDropList();
+                if (!ExportViewModel.IsBusy && ImportViewModel.CanAcceptFiles(s))
+                {
+                    dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
+                    dropInfo.Effects = System.Windows.DragDropEffects.Copy;
+                }
+            }
+            else
+            {
+                dropInfo.NotHandled = true;
+            }
+        }
+
+        public void Drop(IDropInfo dropInfo)
+        {
+            var dataObject = dropInfo.Data as DataObject;
+            if (dataObject != null && dataObject.ContainsFileDropList())
+            {
+                ImportViewModel.ImportFiles(dataObject.GetFileDropList().Cast<string>().ToList());
+            }
+            else
+            {
+                dropInfo.NotHandled = true;
+            }
         }
     }
 }

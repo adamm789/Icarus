@@ -250,12 +250,12 @@ namespace Icarus.ViewModels.Mods
                 _transparency = value;
                 if (value == enabled)
                 {
-                    Log.Debug("Transparency enabed");
+                    Log.Verbose("Transparency enabed");
                     ShaderInfo.TransparencyEnabled = true;
                 }
                 else if (value == disabled)
                 {
-                    Log.Debug("Transparency disabled");
+                    Log.Verbose("Transparency disabled");
                     ShaderInfo.TransparencyEnabled = false;
                 }
             }

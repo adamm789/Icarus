@@ -30,6 +30,8 @@ using System.Windows.Forms;
 using Icarus.Mods.Interfaces;
 using System.Diagnostics;
 using Icarus.Util.Extensions;
+using System.Net.Http.Headers;
+using Icarus.Services.GameFiles.Interfaces;
 
 namespace Icarus.Services.Files
 {
@@ -57,12 +59,6 @@ namespace Icarus.Services.Files
             _ttmpImporter = new(projectDirectory, gamePathFramework);
         }
 
-        protected override void OnLuminaSet()
-        {
-            base.OnLuminaSet();
-
-        }
-
         public bool IsImporting
         {
             get { return _importFileQueue.Count > 0; }
@@ -85,8 +81,9 @@ namespace Icarus.Services.Files
         /// </summary>
         /// <param name="filePath"></param>
         /// <returns>A ModPack with SimpleModsList and potentially ModPackPages filled</returns>
-        public async Task<ModPack?> ImportFile(string filePath)
+        public async Task<ModPack> ImportFile(string filePath)
         {
+            // TODO: ImportFile: return null on import fail? Or empty modPAck?
             var importingFile = "Importing: " + filePath;
             _logService.Information(importingFile);
             _importFileQueue.Enqueue(importingFile);
@@ -96,15 +93,7 @@ namespace Icarus.Services.Files
             var retModPack = new ModPack();
             if (ext == ".fbx")
             {
-                var model = await ImportModel(filePath);
-                if (model != null)
-                {
-                    retModPack.SimpleModsList.Add(model);
-                }
-                else
-                {
-                    retModPack = null;
-                }
+                retModPack = await ImportModel(filePath);
             }
             else if (ext == ".ttmp2")
             {
@@ -115,7 +104,7 @@ namespace Icarus.Services.Files
                 // TODO: How to handle dds, which, I believe, can be both a texture or a material
                 retModPack = await Task.Run(() => ImportColorset(filePath));
             }
-            else if (ext == ".png")
+            else if (ext == ".png" || ext == ".bmp")
             {
                 retModPack = ImportTexture(filePath);
             }
@@ -124,44 +113,6 @@ namespace Icarus.Services.Files
 
             _logService.Verbose("Returning modpack.");
             return retModPack;
-        }
-
-        public async Task<ModelMod?> ImportModel(string filePath)
-        {
-            // Import File -> Convert to TTModel with converter.exe (TTModel Imported)
-            // Choose destination item -> XivMdl OgMdl -> TTModel Original
-            // WriteModelToBytes (Imported, OgMdl)
-            // new Mdl(Imported, OgMdl).MakeNewMdlFile
-            try
-            {
-                var importedModel = await _converterService.FbxToTTModel(filePath);
-                var sane = TTModel.SanityCheck(importedModel, _logService.LoggingFunction);
-
-                _logService.Information("Checking for common user errors.");
-                TTModel.CheckCommonUserErrors(importedModel, _logService.LoggingFunction);
-
-                return new ModelMod(filePath, importedModel);
-            }
-            catch (InvalidOperationException ex)
-            {
-                //_logService.Error(ex, "Conversion did not succeed.");
-                string err = "";
-                err = int.Parse(ex.Message) switch
-                {
-                    500 => "Model is not triangulated.",
-                    300 or 201 => "Sqlite Error.",
-                    _ => "File is invalid.",
-                };
-                _logService.Error(ex, $"Conversion failed. {err}");
-            }
-            catch (Win32Exception ex)
-            {
-                _logService.Error(ex, "The folder /converters was not found.");
-                //Log.Show("Please copy and paste the converters folder from TexTools into the same folder as the exe.");
-            }
-
-            _logService.Error($"Could not import {filePath} as model.");
-            return null;
         }
 
         public async Task<ModPack> ImportTTModPack(string filePath)
@@ -184,16 +135,61 @@ namespace Icarus.Services.Files
             return new ModPack();
         }
 
+        public async Task<ModPack> ImportModel(string filePath)
+        {
+            // Import File -> Convert to TTModel with converter.exe (TTModel Imported)
+            // Choose destination item -> XivMdl OgMdl -> TTModel Original
+            // WriteModelToBytes (Imported, OgMdl)
+            // new Mdl(Imported, OgMdl).MakeNewMdlFile
+            try
+            {
+                var importedModel = await _converterService.FbxToTTModel(filePath);
+                var sane = TTModel.SanityCheck(importedModel, _logService.LoggingFunction);
+
+                _logService.Information("Checking for common user errors.");
+                TTModel.CheckCommonUserErrors(importedModel, _logService.LoggingFunction);
+
+                var mod = new ModelMod(filePath, importedModel);
+
+                var retVal = new ModPack();
+                if (mod == null) return retVal;
+
+                retVal.SimpleModsList.Add(mod);
+                return retVal;
+            }
+            catch (InvalidOperationException ex)
+            {
+                //_logService.Error(ex, "Conversion did not succeed.");
+                string err = "";
+                err = int.Parse(ex.Message) switch
+                {
+                    500 => "Model is not triangulated.",
+                    300 or 201 => "Sqlite Error.",
+                    _ => "File is invalid.",
+                };
+                _logService.Error(ex, $"Conversion failed. {err}");
+            }
+            catch (Win32Exception ex)
+            {
+                _logService.Error(ex, "The folder /converters was not found.");
+                //Log.Show("Please copy and paste the converters folder from TexTools into the same folder as the exe.");
+            }
+
+            _logService.Error($"Could not import {filePath} as model.");
+            return new ModPack();
+        }
+
         public ModPack ImportColorset(string filePath)
         {
             try
             {
-                var modPack = new ModPack();
                 var directory = new DirectoryInfo(filePath);
                 var colorsetData = Tex.GetColorsetDataFromDDS(directory);
                 var colorsetDyeData = Tex.GetColorsetExtraDataFromDDS(directory);
 
                 var materialMod = new MaterialMod(colorsetData, colorsetDyeData);
+
+                var modPack = new ModPack();
                 modPack.SimpleModsList.Add(materialMod);
                 return modPack;
             } catch (Exception ex)
@@ -218,7 +214,7 @@ namespace Icarus.Services.Files
         {
             if (mod is ModelMod mdlMod)
             {
-                var gameFile = _gameFileDataService.GetModelFileData(mdlMod.Path);
+                var gameFile = _gameFileDataService.TryGetModelFileData(mdlMod.Path);
                 if (gameFile == null)
                 {
                     _logService.Error($"Could not get vanilla information of {mdlMod.Path}.");
@@ -228,10 +224,6 @@ namespace Icarus.Services.Files
 
                 mdlMod.TTModel = gameFile.TTModel;
                 mdlMod.XivMdl = gameFile.XivMdl;
-            }
-            else if (mod is MaterialMod mtrlMod)
-            {
-                // TODO: Material mods are already complete...?
             }
         }
 

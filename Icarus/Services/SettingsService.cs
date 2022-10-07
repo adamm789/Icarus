@@ -14,7 +14,7 @@ namespace Icarus.Services
     {
         private static readonly Properties.Settings DefaultSettings = Properties.Settings.Default;
 
-        // TODO: Add log verbosity as a setting
+        // TODO: Add log verbosity to settings (only to DEBUG)
         public SettingsService()
         {
             ReadAllSettings();

@@ -403,7 +403,7 @@ namespace ItemDatabase.Paths
                 retVal += typeString + ".tex";
                 return retVal;
             }
-            return path;
+            throw new ArgumentOutOfRangeException($"Could not change tex type of {path}.");
         }
 
         public static string GetTexVariant(string path)

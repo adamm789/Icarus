@@ -184,5 +184,51 @@ namespace Icarus.Util.Extensions
             DDS.MakeDDS(xivTex, savePath);
         }
 
+        // MakeTexData
+        // https://github.com/TexTools/xivModdingFramework/blob/81c234e7b767d56665185e07aabeeae21d895f0b/xivModdingFramework/Textures/FileTypes/Tex.cs#L905
+        public static async Task<byte[]> DDSToTex(string ddsFilePath, string internalPath, XivTexFormat texFormat)
+        {
+            using (var br = new BinaryReader(File.OpenRead(ddsFilePath)))
+            {
+                br.BaseStream.Seek(12, SeekOrigin.Begin);
+
+                var newHeight = br.ReadInt32();
+                var newWidth = br.ReadInt32();
+                br.ReadBytes(8);
+                var newMipCount = br.ReadInt32();
+
+                if (newHeight % 2 != 0 || newWidth % 2 != 0)
+                {
+                    throw new Exception("Resolution must be a multiple of 2");
+                }
+
+                br.BaseStream.Seek(80, SeekOrigin.Begin);
+
+                var textureFlags = br.ReadInt32();
+                var texType = br.ReadInt32();
+
+                var uncompressedLength = (int)new FileInfo(ddsFilePath).Length - 128;
+                var newTex = new List<byte>();
+
+                if (!internalPath.Contains(".atex"))
+                {
+                    var DDSInfo = await DDS.ReadDDS(br, texFormat, newWidth, newHeight, newMipCount);
+
+                    newTex.AddRange(DatExtensions.MakeType4DatHeader(texFormat, DDSInfo.mipPartOffsets, DDSInfo.mipPartCounts, (int)uncompressedLength, newMipCount, newWidth, newHeight));
+                    newTex.AddRange(TexExtensions.MakeTextureInfoHeader(texFormat, newWidth, newHeight, newMipCount));
+                    newTex.AddRange(DDSInfo.compressedDDS);
+
+                    return newTex.ToArray();
+                }
+                else
+                {
+                    br.BaseStream.Seek(128, SeekOrigin.Begin);
+                    newTex.AddRange(TexExtensions.MakeTextureInfoHeader(texFormat, newWidth, newHeight, newMipCount));
+                    newTex.AddRange(br.ReadBytes((int)uncompressedLength));
+                    var data = await DatExtensions.CreateType2Data(newTex.ToArray());
+                    return data;
+                }
+            }
+        }
     }
 }

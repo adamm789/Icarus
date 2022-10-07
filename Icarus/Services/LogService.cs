@@ -54,8 +54,6 @@ namespace Icarus.Services
             var verbosePath = Path.Combine(projectDirectory, "logs/verbose.txt");
 
 #if DEBUG
-            // TODO: Filter into different txt files
-
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
                 .WriteTo.File(verbosePath, rollingInterval: RollingInterval.Day, rollOnFileSizeLimit: true, retainedFileCountLimit: 7)

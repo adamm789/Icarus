@@ -191,16 +191,6 @@ namespace Icarus.ViewModels.Mods.DataContainers
 
             ModPackPages.Move(sourceIndex, targetIndex);
             ModPack.MovePage(sourceIndex, targetIndex);
-
-            /*
-            ModPack.ModPackPages.RemoveAt(sourceIndex);
-            if (targetIndex > ModPack.ModPackPages.Count)
-            {
-                targetIndex = ModPack.ModPackPages.Count - 1;
-            }
-
-            ModPack.ModPackPages.Insert(targetIndex, source.GetModPackPage());
-            */
         }
 
         private void DecreasePageIndex()
@@ -305,19 +295,25 @@ namespace Icarus.ViewModels.Mods.DataContainers
         // TODO: DragDrop for ModPack
         void IDropTarget.DragOver(IDropInfo dropInfo)
         {
-            /*
-            var target = dropInfo.Data;
-            if (target is ModPackPageViewModel page)
+            var source = dropInfo.Data;
+            var target = dropInfo.TargetItem;
+            if (source is ModPackPageViewModel && target is ModPackPageViewModel)
             {
                 dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
                 dropInfo.Effects = DragDropEffects.Copy;
             }
-            */
+            
         }
 
         void IDropTarget.Drop(IDropInfo dropInfo)
         {
+            var source = dropInfo.Data;
+            var target = dropInfo.TargetItem;
 
+            if (source is ModPackPageViewModel sourcePage && target is ModPackPageViewModel targetPage)
+            {
+                Move(sourcePage, targetPage);
+            }
         }
     }
 }

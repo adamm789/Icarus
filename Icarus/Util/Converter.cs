@@ -63,11 +63,7 @@ namespace Icarus.Util
                 {
                     return null;
                 }
-            })/*.ContinueWith((t) =>
-            {
-                if (t.IsFaulted) throw t.Exception.InnerException;
-                else return t.Result;
-            })*/);
+            }));
         }
 
         public async Task ModelModToFbx(ModelMod mod, DirectoryInfo outputDirectory, string outputFileName = "")
@@ -125,11 +121,7 @@ namespace Icarus.Util
 
                 // TODO: Provide "unique" names for each file that is converted
                 File.Move(outputFile, outputFilePath);
-            })/*.ContinueWith((t) =>
-            {
-                if (t.IsFaulted) throw t.Exception.InnerException;
-                else return t;
-            })*/);
+            }));
         }
 
         private void ConverterProcess(string filePath, string converterFolder)

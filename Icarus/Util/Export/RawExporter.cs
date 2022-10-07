@@ -26,6 +26,7 @@ using xivModdingFramework.Textures.FileTypes;
 
 namespace Icarus.Util.Export
 {
+    // Class that exports to common file extensions, i.e. .fbx, .dds
     public class RawExporter : Exporter
     {
         // TODO: Theoretically provide options for output files
@@ -108,7 +109,7 @@ namespace Icarus.Util.Export
 
             if (mod is ModelMod mdlMod)
             {
-                ApplyOptions(mdlMod);
+                ApplyModelOptions(mdlMod);
                 await _converterService.ModelModToFbx(mdlMod, outputDirectory, outputFileName);
 
                 var model = mdlMod.ImportedModel;
@@ -132,12 +133,19 @@ namespace Icarus.Util.Export
                 var ttp = new TexTypePath
                 {
                     Path = mod.Path,
-                    Type= xivModdingFramework.Textures.Enums.XivTexType.ColorSet,
+                    Type = xivModdingFramework.Textures.Enums.XivTexType.ColorSet,
                     DataFile = df
                 };
 
                 var texData = MtrlExtensions.MtrlToXivTex(xivMtrl, ttp);
                 TexExtensions.SaveTexAsDDS(outputPath, texData, outputDirectory);
+            }
+            if (mod is TextureMod texMod)
+            {
+                if (mod.IsInternal)
+                {
+                    // If/when to export raw textures?
+                }
             }
         }
     }

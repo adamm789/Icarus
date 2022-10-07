@@ -170,7 +170,6 @@ namespace Icarus.ViewModels.Models
             var dragItem = dropInfo.Data;
             if (CanAcceptChild(dragItem))
             {
-                // TODO: Adorners
                 dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
                 dropInfo.Effects = DragDropEffects.Copy;
             }

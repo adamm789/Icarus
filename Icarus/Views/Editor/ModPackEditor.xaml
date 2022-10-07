@@ -12,16 +12,14 @@
     <Grid>
         <Grid.Resources>
             <DataTemplate DataType="{x:Type datacontainers:ModPackPageViewModel}">
-                <ListView ItemsSource="{Binding ModGroups}" HorizontalContentAlignment="Stretch" dd:DragDrop.IsDragSource="True"
-                                dd:DragDrop.IsDropTarget="True">
-                </ListView>
+                <ItemsControl ItemsSource="{Binding ModGroups}" HorizontalContentAlignment="Stretch">
+                </ItemsControl>
             </DataTemplate>
             <DataTemplate DataType="{x:Type datacontainers:ModGroupViewModel}">
                 <Border BorderBrush="Black" BorderThickness="1">
-                    <StackPanel >
-                        <TextBlock Text="{Binding GroupName}"></TextBlock>
+                    <StackPanel>
+                            <TextBlock Text="{Binding GroupName}"></TextBlock>
                         <ListView ItemsSource="{Binding OptionList}">
-
                         </ListView>
                     </StackPanel>
                 </Border>
@@ -31,8 +29,12 @@
             </DataTemplate>
         </Grid.Resources>
 
-        <ListView ItemsSource="{Binding ModPackPages}">
-
-        </ListView>
+        <ItemsControl ItemsSource="{Binding ModPackPages}" dd:DragDrop.IsDragSource="True" dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
     </Grid>
 </UserControl>

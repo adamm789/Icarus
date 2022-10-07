@@ -16,9 +16,5 @@ namespace Icarus.ViewModels.Mods
         {
 
         }
-        public override async Task SetDestinationItem(IItem? item = null)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

@@ -57,13 +57,9 @@
 
                 <ContentControl DataContext="{Binding ModPackViewModel}">
                     <editors:ModPackEditor></editors:ModPackEditor>
-            </ContentControl>
+                </ContentControl>
             </TabItem>
-
-
         </TabControl>
-
-
         <ContentControl Grid.Row="2" Grid.Column="1" Content="{Binding ExportViewModel}" Margin="5"/>
     </Grid>
 </UserControl>

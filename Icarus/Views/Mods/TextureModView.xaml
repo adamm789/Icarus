@@ -12,7 +12,7 @@
 
              d:DesignHeight="450" d:DesignWidth="800">
     <StackPanel>
-        <local:EditableModView Grid.Row="0"/>
+        <local:ModView Grid.Row="0"/>
         <ComboBox ItemsSource="{Binding TexTypeValues}" SelectedValue="{Binding TexType}"></ComboBox>
     </StackPanel>
 </UserControl>

@@ -13,10 +13,10 @@ namespace Icarus.Mods
 {
     public class TextureMod : Mod, ITextureGameFile
     {
-        // TODO: What information do I need from a TextureMod?
+        // TODO: Assignable TexType?
         public XivTexType TexType { get; set; }
 
-        public Dictionary<XivTexType, XivTexFormat> TypeFormatDict { get; set; }
+        public Dictionary<XivTexType, XivTexFormat>? TypeFormatDict { get; set; }
 
         public TextureMod(bool isInternal=false)
         {
@@ -26,7 +26,6 @@ namespace Icarus.Mods
         public TextureMod(XivTex tex, bool isInternal = true)
         {
             Path = tex.TextureTypeAndPath.Path;
-
             IsInternal = isInternal;
         }
 
@@ -50,11 +49,15 @@ namespace Icarus.Mods
 
         public XivTexFormat GetTexFormat()
         {
-            foreach (var kvp in TypeFormatDict)
+            if (TypeFormatDict != null)
             {
-                if (TexType == kvp.Key)
+                // Try to get the format from the parent material
+                foreach (var kvp in TypeFormatDict)
                 {
-                    return kvp.Value;
+                    if (TexType == kvp.Key)
+                    {
+                        return kvp.Value;
+                    }
                 }
             }
             
@@ -66,6 +69,7 @@ namespace Icarus.Mods
             {
                 return XivTexFormat.DXT1;
             }
+
             return XivTexFormat.A8R8G8B8;
         }
     }

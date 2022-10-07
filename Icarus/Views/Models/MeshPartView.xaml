@@ -6,7 +6,7 @@
              xmlns:uc="clr-namespace:Icarus.Views" 
              xmlns:import="clr-namespace:Icarus.ViewModels.Import" 
              xmlns:models="clr-namespace:Icarus.ViewModels.Models"
-                          xmlns:dd="urn:gong-wpf-dragdrop"
+             xmlns:dd="urn:gong-wpf-dragdrop"
 
              d:DataContext="{d:DesignInstance Type=models:MeshPartViewModel}"
              mc:Ignorable="d" 

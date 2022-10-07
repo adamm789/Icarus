@@ -1,5 +1,6 @@
 ﻿using Icarus.Mods;
 using Icarus.Mods.Interfaces;
+using Icarus.Services.GameFiles.Interfaces;
 using Icarus.Services.GameFiles;
 using Icarus.Services.Interfaces;
 using Icarus.ViewModels.Util;

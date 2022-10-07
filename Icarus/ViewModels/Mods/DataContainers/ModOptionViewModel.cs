@@ -140,7 +140,6 @@ namespace Icarus.ViewModels.Mods.DataContainers
             }
         }
 
-        // TODO: Should I delete the option/group/page if there are no more mods?
         public bool RemoveMod(ModViewModel mod)
         {
             var m = ModViewModels.FirstOrDefault(p => p.ModViewModel.GetMod() == mod.GetMod());

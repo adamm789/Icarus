@@ -8,24 +8,26 @@
         xmlns:icarus="clr-namespace:Icarus" 
         xmlns:viewmodels="clr-namespace:Icarus.ViewModels"
         xmlns:editorviews="clr-namespace:Icarus.Views.Editor"
+        xmlns:dd="urn:gong-wpf-dragdrop"
         d:DataContext="{d:DesignInstance Type=viewmodels:MainWindowViewModel}"
         mc:Ignorable="d"
         Title="Icarus" 
         MinWidth="1200" Width="1200" 
         MinHeight="700" Height="700" 
         FontSize="16"
+        MouseDown="window1_MouseDown"
         WindowStartupLocation="CenterScreen">
     <Window.DataContext>
         <viewmodels:MainWindowViewModel/>
     </Window.DataContext>
-    <Grid>
+    <Grid Name="grid1" Focusable="True" >
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Menu Grid.Row="0">
+        <Menu Grid.Row="0" MouseDown="window1_MouseDown">
             <Menu.ItemContainerStyle>
                 <Style TargetType="MenuItem">
                     <Setter Property="FontSize" Value="16"/>
@@ -35,7 +37,7 @@
             <MenuItem Header="Preferences" Command="{Binding OpenPreferences}"/>
         </Menu>
 
-        <Grid x:Name="MainGrid" Grid.Row="1" IsEnabled="{Binding GamePathSet}">
+        <Grid x:Name="MainGrid" Grid.Row="1" IsEnabled="{Binding GamePathSet}" dd:DragDrop.IsDragSource="True" dd:DragDrop.DropHandler="{Binding}">
             <TabControl Grid.Row="0">
                 <TabItem Header="Importer/Simple Modpack">
                     <editorviews:SimpleEditorView/>

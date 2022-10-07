@@ -3,21 +3,21 @@ using Icarus.ViewModels.Util;
 using System;
 using System.Windows;
 using System.ComponentModel;
+using GongSolutions.Wpf.DragDrop;
 
 namespace Icarus.ViewModels
 {
     public class ItemViewModel : NotifyPropertyChanged
     {
         public IItem Item;
+        public ItemViewModel(IItem item)
+        {
+            Item = item;
+        }
 
         public string Name
         {
             get { return Item.Name; }
-        }
-
-        public ItemViewModel(IItem item)
-        {
-            Item = item;
         }
 
         DelegateCommand _isSelectedCommand;

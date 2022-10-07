@@ -72,13 +72,6 @@ namespace Icarus.ViewModels
             set { _numMatches = value; OnPropertyChanged(); }
         }
 
-        bool _isSelected;
-        public bool IsSelected
-        {
-            get { return _isSelected; }
-            set { _isSelected = value; OnPropertyChanged(); }
-        }
-
         IItem _selectedItem;
         public IItem SelectedItem
         {

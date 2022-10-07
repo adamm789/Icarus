@@ -17,19 +17,19 @@ namespace Icarus.ViewModels
         // TODO: On Enter click expand the entries?
 
         const int minNumBeforeExpansion = 100;
-        readonly ItemListService _itemDatabaseService;
+        readonly ItemListService _itemListService;
         readonly ILogService _logService;
         private PropertyChangedEventHandler eh;
 
-        public SearchViewModel(ItemListService itemDatabaseService, ILogService logService)
+        public SearchViewModel(ItemListService itemListService, ILogService logService)
         {
-            _itemDatabaseService = itemDatabaseService;
+            _itemListService = itemListService;
             _logService = logService;
 
-            if (_itemDatabaseService.Data == null)
+            if (_itemListService.Data == null)
             {
                 eh = new(DataPropertySet);
-                _itemDatabaseService.PropertyChanged += eh;
+                _itemListService.PropertyChanged += eh;
             }
             else
             {
@@ -60,7 +60,7 @@ namespace Icarus.ViewModels
             // TODO: Further categorize indoor furniture?
             //ItemList = await Task.Run( () => {
             _logService.Information("Building item list view models.");
-            var entries = _itemDatabaseService.GetAllItems();
+            var entries = _itemListService.GetAllItems();
             ObservableCollection<ItemListViewModel> items = new();
 
             foreach (var entry in entries)
@@ -95,7 +95,7 @@ namespace Icarus.ViewModels
         private bool ChildSearchFilter(object o)
         {
             var item = ((ItemViewModel)o).Item;
-            var searchText = ItemText;
+            var searchText = SearchText;
 
             if (string.IsNullOrEmpty(searchText))
             {
@@ -104,17 +104,17 @@ namespace Icarus.ViewModels
             return item.IsMatch(searchText);
         }
 
-        string _itemText;
-        public string ItemText
+        string _searchText;
+        public string SearchText
         {
-            get { return _itemText; }
-            set { _itemText = value; OnPropertyChanged(); Search(); }
+            get { return _searchText; }
+            set { _searchText = value; OnPropertyChanged(); Search(); }
         }
 
         public IItem SelectedItem
         {
-            get { return _itemDatabaseService.SelectedItem; }
-            set { _itemDatabaseService.SelectedItem = value; OnPropertyChanged(); }
+            get { return _itemListService.SelectedItem; }
+            set { _itemListService.SelectedItem = value; OnPropertyChanged(); }
         }
 
         string _selectedItemMdl;
@@ -153,11 +153,14 @@ namespace Icarus.ViewModels
             var listView = (CollectionView)CollectionViewSource.GetDefaultView(ItemList);
             listView.Refresh();
             Expand(matchesFound);
-        }
 
-        public bool ShouldExpand(int num)
-        {
-            return num < minNumBeforeExpansion;
+            if (matchesFound == 0)
+            {
+                if (_itemListService.TrySearch(SearchText))
+                {
+
+                }
+            }
         }
 
         // TODO: Behavior: Search is empty, user expands a category, user searches, should the category stay expanded?
@@ -169,6 +172,11 @@ namespace Icarus.ViewModels
             {
                 list.IsExpanded = val;
             }
+        }
+
+        public bool ShouldExpand(int num)
+        {
+            return num < minNumBeforeExpansion;
         }
 
         public void ChildChanged(object sender, PropertyChangedEventArgs e)

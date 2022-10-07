@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
 using Icarus.Services.Files;
+using Icarus.Services.GameFiles.Interfaces;
 using Icarus.Services.GameFiles;
 using Icarus.Services.Interfaces;
 using Icarus.Services.UI;

@@ -105,51 +105,58 @@ namespace Icarus.Util
             {
                 for (int i = 0; i < tasks.Length; i++)
                 {
-                    // TODO: Remove duplicate code of writing mods by extracting into separate function?
-                    var entry = entries[i];
-                    var name = entry.Name;
-                    var category = entry.Category;
-                    var path = entry.Path;
-
-                    var bytes = await tasks[i];
-                    if (bytes == Array.Empty<Byte>())
+                    try
                     {
-                        _logService.Error($"Could not get bytes for {name}. Skipping entry {i}.");
-                        continue;
-                    }
+                        // TODO: Remove duplicate code of writing mods by extracting into separate function?
+                        var entry = entries[i];
+                        var name = entry.Name;
+                        var category = entry.Category;
+                        var path = entry.Path;
 
-                    // Maybe unecessary? But just to be safe, I guess
-                    if (ForbiddenModTypes.Contains(path))
-                    {
-                        _logService.Error($"{path} is a forbidden mod type. Skipping");
-                        continue;
-                    }
-
-                    numMods++;
-                    var datFile = XivPathParser.GetDatFile(path);
-
-                    var modsJson = new ModsJson
-                    {
-                        Name = name,
-                        Category = category,
-                        FullPath = path,
-                        ModOffset = offset,
-                        ModSize = bytes.Length,
-                        DatFile = datFile,
-                        IsDefault = false,
-                        ModPackEntry = new FrameworkModPack
+                        var bytes = await tasks[i];
+                        if (bytes == Array.Empty<Byte>())
                         {
-                            name = modPack.Name,
-                            author = modPack.Author,
-                            version = modPack.Version,
-                            url = modPack.Url
+                            _logService.Error($"Could not get bytes for {name}. Skipping entry {i}.");
+                            continue;
                         }
-                    };
 
-                    modPackJson.SimpleModsList.Add(modsJson);
-                    modsJson.ModOffset = offset;
-                    offset += bytes.Length;
-                    bw.Write(bytes);
+                        // Maybe unecessary? But just to be safe, I guess
+                        if (ForbiddenModTypes.Contains(path))
+                        {
+                            _logService.Error($"{path} is a forbidden mod type. Skipping");
+                            continue;
+                        }
+
+                        numMods++;
+                        var datFile = XivPathParser.GetDatFile(path);
+
+                        var modsJson = new ModsJson
+                        {
+                            Name = name,
+                            Category = category,
+                            FullPath = path,
+                            ModOffset = offset,
+                            ModSize = bytes.Length,
+                            DatFile = datFile,
+                            IsDefault = false,
+                            ModPackEntry = new FrameworkModPack
+                            {
+                                name = modPack.Name,
+                                author = modPack.Author,
+                                version = modPack.Version,
+                                url = modPack.Url
+                            }
+                        };
+
+                        modPackJson.SimpleModsList.Add(modsJson);
+                        modsJson.ModOffset = offset;
+                        offset += bytes.Length;
+                        bw.Write(bytes);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logService.Error(ex, "Could not add smoething.");
+                    }
                 }
             }
 
@@ -373,7 +380,6 @@ namespace Icarus.Util
                 }
                 zf.Save(modPackPath);
 
-                // TODO: Report if pack was not "fully" exported, i.e. skipped mods and/or pages
                 _logService.Information($"Sucessfully saved {modPackPath}.");
                 return modPackPath;
             }

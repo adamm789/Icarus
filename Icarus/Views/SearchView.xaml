@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Icarus.Views" 
+             xmlns:dd="urn:gong-wpf-dragdrop"
              xmlns:viewmodels="clr-namespace:Icarus.ViewModels"
              d:DataContext="{d:DesignInstance Type=viewmodels:SearchViewModel}"
              mc:Ignorable="d" 
@@ -25,7 +26,7 @@
                 <ColumnDefinition Width="2*"/>
             </Grid.ColumnDefinitions>
             <TextBox AcceptsReturn="False"
-                Grid.Row="0" Grid.Column="0" Text="{Binding ItemText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
+                Grid.Row="0" Grid.Column="0" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
                      VerticalAlignment="Center">
 
             </TextBox>
@@ -46,19 +47,21 @@
         </StackPanel>
 
         <TreeView ItemsSource="{Binding ItemList}" Grid.Row="2" 
-                  VirtualizingStackPanel.IsVirtualizing="True">
+                  VirtualizingStackPanel.IsVirtualizing="True"
+                  dd:DragDrop.IsDragSource="True">
+
             <TreeView.ItemContainerStyle>
                 <Style TargetType="{x:Type TreeViewItem}">
                     <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True"/>
                     <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=OneWay}"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                 </Style>
-
             </TreeView.ItemContainerStyle>
 
             <TreeView.Resources>
-                <HierarchicalDataTemplate DataType="{x:Type viewmodels:ItemListViewModel}" ItemsSource="{Binding Items}" >
-                    <StackPanel Height="Auto">
-                        <TextBlock>
+                <HierarchicalDataTemplate DataType="{x:Type viewmodels:ItemListViewModel}" ItemsSource="{Binding Items}">
+                    <StackPanel Height="Auto" HorizontalAlignment="Stretch" dd:DragDrop.DragSourceIgnore="True">
+                        <TextBlock HorizontalAlignment="Stretch" FontSize="14">
                             <TextBlock.Text>
                                 <MultiBinding StringFormat="{}{0} ({1})">
                                     <Binding Path="Header"/>
@@ -67,20 +70,22 @@
                             </TextBlock.Text>
                         </TextBlock>
                     </StackPanel>
-                    
+
                 </HierarchicalDataTemplate>
                 <DataTemplate DataType="{x:Type viewmodels:ItemViewModel}">
-                    <TextBlock Text="{Binding Name, Mode=OneTime}" >
+                        <!--
+                    <TextBlock Text="{Binding Name, Mode=OneTime}">
                         <TextBlock.InputBindings>
-                            <!-- TODO: Does not offer feedback on click-->
+                    -->
+                        <!-- TODO: Does not offer feedback on click-->
+                        <!--
                             <MouseBinding MouseAction="LeftClick" Command="{Binding IsSelectedCommand}"/>
                         </TextBlock.InputBindings>
                     </TextBlock>
-
-                    <!--
+            -->
                     <Button Content="{Binding Name}" Background="Transparent" BorderBrush="Transparent"
-                        Command="{Binding IsSelectedCommand}" Margin="0"/>
--->
+                        Command="{Binding IsSelectedCommand}" Margin="0 -2 0 -1" HorizontalContentAlignment="Right"
+                            FontSize="14"/>
                 </DataTemplate>
             </TreeView.Resources>
         </TreeView>

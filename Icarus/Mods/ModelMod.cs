@@ -16,8 +16,6 @@ namespace Icarus.Mods
 {
     public class ModelMod : Mod, IModelGameFile
     {
-        // TODO: Distinguish origin?
-        // i.e. TexTools Simple, TexTools Advanced, Vanilla, imported fbx
         public TTModel ImportedModel { get; set; }
         public ModelModifierOptions Options { get; set; }
         public XivRace TargetRace { get; set; } = XivRace.Hyur_Midlander_Male;

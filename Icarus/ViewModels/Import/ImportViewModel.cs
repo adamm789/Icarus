@@ -13,6 +13,7 @@ using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.IO;
 using System.Threading.Tasks;
@@ -99,27 +100,73 @@ namespace Icarus.ViewModels.Import
 
         #endregion
 
-
         private async Task ImportFile()
         {
-            //var filter = "Mdl Files | *.mdl";
-            var filter = "Valid Files | *.fbx; *.ttmp2; *.dds; *.png" + "|FBX File | *.fbx" + "|TexTools ModPack | *.ttmp2" + "| dds | *.dds" + "| png | *.png";
+            var filter = "Valid Files | *.fbx; *.ttmp2; *.dds; *.png; *.bmp" + "|FBX File | *.fbx" + "|TexTools ModPack | *.ttmp2" + "| dds | *.dds" + "| png | *.png" + "| bmp | *.bmp";
+            //var filter = "Valid Files | *.fbx; *.ttmp2; *.dds; *.png" + "|FBX File | *.fbx" + "|TexTools ModPack | *.ttmp2" + "| dds | *.dds" + "| png | *.png";
             //var filter = "Valid Files | *.fbx; *.ttmp2; *.dds" + "|FBX File | *.fbx" + "|TexTools ModPack | *.ttmp2" + "| dds | *.dds";
             //var filter = "Valid Files | *.fbx; *.ttmp2" + "|FBX File | *.fbx" + "|TexTools ModPack | *.ttmp2";
 
             var dlg = new OpenFileDialog
             {
-                // TODO: Default folder
                 Filter = filter,
                 InitialDirectory = _settingsService.BrowseDirectory,
                 Multiselect = true
             };
             dlg.ShowDialog();
 
+            await ImportFiles(dlg.FileNames);
+
             // TODO?: Import asynchronously?
+            /*
             foreach (var file in dlg.FileNames)
             {
                 var str = Path.Combine(file);
+                // TODO: Consider what happens when importing multiple files
+                // Particularly, e.g. a ttmp2 and an fbx file
+                if (File.Exists(str))
+                {
+                    var modPack = await ImportFile(str);
+
+                    if (modPack == null)
+                    {
+                        _logService.Error("Could not get mod pack.");
+                        return;
+                    }
+
+                    // TODO: Seems that this may freeze the UI on particularly large mod packs
+                    // TODO: Ask for user confirmation
+
+                    // Three options:
+                    // Import only mods
+                    // Import and overwrite ModPackPages
+                    // Cancel
+
+                    // If add only mods
+                    // ModPack.AddMods(mods);
+
+                    // else if add mods and overwrite modpack
+                    ModPackViewModelImportFlags flags = ModPackViewModelImportFlags.AddMods;
+                    if (modPack.ModPackPages.Count > 0)
+                    {
+                        // TODO: Window to show import options
+                        flags |= ModPackViewModelImportFlags.AppendPagesToEnd;
+                        flags |= ModPackViewModelImportFlags.OverwriteData;
+                    }
+                    _logService.Verbose($"Setting modpack. {modPack.SimpleModsList.Count} simple mods and {modPack.ModPackPages.Count} pack pages");
+                    _modPackViewModel.SetModPack(modPack, flags);
+                }
+            }
+            */
+        }
+
+        public async Task ImportFiles(IList<string> filePaths)
+        {
+            // TODO: Should I combine import files?
+            // But how do I handle multiple ttmp2 files simultaneously with regards to ModPackPages? (i.e. multiple advanced modpacks)
+            foreach (var path in filePaths)
+            {
+                var str = Path.Combine(path);
                 // TODO: Consider what happens when importing multiple files
                 // Particularly, e.g. a ttmp2 and an fbx file
                 if (File.Exists(str))
@@ -160,6 +207,21 @@ namespace Icarus.ViewModels.Import
         public async Task<ModPack?> ImportFile(string filePath)
         {
             return await _importService.ImportFile(filePath);
+        }
+
+        public bool CanAcceptFiles(StringCollection collection)
+        {
+            //var filter = "Valid Files | *.fbx; *.ttmp2; *.dds; *.png; *.bmp" + "|FBX File | *.fbx" + "|TexTools ModPack | *.ttmp2" + "| dds | *.dds" + "| png | *.png" + "| bmp | *.bmp";
+
+            foreach (var str in collection)
+            {
+                var ext = Path.GetExtension(str);
+                if (ext != ".fbx" && ext != ".ttmp2" && ext != ".dds" && ext != ".png" && ext != ".bmp")
+                {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }

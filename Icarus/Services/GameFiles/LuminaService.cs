@@ -59,7 +59,6 @@ namespace Icarus.Services.GameFiles
             }
             catch (ArgumentException ex)
             {
-                //_logService.Warning(.\n{ex.Message}\n{ex.StackTrace}");
                 _logService.Warning(ex, $"Could not initialize Lumina with {_settingsService.GameDirectoryLumina}");
             }
 

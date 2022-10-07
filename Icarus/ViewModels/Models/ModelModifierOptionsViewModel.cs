@@ -110,7 +110,6 @@ namespace Icarus.ViewModels.Import
         }
 
         ModelModifierOptions _options;
-
         public ModelModifierOptionsViewModel(ModelModifierOptions options)
         {
             _options = options;

@@ -3,7 +3,6 @@ using GongSolutions.Wpf.DragDrop.Utilities;
 using Icarus.Mods;
 using Icarus.Mods.Interfaces;
 using Icarus.Services.GameFiles;
-using Icarus.Services.Interfaces;
 using Icarus.ViewModels.Import;
 using Icarus.ViewModels.Util;
 using ItemDatabase.Interfaces;
@@ -15,24 +14,22 @@ using xivModdingFramework.Mods.DataContainers;
 using Mod = Icarus.Mods.Mod;
 using System.Windows;
 using Serilog;
+using Icarus.Services.GameFiles.Interfaces;
 
 namespace Icarus.ViewModels.Mods
 {
-    public abstract class ModViewModel : NotifyPropertyChanged
+    public abstract class ModViewModel : NotifyPropertyChanged, IDropTarget
     {
         protected IMod _mod;
         protected readonly IGameFileService _gameFileService;
-        protected readonly ItemListService _itemListService;
+        //protected readonly ItemListService _itemListService;
         public bool IsReadOnly => this is ReadOnlyModViewModel;
-
-        // Whether or not the source of a changing DestinationPath is internal of from the user
-        protected bool fromItem = false;
 
         public ModViewModel(IMod mod, ItemListService itemListService, IGameFileService gameFileDataService)
         {
             _mod = mod;
             _gameFileService = gameFileDataService;
-            _itemListService = itemListService;
+            //_itemListService = itemListService;
 
             var file = Path.GetFileName(mod.ModFilePath);
             if (file != null)
@@ -98,11 +95,8 @@ namespace Icarus.ViewModels.Mods
             get { return _mod.Path; }
             set
             {
-                if (!fromItem)
-                {
-                    var couldSetDestinationPath = Task.Run(() => TrySetDestinationPath(value, DestinationName)).Result;
-                    if (!couldSetDestinationPath) return;
-                }
+                var couldSetDestinationPath = Task.Run(() => TrySetDestinationPath(value, DestinationName)).Result;
+                if (!couldSetDestinationPath) return;
                 _mod.Path = value;
                 RaiseDestinationPathChanged();
             }
@@ -163,18 +157,16 @@ namespace Icarus.ViewModels.Mods
             CanExport = _mod.IsComplete();
         }
 
-        public virtual async Task SetDestinationItem(IItem? itemArg = null)
+        public virtual async Task<bool> SetDestinationItem(IItem? itemArg = null)
         {
-            fromItem = true;
             var data = await _gameFileService.GetFileData(itemArg, _mod.GetType());
             if (data != null)
             {
                 SetModData(data);
                 RaiseDestinationPathChanged();
+                return true;
             }
-
-            fromItem = false;
-            return;
+            return false;
         }
 
         /// <summary>
@@ -186,7 +178,7 @@ namespace Icarus.ViewModels.Mods
         protected virtual async Task<bool> TrySetDestinationPath(string path, string name = "")
         {
             if (path == DestinationPath) return false;
-            var modData = await _gameFileService.TryGetFileData(path, name);
+            var modData = await _gameFileService.TryGetFileData(path, GetType(), name);
             if (modData == null)
             {
                 Log.Warning($"Could not set {path} as {GetType().Name}");
@@ -199,10 +191,30 @@ namespace Icarus.ViewModels.Mods
             return true;
         }
 
-        public virtual void SetModData(IGameFile gameFile)
+        public virtual bool SetModData(IGameFile gameFile)
         {
             _mod.SetModData(gameFile);
+            return true;
             //RaiseModPropertyChanged();
+        }
+
+        public void DragOver(IDropInfo dropInfo)
+        {
+            var item = dropInfo.Data;
+            if (item is ItemViewModel)
+            {
+                dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
+                dropInfo.Effects = DragDropEffects.Copy;
+            }
+        }
+
+        public void Drop(IDropInfo dropInfo)
+        {
+            var item = dropInfo.Data;
+            if (item is ItemViewModel vm)
+            {
+                SetDestinationItem(vm.Item);
+            }
         }
     }
 }

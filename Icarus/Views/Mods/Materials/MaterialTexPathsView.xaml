@@ -23,14 +23,11 @@
             <TextBlock/>
             <TextBlock/>
         </StackPanel>
+
         <StackPanel Margin="0,5,0,0">
             <DockPanel>
                 <TextBlock Text="Normal" DockPanel.Dock="Left"/>
                 <TextBox Text="{Binding NormalTexPath}" DockPanel.Dock="Right"/>
-                <!--
-                <TextBlock Text="Normal"/>
-                <TextBox DataContext="{Binding NormalTex}" Text="{Binding Path}"/>
-                -->
             </DockPanel>
 
             <DockPanel Visibility="{Binding HasSpecular, Converter={StaticResource BooleanToVisibilityConverter}}">
@@ -53,7 +50,5 @@
                 <TextBox Text="{Binding ReflectionTexPath}" DockPanel.Dock="Right"/>
             </DockPanel>
         </StackPanel>
-
-
     </Grid>
 </UserControl>

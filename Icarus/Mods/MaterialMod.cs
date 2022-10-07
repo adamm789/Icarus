@@ -208,21 +208,6 @@ namespace Icarus.Mods
             return XivMtrl;
         }
 
-        private static MapInfo GetMapInfo(XivTexType type, MtrlTextureDescriptorFormat format, string path)
-        {
-            var retVal = new MapInfo()
-            {
-                Usage = type,
-                Format = format,
-                Path = path
-            };
-            if (String.IsNullOrWhiteSpace(path))
-            {
-                Log.Error($"Trying to set {path} as {nameof(type)}.");
-            }
-            return retVal;
-        }
-
         public List<SharpDX.Half>? GetColorSetData()
         {
             return XivMtrl?.ColorSetData;
@@ -253,15 +238,29 @@ namespace Icarus.Mods
             return false;
         }
 
+        private static MapInfo GetMapInfo(XivTexType type, MtrlTextureDescriptorFormat format, string path)
+        {
+            var retVal = new MapInfo()
+            {
+                Usage = type,
+                Format = format,
+                Path = path
+            };
+            if (String.IsNullOrWhiteSpace(path))
+            {
+                Log.Error($"Trying to set {path} as {nameof(type)}.");
+            }
+            return retVal;
+        }
+
         // TODO: Ability to copy colorset data or leave it alone
         public override void SetModData(IGameFile gameFile)
         {
-            if (gameFile is not MaterialGameFile)
+            if (gameFile is not MaterialGameFile materialGameFile)
             {
                 throw new ArgumentException($"ModData was not of MaterialGameFile. It was {gameFile.GetType()}.");
             }
-            var materialGameFile = gameFile as MaterialGameFile;
-            base.SetModData(gameFile);
+            base.SetModData(materialGameFile);
             Init(materialGameFile.XivMtrl);
         }
     }

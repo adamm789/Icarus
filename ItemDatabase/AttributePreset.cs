@@ -144,7 +144,6 @@ namespace ItemDatabase
 
         public static List<XivAttribute>? GetAttributes(string path)
         {
-            // TODO: Get attributes via string (_met, _sho, etc)
             if (String.IsNullOrWhiteSpace(path)) return null;
             var retVal = new List<XivAttribute>();
             path = path.ToLower();
@@ -154,7 +153,6 @@ namespace ItemDatabase
             {
                 retVal.AddRange(slotAttributes);
             }
-
             if (XivPathParser.IsFace(path))
             {
                 retVal.AddRange(FaceAttributes);

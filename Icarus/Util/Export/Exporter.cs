@@ -24,6 +24,8 @@ using xivModdingFramework.Materials.DataContainers;
 using xivModdingFramework.Cache;
 using System.Drawing;
 using ItemDatabase.Paths;
+using System.Windows.Shapes;
+using Path = System.IO.Path;
 
 namespace Icarus.Util
 {
@@ -100,13 +102,15 @@ namespace Icarus.Util
             return Array.Empty<byte>();
         }
 
-        // TODO: WriteTextureToBytes
-        // TODO: Seems like I need to get the format of the given texture
         public async Task<byte[]> WriteTextureToBytes(TextureMod mod, bool shouldCompress)
         {
             if (mod.IsInternal)
             {
-                throw new NotImplementedException("Unknown method for internal textures.");
+                throw new NotImplementedException("Unknown export method for internal textures.");
+            }
+            if (!shouldCompress)
+            {
+                throw new NotImplementedException("Unknown export method for Penumbra texture (.tex)");
             }
 
             var ddsContainer = new DDSContainer();
@@ -115,52 +119,18 @@ namespace Icarus.Util
             var externalPath = mod.ModFilePath;
             var internalPath = mod.Path;
 
-            //var root = await XivCache.GetFirstRoot(internalPath);
+            if (!File.Exists(externalPath))
+            {
+                throw new FileNotFoundException($"The external texture path: {externalPath} could not be found.");
+            }
+
+            // MakeTexData
+            // https://github.com/TexTools/xivModdingFramework/blob/81c234e7b767d56665185e07aabeeae21d895f0b/xivModdingFramework/Textures/FileTypes/Tex.cs#L905
             try
             {
-                /*
-                if (texFormat == XivTexFormat.INVALID)
-                {
-                    if (isDds)
-                    {
-                        using (var fs = new FileStream(externalPath, FileMode.Open))
-                        {
-                            using (var sr = new BinaryReader(fs))
-                            {
-                                texFormat = TexExtensions.GetDDSTexFormat(sr);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        // TODO: How to get tex format of an external item?
-                        try
-                        {
-                            var xivt = await _dat.GetType4Data(internalPath, false);
-                            texFormat = xivt.TextureFormat;
-                        } catch (Exception ex)
-                        {
-                            _logService.Warning($"Could not get Type4 data from {internalPath}");
-                            if (mod.TexType == XivTexType.Normal)
-                            {
-                                texFormat = XivTexFormat.DXT5;
-                            }
-                            else if (mod.TexType == XivTexType.Multi)
-                            {
-                                texFormat = XivTexFormat.DXT1;
-                            }
-                            else
-                            {
-                                texFormat = XivTexFormat.A8R8G8B8;
-                            }
-                        }
-                    }
-                }
-                */
-
                 // Check if the texture being imported has been imported before
                 CompressionFormat compressionFormat = CompressionFormat.BGRA;
-                
+
                 switch (texFormat)
                 {
                     case XivTexFormat.DXT1:
@@ -179,7 +149,7 @@ namespace Icarus.Util
                         }
                         break;
                 }
-                
+
                 if (!isDds)
                 {
                     using (var surface = Surface.LoadFromFile(externalPath))
@@ -213,6 +183,7 @@ namespace Icarus.Util
                 }
 
                 // If we're not a DDS, write the DDS to file temporarily.
+                // TODO: Where to write temp file?... To Temp folder?
                 var ddsFilePath = externalPath;
                 if (!isDds)
                 {
@@ -221,53 +192,24 @@ namespace Icarus.Util
                     ddsFilePath = tempFile;
                 }
 
-                using (var br = new BinaryReader(File.OpenRead(ddsFilePath)))
-                {
-                    br.BaseStream.Seek(12, SeekOrigin.Begin);
-
-                    var newHeight = br.ReadInt32();
-                    var newWidth = br.ReadInt32();
-                    br.ReadBytes(8);
-                    var newMipCount = br.ReadInt32();
-
-                    if (newHeight % 2 != 0 || newWidth % 2 != 0)
-                    {
-                        throw new Exception("Resolution must be a multiple of 2");
-                    }
-
-                    br.BaseStream.Seek(80, SeekOrigin.Begin);
-
-                    var textureFlags = br.ReadInt32();
-                    var texType = br.ReadInt32();
-
-                    var uncompressedLength = (int)new FileInfo(ddsFilePath).Length - 128;
-                    var newTex = new List<byte>();
-
-                    if (!internalPath.Contains(".atex"))
-                    {
-                        var DDSInfo = await DDS.ReadDDS(br, texFormat, newWidth, newHeight, newMipCount);
-
-                        newTex.AddRange(DatExtensions.MakeType4DatHeader(texFormat, DDSInfo.mipPartOffsets, DDSInfo.mipPartCounts, (int)uncompressedLength, newMipCount, newWidth, newHeight));
-                        newTex.AddRange(TexExtensions.MakeTextureInfoHeader(texFormat, newWidth, newHeight, newMipCount));
-                        newTex.AddRange(DDSInfo.compressedDDS);
-
-                        return newTex.ToArray();
-                    }
-                    else
-                    {
-                        br.BaseStream.Seek(128, SeekOrigin.Begin);
-                        newTex.AddRange(TexExtensions.MakeTextureInfoHeader(texFormat, newWidth, newHeight, newMipCount));
-                        newTex.AddRange(br.ReadBytes((int)uncompressedLength));
-                        var data = await DatExtensions.CreateType2Data(newTex.ToArray());
-                        return data;
-                    }
-                }
+                return await TexExtensions.DDSToTex(ddsFilePath, internalPath, texFormat);
             }
             finally
             {
                 ddsContainer.Dispose();
             }
-            //return await tex.MakeTexData(mod.Path, mod.ModFilePath);
+        }
+
+        protected void ApplyModelOptions(ModelMod mm)
+        {
+            _logService.Information($"Applying ModelModifiers for {mm.Name}");
+            var ttModel = mm.ImportedModel;
+            var ogMdl = mm.XivMdl;
+            var options = mm.Options;
+            var ogPath = ogMdl.MdlPath;
+
+            options.Apply(ttModel, ogMdl, null, _logService.LoggingFunction);
+            ModelModifiers.FixUpSkinReferences(ttModel, ogPath);
         }
 
         /// <summary>
@@ -279,20 +221,14 @@ namespace Icarus.Util
         protected async Task<byte[]> WriteModelToBytes(ModelMod file, bool shouldCompress, int counter = 0)
         {
             _logService.Verbose($"{file.Name} ({counter}) has started.");
+            /*
             TTModel ttModel;
             XivMdl ogMdl = file.XivMdl;
             string ogPath = ogMdl.MdlPath;
             ModelModifierOptions options = new();
 
-            if (file is ModelMod mm)
-            {
-                ttModel = mm.ImportedModel;
-                options = mm.Options;
-            }
-            else
-            {
-                ttModel = file.TTModel;
-            }
+            ttModel = file.ImportedModel;
+            options = file.Options;
 
             options.Apply(ttModel, ogMdl, null, _logService.LoggingFunction);
 
@@ -304,6 +240,10 @@ namespace Icarus.Util
             {
                 Log.Error(ex.Message);
             }
+            */
+            var ttModel = file.ImportedModel;
+            var ogMdl = file.XivMdl;
+            ApplyModelOptions(file);
 
             var mdl = new Mdl(ttModel, ogMdl);
             var bytes = await mdl.MakeNewMdlFileLumina(shouldCompress);

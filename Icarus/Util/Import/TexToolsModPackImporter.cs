@@ -251,7 +251,6 @@ namespace Icarus.Services.Files
                 {
                     var file = pack.ReadFile<MtrlFile>(mods.ModOffset);
                     var gameDirectory = new DirectoryInfo(_gameDirectory);
-                    // TODO: Does seem to be creating correct color set data...?
                     var xivMtrl = await MtrlExtensions.GetMtrlData(gameDirectory, file.Data, mods.FullPath);
 
                     var modFileName = GetModFileName(mods, option);

@@ -1,9 +1,11 @@
 ﻿using Icarus.Mods;
 using Icarus.Mods.GameFiles;
 using Icarus.Mods.Interfaces;
+using Icarus.Services.GameFiles.Interfaces;
 using Icarus.Services.Interfaces;
 using Icarus.Util;
 using Icarus.Util.Extensions;
+using Icarus.ViewModels.Mods;
 using ItemDatabase.Interfaces;
 using ItemDatabase.Paths;
 using Lumina;
@@ -41,9 +43,9 @@ namespace Icarus.Services.GameFiles
         readonly string _gameDirectory;
         readonly DirectoryInfo _frameworkGameDirectory;
 
-        public GameFileService(LuminaService luminaService, ItemListService itemDatabaseService, SettingsService settingsService, ILogService logService) : base(luminaService)
+        public GameFileService(LuminaService luminaService, ItemListService itemListService, SettingsService settingsService, ILogService logService) : base(luminaService)
         {
-            _itemListService = itemDatabaseService;
+            _itemListService = itemListService;
             _gameDirectory = settingsService.GameDirectoryLumina;
             _logService = logService;
             _frameworkGameDirectory = new(Path.Combine(_gameDirectory, "ffxiv"));
@@ -90,6 +92,25 @@ namespace Icarus.Services.GameFiles
             return null;
         }
 
+        // TODO: race?
+        public async Task<IGameFile?> TryGetFileData(string path, Type? callingType = null, string name = "")
+        {
+            if (XivPathParser.IsMdl(path) && callingType == typeof(ModelModViewModel))
+            {
+                return TryGetModelFileData(path, name);
+            }
+            if (XivPathParser.IsMtrl(path) && callingType == typeof(MaterialModViewModel))
+            {
+                return await TryGetMaterialFileData(path, name);
+            }
+            if (XivPathParser.IsTex(path) && callingType == typeof(TextureModViewModel))
+            {
+                return await TryGetTextureFileData(path, name);
+            }
+            _logService.Error($"Returning null from {path}");
+            return null;
+        }
+
         public async Task<ITextureGameFile?> GetTextureFileData(IItem? itemArg = null)
         {
             var item = GetItem(itemArg);
@@ -101,7 +122,7 @@ namespace Icarus.Services.GameFiles
             }
             var xivMtrl = materialFileData.XivMtrl;
             var typeFormatDict = new Dictionary<XivTexType, XivTexFormat>();
-            
+
             for (var i = 0; i < xivMtrl.TexturePathList.Count; i++)
             {
                 var texturePath = xivMtrl.TexturePathList[i];
@@ -120,33 +141,7 @@ namespace Icarus.Services.GameFiles
             return retVal;
         }
 
-        // TODO: race?
-        public async Task<IGameFile?> TryGetFileData(string path, string name = "")
-        {
-            if (XivPathParser.IsMdl(path))
-            {
-                try
-                {
-                    return GetModelFileData(path, name);
-                }
-                catch (ArgumentException ex)
-                {
-                    _logService.Error(ex.Message);
-                }
-            }
-            if (XivPathParser.IsMtrl(path))
-            {
-                return await GetMaterialFileData(path, name);
-            }
-            if (XivPathParser.IsTex(path))
-            {
-                return await GetTextureFileData(path, name);
-            }
-            _logService.Error($"Returning null from {path}");
-            return null;
-        }
-
-        public async Task<ITextureGameFile?> GetTextureFileData(string path, string itemName = "")
+        public async Task<ITextureGameFile?> TryGetTextureFileData(string path, string itemName = "")
         {
             List<IItem> results = new();
 
@@ -164,44 +159,50 @@ namespace Icarus.Services.GameFiles
 
         // TODO: Split into ModelFileService, MaterialFileService, etc?
         #region Models
-        public IModelGameFile? GetModelFileData(string path, string itemName = "")
+        public IModelGameFile? TryGetModelFileData(string path, string itemName = "")
         {
             //var mdl = _lumina.GetFile<MdlFile>(path);
             //var file = _lumina.GetFileMetadata(path);
-            (var model, var xivMdl) = TryGetOriginalModel(path);
-
-            // TODO: Currently picks the first one
-            // How to handle variants (if I can)
-            List<IItem> results = new();
-
-            if (!String.IsNullOrWhiteSpace(itemName))
+            try
             {
-                results = _itemListService.Search(itemName);
+                (var model, var xivMdl) = TryGetOriginalModel(path);
+
+                List<IItem> results = new();
+
+                _logService.Debug($"Searching for {path} to try and get item name.");
+                if (!String.IsNullOrWhiteSpace(itemName))
+                {
+                    results = _itemListService.Search(itemName);
+                }
+                if (results.Count == 0)
+                {
+                    results = _itemListService.Search(path);
+                }
+
+                var name = $"{path} (?)";
+                if (results.Count > 0)
+                {
+                    name = results[0].Name;
+                }
+                var category = XivPathParser.GetCategory(path);
+                var race = XivPathParser.GetRaceFromString(path);
+
+                var ret = new ModelGameFile()
+                {
+                    Name = name,
+                    Path = path,
+                    TargetRace = race,
+                    TTModel = model,
+                    XivMdl = xivMdl,
+                    Category = category
+                };
+
+                return ret;
             }
-            if (results.Count == 0)
+            catch (ArgumentException)
             {
-                results = _itemListService.Search(path);
+                return null;
             }
-
-            var name = $"{path} (?)";
-            if (results.Count > 0)
-            {
-                name = results[0].Name;
-            }
-            var category = XivPathParser.GetCategory(path);
-            var race = XivPathParser.GetRaceFromString(path);
-
-            var ret = new ModelGameFile()
-            {
-                Name = name,
-                Path = path,
-                TargetRace = race,
-                TTModel = model,
-                XivMdl = xivMdl,
-                Category = category
-            };
-
-            return ret;
         }
 
         public IModelGameFile? GetModelFileData(IItem? itemArg = null, XivRace race = XivRace.Hyur_Midlander_Male)
@@ -249,7 +250,7 @@ namespace Icarus.Services.GameFiles
         #endregion
         #region Materials
 
-        public async Task<IMaterialGameFile?> GetMaterialFileData(string path, string itemName = "")
+        public async Task<IMaterialGameFile?> TryGetMaterialFileData(string path, string itemName = "")
         {
             var xivMtrl = await TryGetMaterialFromPath(path);
             List<IItem> results = new();
@@ -323,6 +324,9 @@ namespace Icarus.Services.GameFiles
             return retVal;
         }
 
+        #endregion
+
+        #region Private Functions
         private async Task<XivMtrl?> TryGetMaterialFromPath(string path)
         {
             _logService.Information($"Trying to get material: {path}.");
@@ -332,36 +336,17 @@ namespace Icarus.Services.GameFiles
                 {
                     var mtrlFile = _lumina.GetFile<MtrlFile>(path);
                     var xivMtrl = await MtrlExtensions.GetMtrlData(_frameworkGameDirectory, mtrlFile.Data, path);
+                    _logService.Information($"Successfully found material {path}");
                     return xivMtrl;
                 }
             }
             catch (ArgumentOutOfRangeException ex)
             {
-
+                _logService.Debug($"Could not find material {path}");
             }
             return null;
         }
 
-        #endregion
-        #region Textures
-
-        // TODO GetTextureData(IItem);
-        public XivTexFormat GetTextureData(IItem? itemArg = null)
-        {
-            var item = GetItem(itemArg);
-            if (item == null) return XivTexFormat.INVALID;
-            var tex = item.GetTexPath(XivTexType.Multi);
-            if (_lumina.FileExists(item.GetTexPath(XivTexType.Multi)))
-            {
-                var texFile = _lumina.GetFile<TexFile>(item.GetTexPath(XivTexType.Multi));
-                var format = texFile.Header.Format;
-                // Transform format to XivTexFormat?
-            }
-            return XivTexFormat.INVALID;
-        }
-        #endregion
-
-        #region Private Functions
         private (TTModel, XivMdl) TryGetOriginalModel(string path, XivRace race = XivRace.Hyur_Midlander_Male)
         {
             var mdl = TryGetOriginalWithLumina(path);

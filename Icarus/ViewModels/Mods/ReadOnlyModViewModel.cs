@@ -1,6 +1,6 @@
 ﻿using Icarus.Mods.Interfaces;
+using Icarus.Services.GameFiles.Interfaces;
 using Icarus.Services.GameFiles;
-using Icarus.Services.Interfaces;
 using Icarus.ViewModels.Util;
 using ItemDatabase.Interfaces;
 using Serilog;
@@ -24,11 +24,11 @@ namespace Icarus.ViewModels.Mods
             FileName = mod.ModFileName;
         }
 
-        public override async Task SetDestinationItem(IItem? item = null)
+        public override async Task<bool> SetDestinationItem(IItem? item = null)
         {
             //throw new NotImplementedException();
             Log.Information("Cannot set item on ReadOnlyMod.");
-            return;
+            return false;
         }
     }
 }

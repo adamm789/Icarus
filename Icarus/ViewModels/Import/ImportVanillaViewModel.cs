@@ -1,6 +1,7 @@
 ﻿using Icarus.Mods;
 using Icarus.Mods.GameFiles;
 using Icarus.Mods.Interfaces;
+using Icarus.Services.GameFiles.Interfaces;
 using Icarus.Services.GameFiles;
 using Icarus.Services.Interfaces;
 using Icarus.ViewModels.Mods;
@@ -44,6 +45,10 @@ namespace Icarus.ViewModels.Import
                 SelectedItem = (sender as ItemListService).SelectedItem;
                 HasSkin = XivPathParser.HasSkin(SelectedItem.GetMdlPath());
                 AllRacesMdls = new(_itemListService.GetAllRaceMdls());
+                if (AllRacesMdls.Count > 0)
+                {
+                    SelectedRace = AllRacesMdls[0];
+                }
             }
         }
 
@@ -131,8 +136,6 @@ namespace Icarus.ViewModels.Import
 
         public ModelMod? GetVanillaMdl()
         {
-            // TODO: Trying to get a vanilla item ends up getting model data twice. ?
-
             if (ShouldGetMdlData())
             {
                 var modelGameFile = _gameFileDataService.GetModelFileData(SelectedItem, SelectedRace);
@@ -141,7 +144,7 @@ namespace Icarus.ViewModels.Import
                 var modViewModel = _modPackViewModel.Add(mod);
                 if (modViewModel == null)
                 {
-                    _logService.Fatal($"Failed to get vanilla mdl: {mod.Name}");
+                    _logService.Fatal($"Failed to get ViewModel for vanilla mdl: {mod.Name}");
                     return null;
                 }
                 modViewModel.SetModData(modelGameFile);
@@ -165,7 +168,7 @@ namespace Icarus.ViewModels.Import
             var modViewModel = _modPackViewModel.Add(mod);
             if (modViewModel == null)
             {
-                _logService.Fatal($"Failed to get vanilla mtrl: {mod.Name}");
+                _logService.Fatal($"Failed to get ViewModel vanilla mtrl: {mod.Name}");
                 return null;
             }
             modViewModel.SetModData(materialGameFile);

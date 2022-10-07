@@ -22,5 +22,10 @@ namespace Icarus
             base.OnClosed(e);
             Application.Current.Dispatcher.InvokeShutdown();
         }
+
+        private void window1_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            grid1.Focus();
+        }
     }
 }

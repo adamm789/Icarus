@@ -63,6 +63,7 @@ namespace Icarus.Services.GameFiles
             }
             return Data.GetAllRaceMdls(item);
         }
+
         public List<IItem> Search(string str)
         {
             var ret = new List<IItem>();
@@ -73,7 +74,7 @@ namespace Icarus.Services.GameFiles
             else
             {
                 ret = Data.Search(str);
-                _logService.Information($"Searched for {str}. Found {ret.Count} matching entries.");
+                _logService.Debug($"Searched for {str}. Found {ret.Count} matching entries.");
             }
             return ret;
         }
@@ -91,6 +92,11 @@ namespace Icarus.Services.GameFiles
                 _logService.Information($"Searched for {str}. Found {ret.Count} matching entries.");
             }
             return ret;
+        }
+
+        public bool TrySearch(string path)
+        {
+            return _lumina.FileExists(path);
         }
 
         protected override void OnLuminaSet()

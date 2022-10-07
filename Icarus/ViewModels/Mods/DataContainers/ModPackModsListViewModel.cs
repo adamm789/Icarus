@@ -238,8 +238,9 @@ namespace Icarus.ViewModels.Mods.DataContainers
         #region UI
         void IDropTarget.DragOver(IDropInfo dropInfo)
         {
+            var source = dropInfo.Data as ModViewModel;
             var target = dropInfo.TargetItem as ModViewModel;
-            if (target != null)
+            if (source != null && target != null)
             {
                 dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
                 dropInfo.Effects = DragDropEffects.Copy;
