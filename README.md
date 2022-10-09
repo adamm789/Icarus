@@ -10,7 +10,8 @@ Currently supports:
 * Exporting files as .fbx
 * Adding attributes
 * Removing shapes  
-* Tentative mtrl files  
+* Importing dds to colorset and mtrl
+* Importing png and bmp to tex
 
 # Usage
 Set game path  
@@ -23,7 +24,6 @@ If you wish to build your own copy, you will need the "converters" (for importin
 # Known Issues
 * If you import a ttmp2 file, some files will be called "ReadOnly." They will be skipped if exporting to any Penumbra format. However, they should be included in any TexTools export.  
 * While you can theoretically assign any destination path, this is a courtesy. Use at your own risk.  
-* "TryGet" allows inputting an internal game path to get the vanilla item. This is again provided as a courtesy. Use at your own risk.
 * When exporting vanilla mdls with skins, the resulting png is incorrect.  
 * When importing via fbx, attributes are not automatically set. While intentional, down the line, there may be a setting to change that.  
 * Models with custom skeletons will not export to fbx correctly. They appear to work fine in-game.
