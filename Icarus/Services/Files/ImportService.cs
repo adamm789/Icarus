@@ -166,7 +166,11 @@ namespace Icarus.Services.Files
                 var colorsetData = Tex.GetColorsetDataFromDDS(directory);
                 var colorsetDyeData = Tex.GetColorsetExtraDataFromDDS(directory);
 
-                var materialMod = new MaterialMod(colorsetData, colorsetDyeData);
+                var materialMod = new MaterialMod(colorsetData, colorsetDyeData)
+                {
+                    ModFileName = filePath,
+                    ModFilePath = filePath
+                };
 
                 var modPack = new ModPack();
                 modPack.SimpleModsList.Add(materialMod);

@@ -9,7 +9,7 @@
                      xmlns:dd="urn:gong-wpf-dragdrop"
         d:DataContext="{d:DesignInstance Type=models:MeshGroupViewModel}"
         mc:Ignorable="d" 
-             Height="450" Width="800"
+             MinHeight="450" MinWidth="800"
         Title="Shape and Attribute Editor">
     <Grid>
         <Grid.Resources>
@@ -35,9 +35,9 @@
         </Grid.Resources>
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="2*"/>
             <ColumnDefinition Width="3*"/>
-            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="4*"/>
+            <ColumnDefinition Width="4*"/>
         </Grid.ColumnDefinitions>
 
         <Grid Grid.Column="0">

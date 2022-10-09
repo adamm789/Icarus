@@ -7,7 +7,9 @@ using Icarus.Services.GameFiles.Interfaces;
 using Icarus.ViewModels.Import;
 using Icarus.ViewModels.Models;
 using ItemDatabase;
+using ItemDatabase.Enums;
 using ItemDatabase.Paths;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using xivModdingFramework.General.Enums;
 
@@ -144,11 +146,22 @@ namespace Icarus.ViewModels.Mods
             //var attributePresets = GetAttributePresets(modelData);
             //var slotAttributes = GetSlotAttributes(slot);
             var attributePresets = AttributePreset.GetAttributeTTModelPresets(ttModel);
+            Dictionary<string, Dictionary<int, List<XivAttribute>>> internalPresets = new();
+            if (IsInternal)
+            {
+                internalPresets = AttributePreset.GetAttributeTTModelPresets(_modelMod.ImportedModel);
+            }
+
             var bodyPresets = AttributePreset.GetAttributeBodyPresets(slot);
+            foreach (var pair in internalPresets)
+            {
+                attributePresets.TryAdd(pair.Key, pair.Value);
+            }
             foreach (var pair in bodyPresets)
             {
                 attributePresets.TryAdd(pair.Key, pair.Value);
             }
+
             //var slotAttributes = AttributePreset.GetSlotAttributes(slot);
             var slotAttributes = AttributePreset.GetAttributes(modelData.Path);
 

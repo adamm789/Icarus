@@ -35,12 +35,14 @@ namespace Icarus.Services
         }
         public void Fatal(string s) => Log.Fatal(s);
         public void Fatal(Exception ex, string s = "") => Log.Fatal(ex, s);
+        public ILogger Logger => Log.Logger;
 
 
         readonly SettingsService _settingsService;
 
         public LogService(SettingsService settingsService)
         {
+
             _settingsService = settingsService;
 
             var projectDirectory = _settingsService.ProjectDirectory;

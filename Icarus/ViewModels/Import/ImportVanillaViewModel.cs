@@ -178,17 +178,18 @@ namespace Icarus.ViewModels.Import
         DelegateCommand _getVanillaModel;
         public DelegateCommand GetVanillaModel
         {
-            get { return _getVanillaModel ??= new DelegateCommand(async o => await GetVanillaItem()); }
+            get { return _getVanillaModel ??= new DelegateCommand(_ => GetVanillaMdl()); }
         }
 
         DelegateCommand _getVanillaMaterial;
         public DelegateCommand GetVanillaMaterial
         {
-            get { return _getVanillaMaterial ??= new DelegateCommand(async o => await GetVanillaItem()); }
+            get { return _getVanillaMaterial ??= new DelegateCommand(async _ => await GetVanillaMtrl()); }
         }
 
         // chara/human/c1301/obj/face/f0001/model/c1301f0001_fac.mdl
 
+        /*
         public async Task<IGameFile?> GetVanillaItem()
         {
             IGameFile? gameFile = null;
@@ -216,6 +217,7 @@ namespace Icarus.ViewModels.Import
             }
             return gameFile;
         }
+        */
 
         public ModelMod? GetVanillaMdl()
         {

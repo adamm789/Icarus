@@ -6,7 +6,6 @@
              xmlns:local="clr-namespace:Icarus.Views.Models" 
              xmlns:models="clr-namespace:Icarus.ViewModels.Models" 
              xmlns:dd="urn:gong-wpf-dragdrop"
-
              d:DataContext="{d:DesignInstance Type=models:AttributePresetsViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">

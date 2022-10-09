@@ -29,15 +29,16 @@ namespace Icarus.ViewModels.Mods.DataContainers
         Dictionary<ModViewModel, List<NotifyPropertyChanged>> mtrlDictionary = new();
         Dictionary<ModViewModel, List<NotifyPropertyChanged>> texDictionary = new();
 
-        public ModPackModsListViewModel(ModPack modPack, ViewModelService modFileService)
+        public ModPackModsListViewModel(ModPack modPack, ViewModelService viewModelService)
         {
             ModPack = modPack;
-            _viewModelService = modFileService;
+            _viewModelService = viewModelService;
 
             UpdateHeaders();
         }
 
         private int identifier = 0;
+
         bool _canExport = false;
         public bool CanExport
         {

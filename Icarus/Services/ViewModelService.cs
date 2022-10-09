@@ -26,6 +26,7 @@ namespace Icarus.Services
 
         public ModViewModel GetModViewModel(IGameFile mod)
         {
+
             if (mod is ModelMod modelMod)
             {
                 var vm = new ModelModViewModel(modelMod, this, _itemListService, _gameFileService);

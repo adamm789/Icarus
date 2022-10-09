@@ -204,7 +204,8 @@ namespace ItemDatabase
                 }
                 if (partDict.Keys.Count > 0)
                 {
-                    var groupName = $"Group {i} ";
+                    var path = Path.GetFileName(ttModel.Source);
+                    var groupName = $"{path} - Group {i} ";
                     dict.Add(groupName, partDict);
                 }
             }
