@@ -18,7 +18,7 @@ namespace Icarus.ViewModels.Mods
         //protected readonly ItemListService _itemListService;
         public bool IsReadOnly => this is ReadOnlyModViewModel;
 
-        public ModViewModel(IMod mod, ItemListService itemListService, IGameFileService gameFileDataService)
+        public ModViewModel(IMod mod, IGameFileService gameFileDataService)
         {
             _mod = mod;
             _gameFileService = gameFileDataService;

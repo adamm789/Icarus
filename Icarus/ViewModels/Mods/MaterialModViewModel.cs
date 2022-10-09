@@ -17,8 +17,8 @@ namespace Icarus.ViewModels.Mods
 
         // TODO: Include a section that shows the overall edits to all items
         // e.g. Group and display the mods that affect e6111
-        public MaterialModViewModel(MaterialMod mod, ItemListService itemListService, IGameFileService gameFileDataService, IWindowService windowService)
-            : base(mod, itemListService, gameFileDataService)
+        public MaterialModViewModel(MaterialMod mod, IGameFileService gameFileDataService, IWindowService windowService)
+            : base(mod, gameFileDataService)
         {
             _materialMod = mod;
             _windowService = windowService;

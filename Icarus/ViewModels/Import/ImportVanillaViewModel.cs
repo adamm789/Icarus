@@ -21,11 +21,11 @@ namespace Icarus.ViewModels.Import
     public class ImportVanillaViewModel : NotifyPropertyChanged
     {
         readonly IModsListViewModel _modPackViewModel;
-        readonly SearchViewModel _itemListService;
+        readonly ItemListViewModel _itemListService;
         readonly IGameFileService _gameFileDataService;
         readonly ILogService _logService;
 
-        public ImportVanillaViewModel(IModsListViewModel modPack, SearchViewModel itemListService, IGameFileService gameFileService, ILogService logService)
+        public ImportVanillaViewModel(IModsListViewModel modPack, ItemListViewModel itemListService, IGameFileService gameFileService, ILogService logService)
         {
             _modPackViewModel = modPack;
             _gameFileDataService = gameFileService;
@@ -38,9 +38,10 @@ namespace Icarus.ViewModels.Import
 
         private void SelectedItemChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(SearchViewModel.SelectedItem))
+            var itemList = sender as ItemListViewModel;
+            if (e.PropertyName == nameof(ItemListViewModel.SelectedItem) && itemList != null)
             {
-                SelectedItem = (sender as SearchViewModel).SelectedItem;
+                SelectedItem = itemList.SelectedItem;
                 if (SelectedItem != null)
                 {
                     HasSkin = XivPathParser.HasSkin(SelectedItem.GetMdlPath());
@@ -53,6 +54,9 @@ namespace Icarus.ViewModels.Import
                     SelectedItemMdl = SelectedItem.GetMdlFileName();
                     SelectedItemMtrl = SelectedItem.GetMtrlFileName();
                     SelectedItemName = SelectedItem.Name;
+
+                    CanImportMdl = true;
+                    CanImportMtrl = true;
                 }
                 else
                 {
@@ -65,9 +69,9 @@ namespace Icarus.ViewModels.Import
                 }
             }
             // TODO: Behavior: Type in invalid path, CanImportMdl/Mtrl will still be enabled
-            if (e.PropertyName == nameof(SearchViewModel.CompletePath))
+            if (e.PropertyName == nameof(ItemListViewModel.CompletePath) && itemList != null)
             {
-                _completePath = (sender as SearchViewModel).CompletePath;
+                _completePath = itemList.CompletePath;
                 if (_completePath != null)
                 {
                     CanImportMdl = XivPathParser.IsMdl(_completePath);
@@ -131,8 +135,8 @@ namespace Icarus.ViewModels.Import
             }
         }
 
-        IItem _selectedItem;
-        public IItem SelectedItem
+        IItem? _selectedItem;
+        public IItem? SelectedItem
         {
             get { return _selectedItem; }
             set { _selectedItem = value; OnPropertyChanged(); }
@@ -161,14 +165,14 @@ namespace Icarus.ViewModels.Import
 
         string? _completePath;
 
-        bool _canImportMdl = true;
+        bool _canImportMdl = false;
         public bool CanImportMdl
         {
             get { return _canImportMdl; }
             set { _canImportMdl = value; OnPropertyChanged(); }
         }
 
-        bool _canImportMtrl = true;
+        bool _canImportMtrl = false;
         public bool CanImportMtrl
         {
             get { return _canImportMtrl; }

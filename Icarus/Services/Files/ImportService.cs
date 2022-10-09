@@ -146,7 +146,7 @@ namespace Icarus.Services.Files
                     300 or 201 => "Sqlite Error.",
                     _ => "File is invalid.",
                 };
-                _logService.Error(ex, $"Conversion failed. {err}");
+                _logService.Error(ex, $"Import failed. {err}");
             }
             catch (Win32Exception ex)
             {

@@ -14,13 +14,15 @@ namespace Icarus.Services.UI
             _messageBoxService = messageBoxService;
             _windowService = windowService;
         }
-
+        
         public void Show(string message) => _messageBoxService.Show(message);
 
         public DialogResult Show(string message, string title, MessageBoxButtons buttons) => _messageBoxService.Show(message, title, buttons);
 
         public DialogResult ShowMessage(string message, string title, MessageBoxButtons buttons) => _messageBoxService.ShowMessage(message, title, buttons);
 
+        public void Show<T>(object dataContext) where T : Window, new() => _windowService.Show<T>(dataContext);
         public void ShowWindow<T>(object dataContext) where T : Window, new() => _windowService.ShowWindow<T>(dataContext);
+        public bool IsWindowOpen<T>(string name = "") where T : Window => _windowService.IsWindowOpen<T>(name);
     }
 }

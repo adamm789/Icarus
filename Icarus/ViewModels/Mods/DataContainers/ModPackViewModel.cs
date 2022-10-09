@@ -15,24 +15,38 @@ namespace Icarus.ViewModels.Mods.DataContainers
     public class ModPackViewModel : NotifyPropertyChanged, IModPackViewModel, IDropTarget
     {
         public ModPack ModPack { get; }
-        IModsListViewModel _modsList;
-        ViewModelService _modFileService;
+        public IModsListViewModel ModsListViewModel { get; }
+        ViewModelService _viewModelService;
 
-        IModPackMetaViewModel modPackMetaViewModel;
+        IModPackMetaViewModel _modPackMetaViewModel;
         public IModPackMetaViewModel ModPackMetaViewModel
         {
-            get { return modPackMetaViewModel; }
-            set { modPackMetaViewModel = value; OnPropertyChanged(); }
+            get { return _modPackMetaViewModel; }
+            set { _modPackMetaViewModel = value; OnPropertyChanged(); }
         }
-        public ModPackViewModel(ModPack modPack, IModPackMetaViewModel modPackMeta, IModsListViewModel modsList, ViewModelService modFileService)
+
+        public ModPackViewModel(ModPack modPack, ViewModelService viewModelService)
         {
-            _modsList = modsList;
-            _modFileService = modFileService;
+            ModPack = modPack;
+            _viewModelService = viewModelService;
+
+            ModPackMetaViewModel = _viewModelService.GetModPackMetaViewModel(modPack);
+            ModsListViewModel = new ModsListViewModel(modPack, _viewModelService);
+
+            DisplayedViewModel = ModPackMetaViewModel;
+            ModsListViewModel.SimpleModsList.CollectionChanged += new NotifyCollectionChangedEventHandler(OnCollectionChanged);
+        }
+
+
+        public ModPackViewModel(ModPack modPack, IModPackMetaViewModel modPackMeta, IModsListViewModel modsList, ViewModelService viewModelService)
+        {
+            ModsListViewModel = modsList;
+            _viewModelService = viewModelService;
             ModPack = modPack;
             ModPackMetaViewModel = modPackMeta;
 
             DisplayedViewModel = ModPackMetaViewModel;
-            _modsList.SimpleModsList.CollectionChanged += new NotifyCollectionChangedEventHandler(OnCollectionChanged);
+            ModsListViewModel.SimpleModsList.CollectionChanged += new NotifyCollectionChangedEventHandler(OnCollectionChanged);
         }
 
         private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -55,7 +69,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
         // TODO: pages -> overwrite, insert at index, and append to end
         public void SetModPack(ModPack modPack, ModPackViewModelImportFlags flags)
         {
-            _modsList.AddRange(modPack.SimpleModsList);
+            ModsListViewModel.AddRange(modPack.SimpleModsList);
             if (flags.HasFlag(ModPackViewModelImportFlags.OverwriteData))
             {
                 ModPack.CopyFrom(modPack);
@@ -69,7 +83,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
             {
                 foreach (var page in modPack.ModPackPages)
                 {
-                    var pageViewModel = new ModPackPageViewModel(page, this, _modFileService);
+                    var pageViewModel = new ModPackPageViewModel(page, this, _viewModelService);
                     AddPage(pageViewModel);
                 }
                 UpdatePagesView();
@@ -144,7 +158,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
 
         public ModPackPageViewModel AddPage()
         {
-            var page = new ModPackPageViewModel(ModPackPages.Count, this, _modFileService);
+            var page = new ModPackPageViewModel(ModPackPages.Count, this, _viewModelService);
 
             AddPage(page);
             return page;

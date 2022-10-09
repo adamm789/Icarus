@@ -9,20 +9,43 @@ using System.Windows.Data;
 
 namespace Icarus.ViewModels
 {
-    public class SearchViewModel : NotifyPropertyChanged
-    {
+    //public class SearchViewModel : NotifyPropertyChanged
+   // {
         // TODO: On Enter click expand the entries?
-
+        /*
         const int minNumBeforeExpansion = 100;
         readonly ItemListService _itemListService;
         readonly ILogService _logService;
         private PropertyChangedEventHandler eh;
 
+        readonly ItemListViewModelX _itemListViewModel;
+
+        public SearchViewModel(ItemListViewModelX itemListViewModel, ILogService logService)
+        {
+            _itemListViewModel = itemListViewModel;
+            _logService = logService;
+
+            var eh = new PropertyChangedEventHandler(OnItemSelected);
+            _itemListViewModel.PropertyChanged += eh;
+        }
+
+        private void OnItemSelected(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(ItemListViewModelX.SelectedItem) && sender is ItemListViewModelX vm) {
+                if (vm.SelectedItem != null)
+                {
+                    SelectedItem = vm.SelectedItem;
+                }
+            }
+        }
+
         public SearchViewModel(ItemListService itemListService, ILogService logService)
         {
             _itemListService = itemListService;
             _logService = logService;
+            */
 
+            /*
             if (_itemListService.Data == null)
             {
                 eh = new(DataPropertySet);
@@ -32,13 +55,16 @@ namespace Icarus.ViewModels
             {
                 BuildList();
             }
-        }
+            */
+        //}
+        /*
         ObservableCollection<ItemListViewModel> _itemList = new();
         public ObservableCollection<ItemListViewModel> ItemList
         {
             get { return _itemList; }
             set { _itemList = value; OnPropertyChanged(); }
         }
+
         private async void DataPropertySet(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(ItemListService.Data) && sender is ItemListService service)
@@ -78,6 +104,7 @@ namespace Icarus.ViewModels
             ItemList = items;
             //});
         }
+        
 
         private bool SearchFilter(object o)
         {
@@ -96,20 +123,24 @@ namespace Icarus.ViewModels
             }
             return item.IsMatch(searchText);
         }
-
+        */
+        /*
         string _searchText;
         public string SearchText
         {
             get { return _searchText; }
-            set { _searchText = value; OnPropertyChanged(); Search(); }
+            set { _searchText = value; OnPropertyChanged(); _itemListViewModel.Search(_searchText); }
         }
 
+
+        IItem? _selectedItem;
         public IItem? SelectedItem
         {
-            get { return _itemListService.SelectedItem; }
-            set { _itemListService.SelectedItem = value; OnPropertyChanged(); }
+            get { return _selectedItem; }
+            set { _selectedItem = value; OnPropertyChanged(); }
         }
-
+        */
+        /*
         string _selectedItemMdl;
         public string SelectedItemMdl
         {
@@ -130,15 +161,17 @@ namespace Icarus.ViewModels
             get { return _selectedItemName; }
             set { _selectedItemName = value; OnPropertyChanged(); }
         }
+        */
 
+        /*
         string? _completePath;
         public string? CompletePath
         {
             get { return _completePath; }
             set { _completePath = value; OnPropertyChanged(); }
         }
-
-        // TODO: Expand if there are only X amount of matching items?
+        */
+        /*
         public void Search()
         {
             var matchesFound = 0;
@@ -198,5 +231,6 @@ namespace Icarus.ViewModels
                 }
             }
         }
-    }
+        */
+    //}
 }

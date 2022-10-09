@@ -5,25 +5,26 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:dd="urn:gong-wpf-dragdrop"
              xmlns:viewmodels="clr-namespace:Icarus.ViewModels"
-             d:DataContext="{d:DesignInstance Type=viewmodels:SearchViewModel}"
+             d:DataContext="{d:DesignInstance Type=viewmodels:ItemListViewModel}"
              xmlns:local="clr-namespace:Icarus.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 
-    <TreeView ItemsSource="{Binding ItemList}" Grid.Row="2" 
+    <TreeView Grid.Row="2" ItemsSource="{Binding ItemList}"
                   VirtualizingStackPanel.IsVirtualizing="True"
                   dd:DragDrop.IsDragSource="True">
 
         <TreeView.ItemContainerStyle>
             <Style TargetType="{x:Type TreeViewItem}">
                 <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True"/>
-                <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=OneWay}"/>
+                <Setter Property="IsExpanded" Value="{Binding IsExpanded}"/>
                 <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
             </Style>
         </TreeView.ItemContainerStyle>
 
         <TreeView.Resources>
-            <HierarchicalDataTemplate DataType="{x:Type viewmodels:ItemListViewModel}" ItemsSource="{Binding Items}">
+            <!--
+            <HierarchicalDataTemplate DataType="{x:Type viewmodels:ItemListViewModelX}">
                 <StackPanel Height="Auto" HorizontalAlignment="Stretch" dd:DragDrop.DragSourceIgnore="True">
                     <TextBlock HorizontalAlignment="Stretch" FontSize="14">
                         <TextBlock.Text>
@@ -36,11 +37,14 @@
                 </StackPanel>
 
             </HierarchicalDataTemplate>
-            <DataTemplate DataType="{x:Type viewmodels:ItemViewModel}">
-                <Button Content="{Binding Name}" Background="Transparent" BorderBrush="Transparent"
+            -->
+            <HierarchicalDataTemplate DataType="{x:Type viewmodels:TreeItemViewModel}" ItemsSource="{Binding Children}">
+                <StackPanel>
+                    <Button Content="{Binding Header}" Background="Transparent" BorderBrush="Transparent"
                             Command="{Binding IsSelectedCommand}" Margin="0 -2 0 -1" HorizontalContentAlignment="Right"
-                            FontSize="14" ToolTip="{Binding Name}"/>
-            </DataTemplate>
+                            FontSize="14" ToolTip="{Binding Header}"/>
+                </StackPanel>
+            </HierarchicalDataTemplate>
         </TreeView.Resources>
     </TreeView>
 </UserControl>

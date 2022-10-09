@@ -32,12 +32,12 @@
                   Visibility="{Binding HasSkin, Converter={StaticResource BooleanToVisibilityConverter}}"/>
             </Grid>
             <Button Grid.Row="0" Grid.Column="1" Command="{Binding GetVanillaModel}" Content="Add Vanilla Mdl"
-                    Visibility="{Binding CanImportMdl, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                    IsEnabled="{Binding CanImportMdl}"/>
         </Grid>
 
         <TextBox Text="{Binding SelectedItemMtrl}" IsReadOnly="True"/>
         <Button Command="{Binding GetVanillaMaterial}" Content="Add Vanilla Mtrl"
-                Visibility="{Binding CanImportMtrl, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                IsEnabled="{Binding CanImportMtrl}"/>
 
         <!--
         <TextBox Grid.Row="1"  Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding Text}" TextWrapping="NoWrap" Width="300"/>

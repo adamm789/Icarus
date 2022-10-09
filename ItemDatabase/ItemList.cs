@@ -18,7 +18,6 @@ namespace ItemDatabase
 
         private Dictionary<string, SortedDictionary<string, IItem>> _allItems = new();
         private SortedDictionary<MainItemCategory, SortedList<string, Item>> OtherItems = new();
-
         public ItemList(GameData lumina)
         {
             _lumina = lumina;
@@ -96,7 +95,7 @@ namespace ItemDatabase
                 }
             }
 
-
+            /*
             _allItems["Housing Furniture"] = new();
             foreach (var f in furnishings)
             {
@@ -105,7 +104,7 @@ namespace ItemDatabase
 
                 _allItems["Housing Furniture"].Add(item.Name, item);
             }
-
+            */
 
             AddBody();
         }

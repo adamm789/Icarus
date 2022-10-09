@@ -24,15 +24,11 @@ namespace Icarus.Services.GameFiles
             set { _data = value; OnPropertyChanged(); }
         }
 
-        IItem _selectedItem;
-        public IItem SelectedItem
+        IItem? _selectedItem;
+        public IItem? SelectedItem
         {
             get { return _selectedItem; }
-            set
-            {
-                _selectedItem = value;
-                OnPropertyChanged();
-            }
+            set { _selectedItem = value; OnPropertyChanged(); }
         }
 
         public List<IItem> Search(string str)

@@ -50,7 +50,7 @@ namespace Icarus.Services.GameFiles
                 }
                 else
                 {
-                    _logService.Error("Could not get Item file. None was given.");
+                    _logService.Debug("Could not get Item file. None was given.");
                     return null;
                 }
             }
@@ -374,7 +374,7 @@ namespace Icarus.Services.GameFiles
         {
             if (_lumina.FileExists(path))
             {
-                _logService.Information($"Successfully got model of {path}");
+                _logService.Verbose($"Successfully got model of {path}");
 
                 var mdl = new MdlWithLumina(_lumina, path);
                 return mdl;
@@ -389,7 +389,7 @@ namespace Icarus.Services.GameFiles
 
                 if (_lumina.FileExists(skinRacePath))
                 {
-                    _logService.Information($"Using base race: {skinRacePath}.");
+                    _logService.Debug($"Using base race: {skinRacePath}.");
                     _logService.Warning("Make sure metadata is enabled to see this mod correctly.");
                     var mdl = new MdlWithLumina(_lumina, skinRacePath);
                     return mdl;

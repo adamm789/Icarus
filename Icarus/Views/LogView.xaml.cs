@@ -1,13 +1,14 @@
-﻿using System.Windows.Controls;
+﻿using System.Windows;
+using System.Windows.Controls;
 
 namespace Icarus.Views
 {
     /// <summary>
     /// Interaction logic for LogView.xaml
     /// </summary>
-    public partial class LogView : UserControl
+    public partial class LogWindow : Window
     {
-        public LogView()
+        public LogWindow()
         {
             InitializeComponent();
         }

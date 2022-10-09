@@ -7,6 +7,8 @@ namespace Icarus.ViewModels.Mods.DataContainers.Interfaces
     public interface IModPackViewModel : INotifyPropertyChanged
     {
         ModPack ModPack { get; }
+        IModPackMetaViewModel ModPackMetaViewModel { get; }
+        IModsListViewModel ModsListViewModel { get; }
         ObservableCollection<ModPackPageViewModel> ModPackPages { get; set; }
         ModPackPageViewModel AddPage();
         void AddPage(ModPackPageViewModel packPage);

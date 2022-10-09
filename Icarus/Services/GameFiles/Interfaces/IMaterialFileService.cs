@@ -9,5 +9,6 @@ namespace Icarus.Services.GameFiles.Interfaces
     {
         Task<IMaterialGameFile?> GetMaterialFileData(IItem? item);
         Task<IMaterialGameFile?> TryGetMaterialFileData(string path, string name = "");
+
     }
 }

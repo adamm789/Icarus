@@ -48,13 +48,11 @@
 
         <TabControl Grid.Row="0" Grid.Column="1">
             <TabItem Header="Pages">
-
                 <ContentControl Grid.Row="0" Grid.Column="1" DataContext="{Binding ModPackViewModel}">
                     <modviews:ModPackView/>
                 </ContentControl>
             </TabItem>
             <TabItem Header="Pack">
-
                 <ContentControl DataContext="{Binding ModPackViewModel}">
                     <editors:ModPackEditor></editors:ModPackEditor>
                 </ContentControl>

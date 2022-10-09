@@ -28,7 +28,7 @@
             <DataTemplate DataType="{x:Type datacontainers:ModPackMetaViewModel}">
                 <mods:SimpleModPackMetaView/>
             </DataTemplate>
-            <DataTemplate DataType="{x:Type datacontainers:ModPackModsListViewModel}">
+            <DataTemplate DataType="{x:Type datacontainers:ModsListViewModel}">
                 <local:SimpleModPackView/>
             </DataTemplate>
             <DataTemplate DataType="{x:Type exporterviewmodels:ExportViewModel}">
@@ -45,9 +45,9 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <ContentControl Grid.Row="0" Content="{Binding SearchViewModel}">
+            <ContentControl Grid.Row="0" Content="{Binding ItemListViewModel}">
                 <ContentControl.Resources>
-                    <DataTemplate DataType="{x:Type viewmodels:SearchViewModel}">
+                    <DataTemplate DataType="{x:Type viewmodels:ItemListViewModel}">
                         <views:SearchView/>
                     </DataTemplate>
                 </ContentControl.Resources>
@@ -59,9 +59,9 @@
                     </DataTemplate>
                 </ContentControl.Resources>
             </ContentControl>
-            <ContentControl Grid.Row="2" Content="{Binding SearchViewModel}" VerticalContentAlignment="Stretch">
+            <ContentControl Grid.Row="2" Content="{Binding ItemListViewModel}" VerticalContentAlignment="Stretch">
                 <ContentControl.Resources>
-                    <DataTemplate DataType="{x:Type viewmodels:SearchViewModel}">
+                    <DataTemplate DataType="{x:Type viewmodels:ItemListViewModel}">
                         <views:ItemListView/>
                     </DataTemplate>
                 </ContentControl.Resources>

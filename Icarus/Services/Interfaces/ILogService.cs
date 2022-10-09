@@ -1,5 +1,7 @@
-﻿using Serilog;
+﻿using Icarus.UI;
+using Serilog;
 using System;
+using System.IO;
 
 namespace Icarus.Services.Interfaces
 {
@@ -18,6 +20,8 @@ namespace Icarus.Services.Interfaces
         void Fatal(Exception ex, string s = "");
 
         ILogger Logger { get; }
+        StringWriter StringWriter { get; }
+        InMemorySink Sink { get; }
 
         void LoggingFunction(bool warning, string message);
     }

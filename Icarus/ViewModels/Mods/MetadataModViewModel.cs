@@ -5,7 +5,7 @@ namespace Icarus.ViewModels.Mods
 {
     public class MetadataModViewModel : ModViewModel
     {
-        public MetadataModViewModel(IMod mod, ItemListService itemListService, GameFileService gameFileDataService) : base(mod, itemListService, gameFileDataService)
+        public MetadataModViewModel(IMod mod, GameFileService gameFileDataService) : base(mod, gameFileDataService)
         {
 
         }

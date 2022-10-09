@@ -15,7 +15,7 @@ using System.Windows.Data;
 
 namespace Icarus.ViewModels.Mods.DataContainers
 {
-    public class ModPackModsListViewModel : NotifyPropertyChanged, IModsListViewModel, IDropTarget
+    public class ModsListViewModel : NotifyPropertyChanged, IModsListViewModel, IDropTarget
     {
         public ModPack ModPack { get; }
         ViewModelService _viewModelService;
@@ -29,7 +29,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
         Dictionary<ModViewModel, List<NotifyPropertyChanged>> mtrlDictionary = new();
         Dictionary<ModViewModel, List<NotifyPropertyChanged>> texDictionary = new();
 
-        public ModPackModsListViewModel(ModPack modPack, ViewModelService viewModelService)
+        public ModsListViewModel(ModPack modPack, ViewModelService viewModelService)
         {
             ModPack = modPack;
             _viewModelService = viewModelService;

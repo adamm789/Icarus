@@ -8,7 +8,7 @@ using xivModdingFramework.General.Enums;
 namespace Icarus.Services.GameFiles.Interfaces
 {
 
-    public interface IGameFileService : IServiceProvider
+    public interface IGameFileService : IServiceProvider, IModelFileService, IMaterialFileService, ITextureFileService
     {
         Task<IGameFile?> GetFileData(IItem? itemArg = null, Type? type = null);
         /// <summary>

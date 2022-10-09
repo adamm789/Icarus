@@ -13,8 +13,8 @@ namespace Icarus.ViewModels.Mods
 
         public byte[] Data;
 
-        public ReadOnlyModViewModel(IMod mod, ItemListService itemListService, IGameFileService gameFileDataService)
-            : base(mod, itemListService, gameFileDataService)
+        public ReadOnlyModViewModel(IMod mod, IGameFileService gameFileService)
+            : base(mod, gameFileService)
         {
             FileName = mod.ModFileName;
         }

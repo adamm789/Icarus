@@ -28,8 +28,8 @@ namespace Icarus.ViewModels.Mods
 
         #region Constructors
 
-        public ModelModViewModel(ModelMod modelMod, ViewModelService viewModelService, ItemListService itemListService, IGameFileService gameFileDataService)
-            : base(modelMod, itemListService, gameFileDataService)
+        public ModelModViewModel(ModelMod modelMod, ViewModelService viewModelService, IGameFileService gameFileDataService)
+            : base(modelMod, gameFileDataService)
         {
             _modelMod = modelMod;
             var importedModel = modelMod.ImportedModel;

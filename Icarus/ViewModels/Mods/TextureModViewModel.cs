@@ -16,7 +16,7 @@ namespace Icarus.ViewModels.Mods
     public class TextureModViewModel : ModViewModel
     {
         TextureMod _textureMod;
-        public TextureModViewModel(TextureMod mod, ItemListService itemListService, IGameFileService gameFileDataService) : base(mod, itemListService, gameFileDataService)
+        public TextureModViewModel(TextureMod mod, IGameFileService gameFileService) : base(mod, gameFileService)
         {
             _textureMod = mod;
             SetCanExport();

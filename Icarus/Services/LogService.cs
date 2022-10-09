@@ -1,4 +1,5 @@
 ﻿using Icarus.Services.Interfaces;
+using Icarus.UI;
 using Serilog;
 using Serilog.Events;
 using System;
@@ -36,6 +37,8 @@ namespace Icarus.Services
         public void Fatal(string s) => Log.Fatal(s);
         public void Fatal(Exception ex, string s = "") => Log.Fatal(ex, s);
         public ILogger Logger => Log.Logger;
+        public StringWriter StringWriter { get; }
+        public InMemorySink Sink { get; }
 
 
         readonly SettingsService _settingsService;
@@ -48,6 +51,8 @@ namespace Icarus.Services
             var projectDirectory = _settingsService.ProjectDirectory;
             var logPath = Path.Combine(projectDirectory, "logs/logs.txt");
             var verbosePath = Path.Combine(projectDirectory, "logs/verbose.txt");
+            Sink = new InMemorySink();
+            StringWriter = new();
 
 #if DEBUG
             Log.Logger = new LoggerConfiguration()
@@ -56,7 +61,8 @@ namespace Icarus.Services
                 .WriteTo.Logger(l => l.Filter.ByExcluding(e => e.Level == LogEventLevel.Verbose)
                 .WriteTo.Debug()
                 .WriteTo.Logger(l => l.Filter.ByExcluding(e => e.Level == LogEventLevel.Debug)
-                .WriteTo.File(path: logPath, rollingInterval: RollingInterval.Day, rollOnFileSizeLimit: true, retainedFileCountLimit: 7)))
+                .WriteTo.File(path: logPath, rollingInterval: RollingInterval.Day, rollOnFileSizeLimit: true, retainedFileCountLimit: 7)
+                .WriteTo.Sink(Sink)))
                 .CreateLogger();
 #else
             Log.Logger = new LoggerConfiguration()

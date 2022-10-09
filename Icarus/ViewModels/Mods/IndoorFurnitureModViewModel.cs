@@ -5,8 +5,8 @@ namespace Icarus.ViewModels.Mods
 {
     public class IndoorFurnitureModViewModel : ModViewModel
     {
-        public IndoorFurnitureModViewModel(IMod mod, ItemListService itemListService, GameFileService gameFileDataService)
-            : base(mod, itemListService, gameFileDataService)
+        public IndoorFurnitureModViewModel(IMod mod, GameFileService gameFileService)
+            : base(mod, gameFileService)
         {
 
         }

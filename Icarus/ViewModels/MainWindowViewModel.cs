@@ -35,33 +35,40 @@ namespace Icarus.ViewModels
 
         private void Init()
         {
+
+
             var modPack = new ModPack();
             _luminaService = ServiceManager.GetRequiredService<LuminaService>();
             var _userPreferencesService = ServiceManager.GetRequiredService<IUserPreferencesService>();
             _userPreferences = new(_userPreferencesService);
-            var x = 0;
 
             var _messageBoxService = ServiceManager.GetRequiredService<IMessageBoxService>();
             var _exportService = ServiceManager.GetRequiredService<ExportService>();
-            var _itemDatabaseService = ServiceManager.GetRequiredService<ItemListService>();
+            var itemListService = ServiceManager.GetRequiredService<ItemListService>();
             var _importService = ServiceManager.GetRequiredService<ImportService>();
-            var _modFileService = ServiceManager.GetRequiredService<ViewModelService>();
+            var viewModelService = ServiceManager.GetRequiredService<ViewModelService>();
             var settingsService = ServiceManager.GetRequiredService<SettingsService>();
             var gameFileDataService = ServiceManager.GetRequiredService<IGameFileService>();
             var logService = ServiceManager.GetRequiredService<ILogService>();
 
+            _logViewModel = new LogViewModel(logService);
+            OpenLogWindow();
+
             _appSettings = new(settingsService, _messageBoxService);
             _luminaService.TrySetLumina();
 
-            ModPackMetaViewModel = new ModPackMetaViewModel(modPack, _userPreferencesService);
-            ModsListViewModel = new ModPackModsListViewModel(modPack, _modFileService);
-            ModPackViewModel = new ModPackViewModel(modPack, ModPackMetaViewModel, ModsListViewModel, _modFileService);
-            SearchViewModel = new(_itemDatabaseService, logService);
+            //ModPackViewModel = new ModPackViewModel(modPack, ModPackMetaViewModel, ModsListViewModel, _modFileService);
+            ModPackViewModel = new ModPackViewModel(modPack, viewModelService);
+            ModPackMetaViewModel = ModPackViewModel.ModPackMetaViewModel;
+            ModsListViewModel = ModPackViewModel.ModsListViewModel;
+            //ModPackMetaViewModel = new ModPackMetaViewModel(modPack, _userPreferencesService);
+            //ModsListViewModel = new ModsListViewModel(modPack, viewModelService);
 
-            ImportVanillaViewModel = new(ModsListViewModel, SearchViewModel, gameFileDataService, logService);
+            ItemListViewModel = new(itemListService, logService);
+            //SearchViewModel = new(ItemListViewModel, logService);
+            ImportVanillaViewModel = new(ModsListViewModel, ItemListViewModel, gameFileDataService, logService);
             ExportViewModel = new(ModsListViewModel, _messageBoxService, _exportService);
             ImportViewModel = new(ModPackViewModel, _importService, settingsService, logService);
-
 
             var exportStatusChange = new PropertyChangedEventHandler(OnExportStatusChanged);
             ExportViewModel.PropertyChanged += exportStatusChange;
@@ -72,6 +79,8 @@ namespace Icarus.ViewModels
             var isImportingAdvanced = new PropertyChangedEventHandler(OnAdvancedImport);
             _importService.PropertyChanged += isImportingAdvanced;
         }
+
+        LogViewModel _logViewModel;
 
         private void OnExportStatusChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -137,11 +146,11 @@ namespace Icarus.ViewModels
             set { _importViewModel = value; OnPropertyChanged(); }
         }
 
-        SearchViewModel _searchViewModel;
-        public SearchViewModel SearchViewModel
+        ItemListViewModel _itemListViewModel;
+        public ItemListViewModel ItemListViewModel
         {
-            get { return _searchViewModel; }
-            set { _searchViewModel = value; OnPropertyChanged(); }
+            get { return _itemListViewModel; }
+            set { _itemListViewModel = value; OnPropertyChanged(); }
         }
 
         bool _isBusy = false;
@@ -164,14 +173,21 @@ namespace Icarus.ViewModels
         DelegateCommand _openSettings;
         public DelegateCommand OpenSettings
         {
-            get { return _openSettings ??= new DelegateCommand(o => OpenSettingsWindow(), o => !IsBusy); }
+            get { return _openSettings ??= new DelegateCommand(_ => OpenSettingsWindow(), _ => !IsBusy); }
         }
 
         DelegateCommand _openPreferences;
         public DelegateCommand OpenPreferences
         {
-            get { return _openPreferences ??= new DelegateCommand(o => OpenUserPreferencesWindow(), o => !IsBusy); }
+            get { return _openPreferences ??= new DelegateCommand(_ => OpenUserPreferencesWindow(), _ => !IsBusy); }
         }
+
+        DelegateCommand _openLog;
+        public DelegateCommand OpenLog
+        {
+            get { return _openLog ??= new DelegateCommand(_ => OpenLogWindow()); }
+        }
+
         ImportVanillaViewModel _importVanillaViewModel;
         public ImportVanillaViewModel ImportVanillaViewModel
         {
@@ -193,6 +209,14 @@ namespace Icarus.ViewModels
         public void OpenUserPreferencesWindow()
         {
             _windowService.ShowWindow<UserPreferencesWindow>(_userPreferences);
+        }
+
+        public void OpenLogWindow()
+       {
+            if (!_windowService.IsWindowOpen<LogWindow>())
+            {
+                _windowService.Show<LogWindow>(_logViewModel);
+            }
         }
 
         public void DragOver(IDropInfo dropInfo)
