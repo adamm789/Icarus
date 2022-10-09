@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using xivModdingFramework.Textures.Enums;
+﻿using xivModdingFramework.Textures.Enums;
 using LuminaItem = Lumina.Excel.GeneratedSheets.Item;
 
 namespace ItemDatabase
@@ -14,6 +9,12 @@ namespace ItemDatabase
         {
 
         }
+
+        public override string GetMdlFileName()
+        {
+            throw new NotImplementedException();
+        }
+
         public override string GetMdlPath()
         {
             throw new NotImplementedException();

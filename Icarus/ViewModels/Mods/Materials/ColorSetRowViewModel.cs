@@ -1,14 +1,10 @@
 ﻿using Icarus.ViewModels.Util;
-using SharpDX;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
-using WindowsColor = System.Windows.Media.Color;
-using Half = SharpDX.Half;
 using Color = SharpDX.Color;
+using Half = SharpDX.Half;
+using WindowsColor = System.Windows.Media.Color;
 
 namespace Icarus.ViewModels.Mods
 {

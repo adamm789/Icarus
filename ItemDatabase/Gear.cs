@@ -1,17 +1,6 @@
-﻿using ItemDatabase;
-using ItemDatabase.Enums;
+﻿using ItemDatabase.Enums;
 using ItemDatabase.Interfaces;
-using Lumina;
-using Lumina.Data;
-using Lumina.Excel;
 using Lumina.Excel.GeneratedSheets;
-using Serilog;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Textures.Enums;
 using LuminaItem = Lumina.Excel.GeneratedSheets.Item;
@@ -78,7 +67,7 @@ namespace ItemDatabase
 
         public override string GetMdlPath()
         {
-            return GetMdlPath();
+            return GetMdlPath(XivRace.Hyur_Midlander_Male);
         }
 
         public virtual string GetMdlPath(XivRace race = XivRace.Hyur_Midlander_Male)
@@ -86,6 +75,17 @@ namespace ItemDatabase
             return $"{_directory}{_baseString}/model/{GetRaceCode(race)}{_baseString}{_slotName}.mdl";
             //return _directory + _baseString + "/model/" + GetRaceCode(race) + _baseString + _slotName + ".mdl";
         }
+
+        public override string GetMdlFileName()
+        {
+            return GetMdlFileName(XivRace.Hyur_Midlander_Male);
+        }
+
+        public virtual string GetMdlFileName(XivRace race = XivRace.Hyur_Midlander_Male)
+        {
+            return $"{GetRaceCode(race)}{_baseString}{_slotName}.mdl";
+        }
+
         public virtual string GetBaseRaceMdlPath(XivRace race)
         {
             var baseRace = GetBaseModelRace(race);
@@ -113,7 +113,7 @@ namespace ItemDatabase
             //return _directory + _baseString + "/material/" + _longVariantString + GetMtrlFileName(race, variant);
         }
 
-        public override string GetTexPath(XivTexType t, string variant="")
+        public override string GetTexPath(XivTexType t, string variant = "")
         {
             return GetTexPath(t, XivRace.Hyur_Midlander_Male, variant);
         }
@@ -168,7 +168,7 @@ namespace ItemDatabase
             if (cat.Neck == 1) slot |= EquipmentSlot.Neck;
             if (cat.Wrists == 1) slot |= EquipmentSlot.Wrists;
             if (cat.FingerL == 1) slot |= EquipmentSlot.LeftRing;
-            if (cat.FingerR == 1 ) slot |= EquipmentSlot.RightRing;
+            if (cat.FingerR == 1) slot |= EquipmentSlot.RightRing;
             if (cat.MainHand == 1) slot |= EquipmentSlot.MainHand;
             if (cat.OffHand == 1) slot |= EquipmentSlot.OffHand;
 

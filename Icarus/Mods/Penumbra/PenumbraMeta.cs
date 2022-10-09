@@ -1,5 +1,4 @@
 ﻿using Icarus.Mods.DataContainers;
-using Icarus.ViewModels.Mods;
 
 namespace Icarus.Mods.Penumbra
 {

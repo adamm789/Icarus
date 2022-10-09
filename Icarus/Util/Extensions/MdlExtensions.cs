@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using xivModdingFramework.Models.DataContainers;
+﻿using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Models.FileTypes;
 
 namespace Icarus.Util.Extensions

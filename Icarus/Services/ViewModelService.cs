@@ -1,19 +1,10 @@
 ﻿using Icarus.Mods;
-using Icarus.Mods.DataContainers;
 using Icarus.Mods.Interfaces;
-using Icarus.Services.GameFiles.Interfaces;
 using Icarus.Services.GameFiles;
+using Icarus.Services.GameFiles.Interfaces;
 using Icarus.Services.Interfaces;
-using Icarus.Services.UI;
 using Icarus.ViewModels.Models;
 using Icarus.ViewModels.Mods;
-using ItemDatabase.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using xivModdingFramework.General.Enums;
 using xivModdingFramework.Models.DataContainers;
 
 namespace Icarus.Services

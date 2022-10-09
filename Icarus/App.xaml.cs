@@ -1,7 +1,5 @@
 ﻿using Icarus.Services;
-using Icarus.ViewModels;
 using Lumina;
-using Serilog;
 using System;
 using System.IO;
 using System.Windows;

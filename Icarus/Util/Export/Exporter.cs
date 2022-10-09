@@ -2,29 +2,18 @@
 using Icarus.Mods.DataContainers;
 using Icarus.Mods.Interfaces;
 using Icarus.Services.Interfaces;
-using Icarus.ViewModels.Mods;
+using Icarus.Util.Extensions;
 using Lumina;
-using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using TeximpNet;
+using TeximpNet.Compression;
 using TeximpNet.DDS;
-using xivModdingFramework.Textures.Enums;
-using xivModdingFramework.Materials.FileTypes;
-using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Models.Helpers;
-using xivModdingFramework.SqPack.FileTypes;
-using xivModdingFramework.Textures.FileTypes;
-using Icarus.Util.Extensions;
-using TeximpNet.Compression;
-using TeximpNet;
-using xivModdingFramework.Materials.DataContainers;
-using xivModdingFramework.Cache;
-using System.Drawing;
-using ItemDatabase.Paths;
-using System.Windows.Shapes;
+using xivModdingFramework.Textures.Enums;
 using Path = System.IO.Path;
 
 namespace Icarus.Util

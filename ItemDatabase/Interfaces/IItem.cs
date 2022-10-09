@@ -1,10 +1,4 @@
 ﻿using ItemDatabase.Enums;
-using Lumina.Excel.GeneratedSheets;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using xivModdingFramework.Textures.Enums;
 
 namespace ItemDatabase.Interfaces
@@ -18,9 +12,10 @@ namespace ItemDatabase.Interfaces
         public MainItemCategory Category { get; }
 
         string GetMdlPath();
+        string GetMdlFileName();
         string GetMtrlPath();
         string GetMtrlFileName();
-        string GetTexPath(XivTexType type, string variant="");
+        string GetTexPath(XivTexType type, string variant = "");
         bool IsMatch(string str);
     }
 }

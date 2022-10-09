@@ -1,21 +1,11 @@
 ﻿using Icarus.Mods.GameFiles;
 using Icarus.Mods.Interfaces;
-using ItemDatabase.Interfaces;
 using ItemDatabase.Paths;
 using Serilog;
-using SharpDX.DXGI;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using xivModdingFramework.General.Enums;
 using xivModdingFramework.Materials.DataContainers;
-using xivModdingFramework.Materials.FileTypes;
-using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Textures.Enums;
-using xivModdingFramework.Textures.FileTypes;
 using Half = SharpDX.Half;
 
 
@@ -46,7 +36,7 @@ namespace Icarus.Mods
         }
 
         public MaterialMod(List<Half> colorSetData, byte[]? colorSetExtraData)
-        {           
+        {
             ColorSetData = colorSetData;
             ColorSetDyeData = colorSetExtraData;
         }

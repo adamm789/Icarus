@@ -1,17 +1,11 @@
 ﻿using Icarus.Mods;
 using Icarus.Mods.Interfaces;
-using Icarus.Services.GameFiles.Interfaces;
 using Icarus.Services.GameFiles;
-using ItemDatabase.Interfaces;
+using Icarus.Services.GameFiles.Interfaces;
 using ItemDatabase.Paths;
 using Serilog;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using xivModdingFramework.Materials.DataContainers;
 using xivModdingFramework.Textures.Enums;
 
 namespace Icarus.ViewModels.Mods
@@ -38,7 +32,8 @@ namespace Icarus.ViewModels.Mods
         public XivTexType TexType
         {
             get { return _textureMod.TexType; }
-            set {
+            set
+            {
                 _textureMod.TexType = value;
                 OnPropertyChanged();
                 try
@@ -48,7 +43,8 @@ namespace Icarus.ViewModels.Mods
                     var newPath = XivPathParser.ChangeTexType(DestinationPath, _textureMod.TexType);
                     DestinationPath = newPath;
 
-                } catch (ArgumentOutOfRangeException)
+                }
+                catch (ArgumentOutOfRangeException)
                 {
                     Log.Error($"Could not set {_textureMod.TexType} to {DestinationPath}.");
                 }

@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Materials.DataContainers;
-using xivModdingFramework.Materials.FileTypes;
 using xivModdingFramework.SqPack.FileTypes;
-using Index = xivModdingFramework.SqPack.FileTypes.Index;
-using Half = SharpDX.Half;
 using xivModdingFramework.Textures.DataContainers;
 using xivModdingFramework.Textures.Enums;
+using Half = SharpDX.Half;
+using Index = xivModdingFramework.SqPack.FileTypes.Index;
 
 namespace Icarus.Util.Extensions
 {

@@ -1,9 +1,5 @@
-﻿using System;
+﻿using Icarus.Mods.Interfaces;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Icarus.Mods.Interfaces;
 using xivModdingFramework.Mods.DataContainers;
 
 namespace Icarus.Mods.DataContainers

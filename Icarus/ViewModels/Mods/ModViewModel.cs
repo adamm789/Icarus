@@ -1,20 +1,13 @@
 ﻿using GongSolutions.Wpf.DragDrop;
-using GongSolutions.Wpf.DragDrop.Utilities;
-using Icarus.Mods;
 using Icarus.Mods.Interfaces;
 using Icarus.Services.GameFiles;
-using Icarus.ViewModels.Import;
+using Icarus.Services.GameFiles.Interfaces;
 using Icarus.ViewModels.Util;
 using ItemDatabase.Interfaces;
-using System;
+using Serilog;
 using System.IO;
 using System.Threading.Tasks;
-using xivModdingFramework.Mods.DataContainers;
-
-using Mod = Icarus.Mods.Mod;
 using System.Windows;
-using Serilog;
-using Icarus.Services.GameFiles.Interfaces;
 
 namespace Icarus.ViewModels.Mods
 {

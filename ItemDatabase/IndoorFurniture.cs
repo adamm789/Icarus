@@ -1,10 +1,4 @@
-﻿using ItemDatabase.Enums;
-using Lumina.Excel.GeneratedSheets;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Lumina.Excel.GeneratedSheets;
 using xivModdingFramework.Textures.Enums;
 
 namespace ItemDatabase
@@ -24,6 +18,13 @@ namespace ItemDatabase
                 var str = GetMdlPath();
             }
         }
+
+        public override string GetMdlFileName()
+        {
+            //throw new NotImplementedException();
+            return "/fun_b0_m" + code + ".mdl";
+        }
+
         public override string GetMdlPath()
         {
             // TODO: What about, e.g. Steel Locker which has an "a" appended at the end for the part
@@ -34,7 +35,13 @@ namespace ItemDatabase
 
         public override string GetMtrlFileName()
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
+            return GetMtrlFileName("0a");
+        }
+
+        public string GetMtrlFileName(string variant)
+        {
+            return "fun_b0_m" + code + "_" + variant + ".mtrl";
         }
 
         public override string GetMtrlPath()
@@ -45,7 +52,7 @@ namespace ItemDatabase
         public string GetMtrlPath(string variant = "0a")
         {
             // bgcommon/hou/indoor/general/1142/material/fun_b0_m1142_0b.mtrl
-            return "bgcommon/hou/indoor/general/" + code +"/material/fun_b0_m" + code + "_" + variant + ".mtrl";
+            return "bgcommon/hou/indoor/general/" + code + "/material/fun_b0_m" + code + "_" + variant + ".mtrl";
         }
 
         public override string GetTexPath(XivTexType type, string variant = "")

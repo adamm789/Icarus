@@ -1,15 +1,7 @@
 ﻿using Icarus.Services.Interfaces;
-using Icarus.ViewModels.Util;
 using Lumina;
-using Serilog;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Configuration;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Icarus.Services.GameFiles
 {

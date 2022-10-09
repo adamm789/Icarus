@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using Icarus.Mods.Interfaces;
+﻿using Icarus.Mods.Interfaces;
 using Icarus.Util.Extensions;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using xivModdingFramework.Mods.DataContainers;
 
 namespace Icarus.Mods.DataContainers
@@ -116,7 +111,7 @@ namespace Icarus.Mods.DataContainers
         public string Url
         {
             get { return _modPackJson.Url; }
-            set { _modPackJson.Url = value;  }
+            set { _modPackJson.Url = value; }
         }
 
         public string MinimumFrameworkVersion = "1.0.0.0";

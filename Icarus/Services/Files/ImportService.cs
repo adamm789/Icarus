@@ -1,37 +1,16 @@
-﻿using Icarus.Util;
-using Icarus.ViewModels.Mods;
-using Icarus.ViewModels.Util;
+﻿using Icarus.Mods;
+using Icarus.Mods.Interfaces;
+using Icarus.Services.GameFiles;
+using Icarus.Services.GameFiles.Interfaces;
+using Icarus.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using xivModdingFramework.Models.DataContainers;
-
-using Serilog;
-using Icarus.ViewModels;
-using Icarus.Services.Interfaces;
-using Lumina;
-using Icarus.Mods;
-using Icarus.Mods.DataContainers;
-using Icarus.Services.GameFiles;
-using Lumina.Data;
-using Lumina.Data.Files;
-using xivModdingFramework.Materials.FileTypes;
-using xivModdingFramework.Mods.DataContainers;
-
-using ModPack = Icarus.Mods.DataContainers.ModPack;
-using SixLabors.ImageSharp.PixelFormats;
 using xivModdingFramework.Textures.FileTypes;
-using Icarus.Mods.GameFiles;
-using System.Windows.Forms;
-using Icarus.Mods.Interfaces;
-using System.Diagnostics;
-using Icarus.Util.Extensions;
-using System.Net.Http.Headers;
-using Icarus.Services.GameFiles.Interfaces;
+using ModPack = Icarus.Mods.DataContainers.ModPack;
 
 namespace Icarus.Services.Files
 {
@@ -192,7 +171,8 @@ namespace Icarus.Services.Files
                 var modPack = new ModPack();
                 modPack.SimpleModsList.Add(materialMod);
                 return modPack;
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 _logService.Error(ex, $"Could not get colorset data from {filePath}");
             }
@@ -202,7 +182,7 @@ namespace Icarus.Services.Files
         public async Task<ModPack> ImportTexToolsModPack(string filePath)
         {
             var retPack = await _ttmpImporter.ExtractTexToolsModPack(filePath);
-                
+
             foreach (var mod in retPack.SimpleModsList)
             {
                 CompleteMod(mod);
@@ -234,14 +214,14 @@ namespace Icarus.Services.Files
             // TODO: TextureMod
             // seems like there's really nothing I can add?
             // Texture mods don't seem too editable
-            
+
             var texMod = new TextureMod(false)
             {
                 ModFileName = filePath,
                 ModFilePath = filePath
             };
             retPack.SimpleModsList.Add(texMod);
-            
+
             return retPack;
         }
 

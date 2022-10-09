@@ -1,5 +1,4 @@
-﻿using Icarus.Util;
-using System;
+﻿using System;
 using System.Data.SQLite;
 using xivModdingFramework.Cache;
 using xivModdingFramework.Models.DataContainers;

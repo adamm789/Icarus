@@ -1,26 +1,15 @@
-﻿using Icarus.Mods;
-using Icarus.Mods.DataContainers;
-using Icarus.Services;
+﻿using Icarus.Mods.DataContainers;
 using Icarus.Services.Files;
-using Icarus.Services.GameFiles;
 using Icarus.Services.Interfaces;
-using Icarus.Util;
 using Icarus.ViewModels.Mods.DataContainers;
 using Icarus.ViewModels.Mods.DataContainers.Interfaces;
 using Icarus.ViewModels.Util;
-using ItemDatabase.Interfaces;
-using Serilog;
-using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Windows.Threading;
-using xivModdingFramework.General.Enums;
-using xivModdingFramework.Models.DataContainers;
 
 namespace Icarus.ViewModels.Import
 {

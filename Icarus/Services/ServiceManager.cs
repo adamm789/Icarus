@@ -1,16 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
 using Icarus.Services.Files;
-using Icarus.Services.GameFiles.Interfaces;
 using Icarus.Services.GameFiles;
+using Icarus.Services.GameFiles.Interfaces;
 using Icarus.Services.Interfaces;
 using Icarus.Services.UI;
 using Microsoft.Extensions.DependencyInjection;
-using Serilog;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Icarus.Services
 {

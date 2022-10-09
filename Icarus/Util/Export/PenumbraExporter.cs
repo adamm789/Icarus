@@ -1,18 +1,13 @@
 ﻿using Icarus.Mods;
-using Icarus.Mods.DataContainers;
 using Icarus.Mods.Interfaces;
 using Icarus.Mods.Penumbra;
 using Icarus.Services.Interfaces;
-using Icarus.ViewModels.Mods;
 using Ionic.Zip;
-using Lumina;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using xivModdingFramework.Mods;
-using xivModdingFramework.Mods.DataContainers;
 
 using ModPack = Icarus.Mods.DataContainers.ModPack;
 

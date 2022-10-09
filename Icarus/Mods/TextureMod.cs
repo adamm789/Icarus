@@ -2,10 +2,6 @@
 using ItemDatabase.Paths;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using xivModdingFramework.Materials.DataContainers;
 using xivModdingFramework.Textures.DataContainers;
 using xivModdingFramework.Textures.Enums;
 
@@ -18,11 +14,11 @@ namespace Icarus.Mods
 
         public Dictionary<XivTexType, XivTexFormat>? TypeFormatDict { get; set; }
 
-        public TextureMod(bool isInternal=false)
+        public TextureMod(bool isInternal = false)
         {
             IsInternal = isInternal;
         }
-        
+
         public TextureMod(XivTex tex, bool isInternal = true)
         {
             Path = tex.TextureTypeAndPath.Path;
@@ -60,7 +56,7 @@ namespace Icarus.Mods
                     }
                 }
             }
-            
+
             if (TexType == XivTexType.Normal)
             {
                 return XivTexFormat.DXT5;

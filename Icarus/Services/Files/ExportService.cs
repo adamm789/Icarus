@@ -1,22 +1,10 @@
-﻿using Icarus.Mods;
-using Icarus.Mods.DataContainers;
+﻿using Icarus.Mods.DataContainers;
 using Icarus.Services.GameFiles;
 using Icarus.Services.Interfaces;
 using Icarus.Util;
 using Icarus.Util.Export;
-using Icarus.ViewModels.Mods;
-using Icarus.ViewModels.Util;
-using Serilog;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using xivModdingFramework.Models.DataContainers;
-using xivModdingFramework.Models.FileTypes;
 
 namespace Icarus.Services.Files
 {

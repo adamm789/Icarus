@@ -2,16 +2,11 @@
 using Icarus.ViewModels.Util;
 using ItemDatabase;
 using ItemDatabase.Enums;
-using Serilog;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
 using System.Windows;
-using xivModdingFramework.Materials.FileTypes;
 using xivModdingFramework.Models.DataContainers;
-using static Lumina.Data.Files.TexFile;
 
 namespace Icarus.ViewModels.Models
 {
@@ -58,7 +53,8 @@ namespace Icarus.ViewModels.Models
         }
 
         DelegateCommand _addAttributeCommand;
-        public DelegateCommand AddAttributeCommand { 
+        public DelegateCommand AddAttributeCommand
+        {
             get { return _addAttributeCommand ??= new DelegateCommand(o => AddAttribute()); }
         }
 

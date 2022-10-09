@@ -1,12 +1,4 @@
-﻿using Icarus.Services.Interfaces;
-using ItemDatabase.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Icarus.Mods.Interfaces
+﻿namespace Icarus.Mods.Interfaces
 {
     public interface IMod : IGameFile
     {

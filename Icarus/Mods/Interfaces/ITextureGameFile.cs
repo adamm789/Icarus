@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using xivModdingFramework.Textures.DataContainers;
+﻿using System.Collections.Generic;
 using xivModdingFramework.Textures.Enums;
 
 namespace Icarus.Mods.Interfaces

@@ -1,11 +1,8 @@
-﻿using ItemDatabase;
-using ItemDatabase.Enums;
+﻿using ItemDatabase.Enums;
 using ItemDatabase.Interfaces;
 using Lumina;
-using Lumina.Excel;
 using Lumina.Excel.GeneratedSheets;
 using Lumina.Text;
-using System.Text.RegularExpressions;
 using xivModdingFramework.General.Enums;
 using LuminaItem = Lumina.Excel.GeneratedSheets.Item;
 
@@ -43,24 +40,6 @@ namespace ItemDatabase
         public Dictionary<string, SortedDictionary<string, IItem>> GetAllItems()
         {
             return _allItems;
-        }
-
-        public List<XivRace> GetAllRaceMdls(IItem item)
-        {
-            var mdls = new List<XivRace>();
-            if (item is IGear gear)
-            {
-                foreach (var race in XivRaces.PlayableRaces)
-                {
-                    var path = gear.GetMdlPath(race);
-                    if (_lumina.FileExists(path))
-                    {
-                        mdls.Add(race);
-                    }
-                }
-            }
-
-            return mdls;
         }
 
         private void BuildList()
@@ -117,16 +96,16 @@ namespace ItemDatabase
                 }
             }
 
-            
+
             _allItems["Housing Furniture"] = new();
             foreach (var f in furnishings)
             {
                 var item = new IndoorFurniture(f);
                 if (String.IsNullOrWhiteSpace(item.Name)) continue;
-                
+
                 _allItems["Housing Furniture"].Add(item.Name, item);
             }
-            
+
 
             AddBody();
         }

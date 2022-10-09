@@ -1,21 +1,12 @@
 ﻿using Icarus.Mods;
-using Lumina.Data.Files;
-using Lumina.Data;
+using Serilog;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using xivModdingFramework.Models.DataContainers;
-using xivModdingFramework.Models.FileTypes;
-using xivModdingFramework.Mods.DataContainers;
-using Ionic.Zip;
-using Newtonsoft.Json;
 using xivModdingFramework.Cache;
 using xivModdingFramework.General.Enums;
-using Serilog;
+using xivModdingFramework.Models.DataContainers;
 
 namespace Icarus.Util
 {

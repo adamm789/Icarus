@@ -1,19 +1,11 @@
-﻿using Icarus.Mods;
-using Icarus.Services;
-using Icarus.Services.GameFiles;
-using Icarus.Services.Interfaces;
+﻿using Icarus.Services.Interfaces;
 using Icarus.ViewModels.Mods;
 using Icarus.ViewModels.Util;
 using Icarus.Views.Models;
-using ItemDatabase;
 using ItemDatabase.Enums;
-using ItemDatabase.Interfaces;
-using Serilog;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Text.RegularExpressions;
 using xivModdingFramework.Models.DataContainers;
 
 namespace Icarus.ViewModels.Models
@@ -105,7 +97,8 @@ namespace Icarus.ViewModels.Models
         {
             var shape = sender as ShapeViewModel;
 
-            if (e.PropertyName == nameof(ShapeViewModel.ShouldRemove)) {
+            if (e.PropertyName == nameof(ShapeViewModel.ShouldRemove))
+            {
                 Shapes.Remove(shape);
                 foreach (var meshPart in ImportedGroup.Parts)
                 {

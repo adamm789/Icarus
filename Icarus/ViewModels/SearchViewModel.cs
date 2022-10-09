@@ -2,13 +2,10 @@
 using Icarus.Services.Interfaces;
 using Icarus.ViewModels.Util;
 using ItemDatabase.Interfaces;
-using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Data;
-using System.Windows.Forms;
 
 namespace Icarus.ViewModels
 {
@@ -40,11 +37,7 @@ namespace Icarus.ViewModels
         public ObservableCollection<ItemListViewModel> ItemList
         {
             get { return _itemList; }
-            set
-            {
-                _itemList = value;
-                OnPropertyChanged();
-            }
+            set { _itemList = value; OnPropertyChanged(); }
         }
         private async void DataPropertySet(object sender, PropertyChangedEventArgs e)
         {
@@ -111,7 +104,7 @@ namespace Icarus.ViewModels
             set { _searchText = value; OnPropertyChanged(); Search(); }
         }
 
-        public IItem SelectedItem
+        public IItem? SelectedItem
         {
             get { return _itemListService.SelectedItem; }
             set { _itemListService.SelectedItem = value; OnPropertyChanged(); }
@@ -138,6 +131,13 @@ namespace Icarus.ViewModels
             set { _selectedItemName = value; OnPropertyChanged(); }
         }
 
+        string? _completePath;
+        public string? CompletePath
+        {
+            get { return _completePath; }
+            set { _completePath = value; OnPropertyChanged(); }
+        }
+
         // TODO: Expand if there are only X amount of matching items?
         public void Search()
         {
@@ -158,8 +158,13 @@ namespace Icarus.ViewModels
             {
                 if (_itemListService.TrySearch(SearchText))
                 {
-
+                    CompletePath = SearchText;
+                    SelectedItem = null;
                 }
+            }
+            else
+            {
+                CompletePath = null;
             }
         }
 
@@ -187,8 +192,8 @@ namespace Icarus.ViewModels
 
                 if (SelectedItem != null)
                 {
-                    SelectedItemMdl = SelectedItem.GetMdlPath();
-                    SelectedItemMtrl = SelectedItem.GetMtrlPath();
+                    SelectedItemMdl = SelectedItem.GetMdlFileName();
+                    SelectedItemMtrl = SelectedItem.GetMtrlFileName();
                     SelectedItemName = SelectedItem.Name;
                 }
             }

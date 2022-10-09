@@ -1,18 +1,12 @@
 ﻿using Icarus.Mods;
-using Icarus.ViewModels.Mods.Materials;
 using Icarus.ViewModels.Util;
-using ItemDatabase.Paths;
 using Serilog;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Data;
 using xivModdingFramework.Materials.DataContainers;
-using xivModdingFramework.Textures.Enums;
 
 namespace Icarus.ViewModels.Mods
 {

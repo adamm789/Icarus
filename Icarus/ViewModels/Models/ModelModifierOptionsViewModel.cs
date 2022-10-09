@@ -1,7 +1,4 @@
-﻿using Icarus.Mods;
-using Icarus.ViewModels.Mods;
-using Icarus.ViewModels.Util;
-using System.ComponentModel;
+﻿using Icarus.ViewModels.Util;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Models.Helpers;
 
@@ -80,8 +77,9 @@ namespace Icarus.ViewModels.Import
         public XivRace SourceRace
         {
             get { return _options.SourceRace; }
-            set { 
-                _options.SourceRace = value; 
+            set
+            {
+                _options.SourceRace = value;
                 OnPropertyChanged();
                 if (value != XivRace.All_Races)
                 {

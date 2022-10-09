@@ -1,14 +1,10 @@
 ﻿using GongSolutions.Wpf.DragDrop;
 using Icarus.Mods.DataContainers;
-using Icarus.Mods.Interfaces;
 using Icarus.Services;
-using Icarus.Services.GameFiles;
-using Icarus.Services.Interfaces;
 using Icarus.Util.Extensions;
 using Icarus.ViewModels.Util;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Windows;
 
 namespace Icarus.ViewModels.Mods.DataContainers

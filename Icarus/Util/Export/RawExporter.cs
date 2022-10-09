@@ -4,25 +4,14 @@ using Icarus.Mods.Interfaces;
 using Icarus.Services.Files;
 using Icarus.Services.Interfaces;
 using Icarus.Util.Extensions;
-using Icarus.ViewModels.Mods;
 using Lumina;
-using Lumina.Data.Files;
-using Lumina.Models.Materials;
-using Lumina.Models.Models;
 using System;
-using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using xivModdingFramework.Helpers;
-using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Models.Helpers;
 using xivModdingFramework.Textures.DataContainers;
-using xivModdingFramework.Textures.FileTypes;
 
 namespace Icarus.Util.Export
 {

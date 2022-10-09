@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using CommunityToolkit.Mvvm.DependencyInjection;
-using Icarus.Services.Interfaces;
+﻿using Icarus.Services.Interfaces;
 using Serilog;
 using Serilog.Events;
+using System;
+using System.IO;
 
 namespace Icarus.Services
 {

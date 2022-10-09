@@ -6,7 +6,6 @@
              xmlns:local="clr-namespace:Icarus.Views.Mods"
              mc:Ignorable="d" 
              xmlns:modviewmodels="clr-namespace:Icarus.ViewModels.Mods"
-
              xmlns:enums="clr-namespace:xivModdingFramework.General.Enums;assembly=xivModdingFramework"
              d:DataContext="{d:DesignInstance Type=modviewmodels:TextureModViewModel}"
 

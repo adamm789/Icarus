@@ -9,60 +9,40 @@
              d:DataContext="{d:DesignInstance Type=import:ImportVanillaViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid Grid.Row="1" Grid.ColumnSpan="2">
-        <Grid.Resources>
+    <StackPanel>
+        <StackPanel.Resources>
             <ui:BooleanToVisibilityConverter
                 x:Key="BooleanToVisibilityConverter"
-                True="Visible" False="Collapsed"/>
-        </Grid.Resources>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-        <Button Grid.Row="0" Grid.Column="0" Command="{Binding GetVanillaModel}" Content="Add Vanilla Mdl"></Button>
-        <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding AllRacesMdls}"
+                True="Visible" False="Hidden"/>
+        </StackPanel.Resources>
+
+        <TextBox Text="{Binding SelectedItemName}" IsReadOnly="True"
+                 Margin="0 0 0 5"/>
+        
+        <TextBox Text="{Binding SelectedItemMdl}" IsReadOnly="True"/>
+        <Grid Margin="0 0 0 5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0">
+                <ComboBox Grid.Row="0" Grid.Column="0" ItemsSource="{Binding AllRacesMdls}"
                   SelectedValue="{Binding SelectedRace}"
-                  SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}"
                   Text="Add Vanilla Model"
                   Visibility="{Binding HasSkin, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-        <Button Grid.Row="0" Grid.Column="2" Command="{Binding GetVanillaMaterial}" Content="Add Vanilla Mtrl"/>
-        
+            </Grid>
+            <Button Grid.Row="0" Grid.Column="1" Command="{Binding GetVanillaModel}" Content="Add Vanilla Mdl"
+                    Visibility="{Binding CanImportMdl, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+        </Grid>
+
+        <TextBox Text="{Binding SelectedItemMtrl}" IsReadOnly="True"/>
+        <Button Command="{Binding GetVanillaMaterial}" Content="Add Vanilla Mtrl"
+                Visibility="{Binding CanImportMtrl, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
+        <!--
         <TextBox Grid.Row="1"  Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding Text}" TextWrapping="NoWrap" Width="300"/>
         <Button Grid.Row="1" Grid.Column="2" Command="{Binding TryGetPathCommand}" Content="Try Get File"/>
-
-        <!--
-        <Menu Grid.Column="2">
-            <MenuItem Header="Add Vanilla Mdl" ItemsSource="{Binding AllRacesMdls}">
-                <MenuItem.ItemContainerStyle>
-                    <Style TargetType="MenuItem">
-                        <Setter Property="Command" Value="{Binding TestCommand, RelativeSource={RelativeSource AncestorType=local:ImportVanillaView}}"/>
-                    </Style>
-                </MenuItem.ItemContainerStyle>
-            </MenuItem>
-            
-
-        </Menu>
         -->
 
-        <!--
-        <Menu Grid.Column="2">
-            <MenuItem Header="Add Vanilla Mdl" ItemsSource="{Binding AllRacesMdls}">
-                <MenuItem.ItemContainerStyle>
-                    <Style TargetType="{x:Type MenuItem}">
-                        <Setter Property="Command" Value="{Binding TestCommand}"/>
-                    </Style>
-                </MenuItem.ItemContainerStyle>
-
-            </MenuItem>
-        </Menu>
-        -->
-        <!--
-                  <Button Grid.Column="1" Command="{Binding GetVanillaMaterial}">Add Vanilla Material</Button>
-            -->
-    </Grid>
+    </StackPanel>
 </UserControl>

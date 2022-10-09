@@ -8,28 +8,15 @@ using Icarus.Util.Extensions;
 using Icarus.ViewModels.Mods;
 using ItemDatabase.Interfaces;
 using ItemDatabase.Paths;
-using Lumina;
-using Lumina.Data;
 using Lumina.Data.Files;
-using Lumina.Excel.GeneratedSheets;
-using Lumina.Models.Materials;
-using Lumina.Models.Models;
-using Serilog;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Windows.Shapes;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Materials.DataContainers;
 using xivModdingFramework.Materials.FileTypes;
 using xivModdingFramework.Models.DataContainers;
-using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.SqPack.FileTypes;
 using xivModdingFramework.Textures.Enums;
 using Path = System.IO.Path;
@@ -95,6 +82,21 @@ namespace Icarus.Services.GameFiles
         // TODO: race?
         public async Task<IGameFile?> TryGetFileData(string path, Type? callingType = null, string name = "")
         {
+            if (XivPathParser.IsMdl(path))
+            {
+                return TryGetModelFileData(path, name);
+            }
+            if (XivPathParser.IsMtrl(path))
+            {
+                return await TryGetMaterialFileData(path, name);
+            }
+            if (XivPathParser.IsTex(path))
+            {
+                return await TryGetTextureFileData(path, name);
+            }
+            _logService.Error($"Returning null from {path}");
+            return null;
+            /*
             if (XivPathParser.IsMdl(path) && callingType == typeof(ModelModViewModel))
             {
                 return TryGetModelFileData(path, name);
@@ -109,6 +111,7 @@ namespace Icarus.Services.GameFiles
             }
             _logService.Error($"Returning null from {path}");
             return null;
+            */
         }
 
         public async Task<ITextureGameFile?> GetTextureFileData(IItem? itemArg = null)
@@ -242,9 +245,20 @@ namespace Icarus.Services.GameFiles
 
         public List<XivRace> GetAllRaceMdls(IItem? itemArg)
         {
+            var mdls = new List<XivRace>();
             var item = GetItem(itemArg);
-            if (item == null) return new List<XivRace>();
-            return _itemListService.GetAllRaceMdls(item);
+            if (item is IGear gear)
+            {
+                foreach (var race in XivRaces.PlayableRaces)
+                {
+                    var path = gear.GetMdlPath(race);
+                    if (_lumina.FileExists(path))
+                    {
+                        mdls.Add(race);
+                    }
+                }
+            }
+            return mdls;
         }
 
         #endregion

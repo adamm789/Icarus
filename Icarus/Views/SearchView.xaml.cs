@@ -12,7 +12,7 @@ namespace Icarus.Views
             //MouseLeftButtonUp += TextBlock_MouseLeftButtonUp;
         }
 
-        
+
         private void TextBlock_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             IsSelected = true;

@@ -2,15 +2,9 @@
 using Icarus.Services.GameFiles;
 using Icarus.Services.Interfaces;
 using Icarus.Util;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using xivModdingFramework.Models.DataContainers;
-using xivModdingFramework.Models.FileTypes;
 
 namespace Icarus.Services.Files
 {
@@ -24,7 +18,7 @@ namespace Icarus.Services.Files
         private Converter _converter;
         readonly SettingsService _settings;
         readonly ILogService _logService;
-        public ConverterService(SettingsService settings, LuminaService luminaService, ILogService logService) : base (luminaService)
+        public ConverterService(SettingsService settings, LuminaService luminaService, ILogService logService) : base(luminaService)
         {
             _settings = settings;
             _logService = logService;

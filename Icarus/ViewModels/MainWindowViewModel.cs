@@ -1,28 +1,21 @@
-﻿using Icarus.Mods.DataContainers;
+﻿using GongSolutions.Wpf.DragDrop;
+using Icarus.Mods.DataContainers;
 using Icarus.Services;
 using Icarus.Services.Files;
-using Icarus.Services.GameFiles.Interfaces;
 using Icarus.Services.GameFiles;
+using Icarus.Services.GameFiles.Interfaces;
 using Icarus.Services.Interfaces;
 using Icarus.ViewModels.Export;
 using Icarus.ViewModels.Import;
-using Icarus.ViewModels.Mods;
 using Icarus.ViewModels.Mods.DataContainers;
 using Icarus.ViewModels.Mods.DataContainers.Interfaces;
 using Icarus.ViewModels.Util;
 using Icarus.Views;
-using Lumina.Data.Files;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
-using GongSolutions.Wpf.DragDrop;
-using System.Runtime.InteropServices.ComTypes;
-
-using IDataObject = System.Windows.IDataObject;
-using IDropTarget = GongSolutions.Wpf.DragDrop.IDropTarget;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Windows;
+using IDropTarget = GongSolutions.Wpf.DragDrop.IDropTarget;
 
 [assembly: InternalsVisibleTo("UnitTests")]
 
@@ -46,6 +39,7 @@ namespace Icarus.ViewModels
             _luminaService = ServiceManager.GetRequiredService<LuminaService>();
             var _userPreferencesService = ServiceManager.GetRequiredService<IUserPreferencesService>();
             _userPreferences = new(_userPreferencesService);
+            var x = 0;
 
             var _messageBoxService = ServiceManager.GetRequiredService<IMessageBoxService>();
             var _exportService = ServiceManager.GetRequiredService<ExportService>();
@@ -55,19 +49,20 @@ namespace Icarus.ViewModels
             var settingsService = ServiceManager.GetRequiredService<SettingsService>();
             var gameFileDataService = ServiceManager.GetRequiredService<IGameFileService>();
             var logService = ServiceManager.GetRequiredService<ILogService>();
+
             _appSettings = new(settingsService, _messageBoxService);
             _luminaService.TrySetLumina();
 
             ModPackMetaViewModel = new ModPackMetaViewModel(modPack, _userPreferencesService);
             ModsListViewModel = new ModPackModsListViewModel(modPack, _modFileService);
             ModPackViewModel = new ModPackViewModel(modPack, ModPackMetaViewModel, ModsListViewModel, _modFileService);
+            SearchViewModel = new(_itemDatabaseService, logService);
 
-            ImportVanillaViewModel = new(ModsListViewModel, _itemDatabaseService, gameFileDataService, logService);
+            ImportVanillaViewModel = new(ModsListViewModel, SearchViewModel, gameFileDataService, logService);
             ExportViewModel = new(ModsListViewModel, _messageBoxService, _exportService);
             ImportViewModel = new(ModPackViewModel, _importService, settingsService, logService);
 
-            SearchViewModel = new(_itemDatabaseService, logService);
-            
+
             var exportStatusChange = new PropertyChangedEventHandler(OnExportStatusChanged);
             ExportViewModel.PropertyChanged += exportStatusChange;
 

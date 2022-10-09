@@ -2,7 +2,9 @@
 using Icarus.Mods.DataContainers;
 using Icarus.Mods.Interfaces;
 using Icarus.Util;
+using Icarus.Util.Extensions;
 using Ionic.Zip;
+using ItemDatabase.Paths;
 using Lumina.Data;
 using Lumina.Data.Files;
 using Lumina.Data.Structs;
@@ -17,15 +19,12 @@ using xivModdingFramework.General.Enums;
 using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.Mods.FileTypes;
-using Icarus.Util.Extensions;
 using xivModdingFramework.Textures.DataContainers;
 using xivModdingFramework.Textures.Enums;
-using ItemDatabase.Paths;
-
 using Mod = Icarus.Mods.Mod;
-using ModPack = Icarus.Mods.DataContainers.ModPack;
 using ModGroup = Icarus.Mods.DataContainers.ModGroup;
 using ModOption = Icarus.Mods.DataContainers.ModOption;
+using ModPack = Icarus.Mods.DataContainers.ModPack;
 
 namespace Icarus.Services.Files
 {
@@ -214,7 +213,8 @@ namespace Icarus.Services.Files
                 try
                 {
                     type = XivPathParser.GetTexType(mods.FullPath);
-                } catch (ArgumentException)
+                }
+                catch (ArgumentException)
                 {
                     Log.Error("Using TexType Normal");
                 }
@@ -246,7 +246,7 @@ namespace Icarus.Services.Files
         private async Task<Mod?> ExtractStandard(ModsJson mods, SqPackStream pack, ModOptionJson? option = null)
         {
             if (mods.FullPath.Contains(".mtrl"))
-            {                
+            {
                 try
                 {
                     var file = pack.ReadFile<MtrlFile>(mods.ModOffset);
@@ -264,7 +264,8 @@ namespace Icarus.Services.Files
                         Category = mods.Category
                     };
                     return mtrlMod;
-                } catch (NotImplementedException ex)
+                }
+                catch (NotImplementedException ex)
                 {
                     Log.Error(ex, "");
                     return null;

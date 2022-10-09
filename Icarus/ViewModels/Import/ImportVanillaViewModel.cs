@@ -1,33 +1,31 @@
 ﻿using Icarus.Mods;
 using Icarus.Mods.GameFiles;
 using Icarus.Mods.Interfaces;
-using Icarus.Services.GameFiles.Interfaces;
+using Icarus.Services;
 using Icarus.Services.GameFiles;
+using Icarus.Services.GameFiles.Interfaces;
 using Icarus.Services.Interfaces;
-using Icarus.ViewModels.Mods;
 using Icarus.ViewModels.Mods.DataContainers.Interfaces;
 using Icarus.ViewModels.Util;
 using ItemDatabase.Interfaces;
 using ItemDatabase.Paths;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using xivModdingFramework.General.Enums;
 
 namespace Icarus.ViewModels.Import
 {
+    // TODO: Clean up this view model
+    // Split into ImportVanillaModelViewModel and ImportVanillaMaterialViewModel?
     public class ImportVanillaViewModel : NotifyPropertyChanged
     {
         readonly IModsListViewModel _modPackViewModel;
-        readonly ItemListService _itemListService;
+        readonly SearchViewModel _itemListService;
         readonly IGameFileService _gameFileDataService;
         readonly ILogService _logService;
 
-        public ImportVanillaViewModel(IModsListViewModel modPack, ItemListService itemListService, IGameFileService gameFileService, ILogService logService)
+        public ImportVanillaViewModel(IModsListViewModel modPack, SearchViewModel itemListService, IGameFileService gameFileService, ILogService logService)
         {
             _modPackViewModel = modPack;
             _gameFileDataService = gameFileService;
@@ -40,14 +38,59 @@ namespace Icarus.ViewModels.Import
 
         private void SelectedItemChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(ItemListService.SelectedItem))
+            if (e.PropertyName == nameof(SearchViewModel.SelectedItem))
             {
-                SelectedItem = (sender as ItemListService).SelectedItem;
-                HasSkin = XivPathParser.HasSkin(SelectedItem.GetMdlPath());
-                AllRacesMdls = new(_itemListService.GetAllRaceMdls());
-                if (AllRacesMdls.Count > 0)
+                SelectedItem = (sender as SearchViewModel).SelectedItem;
+                if (SelectedItem != null)
                 {
-                    SelectedRace = AllRacesMdls[0];
+                    HasSkin = XivPathParser.HasSkin(SelectedItem.GetMdlPath());
+                    AllRacesMdls = new(_gameFileDataService.GetAllRaceMdls(SelectedItem));
+                    if (AllRacesMdls.Count > 0)
+                    {
+                        SelectedRace = AllRacesMdls[0];
+                    }
+
+                    SelectedItemMdl = SelectedItem.GetMdlFileName();
+                    SelectedItemMtrl = SelectedItem.GetMtrlFileName();
+                    SelectedItemName = SelectedItem.Name;
+                }
+                else
+                {
+                    HasSkin = false;
+                    AllRacesMdls = new();
+
+                    SelectedItemMdl = "";
+                    SelectedItemMtrl = "";
+                    SelectedItemName = "";
+                }
+            }
+            // TODO: Behavior: Type in invalid path, CanImportMdl/Mtrl will still be enabled
+            if (e.PropertyName == nameof(SearchViewModel.CompletePath))
+            {
+                _completePath = (sender as SearchViewModel).CompletePath;
+                if (_completePath != null)
+                {
+                    CanImportMdl = XivPathParser.IsMdl(_completePath);
+                    if (CanImportMdl)
+                    {
+                        SelectedItemMdl = _completePath;
+                    }
+
+                    CanImportMtrl = XivPathParser.IsMtrl(_completePath);
+                    if (CanImportMtrl)
+                    {
+                        SelectedItemMtrl = _completePath;
+                    }
+                }
+                else if (SelectedItem != null)
+                {
+                    CanImportMdl = true;
+                    CanImportMtrl = true;
+                }
+                else
+                {
+                    CanImportMdl = false;
+                    CanImportMtrl = false;
                 }
             }
         }
@@ -57,35 +100,6 @@ namespace Icarus.ViewModels.Import
         {
             get { return _hasSkin; }
             set { _hasSkin = value; OnPropertyChanged(); }
-        }
-
-        string _text = "";
-        public string Text
-        {
-            get { return _text; }
-            set { _text = value; OnPropertyChanged(); }
-        }
-
-        DelegateCommand _tryGetPathCommand;
-        public DelegateCommand TryGetPathCommand
-        {
-            get { return _tryGetPathCommand ??= new DelegateCommand(async o => await TryGetPath()); }
-        }
-
-        public async Task TryGetPath()
-        {
-            var gameFile = await _gameFileDataService.TryGetFileData(Text);
-            if (gameFile is ModelGameFile model)
-            {
-                var mod = new ModelMod(model, true);
-                _modPackViewModel.Add(mod);
-            }
-        }
-
-        DelegateCommand _getVanillaModel;
-        public DelegateCommand GetVanillaModel
-        {
-            get { return _getVanillaModel ??= new DelegateCommand(o => GetVanillaMdl()); }
         }
 
         bool _selectingMdlRace = false;
@@ -106,14 +120,15 @@ namespace Icarus.ViewModels.Import
         public XivRace SelectedRace
         {
             get { return _selectedRace; }
-            set { _selectedRace = value; OnPropertyChanged(); }
-        }
-
-        int _selectedIndex = 0;
-        public int SelectedIndex
-        {
-            get { return _selectedIndex; }
-            set { _selectedIndex = value; OnPropertyChanged(); }
+            set
+            {
+                _selectedRace = value;
+                OnPropertyChanged();
+                if (SelectedItem is IGear gear)
+                {
+                    SelectedItemMdl = gear.GetMdlFileName(_selectedRace);
+                }
+            }
         }
 
         IItem _selectedItem;
@@ -123,23 +138,98 @@ namespace Icarus.ViewModels.Import
             set { _selectedItem = value; OnPropertyChanged(); }
         }
 
-        private bool ShouldGetMdlData()
+        string _selectedItemMdl;
+        public string SelectedItemMdl
         {
-            return (SelectedIndex != -1 && AllRacesMdls.Count > 0) || (AllRacesMdls.Count == 0);
+            get { return _selectedItemMdl; }
+            set { _selectedItemMdl = value; OnPropertyChanged(); }
+        }
+
+        string _selectedItemMtrl;
+        public string SelectedItemMtrl
+        {
+            get { return _selectedItemMtrl; }
+            set { _selectedItemMtrl = value; OnPropertyChanged(); }
+        }
+
+        string _selectedItemName;
+        public string SelectedItemName
+        {
+            get { return _selectedItemName; }
+            set { _selectedItemName = value; OnPropertyChanged(); }
+        }
+
+        string? _completePath;
+
+        bool _canImportMdl = true;
+        public bool CanImportMdl
+        {
+            get { return _canImportMdl; }
+            set { _canImportMdl = value; OnPropertyChanged(); }
+        }
+
+        bool _canImportMtrl = true;
+        public bool CanImportMtrl
+        {
+            get { return _canImportMtrl; }
+            set { _canImportMtrl = value; OnPropertyChanged(); }
+        }
+
+        DelegateCommand _getVanillaModel;
+        public DelegateCommand GetVanillaModel
+        {
+            get { return _getVanillaModel ??= new DelegateCommand(async o => await GetVanillaItem()); }
         }
 
         DelegateCommand _getVanillaMaterial;
         public DelegateCommand GetVanillaMaterial
         {
-            get { return _getVanillaMaterial ??= new DelegateCommand(async o => await GetVanillaMtrl()); }
+            get { return _getVanillaMaterial ??= new DelegateCommand(async o => await GetVanillaItem()); }
+        }
+
+        // chara/human/c1301/obj/face/f0001/model/c1301f0001_fac.mdl
+
+        public async Task<IGameFile?> GetVanillaItem()
+        {
+            IGameFile? gameFile = null;
+            if (_completePath != null)
+            {
+                gameFile = await _gameFileDataService.TryGetFileData(_completePath);
+            }
+            else
+            {
+                if (CanImportMdl)
+                {
+                    gameFile = _gameFileDataService.GetModelFileData(SelectedItem, SelectedRace);
+                }
+                else if (CanImportMtrl)
+                {
+                    gameFile = await _gameFileDataService.GetMaterialFileData(SelectedItem);
+                }
+            }
+
+            if (gameFile != null)
+            {
+                var modViewModel = ServiceManager.GetRequiredService<ViewModelService>().GetModViewModel(gameFile);
+                _modPackViewModel.Add(modViewModel);
+                modViewModel.SetModData(gameFile);
+            }
+            return gameFile;
         }
 
         public ModelMod? GetVanillaMdl()
         {
-            if (ShouldGetMdlData())
+            IModelGameFile? modelGameFile;
+            if (_completePath != null)
             {
-                var modelGameFile = _gameFileDataService.GetModelFileData(SelectedItem, SelectedRace);
-                if (modelGameFile == null) return null;
+                modelGameFile = _gameFileDataService.TryGetModelFileData(_completePath);
+            }
+            else
+            {
+                modelGameFile = _gameFileDataService.GetModelFileData(SelectedItem, SelectedRace);
+            }
+            if (modelGameFile != null)
+            {
                 var mod = new ModelMod(modelGameFile, true);
                 var modViewModel = _modPackViewModel.Add(mod);
                 if (modViewModel == null)
@@ -151,28 +241,40 @@ namespace Icarus.ViewModels.Import
                 return mod;
             }
             return null;
+            //return null;
         }
 
         private async Task<MaterialMod?> GetVanillaMtrl(IItem? item = null)
         {
             // TODO: How to handle SmallClothes, Emperor's series, and skin materials
             // TODO: Most of SmallClothes don't seem to have a material
-            var materialGameFile = await _gameFileDataService.GetMaterialFileData(item);
-            if (materialGameFile == null) return null;
-            if (materialGameFile.XivMtrl == null)
+            IMaterialGameFile? materialGameFile;
+            if (_completePath != null )
             {
-                _logService.Error($"Could not find the material for {item.Name}");
-                return null;
+                materialGameFile = await _gameFileDataService.TryGetMaterialFileData(_completePath);
             }
-            var mod = new MaterialMod(materialGameFile, true);
-            var modViewModel = _modPackViewModel.Add(mod);
-            if (modViewModel == null)
+            else
             {
-                _logService.Fatal($"Failed to get ViewModel vanilla mtrl: {mod.Name}");
-                return null;
+                materialGameFile = await _gameFileDataService.GetMaterialFileData(item);
             }
-            modViewModel.SetModData(materialGameFile);
-            return mod;
+            if (materialGameFile != null)
+            {
+                if (materialGameFile.XivMtrl == null)
+                {
+                    _logService.Error($"Could not find the material for {item.Name}");
+                    return null;
+                }
+                var mod = new MaterialMod(materialGameFile, true);
+                var modViewModel = _modPackViewModel.Add(mod);
+                if (modViewModel == null)
+                {
+                    _logService.Fatal($"Failed to get ViewModel vanilla mtrl: {mod.Name}");
+                    return null;
+                }
+                modViewModel.SetModData(materialGameFile);
+                return mod;
+            }
+            return null;
         }
     }
 }

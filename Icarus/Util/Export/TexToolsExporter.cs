@@ -1,26 +1,22 @@
 ﻿using Icarus.Mods;
-using Icarus.Mods.DataContainers;
-using Icarus.ViewModels.Mods;
+using Icarus.Mods.Interfaces;
+using Icarus.Services.Interfaces;
 using Ionic.Zip;
+using ItemDatabase.Paths;
+using Lumina;
 using Newtonsoft.Json;
 using Serilog;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using xivModdingFramework.Mods.DataContainers;
-
-using IcarusModPack = Icarus.Mods.DataContainers.ModPack;
 using FrameworkModPack = xivModdingFramework.Mods.DataContainers.ModPack;
+using IcarusModPack = Icarus.Mods.DataContainers.ModPack;
 using Path = System.IO.Path;
-using Icarus.Mods.Interfaces;
-using System.Collections.Concurrent;
-using Icarus.Services.Interfaces;
-using ItemDatabase.Paths;
-using Lumina;
-using System.Threading;
 
 namespace Icarus.Util
 {
@@ -36,7 +32,7 @@ namespace Icarus.Util
 
         public TexToolsExporter(ILogService logService) : base(logService)
         {
-            
+
         }
 
         public override string GetOutputPath(IcarusModPack modPack, string outputDir)
@@ -329,7 +325,8 @@ namespace Icarus.Util
                                 if (offsetDict.ContainsKey(modOptionMod))
                                 {
                                     modOffset = offsetDict[modOptionMod];
-                                } else
+                                }
+                                else
                                 {
                                     offsetDict.Add(modOptionMod, offset);
                                 }

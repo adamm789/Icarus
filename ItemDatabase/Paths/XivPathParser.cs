@@ -1,15 +1,7 @@
 ﻿using ItemDatabase.Enums;
-using Lumina.Excel.GeneratedSheets;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Metadata;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Textures.Enums;
-using xivModdingFramework.Textures.FileTypes;
 
 namespace ItemDatabase.Paths
 {

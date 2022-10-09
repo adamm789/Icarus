@@ -1,12 +1,8 @@
 ﻿using Icarus.Mods.DataContainers;
-using Icarus.Mods.Interfaces;
 using Icarus.Services;
-using Icarus.Services.GameFiles;
-using Icarus.Services.Interfaces;
 using Icarus.ViewModels.Util;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using xivModdingFramework.Mods.DataContainers;
 
 namespace Icarus.ViewModels.Mods.DataContainers
 {
@@ -38,9 +34,10 @@ namespace Icarus.ViewModels.Mods.DataContainers
         public int PageIndex
         {
             get { return _modPackPage.PageIndex; }
-            set { 
-                _modPackPage.PageIndex = value; 
-                OnPropertyChanged(); 
+            set
+            {
+                _modPackPage.PageIndex = value;
+                OnPropertyChanged();
             }
         }
 

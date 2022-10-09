@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.SqPack.FileTypes;
@@ -13,7 +11,7 @@ namespace Icarus.Util.Extensions
 {
     public static class DatExtensions
     {
-        public static async Task<XivTex> GetType4Data(byte[] data, long offset=0)
+        public static async Task<XivTex> GetType4Data(byte[] data, long offset = 0)
         {
             var xivTex = new XivTex();
             var decompressedData = new List<byte>();

@@ -1,14 +1,5 @@
-﻿using ItemDatabase.Interfaces;
-using Icarus.ViewModels.Import;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using xivModdingFramework.Mods.DataContainers;
-using Icarus.Services.Interfaces;
+﻿using Icarus.Mods.GameFiles;
 using Icarus.Mods.Interfaces;
-using Icarus.Mods.GameFiles;
 
 namespace Icarus.Mods
 {
@@ -24,7 +15,7 @@ namespace Icarus.Mods
         public bool IsInternal { get; set; } = false;
         public Mod()
         {
-            
+
         }
 
         public Mod(IGameFile gameFile, bool isInternal = false)
@@ -50,7 +41,7 @@ namespace Icarus.Mods
 
         public virtual string ToVerboseString()
         {
-            return 
+            return
                 $"[ModFileName]: {ModFileName}\n" +
                 $"[ModFilePath]: {ModFilePath}\n" +
                 $"[Name]       : {Name}\n" +

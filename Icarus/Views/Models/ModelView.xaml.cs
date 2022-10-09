@@ -9,7 +9,7 @@ namespace Icarus.Views.Import
     /// </summary>
     public partial class ModelView : UserControl
     {
-        
+
         public ModelView()
         {
             InitializeComponent();
@@ -27,6 +27,6 @@ namespace Icarus.Views.Import
                 parent.RaiseEvent(eventArg);
             }
         }
-        
+
     }
 }

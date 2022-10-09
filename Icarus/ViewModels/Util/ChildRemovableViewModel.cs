@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Icarus.ViewModels.Util
+﻿namespace Icarus.ViewModels.Util
 {
     public abstract class ChildRemovableViewModel : NotifyPropertyChanged
     {

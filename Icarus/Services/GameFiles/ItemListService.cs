@@ -1,19 +1,11 @@
-﻿using Icarus.ViewModels.Util;
+﻿using Icarus.Services.Interfaces;
+using ItemDatabase;
+using ItemDatabase.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ItemDatabase;
-
-using Lumina;
-using ItemDatabase.Interfaces;
-using ItemDatabase.Enums;
-using Icarus.Services.Interfaces;
 using System.Collections.ObjectModel;
+using System.IO;
 using xivModdingFramework.General.Enums;
-using Icarus.Mods.Interfaces;
 
 namespace Icarus.Services.GameFiles
 {
@@ -36,32 +28,11 @@ namespace Icarus.Services.GameFiles
         public IItem SelectedItem
         {
             get { return _selectedItem; }
-            set {
-                _selectedItem = value; 
+            set
+            {
+                _selectedItem = value;
                 OnPropertyChanged();
-                AllRaceMdls = new(Data.GetAllRaceMdls(SelectedItem));
             }
-        }
-
-        ObservableCollection<XivRace> _allRaceMdls = new();
-        public ObservableCollection<XivRace> AllRaceMdls
-        {
-            get { return _allRaceMdls; }
-            set { _allRaceMdls = value; OnPropertyChanged(); }
-        }
-
-        public List<XivRace> GetAllRaceMdls(IItem? itemArg = null)
-        {
-            var item = itemArg;
-            if (itemArg == null)
-            {
-                item = SelectedItem;
-            }
-            if (item == null)
-            {
-                return new List<XivRace>();
-            }
-            return Data.GetAllRaceMdls(item);
         }
 
         public List<IItem> Search(string str)
@@ -96,7 +67,23 @@ namespace Icarus.Services.GameFiles
 
         public bool TrySearch(string path)
         {
-            return _lumina.FileExists(path);
+            if (!path.Contains(".mdl") && !path.Contains(".mtrl"))
+            {
+                return false;
+            }
+
+            try
+            {
+                return _lumina.FileExists(path);
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                return false;
+            }
+            catch (IndexOutOfRangeException)
+            {
+                return false;
+            }
         }
 
         protected override void OnLuminaSet()

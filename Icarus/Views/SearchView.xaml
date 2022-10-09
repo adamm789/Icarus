@@ -9,7 +9,6 @@
              d:DataContext="{d:DesignInstance Type=viewmodels:SearchViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -21,73 +20,16 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="8*"/>
-                <ColumnDefinition Width="2*"/>
-            </Grid.ColumnDefinitions>
+
             <TextBox AcceptsReturn="False"
                 Grid.Row="0" Grid.Column="0" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
                      VerticalAlignment="Center">
-
             </TextBox>
             <!--
             <Button Grid.Row="0" Grid.Column="1" Height="Auto" Margin="10,10,10,10" 
                     FontSize="14" Command="{Binding OnSearchCommand}">Search</Button>
 -->
         </Grid>
-        <StackPanel Grid.Row="1">
-            <StackPanel.Resources>
-                <Style TargetType="TextBox">
-                    <Setter Property="FontSize" Value="14"/>
-                </Style>
-            </StackPanel.Resources>
-            <TextBox Text="{Binding SelectedItemName}" IsReadOnly="True"/>
-            <TextBox Text="{Binding SelectedItemMdl}" IsReadOnly="True"/>
-            <TextBox Text="{Binding SelectedItemMtrl}" IsReadOnly="True"/>
-        </StackPanel>
 
-        <TreeView ItemsSource="{Binding ItemList}" Grid.Row="2" 
-                  VirtualizingStackPanel.IsVirtualizing="True"
-                  dd:DragDrop.IsDragSource="True">
-
-            <TreeView.ItemContainerStyle>
-                <Style TargetType="{x:Type TreeViewItem}">
-                    <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True"/>
-                    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=OneWay}"/>
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                </Style>
-            </TreeView.ItemContainerStyle>
-
-            <TreeView.Resources>
-                <HierarchicalDataTemplate DataType="{x:Type viewmodels:ItemListViewModel}" ItemsSource="{Binding Items}">
-                    <StackPanel Height="Auto" HorizontalAlignment="Stretch" dd:DragDrop.DragSourceIgnore="True">
-                        <TextBlock HorizontalAlignment="Stretch" FontSize="14">
-                            <TextBlock.Text>
-                                <MultiBinding StringFormat="{}{0} ({1})">
-                                    <Binding Path="Header"/>
-                                    <Binding Path="NumMatches"/>
-                                </MultiBinding>
-                            </TextBlock.Text>
-                        </TextBlock>
-                    </StackPanel>
-
-                </HierarchicalDataTemplate>
-                <DataTemplate DataType="{x:Type viewmodels:ItemViewModel}">
-                        <!--
-                    <TextBlock Text="{Binding Name, Mode=OneTime}">
-                        <TextBlock.InputBindings>
-                    -->
-                        <!-- TODO: Does not offer feedback on click-->
-                        <!--
-                            <MouseBinding MouseAction="LeftClick" Command="{Binding IsSelectedCommand}"/>
-                        </TextBlock.InputBindings>
-                    </TextBlock>
-            -->
-                    <Button Content="{Binding Name}" Background="Transparent" BorderBrush="Transparent"
-                        Command="{Binding IsSelectedCommand}" Margin="0 -2 0 -1" HorizontalContentAlignment="Right"
-                            FontSize="14"/>
-                </DataTemplate>
-            </TreeView.Resources>
-        </TreeView>
     </Grid>
 </UserControl>

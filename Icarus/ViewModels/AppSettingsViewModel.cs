@@ -1,6 +1,5 @@
 ﻿using Icarus.Services;
 using Icarus.Services.Interfaces;
-using Icarus.Services.UI;
 using Icarus.ViewModels.Util;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -18,6 +17,8 @@ namespace Icarus.ViewModels
             _settings = settings;
             _messageBox = messageBox;
         }
+
+        public bool StandardSettings => !AdvancedSettings;
 
         public bool AdvancedSettings
         {
@@ -72,7 +73,8 @@ namespace Icarus.ViewModels
         public string BrowseDirectory
         {
             get { return _settings.BrowseDirectory; }
-            set {
+            set
+            {
                 if (Directory.Exists(value))
                 {
                     value = Path.Combine(value);
@@ -85,7 +87,8 @@ namespace Icarus.ViewModels
         public string OutputDirectory
         {
             get { return _settings.OutputDirectory; }
-            set { 
+            set
+            {
                 if (Directory.Exists(value))
                 {
                     value = Path.Combine(value);

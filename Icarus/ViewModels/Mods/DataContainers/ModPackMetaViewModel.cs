@@ -1,19 +1,8 @@
 ﻿using Icarus.Mods.DataContainers;
-using Icarus.Mods.Interfaces;
-using Icarus.Services.GameFiles;
 using Icarus.Services.Interfaces;
 using Icarus.ViewModels.Mods.DataContainers.Interfaces;
 using Icarus.ViewModels.Util;
-using Serilog;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.ComponentModel;
-using System.IO.Packaging;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Windows.Data;
 
 namespace Icarus.ViewModels.Mods.DataContainers
 {

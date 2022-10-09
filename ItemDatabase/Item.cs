@@ -1,11 +1,6 @@
 ﻿using ItemDatabase.Enums;
 using ItemDatabase.Interfaces;
-using Lumina;
-using Lumina.Data;
-using Lumina.Excel;
 using Lumina.Excel.GeneratedSheets;
-using Lumina.Text;
-using xivModdingFramework.General.Enums;
 using xivModdingFramework.Textures.Enums;
 using LuminaItem = Lumina.Excel.GeneratedSheets.Item;
 
@@ -33,10 +28,11 @@ namespace ItemDatabase
         }
 
         public abstract string GetMdlPath();
+        public abstract string GetMdlFileName();
 
         public abstract string GetMtrlPath();
 
-        public abstract string GetTexPath(XivTexType type, string variant="");
+        public abstract string GetTexPath(XivTexType type, string variant = "");
 
         public abstract string GetMtrlFileName();
 
@@ -107,8 +103,9 @@ namespace ItemDatabase
 
         public virtual bool IsMatch(string str)
         {
-            if (String.IsNullOrWhiteSpace(str)) { 
-                return false; 
+            if (String.IsNullOrWhiteSpace(str))
+            {
+                return false;
             }
             return Name.Contains(str, StringComparison.OrdinalIgnoreCase);
         }

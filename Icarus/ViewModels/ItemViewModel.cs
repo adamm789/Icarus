@@ -1,9 +1,5 @@
-﻿using ItemDatabase.Interfaces;
-using Icarus.ViewModels.Util;
-using System;
-using System.Windows;
-using System.ComponentModel;
-using GongSolutions.Wpf.DragDrop;
+﻿using Icarus.ViewModels.Util;
+using ItemDatabase.Interfaces;
 
 namespace Icarus.ViewModels
 {

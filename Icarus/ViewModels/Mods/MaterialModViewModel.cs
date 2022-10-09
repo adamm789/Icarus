@@ -1,24 +1,11 @@
 ﻿using Icarus.Mods;
-using Icarus.Mods.Interfaces;
-using Icarus.Services.GameFiles.Interfaces;
 using Icarus.Services.GameFiles;
+using Icarus.Services.GameFiles.Interfaces;
 using Icarus.Services.Interfaces;
 using Icarus.ViewModels.Util;
 using Icarus.Views.Mods;
-using ItemDatabase.Interfaces;
-using ItemDatabase.Paths;
-using Serilog;
-using SharpDX;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Windows.Documents;
 using xivModdingFramework.Materials.DataContainers;
-using xivModdingFramework.Textures.Enums;
-using Half = SharpDX.Half;
 
 namespace Icarus.ViewModels.Mods
 {

@@ -1,18 +1,13 @@
 ﻿using GongSolutions.Wpf.DragDrop;
 using Icarus.Mods.DataContainers;
 using Icarus.Services;
-using Icarus.Services.GameFiles;
 using Icarus.ViewModels.Mods.DataContainers.Interfaces;
 using Icarus.ViewModels.Util;
 using Serilog;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace Icarus.ViewModels.Mods.DataContainers
@@ -302,7 +297,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
                 dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
                 dropInfo.Effects = DragDropEffects.Copy;
             }
-            
+
         }
 
         void IDropTarget.Drop(IDropInfo dropInfo)

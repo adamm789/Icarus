@@ -1,18 +1,11 @@
-﻿using Icarus.Mods.DataContainers;
-using Icarus.Services.Files;
+﻿using Icarus.Services.Files;
 using Icarus.Services.Interfaces;
-using Icarus.Util;
-using Icarus.ViewModels.Import;
-using Icarus.ViewModels.Mods;
 using Icarus.ViewModels.Mods.DataContainers.Interfaces;
 using Icarus.ViewModels.Util;
 using Serilog;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 

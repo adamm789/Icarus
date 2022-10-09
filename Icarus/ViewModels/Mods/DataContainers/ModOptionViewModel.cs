@@ -2,17 +2,13 @@
 using Icarus.Mods.DataContainers;
 using Icarus.Mods.Interfaces;
 using Icarus.Services;
-using Icarus.Services.GameFiles;
-using Icarus.Services.Interfaces;
 using Icarus.ViewModels.Util;
 using Serilog;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
-using System.Windows.Data;
 
 namespace Icarus.ViewModels.Mods.DataContainers
 {

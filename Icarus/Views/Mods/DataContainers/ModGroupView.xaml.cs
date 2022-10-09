@@ -1,6 +1,4 @@
-﻿using Icarus.UI;
-using System;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
@@ -15,7 +13,7 @@ namespace Icarus.Views.Mods.DataContainers
         {
             InitializeComponent();
         }
-        
+
         private void HandlePreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
             if (!e.Handled)

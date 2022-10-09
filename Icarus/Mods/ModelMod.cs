@@ -1,13 +1,7 @@
-﻿using Icarus.Mods.GameFiles;
-using Icarus.Mods.Interfaces;
-using Icarus.Services.Interfaces;
-using Icarus.ViewModels.Mods;
+﻿using Icarus.Mods.Interfaces;
 using ItemDatabase.Paths;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Models.Helpers;
