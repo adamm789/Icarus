@@ -54,7 +54,7 @@
             </TabItem>
             <TabItem Header="Pack">
                 <ContentControl DataContext="{Binding ModPackViewModel}">
-                    <editors:ModPackEditor></editors:ModPackEditor>
+                    <editors:ModPackEditor/>
                 </ContentControl>
             </TabItem>
         </TabControl>

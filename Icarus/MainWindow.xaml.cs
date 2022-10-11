@@ -14,6 +14,7 @@ namespace Icarus
         public MainWindow()
         {
             InitializeComponent();
+            Application.Current.MainWindow = this;
         }
 
         protected override void OnClosed(EventArgs e)

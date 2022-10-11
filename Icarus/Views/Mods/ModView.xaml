@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Icarus.Views.Mods"
              xmlns:mods="clr-namespace:Icarus.ViewModels.Mods"
+             xmlns:ui="clr-namespace:Icarus.UI"
              d:DataContext="{d:DesignInstance Type=mods:ModViewModel}"
              xmlns:dd="urn:gong-wpf-dragdrop"
              mc:Ignorable="d" 
@@ -21,11 +22,10 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Identifier}"/>
-            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding DisplayedHeader}"/>
+            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding DisplayedHeader}" IsReadOnly="True"/>
             <Button Grid.Row="0" Grid.Column="2" Command="{Binding DeleteCommand}" Content="Delete"/>
-
-            <TextBlock Grid.Row="1" Grid.Column="0">Destination:</TextBlock>
-            <TextBox Text="{Binding DestinationPath, UpdateSourceTrigger=LostFocus}" IsReadOnly="{Binding IsReadOnly}" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"/>
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Destination:"/>
+            <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding DestinationPath, UpdateSourceTrigger=LostFocus}"/>
         </Grid>
     </Border>
 </UserControl>

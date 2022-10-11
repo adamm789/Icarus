@@ -4,6 +4,7 @@ using Icarus.Mods.Interfaces;
 using Icarus.Services;
 using Icarus.Services.GameFiles;
 using Icarus.Services.GameFiles.Interfaces;
+using Icarus.Services.Interfaces;
 using Icarus.ViewModels.Import;
 using Icarus.ViewModels.Models;
 using ItemDatabase;
@@ -28,8 +29,8 @@ namespace Icarus.ViewModels.Mods
 
         #region Constructors
 
-        public ModelModViewModel(ModelMod modelMod, ViewModelService viewModelService, IGameFileService gameFileDataService)
-            : base(modelMod, gameFileDataService)
+        public ModelModViewModel(ModelMod modelMod, ViewModelService viewModelService, IGameFileService gameFileService, ILogService logService)
+            : base(modelMod, gameFileService, logService)
         {
             _modelMod = modelMod;
             var importedModel = modelMod.ImportedModel;
@@ -97,54 +98,32 @@ namespace Icarus.ViewModels.Mods
             OptionsViewModel.UpdateTargetRace(race);
         }
 
-        /*
-        public override Task SetDestinationItem(IItem? itemArg = null)
-        {
-            fromItem = true;
-            var modData = _gameFileService.GetModelFileData(itemArg);
-            if (modData != null)
-            {
-                SetModData(modData);
-            }
-
-            fromItem = false;
-            return Task.CompletedTask;
-        }
-        */
-        /*
-        private void SetModData(IGameFile data)
-        {
-            if (data is ModelGameFile modelData)
-            {
-                var ttModel = modelData.TTModel;
-
-                _mod.SetModData(modelData);
-                UpdateAttributes(modelData);
-
-                RaiseModPropertyChanged();
-            }
-        }
-        */
-
         public override bool SetModData(IGameFile? gameFile)
         {
             if (gameFile is ModelGameFile modelGameFile)
             {
                 UpdateAttributes(modelGameFile);
+                var ttModel = modelGameFile.TTModel;
+
+                if (ttModel.MeshGroups.Count == MeshGroups.Count)
+                {
+                    for (var i = 0; i < ttModel.MeshGroups.Count; i++)
+                    {
+                        MeshGroups[i].MaterialViewModel.DisplayedMaterial = ttModel.MeshGroups[i].Material;
+                    }
+                }
+
                 return base.SetModData(modelGameFile);
             }
             return false;
         }
 
-        // TODO: Double check: internal models should have their attributes set
         // TODO: Double check: internal models should always have their original attribute presets available
         private void UpdateAttributes(ModelGameFile modelData)
         {
             var ttModel = modelData.TTModel;
             var slot = XivPathParser.GetEquipmentSlot(modelData.Path);
 
-            //var attributePresets = GetAttributePresets(modelData);
-            //var slotAttributes = GetSlotAttributes(slot);
             var attributePresets = AttributePreset.GetAttributeTTModelPresets(ttModel);
             Dictionary<string, Dictionary<int, List<XivAttribute>>> internalPresets = new();
             if (IsInternal)
@@ -162,10 +141,7 @@ namespace Icarus.ViewModels.Mods
                 attributePresets.TryAdd(pair.Key, pair.Value);
             }
 
-            //var slotAttributes = AttributePreset.GetSlotAttributes(slot);
             var slotAttributes = AttributePreset.GetAttributes(modelData.Path);
-
-            // TODO: Face attributes, hair attributes... other attributes?
 
             foreach (var group in MeshGroups)
             {

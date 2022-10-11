@@ -2,11 +2,11 @@
 
 namespace Icarus.ViewModels.Util
 {
-    public class ViewModelBase : NotifyPropertyChanged
+    public class BaseViewMode : NotifyPropertyChanged
     {
         protected ILogService _logService;
         protected IUIService _uiService;
-        public ViewModelBase(ILogService logService, IUIService uiService)
+        public BaseViewMode(ILogService logService, IUIService uiService)
         {
             _logService = logService;
             _uiService = uiService;

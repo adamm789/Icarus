@@ -6,10 +6,12 @@
              xmlns:models="clr-namespace:Icarus.ViewModels.Models"
              xmlns:importviews="clr-namespace:Icarus.Views.Import"
              xmlns:local="clr-namespace:Icarus.Views.Models" 
-                     xmlns:dd="urn:gong-wpf-dragdrop"
-        d:DataContext="{d:DesignInstance Type=models:MeshGroupViewModel}"
-        mc:Ignorable="d" 
-             MinHeight="450" MinWidth="800"
+             xmlns:dd="urn:gong-wpf-dragdrop"
+             d:DataContext="{d:DesignInstance Type=models:MeshGroupViewModel}"
+             mc:Ignorable="d" 
+             MinHeight="400" MinWidth="800"
+             Height="400" Width="800"
+        
         Title="Shape and Attribute Editor">
     <Grid>
         <Grid.Resources>

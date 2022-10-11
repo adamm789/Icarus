@@ -12,8 +12,6 @@ namespace Icarus.Services
         // TODO: Add log verbosity to settings (only to DEBUG)
         public SettingsService()
         {
-            ReadAllSettings();
-
             ProjectDirectory = GetProjectDirectory();
             ConverterFolder = Path.Combine(GetProjectDirectory(), "converters");
 
@@ -26,30 +24,6 @@ namespace Icarus.Services
             {
                 OutputDirectory = Path.Combine(GetProjectDirectory(), "output");
                 DefaultSettings.Save();
-            }
-        }
-
-        void ReadAllSettings()
-        {
-            try
-            {
-                var appSettings = ConfigurationManager.AppSettings;
-
-                if (appSettings.Count == 0)
-                {
-                    Console.WriteLine("AppSettings is empty.");
-                }
-                else
-                {
-                    foreach (var key in appSettings.AllKeys)
-                    {
-                        Console.WriteLine("Key: {0} Value: {1}", key, appSettings[key]);
-                    }
-                }
-            }
-            catch (ConfigurationErrorsException)
-            {
-                Console.WriteLine("Error reading app settings");
             }
         }
 
@@ -78,7 +52,13 @@ namespace Icarus.Services
             set { DefaultSettings.OutputDirectory = value; OnPropertyChanged(); }
         }
 
-        public void SaveSettings()
+        public event SettingsSavingEventHandler SettingsSaving
+        {
+            add { DefaultSettings.SettingsSaving += value; }
+            remove { DefaultSettings.SettingsSaving -= value; }
+        }
+
+        public void Save()
         {
             DefaultSettings.Save();
         }

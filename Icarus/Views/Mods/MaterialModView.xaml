@@ -43,15 +43,8 @@
         <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding DestinationName, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
 
         <Button Grid.Row="1" Grid.Column="2" Command="{Binding OpenMaterialEditorCommand}" Content="Edit"/>
-        <!--
-        <ListView ItemsSource="{Binding Textures}" Grid.Row="3" Grid.ColumnSpan="2"
-                  PreviewMouseWheel="ListView_PreviewMouseWheel" ScrollViewer.CanContentScroll="False"/>
-        -->
-        <!--
-        <ContentControl Grid.Row="4" Grid.ColumnSpan="2" Content="{Binding ShaderInfoViewModel}"/>
-        -->
 
-        <Grid Grid.Row="3" Grid.ColumnSpan="2"   DataContext="{Binding ShaderInfoViewModel}">
+        <Grid Grid.Row="3" Grid.ColumnSpan="2" DataContext="{Binding ShaderInfoViewModel}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -66,20 +59,5 @@
             <local:MaterialTexPathsView Grid.Row="1" Grid.ColumnSpan="2"/>
         </Grid>
 
-        <!--
-        <ListView Grid.Row="5" Grid.ColumnSpan="2"
-            ItemsSource="{Binding MultiNormalPathList}" PreviewMouseWheel="ListView_PreviewMouseWheel"
-            Visibility="{Binding IsMultiNormal, Converter={StaticResource BooleanToVisibilityConverter}}">
-        </ListView>
-        <ListView Grid.Row="5" Grid.ColumnSpan="2"
-            ItemsSource="{Binding DiffuseSpecularPathList}" PreviewMouseWheel="ListView_PreviewMouseWheel"
-            Visibility="{Binding IsMultiNormal, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
-        </ListView>
-        -->
-        <!--
-        <ListView Grid.Row="4" ItemsSource="{Binding ColorSetViewModels}" HorizontalContentAlignment="Stretch">
-
-        </ListView>
-        -->
     </Grid>
 </UserControl>

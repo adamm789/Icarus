@@ -1,7 +1,9 @@
 ﻿using Icarus.Mods;
+using Icarus.Services;
 using Icarus.Services.GameFiles;
 using Icarus.Services.GameFiles.Interfaces;
 using Icarus.Services.Interfaces;
+using Icarus.ViewModels.Mods.Materials;
 using Icarus.ViewModels.Util;
 using Icarus.Views.Mods;
 using System.Collections.ObjectModel;
@@ -11,30 +13,39 @@ namespace Icarus.ViewModels.Mods
 {
     public class MaterialModViewModel : ModViewModel
     {
-        MaterialMod _materialMod;
+        public MaterialMod Material { get; }
         IWindowService _windowService;
         ShaderInfoViewModel _shaderInfoViewModel;
 
         // TODO: Include a section that shows the overall edits to all items
         // e.g. Group and display the mods that affect e6111
-        public MaterialModViewModel(MaterialMod mod, IGameFileService gameFileDataService, IWindowService windowService)
-            : base(mod, gameFileDataService)
+        public MaterialModViewModel(MaterialMod mod, IGameFileService gameFileDataService, IWindowService windowService,
+            ILogService logService)
+            : base(mod, gameFileDataService, logService)
         {
-            _materialMod = mod;
+            Material = mod;
             _windowService = windowService;
-            ShaderInfoViewModel = new ShaderInfoViewModel(mod);
+            ShaderInfoViewModel = new(Material);
+            ColorSetViewModel = new(Material.ColorSetData);
 
-            var colorset = _materialMod.ColorSetData;
+            var colorset = Material.ColorSetData;
 
             if (colorset.Count == 256)
             {
                 for (var i = 0; i < 16; i++)
                 {
-                    ColorSetViewModels.Add(new ColorSetRowViewModel(colorset.GetRange(i * 16, 16)));
+                    ColorSetViewModels.Add(new ColorSetRowViewModel(i, colorset.GetRange(i * 16, 16)));
                 }
             }
 
             SetCanExport();
+        }
+
+        ColorSetViewModel _colorSetViewModel;
+        public ColorSetViewModel ColorSetViewModel
+        {
+            get { return _colorSetViewModel; }
+            set { _colorSetViewModel = value; OnPropertyChanged(); }
         }
 
         ObservableCollection<ColorSetRowViewModel> _colorSetViewModels = new();
@@ -49,8 +60,6 @@ namespace Icarus.ViewModels.Mods
             get { return _shaderInfoViewModel; }
             set { _shaderInfoViewModel = value; OnPropertyChanged(); }
         }
-
-        private ShaderInfo _shaderInfo => _shaderInfoViewModel.ShaderInfo;
 
         DelegateCommand _openMaterialEditorCommand;
         public DelegateCommand OpenMaterialEditorCommand

@@ -151,7 +151,7 @@ namespace Icarus.Util
                     }
                     catch (Exception ex)
                     {
-                        _logService.Error(ex, "Could not add smoething.");
+                        _logService.Error(ex, "Could not add something.");
                     }
                 }
             }
@@ -247,6 +247,8 @@ namespace Icarus.Util
             var offsetDict = new Dictionary<IMod, int>();
 
             var offset = 0;
+            var numMods = 0;
+            var options = 0;
             using (var bw = new BinaryWriter(File.Open(_tempMPD, FileMode.Create)))
             {
                 foreach (var modPackPage in modPack.ModPackPages)
@@ -298,6 +300,7 @@ namespace Icarus.Util
                             modGroupJson.OptionList.Add(modOptionJson);
                             foreach (var modOptionMod in modOption.Mods)
                             {
+                                options++;
                                 var name = modOptionMod.Name;
                                 var category = modOptionMod.Category;
                                 var path = modOptionMod.Path;
@@ -346,6 +349,7 @@ namespace Icarus.Util
                                     bw.Write(bytes);
                                     offset += bytes.Length;
                                 }
+                                numMods++;
                             }
                         }
                     }
@@ -376,6 +380,15 @@ namespace Icarus.Util
                     zf.AddFile(image, "images");
                 }
                 zf.Save(modPackPath);
+
+                if (numMods == entries.Count)
+                {
+                    _logService.Information($"Sucessfully saved {modPackPath}.");
+                }
+                else
+                {
+                    _logService.Warning($"Saved {modPackPath}. But only wrote {numMods} out of {entries.Count} mod(s).");
+                }
 
                 _logService.Information($"Sucessfully saved {modPackPath}.");
                 return modPackPath;

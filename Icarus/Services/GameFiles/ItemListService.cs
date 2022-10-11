@@ -9,7 +9,7 @@ using xivModdingFramework.General.Enums;
 
 namespace Icarus.Services.GameFiles
 {
-    public class ItemListService : LuminaDependentServiceBase<ItemListService>
+    public class ItemListService : LuminaDependentServiceBase<ItemListService>, IItemListService
     {
         ILogService _logService;
         public ItemListService(ILogService logService, LuminaService luminaService) : base(luminaService)
@@ -17,12 +17,14 @@ namespace Icarus.Services.GameFiles
             _logService = logService;
         }
 
-        protected ItemList? _data;
-        public ItemList? Data
+        bool _isLoaded = false;
+        public bool IsLoaded
         {
-            get { return _data; }
-            set { _data = value; OnPropertyChanged(); }
+            get { return _isLoaded; }
+            set { _isLoaded = value; OnPropertyChanged();  }
         }
+
+        private ItemList? Data;
 
         IItem? _selectedItem;
         public IItem? SelectedItem
@@ -87,6 +89,7 @@ namespace Icarus.Services.GameFiles
             base.OnLuminaSet();
             _logService.Verbose("Creating item list.");
             Data = new(_lumina);
+            IsLoaded = true;
         }
 
         public Dictionary<string, SortedDictionary<string, IItem>> GetAllItems() => Data.GetAllItems();

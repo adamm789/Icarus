@@ -7,7 +7,7 @@
              xmlns:modviewmodels="clr-namespace:Icarus.ViewModels.Mods"
              xmlns:datacontainers="clr-namespace:Icarus.ViewModels.Mods.DataContainers"
              xmlns:interfaces="clr-namespace:Icarus.ViewModels.Mods.DataContainers.Interfaces"
-             d:DataContext="{d:DesignInstance Type=datacontainers:ModPackModsListViewModel}"
+             d:DataContext="{d:DesignInstance Type=datacontainers:ModsListViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
@@ -37,6 +37,6 @@
             </Style>
         </Grid.Resources>
 
-            <modviews:FilteredModsView/>
+        <modviews:FilteredModsView/>
     </Grid>
 </UserControl>

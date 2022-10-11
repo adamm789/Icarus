@@ -39,33 +39,36 @@
                 </Grid.ColumnDefinitions>
 
                 <!-- TODO: Temp element for a re-order tab thingy -->
-                <Label Grid.Column="0" Width="25"></Label>
+                <Label Grid.Column="0" Width="25"/>
 
                 <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding GroupName}"/>
-                <Button Grid.Row="0" Grid.Column="3" Command="{Binding RemoveCommand}" Content="Remove"></Button>
+                <Button Grid.Row="0" Grid.Column="3" Command="{Binding RemoveCommand}" Content="Remove" IsTabStop="False" Focusable="False"/>
             </Grid>
 
             <Grid Grid.Row="1" Grid.Column="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
                 <Grid Grid.Column="0">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <TextBox Text="{Binding NewOptionName, UpdateSourceTrigger=PropertyChanged}" Grid.Column="0">
+                    <Button Grid.Column="0" Command="{Binding AddOptionCommand}">New Option</Button>
+
+                    <TextBox Text="{Binding NewOptionName, UpdateSourceTrigger=PropertyChanged}" Grid.Column="1">
                         <TextBox.InputBindings>
                             <KeyBinding Key="Return" Command="{Binding AddOptionCommand}"/>
                         </TextBox.InputBindings>
                     </TextBox>
-                    <Button Grid.Column="1" Command="{Binding AddOptionCommand}">New Option</Button>
                 </Grid>
-                <StackPanel Grid.Column="1" Orientation="Horizontal">
-                    <RadioButton IsChecked="{Binding SingleSelection}" Content="Single" HorizontalAlignment="Center"></RadioButton>
-                    <RadioButton Content="Multi" HorizontalAlignment="Center"></RadioButton>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10 0 10 0">
+                    <RadioButton IsChecked="{Binding SingleSelection}" Content="Single"
+                                 HorizontalAlignment="Center" VerticalContentAlignment="Center" Margin="5 0 5 0" />
+                    <RadioButton Content="Multi"
+                                 HorizontalAlignment="Center" VerticalContentAlignment="Center" Margin="5 0 5 0"/>
                 </StackPanel>
             </Grid>
 
@@ -77,8 +80,8 @@
                  VirtualizingStackPanel.IsVirtualizing="True"
                  PreviewMouseWheel="HandlePreviewMouseWheel"
                  dd:DragDrop.IsDragSource="True"
-          dd:DragDrop.IsDropTarget="True"
-          dd:DragDrop.DropHandler="{Binding}">
+                 dd:DragDrop.IsDropTarget="True"
+                 dd:DragDrop.DropHandler="{Binding}">
             </ListView>
         </Grid>
     </Border>

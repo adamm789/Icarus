@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:Icarus.Views.Editor"
              xmlns:viewmodels="clr-namespace:Icarus.ViewModels"
              xmlns:exporterviewmodels="clr-namespace:Icarus.ViewModels.Export"
+             xmlns:itemviewmodels="clr-namespace:Icarus.ViewModels.Items"
              xmlns:importviewmodels="clr-namespace:Icarus.ViewModels.Import"
              xmlns:views="clr-namespace:Icarus.Views"
              xmlns:exporterviews="clr-namespace:Icarus.Views.Export"
@@ -36,9 +37,6 @@
             </DataTemplate>
         </Grid.Resources>
 
-        <!--
-        <ContentControl Grid.Column="0" Content="{Binding SearchViewModel}" Margin="5,0,5,0"></ContentControl>
-        -->
         <Grid Grid.Column="0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -47,7 +45,7 @@
             </Grid.RowDefinitions>
             <ContentControl Grid.Row="0" Content="{Binding ItemListViewModel}">
                 <ContentControl.Resources>
-                    <DataTemplate DataType="{x:Type viewmodels:ItemListViewModel}">
+                    <DataTemplate DataType="{x:Type itemviewmodels:ItemListViewModel}">
                         <views:SearchView/>
                     </DataTemplate>
                 </ContentControl.Resources>
@@ -61,7 +59,7 @@
             </ContentControl>
             <ContentControl Grid.Row="2" Content="{Binding ItemListViewModel}" VerticalContentAlignment="Stretch">
                 <ContentControl.Resources>
-                    <DataTemplate DataType="{x:Type viewmodels:ItemListViewModel}">
+                    <DataTemplate DataType="{x:Type itemviewmodels:ItemListViewModel}">
                         <views:ItemListView/>
                     </DataTemplate>
                 </ContentControl.Resources>
@@ -72,17 +70,13 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <ContentControl Grid.Row="0" Content="{Binding ImportViewModel}" Margin="5"/>
-                <!--
-                <ContentControl Grid.Row="1" Content="{Binding ImportVanillaViewModel}" Margin="5"/>
-                -->
-                <ContentControl Grid.Row="2" Content="{Binding ModPackMetaViewModel}" Margin="5"/>
-                <ContentControl Grid.Row="3" Content="{Binding ModsListViewModel}" Margin="5"/>
-                <ContentControl Grid.Row="4" Content="{Binding ExportViewModel}" Margin="5"/>
+                <ContentControl Grid.Row="1" Content="{Binding ModPackMetaViewModel}" Margin="5"/>
+                <ContentControl Grid.Row="2" Content="{Binding ModsListViewModel}" Margin="5"/>
+                <ContentControl Grid.Row="3" Content="{Binding ExportViewModel}" Margin="5"/>
             </Grid>
         </Grid>
     </Grid>

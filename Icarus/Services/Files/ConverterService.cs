@@ -16,9 +16,9 @@ namespace Icarus.Services.Files
         string _converterFolder;
         string _gameDirectory;
         private Converter _converter;
-        readonly SettingsService _settings;
+        readonly ISettingsService _settings;
         readonly ILogService _logService;
-        public ConverterService(SettingsService settings, LuminaService luminaService, ILogService logService) : base(luminaService)
+        public ConverterService(ISettingsService settings, LuminaService luminaService, ILogService logService) : base(luminaService)
         {
             _settings = settings;
             _logService = logService;
@@ -31,9 +31,9 @@ namespace Icarus.Services.Files
             return await _converter.FbxToTTModel(filePath);
         }
 
-        public async Task ModelModToFbx(ModelMod mod, DirectoryInfo outputDirectory, string outputFileName = "")
+        public async Task TTModelToFbx(TTModel model, DirectoryInfo outputDirectory, string outputFileName = "")
         {
-            await _converter.ModelModToFbx(mod, outputDirectory, outputFileName);
+            await _converter.TTModelToFbx(model, outputDirectory, outputFileName);
         }
 
         protected override void OnLuminaSet()

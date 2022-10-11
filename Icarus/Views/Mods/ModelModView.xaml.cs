@@ -28,7 +28,7 @@ namespace Icarus.Views.Mods
 
         private void ListView_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
-            if (!e.Handled)
+            if (!e.Handled && !this.IsMouseCaptureWithin)
             {
                 e.Handled = true;
                 var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta);

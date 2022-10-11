@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows;
 
 namespace Icarus.ViewModels.Mods.DataContainers
@@ -18,12 +19,8 @@ namespace Icarus.ViewModels.Mods.DataContainers
         public IModsListViewModel ModsListViewModel { get; }
         ViewModelService _viewModelService;
 
-        IModPackMetaViewModel _modPackMetaViewModel;
-        public IModPackMetaViewModel ModPackMetaViewModel
-        {
-            get { return _modPackMetaViewModel; }
-            set { _modPackMetaViewModel = value; OnPropertyChanged(); }
-        }
+        //IModPackMetaViewModel _modPackMetaViewModel;
+        public IModPackMetaViewModel ModPackMetaViewModel { get; }
 
         public ModPackViewModel(ModPack modPack, ViewModelService viewModelService)
         {
@@ -37,26 +34,13 @@ namespace Icarus.ViewModels.Mods.DataContainers
             ModsListViewModel.SimpleModsList.CollectionChanged += new NotifyCollectionChangedEventHandler(OnCollectionChanged);
         }
 
-
-        public ModPackViewModel(ModPack modPack, IModPackMetaViewModel modPackMeta, IModsListViewModel modsList, ViewModelService viewModelService)
-        {
-            ModsListViewModel = modsList;
-            _viewModelService = viewModelService;
-            ModPack = modPack;
-            ModPackMetaViewModel = modPackMeta;
-
-            DisplayedViewModel = ModPackMetaViewModel;
-            ModsListViewModel.SimpleModsList.CollectionChanged += new NotifyCollectionChangedEventHandler(OnCollectionChanged);
-        }
-
         private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (e.OldItems != null)
             {
-                foreach (var item in e.OldItems)
+                foreach (var item in e.OldItems.Cast<ModViewModel>())
                 {
-                    var mod = item as ModViewModel;
-                    RemoveMod(mod);
+                    RemoveMod(item);
                 }
             }
         }
@@ -100,6 +84,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
             return ModPackViewModelImportFlags.OverwriteData |
                 ModPackViewModelImportFlags.OverwritePages | ModPackViewModelImportFlags.AppendPagesToEnd;
         }
+
         // TODO: Ability to see all imported advanced modpacks and their options
         // TODO: Allow user to drag and drop groups, options, and pages to the current pack
         ObservableCollection<ModPackPageViewModel> _modPackPages = new();
@@ -129,7 +114,6 @@ namespace Icarus.ViewModels.Mods.DataContainers
             }
         }
 
-
         // Used to disable "Previous Page" on the mod meta page
         bool _isNotFirstPage = false;
         public bool IsNotFirstPage
@@ -150,6 +134,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
         {
             get { return _decreaseCommand ??= new DelegateCommand(o => DecreasePageIndex()); }
         }
+
         DelegateCommand _increaseCommand;
         public DelegateCommand IncreaseCommand
         {
@@ -297,7 +282,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
             {
                 numRemoved += page.RemoveMods(mods);
             }
-            Log.Information($"Removed {numRemoved} mods from pages.");
+            Log.Verbose($"Removed {numRemoved} mods from pages.");
             return numRemoved;
         }
 

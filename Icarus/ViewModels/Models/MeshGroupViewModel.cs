@@ -1,4 +1,5 @@
-﻿using Icarus.Services.Interfaces;
+﻿using Icarus.Services;
+using Icarus.Services.Interfaces;
 using Icarus.ViewModels.Mods;
 using Icarus.ViewModels.Util;
 using Icarus.Views.Models;
@@ -12,17 +13,17 @@ namespace Icarus.ViewModels.Models
 {
     public class MeshGroupViewModel : NotifyPropertyChanged
     {
-        public TTMeshGroup ImportedGroup { get; private set; }
+        private TTMeshGroup _importedGroup;
         readonly IWindowService _windowService;
 
-        public MeshGroupViewModel(TTMeshGroup group, ModelModViewModel modelMod, IWindowService windowService, IUserPreferencesService userPreferencesService)
+        public MeshGroupViewModel(TTMeshGroup group, ModelModViewModel modelMod, IWindowService windowService, ViewModelService viewModelService)
         {
-            MaterialViewModel = new(group, modelMod, userPreferencesService);
-            ImportedGroup = group;
+            MaterialViewModel = viewModelService.GetMeshGroupMaterialViewModel(group, modelMod);
+            _importedGroup = group;
             Name = group.Name;
             _windowService = windowService;
 
-            foreach (var meshPart in ImportedGroup.Parts)
+            foreach (var meshPart in _importedGroup.Parts)
             {
                 MeshParts.Add(new MeshPartViewModel(meshPart));
                 foreach (var key in meshPart.ShapeParts.Keys)
@@ -100,7 +101,7 @@ namespace Icarus.ViewModels.Models
             if (e.PropertyName == nameof(ShapeViewModel.ShouldRemove))
             {
                 Shapes.Remove(shape);
-                foreach (var meshPart in ImportedGroup.Parts)
+                foreach (var meshPart in _importedGroup.Parts)
                 {
                     meshPart.ShapeParts.Remove(shape.Name);
                 }

@@ -10,9 +10,9 @@ namespace Icarus.ViewModels
     internal class AppSettingsViewModel : NotifyPropertyChanged
     {
         readonly char _separator = Path.DirectorySeparatorChar;
-        readonly SettingsService _settings;
+        readonly ISettingsService _settings;
         readonly IMessageBoxService _messageBox;
-        public AppSettingsViewModel(SettingsService settings, IMessageBoxService messageBox)
+        public AppSettingsViewModel(ISettingsService settings, IMessageBoxService messageBox)
         {
             _settings = settings;
             _messageBox = messageBox;
@@ -43,12 +43,6 @@ namespace Icarus.ViewModels
         public DelegateCommand SetDirectoryCommand
         {
             get { return _setDirectoryCommand ??= new DelegateCommand(o => SetDirectory(o)); }
-        }
-
-        DelegateCommand _saveSettingsCommand;
-        public DelegateCommand SaveSettingsCommand
-        {
-            get { return _saveSettingsCommand ??= new DelegateCommand(o => SaveSettings()); }
         }
 
         public string GameDirectoryLumina
@@ -211,17 +205,10 @@ namespace Icarus.ViewModels
                 return (true, false);
             }
         }
-
-        public void SaveSettings()
-        {
-            _settings.SaveSettings();
-            //MessageBox.Show("Settings saved.");
-        }
-
         protected override void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             base.OnPropertyChanged(propertyName);
-            SaveSettings();
+            _settings.Save();
         }
     }
 }

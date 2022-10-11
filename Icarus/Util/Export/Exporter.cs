@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using TeximpNet;
 using TeximpNet.Compression;
 using TeximpNet.DDS;
+using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Models.Helpers;
 using xivModdingFramework.Textures.Enums;
@@ -182,23 +183,28 @@ namespace Icarus.Util
                 }
 
                 return await TexExtensions.DDSToTex(ddsFilePath, internalPath, texFormat);
-            }
+            } // Not catching so any exception should be handled by calling function
             finally
             {
                 ddsContainer.Dispose();
             }
         }
 
-        protected void ApplyModelOptions(ModelMod mm)
+        protected TTModel ApplyModelOptions(ModelMod mm)
         {
-            _logService.Information($"Applying ModelModifiers for {mm.Name}");
+            _logService.Information($"Applying ModelModifiers to {mm.Name}");
             var ttModel = mm.ImportedModel;
+            var copy = ttModel.DeepCopy();
+
             var ogMdl = mm.XivMdl;
             var options = mm.Options;
             var ogPath = ogMdl.MdlPath;
 
-            options.Apply(ttModel, ogMdl, null, _logService.LoggingFunction);
-            ModelModifiers.FixUpSkinReferences(ttModel, ogPath);
+            options.Apply(copy, ogMdl, null, _logService.LoggingFunction);
+
+            ModelModifiers.FixUpSkinReferences(copy, ogPath, _logService.LoggingFunction);
+
+            return copy;
         }
 
         /// <summary>
@@ -210,32 +216,16 @@ namespace Icarus.Util
         protected async Task<byte[]> WriteModelToBytes(ModelMod file, bool shouldCompress, int counter = 0)
         {
             _logService.Verbose($"{file.Name} ({counter}) has started.");
-            /*
-            TTModel ttModel;
-            XivMdl ogMdl = file.XivMdl;
-            string ogPath = ogMdl.MdlPath;
-            ModelModifierOptions options = new();
-
-            ttModel = file.ImportedModel;
-            options = file.Options;
-
-            options.Apply(ttModel, ogMdl, null, _logService.LoggingFunction);
-
-            try
-            {
-                ModelModifiers.FixUpSkinReferences(ttModel, ogPath);
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex.Message);
-            }
-            */
             var ttModel = file.ImportedModel;
             var ogMdl = file.XivMdl;
-            ApplyModelOptions(file);
+            // TODO: I need to un-apply these options after exporting
+            // After applying modelmodifiers and then exporting, the model is not reverted to its original state
+            var copy = ApplyModelOptions(file);
 
-            var mdl = new Mdl(ttModel, ogMdl);
+            var mdl = new Mdl(copy, ogMdl);
             var bytes = await mdl.MakeNewMdlFileLumina(shouldCompress);
+
+            // ModelModifiers.MakeExportReady(ttModel, _logService.LoggingFunction);
 
             _logService.Verbose($"{file.Name} ({counter}) has finished.");
             return bytes;

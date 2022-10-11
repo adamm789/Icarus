@@ -8,10 +8,11 @@
              xmlns:viewmodels="clr-namespace:Icarus.ViewModels"
              d:DataContext="{d:DesignInstance Type=viewmodels:LogViewModel}"
              mc:Ignorable="d" 
-             Height="350" Width="500">
+             Height="350" Width="500"
+        MinHeight="350" MinWidth="700">
     <Grid>
         <ScrollViewer>
-            <TextBlock Text="{Binding Text}"/>
+            <TextBox Text="{Binding Text}" IsReadOnly="True"/>
         </ScrollViewer>
     </Grid>
 </Window>

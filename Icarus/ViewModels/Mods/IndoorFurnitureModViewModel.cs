@@ -3,6 +3,7 @@ using Icarus.Services.GameFiles;
 
 namespace Icarus.ViewModels.Mods
 {
+    /*
     public class IndoorFurnitureModViewModel : ModViewModel
     {
         public IndoorFurnitureModViewModel(IMod mod, GameFileService gameFileService)
@@ -11,4 +12,5 @@ namespace Icarus.ViewModels.Mods
 
         }
     }
+    */
 }

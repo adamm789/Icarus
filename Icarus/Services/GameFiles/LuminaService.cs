@@ -10,10 +10,10 @@ namespace Icarus.Services.GameFiles
         //SettingChangingEventHandler eh;
         PropertyChangedEventHandler eh;
         public GameData? Lumina;
-        readonly SettingsService _settingsService;
+        readonly ISettingsService _settingsService;
         readonly ILogService _logService;
 
-        public LuminaService(SettingsService settingsService, ILogService logService)
+        public LuminaService(ISettingsService settingsService, ILogService logService)
         {
             _settingsService = settingsService;
             _logService = logService;
@@ -35,7 +35,7 @@ namespace Icarus.Services.GameFiles
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(SettingsService.GameDirectoryLumina))
+            if (e.PropertyName == nameof(ISettingsService.GameDirectoryLumina))
             {
                 TrySetLumina();
             }

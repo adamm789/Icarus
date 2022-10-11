@@ -1,5 +1,6 @@
 ﻿using Icarus.Services.Interfaces;
 using System;
+using System.Runtime.CompilerServices;
 using xivModdingFramework.General.Enums;
 
 namespace Icarus.Services
@@ -57,7 +58,6 @@ namespace Icarus.Services
                 {
                     _settings.DefaultMaleVariant = value;
                     OnPropertyChanged();
-                    _settings.Save();
                 }
             }
         }
@@ -71,7 +71,6 @@ namespace Icarus.Services
                 {
                     _settings.DefaultFemaleVariant = value;
                     OnPropertyChanged();
-                    _settings.Save();
                 }
             }
         }
@@ -85,7 +84,6 @@ namespace Icarus.Services
                 {
                     _settings.DefaultLalafellVariant = value;
                     OnPropertyChanged();
-                    _settings.Save();
                 }
             }
         }
@@ -106,6 +104,12 @@ namespace Icarus.Services
             var err = String.Format("Unknown gendered race: {0}", race.ToString());
             _logService.Error(err);
             throw new ArgumentException(err);
+        }
+
+        protected override void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            base.OnPropertyChanged(propertyName);
+            _settings.Save();
         }
     }
 }

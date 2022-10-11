@@ -19,7 +19,7 @@ namespace Icarus.ViewModels
         ILogService _logService;
         ILogger _logger;
         StringWriter _stringWriter;
-        InMemorySink sink;
+        LogSink sink;
 
         public LogViewModel(ILogService logService)
         {
@@ -41,7 +41,7 @@ namespace Icarus.ViewModels
 
         void foo(object sender, PropertyChangedEventArgs e)
         {
-            var s = sender as InMemorySink;
+            var s = sender as LogSink;
             var events = s.Events;
             while (!events.IsEmpty)
             {

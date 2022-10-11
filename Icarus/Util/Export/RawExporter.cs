@@ -43,17 +43,6 @@ namespace Icarus.Util.Export
             return dir;
         }
 
-        private void ApplyOptions(ModelMod mm)
-        {
-            var ttModel = mm.ImportedModel;
-            var ogMdl = mm.XivMdl;
-            var options = mm.Options;
-            var ogPath = ogMdl.MdlPath;
-
-            options.Apply(ttModel, ogMdl, null, _logService.LoggingFunction);
-            ModelModifiers.FixUpSkinReferences(ttModel, ogPath);
-        }
-
         private string GetOutputFileName(IMod mod, ModOption? option = null)
         {
             var retVal = mod.ModFileName;
@@ -98,8 +87,24 @@ namespace Icarus.Util.Export
 
             if (mod is ModelMod mdlMod)
             {
-                ApplyModelOptions(mdlMod);
-                await _converterService.ModelModToFbx(mdlMod, outputDirectory, outputFileName);
+                var src = mdlMod.TTModel.Source;
+                if (Path.GetExtension(src) == ".db")
+                {
+                    // Check to see if the original file was an .fbx file
+                    // Why would someone want to export to an fbx when they have the original?
+                    _logService.Error($"Cannot export mod {mdlMod.Name}.");
+                    return;
+                }
+                var copy = ApplyModelOptions(mdlMod);
+                try
+                {
+                    await _converterService.TTModelToFbx(copy, outputDirectory, outputFileName);
+                }
+                catch (Exception ex)
+                {
+                    _logService.Error(ex, $"Could not export model to fbx. {mdlMod.Name}");
+                    return;
+                }
 
                 var model = mdlMod.ImportedModel;
 
@@ -109,9 +114,9 @@ namespace Icarus.Util.Export
                 {
                     var textureOutputPath = Path.Combine(outputPath, "textures");
                     _logService.Information("Trying to get Materials.");
-                    // TODO: Textures for (only?) skins, seems wrong
+                    // TODO?: Textures for (only?) skins, seems wrong
                     await Mdl.ExportMaterialsForModel(model, textureOutputPath, _gameDirectoryFramework);
-                    _logService.Information("Done with getting materials.");
+                    _logService.Verbose("Done with getting materials.");
                 }
             }
             if (mod is MaterialMod mtrlMod)

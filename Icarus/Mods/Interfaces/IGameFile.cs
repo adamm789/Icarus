@@ -1,8 +1,9 @@
-﻿namespace Icarus.Mods.Interfaces
+﻿using ItemDatabase.Interfaces;
+
+namespace Icarus.Mods.Interfaces
 {
     public interface IGameFile
     {
-        //public IItem? Item { get; set; }
 
         /// <summary>
         /// Name of the item in-game

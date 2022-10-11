@@ -10,6 +10,7 @@ namespace Icarus.Services.GameFiles.Interfaces
 
     public interface IGameFileService : IServiceProvider, IModelFileService, IMaterialFileService, ITextureFileService
     {
+        IItem? GetItem(IItem? itemArg = null);
         Task<IGameFile?> GetFileData(IItem? itemArg = null, Type? type = null);
         /// <summary>
         /// Try to get game file associated with the given path
@@ -23,6 +24,7 @@ namespace Icarus.Services.GameFiles.Interfaces
         /// </summary>
         /// <param name="itemArg"></param>
         /// <returns></returns>
+        /*
         List<XivRace> GetAllRaceMdls(IItem? item = null);
 
         IModelGameFile? GetModelFileData(IItem? item = null, XivRace race = XivRace.Hyur_Midlander_Male);
@@ -33,5 +35,6 @@ namespace Icarus.Services.GameFiles.Interfaces
 
         Task<ITextureGameFile?> GetTextureFileData(IItem? item = null);
         Task<ITextureGameFile?> TryGetTextureFileData(string path, string name = "");
+        */
     }
 }

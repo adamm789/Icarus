@@ -15,7 +15,8 @@ namespace Icarus.Services
         public void Debug(Exception ex, string s = "") => Log.Debug(ex, s);
         public void Information(string s) => Log.Information(s);
         public void Warning(string s) => Log.Warning(s);
-        //public void Warning(Exception ex, string s = "") => Log.Warning(ex, s);
+        public void Warning(Exception ex, string s = "") => Log.Warning(ex, s);
+        /*
         public void Warning(Exception ex, string s = "")
         {
             if (!String.IsNullOrWhiteSpace(s))
@@ -24,8 +25,10 @@ namespace Icarus.Services
             }
             Log.Debug(ex, "");
         }
+        */
         public void Error(string s) => Log.Error(s);
-        //public void Error(Exception ex, string s = "") => Log.Error(ex, s);
+        public void Error(Exception ex, string s = "") => Log.Error(ex, s);
+        /*
         public void Error(Exception ex, string s = "")
         {
             if (!String.IsNullOrWhiteSpace(s))
@@ -34,16 +37,17 @@ namespace Icarus.Services
             }
             Log.Debug(ex, "");
         }
+        */
         public void Fatal(string s) => Log.Fatal(s);
         public void Fatal(Exception ex, string s = "") => Log.Fatal(ex, s);
         public ILogger Logger => Log.Logger;
         public StringWriter StringWriter { get; }
-        public InMemorySink Sink { get; }
+        public LogSink Sink { get; }
 
 
-        readonly SettingsService _settingsService;
+        readonly ISettingsService _settingsService;
 
-        public LogService(SettingsService settingsService)
+        public LogService(ISettingsService settingsService)
         {
 
             _settingsService = settingsService;
@@ -51,9 +55,9 @@ namespace Icarus.Services
             var projectDirectory = _settingsService.ProjectDirectory;
             var logPath = Path.Combine(projectDirectory, "logs/logs.txt");
             var verbosePath = Path.Combine(projectDirectory, "logs/verbose.txt");
-            Sink = new InMemorySink();
+            Sink = new LogSink();
             StringWriter = new();
-
+            var outputTemplate = "{Timestamp:MM-dd HH:mm:ss} [{Level:u3}] {Message:lj}{NewLine}{Exception}";
 #if DEBUG
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -61,7 +65,8 @@ namespace Icarus.Services
                 .WriteTo.Logger(l => l.Filter.ByExcluding(e => e.Level == LogEventLevel.Verbose)
                 .WriteTo.Debug()
                 .WriteTo.Logger(l => l.Filter.ByExcluding(e => e.Level == LogEventLevel.Debug)
-                .WriteTo.File(path: logPath, rollingInterval: RollingInterval.Day, rollOnFileSizeLimit: true, retainedFileCountLimit: 7)
+                .WriteTo.File(path: logPath, rollingInterval: RollingInterval.Day, rollOnFileSizeLimit: true, retainedFileCountLimit: 7,
+                outputTemplate: outputTemplate)
                 .WriteTo.Sink(Sink)))
                 .CreateLogger();
 #else

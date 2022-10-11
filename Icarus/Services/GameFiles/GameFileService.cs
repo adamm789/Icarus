@@ -11,6 +11,7 @@ using ItemDatabase.Paths;
 using Lumina.Data.Files;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Threading.Tasks;
 using xivModdingFramework.General.Enums;
@@ -25,20 +26,23 @@ namespace Icarus.Services.GameFiles
 {
     public class GameFileService : LuminaDependentServiceBase<GameFileService>, IGameFileService
     {
-        readonly ItemListService _itemListService;
+        readonly IItemListService _itemListService;
         readonly ILogService _logService;
+        readonly ISettingsService _settingsService;
         readonly string _gameDirectory;
         readonly DirectoryInfo _frameworkGameDirectory;
 
-        public GameFileService(LuminaService luminaService, ItemListService itemListService, SettingsService settingsService, ILogService logService) : base(luminaService)
+        public GameFileService(LuminaService luminaService, IItemListService itemListService, ISettingsService settingsService, ILogService logService) : base(luminaService)
         {
             _itemListService = itemListService;
+            _settingsService = settingsService;
             _gameDirectory = settingsService.GameDirectoryLumina;
             _logService = logService;
+
             _frameworkGameDirectory = new(Path.Combine(_gameDirectory, "ffxiv"));
         }
 
-        private IItem? GetItem(IItem? item = null)
+        public IItem? GetItem(IItem? item = null)
         {
             if (item == null)
             {
@@ -343,7 +347,6 @@ namespace Icarus.Services.GameFiles
         #region Private Functions
         private async Task<XivMtrl?> TryGetMaterialFromPath(string path)
         {
-            _logService.Information($"Trying to get material: {path}.");
             try
             {
                 if (_lumina.FileExists(path))

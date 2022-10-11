@@ -7,6 +7,7 @@ using Icarus.Services.GameFiles.Interfaces;
 using Icarus.Services.Interfaces;
 using Icarus.ViewModels.Export;
 using Icarus.ViewModels.Import;
+using Icarus.ViewModels.Items;
 using Icarus.ViewModels.Mods.DataContainers;
 using Icarus.ViewModels.Mods.DataContainers.Interfaces;
 using Icarus.ViewModels.Util;
@@ -35,37 +36,31 @@ namespace Icarus.ViewModels
 
         private void Init()
         {
-
-
             var modPack = new ModPack();
             _luminaService = ServiceManager.GetRequiredService<LuminaService>();
-            var _userPreferencesService = ServiceManager.GetRequiredService<IUserPreferencesService>();
-            _userPreferences = new(_userPreferencesService);
+            UserPreferencesService = ServiceManager.GetRequiredService<IUserPreferencesService>();
+            //_userPreferences = new(_userPreferencesService);
+
 
             var _messageBoxService = ServiceManager.GetRequiredService<IMessageBoxService>();
             var _exportService = ServiceManager.GetRequiredService<ExportService>();
-            var itemListService = ServiceManager.GetRequiredService<ItemListService>();
+            var itemListService = ServiceManager.GetRequiredService<IItemListService>();
             var _importService = ServiceManager.GetRequiredService<ImportService>();
             var viewModelService = ServiceManager.GetRequiredService<ViewModelService>();
-            var settingsService = ServiceManager.GetRequiredService<SettingsService>();
+            var settingsService = ServiceManager.GetRequiredService<ISettingsService>();
             var gameFileDataService = ServiceManager.GetRequiredService<IGameFileService>();
             var logService = ServiceManager.GetRequiredService<ILogService>();
 
             _logViewModel = new LogViewModel(logService);
-            OpenLogWindow();
 
             _appSettings = new(settingsService, _messageBoxService);
             _luminaService.TrySetLumina();
 
-            //ModPackViewModel = new ModPackViewModel(modPack, ModPackMetaViewModel, ModsListViewModel, _modFileService);
             ModPackViewModel = new ModPackViewModel(modPack, viewModelService);
             ModPackMetaViewModel = ModPackViewModel.ModPackMetaViewModel;
             ModsListViewModel = ModPackViewModel.ModsListViewModel;
-            //ModPackMetaViewModel = new ModPackMetaViewModel(modPack, _userPreferencesService);
-            //ModsListViewModel = new ModsListViewModel(modPack, viewModelService);
 
             ItemListViewModel = new(itemListService, logService);
-            //SearchViewModel = new(ItemListViewModel, logService);
             ImportVanillaViewModel = new(ModsListViewModel, ItemListViewModel, gameFileDataService, logService);
             ExportViewModel = new(ModsListViewModel, _messageBoxService, _exportService);
             ImportViewModel = new(ModPackViewModel, _importService, settingsService, logService);
@@ -113,45 +108,14 @@ namespace Icarus.ViewModels
 
         #region Bindings
 
-        IModsListViewModel _modsListViewModel;
-        public IModsListViewModel ModsListViewModel
-        {
-            get { return _modsListViewModel; }
-            set { _modsListViewModel = value; OnPropertyChanged(); }
-        }
-
-        IModPackViewModel _modPackViewModel;
-        public IModPackViewModel ModPackViewModel
-        {
-            get { return _modPackViewModel; }
-            set { _modPackViewModel = value; OnPropertyChanged(); }
-        }
-        IModPackMetaViewModel _modPackMetaViewModel;
-        public IModPackMetaViewModel ModPackMetaViewModel
-        {
-            get { return _modPackMetaViewModel; }
-            set { _modPackMetaViewModel = value; OnPropertyChanged(); }
-        }
-        ExportViewModel _exportViewModel;
-        public ExportViewModel ExportViewModel
-        {
-            get { return _exportViewModel; }
-            set { _exportViewModel = value; OnPropertyChanged(); }
-        }
-
-        ImportViewModel _importViewModel;
-        public ImportViewModel ImportViewModel
-        {
-            get { return _importViewModel; }
-            set { _importViewModel = value; OnPropertyChanged(); }
-        }
-
-        ItemListViewModel _itemListViewModel;
-        public ItemListViewModel ItemListViewModel
-        {
-            get { return _itemListViewModel; }
-            set { _itemListViewModel = value; OnPropertyChanged(); }
-        }
+        public IModsListViewModel ModsListViewModel { get; set; }
+        public IModPackViewModel ModPackViewModel { get; set; }
+        public IModPackMetaViewModel ModPackMetaViewModel { get; set; }
+        public ExportViewModel ExportViewModel { get; set; }
+        public ImportViewModel ImportViewModel { get; set; }
+        public ImportVanillaViewModel ImportVanillaViewModel { get; set; }
+        public ItemListViewModel ItemListViewModel { get; set; }
+        public IUserPreferencesService UserPreferencesService { get; set; }
 
         bool _isBusy = false;
         public bool IsBusy
@@ -188,12 +152,6 @@ namespace Icarus.ViewModels
             get { return _openLog ??= new DelegateCommand(_ => OpenLogWindow()); }
         }
 
-        ImportVanillaViewModel _importVanillaViewModel;
-        public ImportVanillaViewModel ImportVanillaViewModel
-        {
-            get { return _importVanillaViewModel; }
-            set { _importVanillaViewModel = value; }
-        }
         #endregion
 
         private void SettingChanged(object sender, PropertyChangedEventArgs e)
@@ -208,7 +166,7 @@ namespace Icarus.ViewModels
 
         public void OpenUserPreferencesWindow()
         {
-            _windowService.ShowWindow<UserPreferencesWindow>(_userPreferences);
+            _windowService.ShowWindow<UserPreferencesWindow>(UserPreferencesService);
         }
 
         public void OpenLogWindow()
@@ -218,7 +176,6 @@ namespace Icarus.ViewModels
                 _windowService.Show<LogWindow>(_logViewModel);
             }
         }
-
         public void DragOver(IDropInfo dropInfo)
         {
             var dataObject = dropInfo.Data as System.Windows.DataObject;

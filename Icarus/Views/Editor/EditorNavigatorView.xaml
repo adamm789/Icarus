@@ -21,7 +21,8 @@
             Command="{Binding DecreaseCommand}"
             IsEnabled="{Binding IsNotFirstPage}">
         </Button>
-        <TextBox Grid.Column="2" Text="{Binding PageIndex, UpdateSourceTrigger=PropertyChanged, TargetNullValue=''}" PreviewTextInput="PreviewTextInput"  VerticalAlignment="Center"/>
+        <TextBox Grid.Column="2" Text="{Binding PageIndex, UpdateSourceTrigger=PropertyChanged, TargetNullValue=''}"
+                 PreviewTextInput="PreviewTextInput"  VerticalAlignment="Center"/>
         <Button Grid.Column="4" Content="{Binding NewOrNext}"
             Command="{Binding IncreaseCommand}">
         </Button>

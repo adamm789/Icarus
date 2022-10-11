@@ -21,7 +21,7 @@ namespace Icarus.Services.Interfaces
 
         ILogger Logger { get; }
         StringWriter StringWriter { get; }
-        InMemorySink Sink { get; }
+        LogSink Sink { get; }
 
         void LoggingFunction(bool warning, string message);
     }

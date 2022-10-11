@@ -4,8 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Icarus.Views" 
-        xmlns:viewmodels="clr-namespace:Icarus.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:UserPreferencesViewModel}"
-        mc:Ignorable="d" 
+             xmlns:viewmodels="clr-namespace:Icarus.ViewModels"
+        xmlns:services="clr-namespace:Icarus.Services"
+             d:DataContext="{d:DesignInstance Type=services:UserPreferencesService}"
+             mc:Ignorable="d" 
              Width="500" Height="300"
         FontSize="16">
     <Grid>
@@ -13,10 +15,11 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-
         <Grid Grid.Row="0" Margin="5">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
@@ -27,10 +30,18 @@
 
             <TextBlock Grid.Row="0" Grid.Column="0" Text="Male Variant" Margin="0,0,5,0"/>
             <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding DefaultMaleVariant, UpdateSourceTrigger=PropertyChanged}"/>
+            
             <TextBlock Grid.Row="1" Grid.Column="0" Text="Female Variant" Margin="0,0,5,0"/>
             <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding DefaultFemaleVariant, UpdateSourceTrigger=PropertyChanged}"/>
+            
             <TextBlock Grid.Row="2" Grid.Column="0" Text="Lalafell Variant" Margin="0,0,5,0"/>
             <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding DefaultLalafellVariant, UpdateSourceTrigger=PropertyChanged}"/>
+
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="Default Author" Margin="0,0,5,0"/>
+            <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding DefaultAuthor, UpdateSourceTrigger=PropertyChanged}"/>
+
+            <TextBlock Grid.Row="4" Grid.Column="0" Text="Default Website" Margin="0,0,5,0"/>
+            <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding DefaultWebsite, UpdateSourceTrigger=PropertyChanged}"/>
         </Grid>
     </Grid>
 </Window>

@@ -55,7 +55,7 @@
             <TextBlock Text="{x:Static import:ModelModifierOptionsViewModel.ClearVColorName}"/>
         </CheckBox>
         <CheckBox Grid.Row="1" Grid.Column="2" IsChecked="{Binding ClearVAlpha, Mode=TwoWay}">
-            <TextBlock Text="{x:Static import:ModelModifierOptionsViewModel.ClearVColorName}"/>
+            <TextBlock Text="{x:Static import:ModelModifierOptionsViewModel.ClearVAlphaName}"/>
         </CheckBox>
 
         <CheckBox Grid.Row="2" Grid.Column="0" IsChecked="{Binding AutoScale, Mode=TwoWay}">

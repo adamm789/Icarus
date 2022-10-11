@@ -28,13 +28,6 @@
         <Button Command="{Binding SetGamePathCommand}" CommandParameter="Lumina"
             Content="Browse" Grid.Row="0" Grid.Column="2"/>
 
-        <!--
-        <TextBlock Text="Game Path (TexTools)" Grid.Row="1" Grid.Column="0" Visibility="Collapsed"/>
-        <TextBox Text="{Binding GameDirectoryTexTools}" Grid.Row="1" Grid.Column="1" Visibility="Collapsed"/>
-        <Button Command="{Binding SetGamePathCommand}" CommandParameter="TexTools"
-            Content="Browse" Grid.Row="1" Grid.Column="2" Visibility="Collapsed"/>
--->
-        
         <TextBlock Text="Search Directory" Grid.Row="2" Grid.Column="0"/>
         <TextBox Text="{Binding BrowseDirectory}" Grid.Row="2" Grid.Column="1"/>
         <Button Command="{Binding SetDirectoryCommand}" CommandParameter="Browse"
@@ -44,19 +37,5 @@
         <TextBox Text="{Binding OutputDirectory}" Grid.Row="3" Grid.Column="1"/>
         <Button Command="{Binding SetDirectoryCommand}" CommandParameter="Output"
             Content="Browse" Grid.Row="3" Grid.Column="3"/>
-
-        <!-- TODO: More settings? -->
-        <CheckBox Content="Advanced Settings" Grid.Row="4" Grid.Column="0"
-                     IsChecked="{Binding AdvancedSettings}"
-                  Visibility="Collapsed"></CheckBox>
-        <!--
-        <CheckBox Content="Use Lumina" Grid.Row="4" Grid.Column="1"
-                  IsChecked="{Binding UseLumina}"
-                  Visibility="Collapsed"></CheckBox>
-        -->
-        <!-- TODO: Create a personal ToggleSwitch? -->
-
-        <Button Content="Save" DockPanel.Dock="Right" Grid.Row="4" Grid.Column="2"
-                Command="{Binding SaveSettingsCommand}"></Button>
     </Grid>
 </Window>

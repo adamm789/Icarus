@@ -5,8 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Icarus.Views" 
              xmlns:dd="urn:gong-wpf-dragdrop"
-             xmlns:viewmodels="clr-namespace:Icarus.ViewModels"
-             d:DataContext="{d:DesignInstance Type=viewmodels:SearchViewModel}"
+             xmlns:itemviewmodels="clr-namespace:Icarus.ViewModels.Items"
+             d:DataContext="{d:DesignInstance Type=itemviewmodels:ItemListViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
@@ -25,10 +25,6 @@
                 Grid.Row="0" Grid.Column="0" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
                      VerticalAlignment="Center">
             </TextBox>
-            <!--
-            <Button Grid.Row="0" Grid.Column="1" Height="Auto" Margin="10,10,10,10" 
-                    FontSize="14" Command="{Binding OnSearchCommand}">Search</Button>
--->
         </Grid>
 
     </Grid>

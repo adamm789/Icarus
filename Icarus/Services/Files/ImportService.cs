@@ -25,7 +25,7 @@ namespace Icarus.Services.Files
 
         protected Queue<string> _importFileQueue = new();
 
-        public ImportService(IGameFileService gameFileDataService, SettingsService settingsService, ConverterService converterService, ILogService logService, LuminaService lumina) : base(lumina)
+        public ImportService(IGameFileService gameFileDataService, ISettingsService settingsService, ConverterService converterService, ILogService logService, LuminaService lumina) : base(lumina)
         {
             _logService = logService;
             _converterService = converterService;
@@ -133,6 +133,7 @@ namespace Icarus.Services.Files
                 var retVal = new ModPack();
                 if (mod == null) return retVal;
 
+                _logService.Information($"Successfully imported model.");
                 retVal.SimpleModsList.Add(mod);
                 return retVal;
             }
@@ -150,7 +151,7 @@ namespace Icarus.Services.Files
             }
             catch (Win32Exception ex)
             {
-                _logService.Error(ex, "The folder /converters was not found.");
+                _logService.Fatal(ex, "The folder /converters was not found.");
                 //Log.Show("Please copy and paste the converters folder from TexTools into the same folder as the exe.");
             }
 

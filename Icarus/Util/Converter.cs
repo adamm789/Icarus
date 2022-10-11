@@ -57,11 +57,10 @@ namespace Icarus.Util
             }));
         }
 
-        public async Task ModelModToFbx(ModelMod mod, DirectoryInfo outputDirectory, string outputFileName = "")
+        public async Task TTModelToFbx(TTModel model, DirectoryInfo outputDirectory, string outputFileName = "")
         {
             await _taskQueue.Enqueue(() => Task.Run(() =>
             {
-                var model = mod.ImportedModel;
                 var dbPath = Path.Combine(_fbxFolder, "input.db");
 
                 if (File.Exists(dbPath))

@@ -1,4 +1,5 @@
-﻿using Icarus.ViewModels.Util;
+﻿using GongSolutions.Wpf.DragDrop;
+using Icarus.ViewModels.Util;
 using ItemDatabase;
 using ItemDatabase.Interfaces;
 using System;
@@ -9,9 +10,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 
-namespace Icarus.ViewModels
+namespace Icarus.ViewModels.Items
 {
-    public class TreeItemViewModel : NotifyPropertyChanged
+    public class TreeItemViewModel : NotifyPropertyChanged, IItemViewModel
     {
         const int minNumBeforeExpansion = 100;
 
@@ -37,6 +38,19 @@ namespace Icarus.ViewModels
             view.Filter = ChildSearchFilter;
         }
 
+        public TreeItemViewModel(IItem item)
+        {
+            Item = item;
+            _header = item.Name;
+            Header = item.Name;
+
+            Tooltip = item.Name;
+            if (item is IGear gear)
+            {
+                Tooltip += $" ({gear.VariantCode})";
+            }
+        }
+
 
         string _searchText = "";
         private bool ChildSearchFilter(object o)
@@ -49,15 +63,9 @@ namespace Icarus.ViewModels
             return vm.HasMatch(_searchText) > 0;
         }
 
-        public TreeItemViewModel(IItem item)
-        {
-            Item = item;
-            Header = item.Name;
-        }
-
         private void OnChildSelected(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(TreeItemViewModel.SelectedItem) && sender is TreeItemViewModel vm)
+            if (e.PropertyName == nameof(SelectedItem) && sender is TreeItemViewModel vm)
             {
                 SelectedItem = vm.SelectedItem;
             }
@@ -70,6 +78,7 @@ namespace Icarus.ViewModels
                 return;
             }
             Header = $"{_header} ({i})";
+
             if (i == 0)
             {
                 IsExpanded = false;
@@ -90,16 +99,13 @@ namespace Icarus.ViewModels
             var items = (CollectionView)CollectionViewSource.GetDefaultView(Children);
             items.Refresh();
 
-            if (items.Count < minNumBeforeExpansion)
-            {
-                IsExpanded = true;
-            }
+            var numMatches =  items.Count;
 
-            if (items.Count == 0)
+            if (Item == null)
             {
-                IsExpanded = false;
+                Header = $"{_header} ({numMatches})";
             }
-            return items.Count;
+            return numMatches;
         }
 
         public int HasMatch(string name)
@@ -124,7 +130,19 @@ namespace Icarus.ViewModels
         DelegateCommand _isSelectedCommand;
         public DelegateCommand IsSelectedCommand
         {
-            get { return _isSelectedCommand ??= new DelegateCommand(o => SelectedItem = Item); }
+            get { return _isSelectedCommand ??= new DelegateCommand(_ => OnSelect()); }
+        }
+
+        public void OnSelect()
+        {
+            if (Item != null)
+            {
+                SelectedItem = Item;
+            }
+            else
+            {
+                IsExpanded = !IsExpanded;
+            }
         }
 
         int _numMatches = 0;
@@ -139,13 +157,7 @@ namespace Icarus.ViewModels
             get { return _selectedItem; }
             set { _selectedItem = value; OnPropertyChanged(); }
         }
-
-        bool _isSelected = false;
-        public bool IsSelected
-        {
-            get { return _isSelected; }
-            set { _isSelected = value; OnPropertyChanged(); }
-        }
+        public bool HasItem => Item != null;
 
         bool _isExpanded = false;
         public bool IsExpanded
@@ -154,6 +166,6 @@ namespace Icarus.ViewModels
             set { _isExpanded = value; OnPropertyChanged(); }
         }
 
-        public void Expand() => IsExpanded = true;
+        public string Tooltip { get; }
     }
 }

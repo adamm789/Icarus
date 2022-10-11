@@ -131,6 +131,8 @@ namespace Icarus.ViewModels.Mods.DataContainers
             var existingMod = ModExists(mod);
             if (existingMod != null)
             {
+                Log.Information($"Deleting mod from modslist: {mod.FileName}.");
+
                 var b1 = SimpleModsList.Remove(existingMod);
                 var b2 = ModPack.SimpleModsList.Remove(mod.GetMod());
 
@@ -189,7 +191,6 @@ namespace Icarus.ViewModels.Mods.DataContainers
             if (e.PropertyName == nameof(ModViewModel.ShouldDelete))
             {
                 var mod = sender as ModViewModel;
-                Log.Information($"Deleting mod from modslist: {mod.FileName}.");
                 DeleteMod(mod);
                 Log.Verbose($"Finished deleting: {mod.FileName}.");
             }

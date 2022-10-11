@@ -2,7 +2,9 @@
 using Icarus.ViewModels.Mods;
 using Icarus.ViewModels.Util;
 using ItemDatabase.Paths;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Models.DataContainers;
 
@@ -17,14 +19,37 @@ namespace Icarus.ViewModels.Models
         readonly IUserPreferencesService _userPreferencesService;
 
         private string _materialName = "";
-        private string _materialVariant = "a";
+
         private string _skinName = "/mt_c0101b0001_";
 
         private string _initialMaterial = "";
 
-        private string _skinVariant = "a";
 
-        public MeshGroupMaterialViewModel(TTMeshGroup group, ModelModViewModel model, IUserPreferencesService userPreferences)
+        string _skinVariant = "a";
+        public string SkinVariant
+        {
+            get { return _skinVariant; }
+            set {
+                _skinVariant = value;
+                OnPropertyChanged();
+                UpdateDisplayedMaterial();
+            }
+        }
+
+        string _materialVariant = "a";
+        public string MaterialVariant
+        {
+            get { return _materialVariant; }
+            set {
+                _materialVariant = value;
+                OnPropertyChanged();
+                UpdateDisplayedMaterial();
+            }
+        }
+
+        public bool CanParsePath => XivPathParser.CanParsePath(DestinationModelPath);
+
+        public MeshGroupMaterialViewModel(TTMeshGroup group, ModelModViewModel model, IUserPreferencesService userPreferences, ISettingsService settingsService)
         {
             _importedGroup = group;
             _userPreferencesService = userPreferences;
@@ -65,7 +90,11 @@ namespace Icarus.ViewModels.Models
         public string DestinationModelPath
         {
             get { return _destinationModelPath; }
-            set { _destinationModelPath = value; UpdateDisplayedMaterial(); }
+            set {
+                _destinationModelPath = value;
+                UpdateDisplayedMaterial();
+                OnPropertyChanged(nameof(CanParsePath));
+            }
         }
 
         bool _isSkinMaterial = false;
@@ -79,6 +108,7 @@ namespace Icarus.ViewModels.Models
                 UpdateDisplayedMaterial();
             }
         }
+
         public bool CanAssignSkin => _modelModViewModel.HasSkin;
 
 
@@ -109,7 +139,26 @@ namespace Icarus.ViewModels.Models
         public string DisplayedMaterial
         {
             get { return _importedGroup.Material; }
-            set { _importedGroup.Material = value; OnPropertyChanged(); }
+            set {
+                if (_importedGroup.Material == value) return;
+
+                _importedGroup.Material = value;
+                if (XivPathParser.IsSkinMtrl(value))
+                {
+                    _isSkinMaterial = true;
+                    OnPropertyChanged(nameof(IsSkinMaterial));
+                }
+
+                OnPropertyChanged();
+                if (IsSkinMaterial)
+                {
+                    SkinVariant = XivPathParser.GetMtrlVariant(value);
+                }
+                else
+                {
+                    MaterialVariant = XivPathParser.GetMtrlVariant(value);
+                }
+            }
         }
 
         private void UpdateDisplayedMaterial()
@@ -140,8 +189,14 @@ namespace Icarus.ViewModels.Models
         private void UpdateItem()
         {
             OnPropertyChanged(nameof(CanAssignSkin));
-            _materialName = XivPathParser.GetMtrlFileName(DestinationModelPath);
+            _materialName = XivPathParser.GetMtrlFileName(DestinationModelPath, _materialVariant);
             _materialName = XivPathParser.PathCorrectFileNameMtrl(_materialName);
         }
+
+        public List<string> VariantList { get; } = new()
+        {
+            "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m",
+            "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"
+        };
     }
 }

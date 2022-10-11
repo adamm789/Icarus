@@ -9,7 +9,7 @@ using System.Windows;
 
 namespace Icarus.ViewModels.Mods.DataContainers
 {
-    // TODO: Allow drag/drop to reorder mod groups
+    // TODO: Prevent Tab-stopping on Remove Button
     public class ModGroupViewModel : NotifyPropertyChanged, IDropTarget
     {
         protected ModGroup _modGroup;

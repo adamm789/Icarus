@@ -10,10 +10,11 @@ namespace Icarus.ViewModels.Mods
 {
     public class ColorSetRowViewModel : NotifyPropertyChanged
     {
-        List<Half> _colorSetData;
-        public ColorSetRowViewModel(List<Half> values)
+        List<Half> _colorsetData;
+        public ColorSetRowViewModel(int rowNumber, List<Half> values)
         {
-            _colorSetData = values;
+            _colorsetData = values;
+            RowNumber = rowNumber;
             Diffuse = new(GetColor(GetColorSetDataRange(values, 0)));
             Specular = new(GetColor(GetColorSetDataRange(values, 4)));
             Emissive = new(GetColor(GetColorSetDataRange(values, 8)));
@@ -48,7 +49,7 @@ namespace Icarus.ViewModels.Mods
 
         public List<Half> GetList()
         {
-            return _colorSetData;
+            return _colorsetData;
         }
 
         public WindowsColor GetColor(Color c)
@@ -88,6 +89,12 @@ namespace Icarus.ViewModels.Mods
         {
             get { return _red; }
             set { _red = value; OnPropertyChanged(); }
+        }
+        int _rowNumber;
+        public int RowNumber
+        {
+            get { return _rowNumber; }
+            set { _rowNumber = value; OnPropertyChanged(); }
         }
     }
 }

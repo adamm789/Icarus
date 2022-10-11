@@ -5,44 +5,33 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:dd="urn:gong-wpf-dragdrop"
              xmlns:viewmodels="clr-namespace:Icarus.ViewModels"
-             d:DataContext="{d:DesignInstance Type=viewmodels:ItemListViewModel}"
+             xmlns:itemviewmodels="clr-namespace:Icarus.ViewModels.Items"
+             xmlns:ui="clr-namespace:Icarus.UI"
+             d:DataContext="{d:DesignInstance Type=itemviewmodels:ItemListViewModel}"
              xmlns:local="clr-namespace:Icarus.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-
-    <TreeView Grid.Row="2" ItemsSource="{Binding ItemList}"
+    
+    <TreeView ItemsSource="{Binding ItemList}"
                   VirtualizingStackPanel.IsVirtualizing="True"
-                  dd:DragDrop.IsDragSource="True">
+                  dd:DragDrop.IsDragSource="True"
+              dd:DragDrop.DragHandler="{Binding}">
 
         <TreeView.ItemContainerStyle>
             <Style TargetType="{x:Type TreeViewItem}">
                 <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True"/>
-                <Setter Property="IsExpanded" Value="{Binding IsExpanded}"/>
+                <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
                 <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
             </Style>
         </TreeView.ItemContainerStyle>
 
         <TreeView.Resources>
-            <!--
-            <HierarchicalDataTemplate DataType="{x:Type viewmodels:ItemListViewModelX}">
-                <StackPanel Height="Auto" HorizontalAlignment="Stretch" dd:DragDrop.DragSourceIgnore="True">
-                    <TextBlock HorizontalAlignment="Stretch" FontSize="14">
-                        <TextBlock.Text>
-                            <MultiBinding StringFormat="{}{0} ({1})">
-                                <Binding Path="Header"/>
-                                <Binding Path="NumMatches"/>
-                            </MultiBinding>
-                        </TextBlock.Text>
-                    </TextBlock>
-                </StackPanel>
-
-            </HierarchicalDataTemplate>
-            -->
-            <HierarchicalDataTemplate DataType="{x:Type viewmodels:TreeItemViewModel}" ItemsSource="{Binding Children}">
+            <ui:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+            <HierarchicalDataTemplate DataType="{x:Type itemviewmodels:TreeItemViewModel}" ItemsSource="{Binding Children}">
                 <StackPanel>
                     <Button Content="{Binding Header}" Background="Transparent" BorderBrush="Transparent"
                             Command="{Binding IsSelectedCommand}" Margin="0 -2 0 -1" HorizontalContentAlignment="Right"
-                            FontSize="14" ToolTip="{Binding Header}"/>
+                            FontSize="14" ToolTip="{Binding Tooltip}" />
                 </StackPanel>
             </HierarchicalDataTemplate>
         </TreeView.Resources>

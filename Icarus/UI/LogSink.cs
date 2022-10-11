@@ -13,9 +13,10 @@ using Icarus.ViewModels.Util;
 
 namespace Icarus.UI
 {
-    public class InMemorySink : NotifyPropertyChanged, ILogEventSink
+    public class LogSink : NotifyPropertyChanged, ILogEventSink
     {
-        readonly ITextFormatter _textFormatter = new MessageTemplateTextFormatter("{Timestamp} [{Level}] {Message}{Exception}");
+        //readonly ITextFormatter _textFormatter = new MessageTemplateTextFormatter("{Timestamp} [{Level}] {Message}{Exception}");
+        readonly ITextFormatter _textFormatter = new MessageTemplateTextFormatter("{Timestamp:MM-dd HH:mm:ss} [{Level:u3}] {Message:lj}");
 
         public ConcurrentQueue<string> Events { get; } = new ConcurrentQueue<string>();
 

@@ -5,6 +5,7 @@ using Icarus.Services;
 using Icarus.Services.GameFiles;
 using Icarus.Services.GameFiles.Interfaces;
 using Icarus.Services.Interfaces;
+using Icarus.ViewModels.Items;
 using Icarus.ViewModels.Mods.DataContainers.Interfaces;
 using Icarus.ViewModels.Util;
 using ItemDatabase.Interfaces;

@@ -18,7 +18,7 @@ namespace Icarus.Services
         public ServiceManager()
         {
             var settings = new SettingsService();
-            _services.AddSingleton(settings);
+            _services.AddSingleton<ISettingsService>(settings);
 
             var logService = new LogService(settings);
             _services.AddSingleton<ILogService>(logService);
@@ -31,7 +31,7 @@ namespace Icarus.Services
             Ioc.Default.GetRequiredService<IGameFileService>();
             Ioc.Default.GetRequiredService<ConverterService>();
             Ioc.Default.GetRequiredService<ExportService>();
-            Ioc.Default.GetRequiredService<ItemListService>();
+            Ioc.Default.GetRequiredService<IItemListService>();
         }
 
         protected virtual void AddUIServices()
@@ -43,7 +43,7 @@ namespace Icarus.Services
         protected void AddRequiredServices()
         {
             _services.AddSingleton<IUserPreferencesService, UserPreferencesService>();
-            _services.AddSingleton<ItemListService>();
+            _services.AddSingleton<IItemListService, ItemListService>();
             _services.AddSingleton<ImportService>();
             _services.AddSingleton<ExportService>();
 

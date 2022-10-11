@@ -10,7 +10,7 @@ namespace Icarus.Services.Files
 {
     public class ExportService : LuminaDependentServiceBase<ExportService>
     {
-        readonly SettingsService _settingsService;
+        readonly ISettingsService _settingsService;
         readonly ConverterService _converterService;
         readonly ILogService _logService;
         protected string _outputDirectory;
@@ -19,7 +19,7 @@ namespace Icarus.Services.Files
         protected TexToolsExporter _textoolsExporter;
         protected RawExporter _rawExporter;
 
-        public ExportService(ILogService logService, SettingsService settingsService, ConverterService converterService, LuminaService luminaService) : base(luminaService)
+        public ExportService(ILogService logService, ISettingsService settingsService, ConverterService converterService, LuminaService luminaService) : base(luminaService)
         {
             _settingsService = settingsService;
             _outputDirectory = _settingsService.OutputDirectory;

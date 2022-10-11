@@ -2,27 +2,36 @@
 using Icarus.Mods.Interfaces;
 using Icarus.Services.GameFiles;
 using Icarus.Services.GameFiles.Interfaces;
+using Icarus.Services.Interfaces;
+using Icarus.ViewModels.Items;
 using Icarus.ViewModels.Util;
 using ItemDatabase.Interfaces;
+using ItemDatabase.Paths;
 using Serilog;
+using System.ComponentModel;
+using System.Configuration;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 
 namespace Icarus.ViewModels.Mods
 {
+    // TODO: Set MaxWidth for textboxes
     public abstract class ModViewModel : NotifyPropertyChanged, IDropTarget
     {
         protected IMod _mod;
+        public IItem? SelectedItem { get; protected set; }
         protected readonly IGameFileService _gameFileService;
-        //protected readonly ItemListService _itemListService;
-        public bool IsReadOnly => this is ReadOnlyModViewModel;
+        protected readonly ILogService _logService;
+        protected bool _isReadOnly => this is ReadOnlyModViewModel;
 
-        public ModViewModel(IMod mod, IGameFileService gameFileDataService)
+        public bool CanParsePath => XivPathParser.CanParsePath(DestinationPath);
+
+        public ModViewModel(IMod mod, IGameFileService gameFileService, ILogService logService)
         {
             _mod = mod;
-            _gameFileService = gameFileDataService;
-            //_itemListService = itemListService;
+            _gameFileService = gameFileService;
+            _logService = logService;
 
             var file = Path.GetFileName(mod.ModFilePath);
             if (file != null)
@@ -88,6 +97,7 @@ namespace Icarus.ViewModels.Mods
             get { return _mod.Path; }
             set
             {
+                if (_mod.Path == value) return;
                 var couldSetDestinationPath = Task.Run(() => TrySetDestinationPath(value, DestinationName)).Result;
                 if (!couldSetDestinationPath) return;
                 _mod.Path = value;
@@ -118,13 +128,6 @@ namespace Icarus.ViewModels.Mods
             set { _shouldDelete = value; OnPropertyChanged(); }
         }
 
-        bool _isSelected = true;
-        public bool IsSelected
-        {
-            get { return _isSelected; }
-            set { _isSelected = value; OnPropertyChanged(); }
-        }
-
         DelegateCommand _deleteCommand;
         public DelegateCommand DeleteCommand
         {
@@ -142,6 +145,7 @@ namespace Icarus.ViewModels.Mods
         {
             OnPropertyChanged(nameof(DestinationPath));
             OnPropertyChanged(nameof(DestinationName));
+            OnPropertyChanged(nameof(CanParsePath));
             SetCanExport();
         }
 
@@ -155,11 +159,13 @@ namespace Icarus.ViewModels.Mods
             var data = await _gameFileService.GetFileData(itemArg, _mod.GetType());
             if (data != null)
             {
+                SelectedItem = _gameFileService.GetItem();
                 SetModData(data);
                 RaiseDestinationPathChanged();
                 return true;
             }
-            return false;
+            return await TrySetDestinationPath(DestinationPath);
+
         }
 
         /// <summary>
@@ -170,11 +176,11 @@ namespace Icarus.ViewModels.Mods
         /// <returns>Whether or not the file data was successfully found.</returns>
         protected virtual async Task<bool> TrySetDestinationPath(string path, string name = "")
         {
-            if (path == DestinationPath) return false;
+            //if (path == DestinationPath) return false;
             var modData = await _gameFileService.TryGetFileData(path, GetType(), name);
             if (modData == null)
             {
-                Log.Warning($"Could not set {path} as {GetType().Name}");
+                _logService.Warning($"Could not set {path} as {GetType().Name}");
                 return false;
             }
             else
@@ -194,7 +200,7 @@ namespace Icarus.ViewModels.Mods
         public void DragOver(IDropInfo dropInfo)
         {
             var item = dropInfo.Data;
-            if (item is ItemViewModel)
+            if (item is IItemViewModel)
             {
                 dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
                 dropInfo.Effects = DragDropEffects.Copy;
@@ -204,7 +210,7 @@ namespace Icarus.ViewModels.Mods
         public void Drop(IDropInfo dropInfo)
         {
             var item = dropInfo.Data;
-            if (item is ItemViewModel vm)
+            if (item is IItemViewModel vm)
             {
                 SetDestinationItem(vm.Item);
             }

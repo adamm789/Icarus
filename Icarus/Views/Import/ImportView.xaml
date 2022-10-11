@@ -20,7 +20,6 @@
             <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
 
-        <!--#region Contents -->
         <ProgressBar Grid.Row="0" Grid.Column="0"
             Minimum="0" Maximum="100" 
                      IsIndeterminate="{Binding IsProgressIndeterminate}">

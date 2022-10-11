@@ -33,38 +33,5 @@
                 Command="{Binding EditShapeAndAttributesCommand}"/>
 
         <ContentControl Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Content="{Binding MaterialViewModel}"/>
-
-        <!--
-        <Grid Grid.Row="1" Grid.Column="0">
-            <ListBox ItemsSource="{Binding Shapes}"
-                 ScrollViewer.CanContentScroll="False">
-                <ListBox.ItemContainerStyle>
-                    <Style TargetType="ListBoxItem">
-                        <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
-                    </Style>
-                </ListBox.ItemContainerStyle>
-                <ListBox.ItemTemplate>
-                    <DataTemplate DataType="{x:Type models:ShapeViewModel}">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0" Text="{Binding Name}"/>
-                            <Button  Grid.Column="1"  Command="{Binding RemoveCommand}" Content="Remove"/>
-                        </Grid>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-        </Grid>
-        
-        <ListBox ItemsSource="{Binding MeshParts}" Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" PreviewMouseWheel="ListView_PreviewMouseWheel">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <importviews:MeshPartView/>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
-        -->
     </Grid>
 </UserControl>

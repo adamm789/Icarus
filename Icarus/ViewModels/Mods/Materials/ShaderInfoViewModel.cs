@@ -1,9 +1,12 @@
 ﻿using Icarus.Mods;
+using Icarus.Services.Interfaces;
 using Icarus.ViewModels.Util;
+using ItemDatabase.Interfaces;
 using Serilog;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Linq;
 using System.Windows.Data;
 using xivModdingFramework.Materials.DataContainers;
@@ -12,21 +15,28 @@ namespace Icarus.ViewModels.Mods
 {
     public class ShaderInfoViewModel : NotifyPropertyChanged
     {
-
         MaterialMod _materialMod;
+        public IItem? SelectedItem;
 
+        bool _canSetTexPaths = true;
+        public bool CanSetTexPaths
+        {
+            get { return _canSetTexPaths; }
+            set { _canSetTexPaths = value; OnPropertyChanged(); }
+        }
+        
         public ShaderInfoViewModel(MaterialMod material)
         {
-            ShaderInfo = material.ShaderInfo;
             _materialMod = material;
+            ShaderInfo = material.ShaderInfo;
 
             //NormalTex = new MaterialTexViewModel(_materialMod.NormalTexPath);
 
-            NormalTexPath = material.NormalTexPath;
-            SpecularTexPath = material.SpecularTexPath;
-            MultiTexPath = material.MultiTexPath;
-            DiffuseTexPath = material.DiffuseTexPath;
-            ReflectionTexPath = material.ReflectionTexPath;
+            NormalTexPath = _materialMod.NormalTexPath;
+            SpecularTexPath = _materialMod.SpecularTexPath;
+            MultiTexPath = _materialMod.MultiTexPath;
+            DiffuseTexPath = _materialMod.DiffuseTexPath;
+            ReflectionTexPath = _materialMod.ReflectionTexPath;
 
             Transparency = _materialMod.ShaderInfo.TransparencyEnabled ? enabled : disabled;
             TransparencyValues = new() { enabled, disabled };
@@ -34,11 +44,11 @@ namespace Icarus.ViewModels.Mods
             Backfaces = _materialMod.ShaderInfo.RenderBackfaces ? show : hide;
             BackfaceValues = new() { show, hide };
 
-            if (material.IsFurniture)
+            if (_materialMod.IsFurniture)
             {
                 ShadersList = new() { MtrlShader.Furniture };
             }
-            else if (material.IsDyeableFurniture)
+            else if (_materialMod.IsDyeableFurniture)
             {
                 ShadersList = new() { MtrlShader.DyeableFurniture };
             }
@@ -54,8 +64,16 @@ namespace Icarus.ViewModels.Mods
                 };
             }
         }
-        public ShaderInfo ShaderInfo { get; }
 
+        protected void OnItemChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (sender is MaterialModViewModel material)
+            {
+                SelectedItem = material.SelectedItem;
+            }
+        }
+
+        public ShaderInfo ShaderInfo { get; }
 
         public void UpdatePaths(string str)
         {
@@ -187,7 +205,6 @@ namespace Icarus.ViewModels.Mods
         }
 
         List<MtrlShader> _shadersList;
-
         public List<MtrlShader> ShadersList
         {
             get { return _shadersList; }

@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Icarus.Views.Mods"
+             xmlns:ui="clr-namespace:Icarus.UI"
              mc:Ignorable="d" 
              xmlns:modviewmodels="clr-namespace:Icarus.ViewModels.Mods"
              xmlns:enums="clr-namespace:xivModdingFramework.General.Enums;assembly=xivModdingFramework"
@@ -13,14 +14,21 @@
     <StackPanel>
         <local:ModView Grid.Row="0"/>
         <Grid>
+            <Grid.Resources>
+                <ui:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"
+                                                 True="Visible" False="Hidden"/>
+            </Grid.Resources>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <Button Grid.Column="0" Command="{Binding SetDestinationCommand}" Content="Copy from Search"/>
             <TextBox Grid.Column="1" Text="{Binding DestinationName}" IsReadOnly="True" Margin="5,0,5,0"/>
-            <ComboBox Grid.Column="2" ItemsSource="{Binding TexTypeValues}" SelectedValue="{Binding TexType}"></ComboBox>
+            <ComboBox Grid.Column="2" ItemsSource="{Binding VariantList}" SelectedValue="{Binding TextureVariant}"
+                      Visibility="{Binding CanParsePath, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <ComboBox Grid.Column="3" ItemsSource="{Binding TexTypeValues}" SelectedValue="{Binding TexType}"/>
         </Grid>
     </StackPanel>
 </UserControl>
