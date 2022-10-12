@@ -1,0 +1,31 @@
+﻿<Window x:Class="Icarus.Views.Mods.Metadata.MetadataWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Icarus.Views.Mods.Metadata"
+        xmlns:mods="clr-namespace:Icarus.ViewModels.Mods"
+        xmlns:modviewmodels="clr-namespace:Icarus.ViewModels.Mods.Metadata"
+        d:DataContext="{d:DesignInstance Type=mods:MetadataModViewModel}"
+        mc:Ignorable="d"
+        Title="MetadataWindow" Height="450" Width="800">
+    <StackPanel>
+        <StackPanel.Resources>
+            <DataTemplate DataType="{x:Type modviewmodels:EqdpViewModel}">
+                <local:EqdpView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type modviewmodels:EqpViewModel}">
+                <local:EqpView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type modviewmodels:GmpViewModel}">
+                <local:GmpView/>
+            </DataTemplate>
+        </StackPanel.Resources>
+        
+        <StackPanel>
+            <ContentControl Content="{Binding EqdpViewModel}" HorizontalContentAlignment="Stretch"/>
+            <ContentControl Content="{Binding EqpViewModel}"/>
+            <ContentControl Content="{Binding GmpViewModel}"/>
+        </StackPanel>
+    </StackPanel>
+</Window>

@@ -12,21 +12,7 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <Grid.Resources>
-            <DataTemplate DataType="{x:Type datacontainers:ModPackMetaViewModel}">
-                <modviews:SimpleModPackMetaView/>
-            </DataTemplate>
-            <DataTemplate DataType="{x:Type modviewmodels:ModelModViewModel}">
-                <modviews:ModelModView/>
-            </DataTemplate>
-            <DataTemplate DataType="{x:Type modviewmodels:MaterialModViewModel}">
-                <modviews:MaterialModView/>
-            </DataTemplate>
-            <DataTemplate DataType="{x:Type modviewmodels:TextureModViewModel}">
-                <modviews:TextureModView/>
-            </DataTemplate>
-            <DataTemplate DataType="{x:Type modviewmodels:ReadOnlyModViewModel}">
-                <modviews:ReadOnlyViewMod/>
-            </DataTemplate>
+
             <Style TargetType="{x:Type Button}">
                 <Setter Property="FontSize" Value="14"/>
                 <Setter Property="VerticalAlignment" Value="Stretch"/>

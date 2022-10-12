@@ -113,6 +113,12 @@ namespace ItemDatabase
             //return _directory + _baseString + "/material/" + _longVariantString + GetMtrlFileName(race, variant);
         }
 
+        public override string GetMetadataPath()
+        {
+            //chara/equipment/e6019/e6019_sho.meta
+            return $"{_directory}{_baseString}/{_baseString}{_slotName}.meta";
+        }
+
         public override string GetTexPath(XivTexType t, string variant = "")
         {
             return GetTexPath(t, XivRace.Hyur_Midlander_Male, variant);

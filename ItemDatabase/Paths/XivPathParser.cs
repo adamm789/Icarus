@@ -49,6 +49,23 @@ namespace ItemDatabase.Paths
             return canParseRegex.IsMatch(input);
         }
 
+        public static bool IsMaleSkin(XivRace race)
+        {
+            if (XivRaces.PlayableRaces.Contains(race))
+            {
+                var x = race.ToString();
+                if (race.ToString().Contains("_Male"))
+                {
+                    return true;
+                }
+                else if (race.ToString().Contains("_Female"))
+                {
+                    return false;
+                }
+            }
+            var err = String.Format("Unknown gendered race: {0}", race.ToString());
+            throw new ArgumentException(err);
+        }
         public static EquipmentSlot GetEquipmentSlot(string input)
         {
             if (headRegex.IsMatch(input)) return EquipmentSlot.Head;

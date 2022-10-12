@@ -193,6 +193,7 @@ namespace Icarus.Services.Files
             var ret = new ModelMod(mods.FullPath, imported)
             {
                 ModFileName = modFileName,
+
                 Path = mods.FullPath,
                 Name = mods.Name,
                 Category = mods.Category
@@ -256,7 +257,7 @@ namespace Icarus.Services.Files
                     var modFileName = GetModFileName(mods, option);
                     var mtrlMod = new MaterialMod(xivMtrl)
                     {
-                        ModFileName = mods.Name,
+                        ModFileName = modFileName,
                         ModFilePath = mods.FullPath,
 
                         Path = mods.FullPath,
@@ -276,7 +277,18 @@ namespace Icarus.Services.Files
             {
                 var file = pack.ReadFile<FileResource>(mods.ModOffset);
                 var meta = await ItemMetadata.Deserialize(file.Data);
-                var x = meta.EqdpEntries[XivRace.Hyur_Midlander_Male];
+
+                var modFileName = GetModFileName(mods, option);
+                var metaMod = new MetadataMod(meta)
+                {
+                    ModFileName = modFileName,
+                    ModFilePath = mods.FullPath,
+
+                    Path = mods.FullPath,
+                    Name = mods.Name,
+                    Category = mods.Category
+                };
+                return metaMod;
             }
             return ExtractReadOnlyMod(mods, pack);
         }

@@ -1,4 +1,5 @@
 ﻿using ItemDatabase.Enums;
+using xivModdingFramework.Cache;
 using xivModdingFramework.Textures.Enums;
 
 namespace ItemDatabase.Interfaces
@@ -16,6 +17,7 @@ namespace ItemDatabase.Interfaces
         string GetMtrlPath();
         string GetMtrlFileName();
         string GetTexPath(XivTexType type, string variant = "");
+        string GetMetadataPath();
         bool IsMatch(string str);
     }
 }

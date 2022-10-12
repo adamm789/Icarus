@@ -39,5 +39,7 @@
         <TextBox Text="{Binding SelectedItemMtrl}" IsReadOnly="True"/>
         <Button Command="{Binding GetVanillaMaterial}" Content="Add Vanilla Mtrl"
                 IsEnabled="{Binding CanImportMtrl}" dd:DragDrop.DragSourceIgnore="True"/>
+        
+        <Button Command="{Binding GetVanillaMetadata}" Content="Add Metadaata"/>
     </StackPanel>
 </UserControl>

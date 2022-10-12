@@ -50,6 +50,11 @@ namespace Icarus.Services
                 var vm = new TextureModViewModel(texMod, _gameFileService, _logService);
                 return vm;
             }
+            else if (file is MetadataMod metaMod)
+            {
+                var vm = new MetadataModViewModel(metaMod, _gameFileService, _windowService, _logService);
+                return vm;
+            }
             else if (file is ReadOnlyMod readOnlyMod)
             {
                 var vm = new ReadOnlyModViewModel(readOnlyMod, _gameFileService, _logService);

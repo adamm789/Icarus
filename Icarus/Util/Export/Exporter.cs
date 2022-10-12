@@ -14,6 +14,7 @@ using TeximpNet.DDS;
 using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Models.Helpers;
+using xivModdingFramework.Mods.FileTypes;
 using xivModdingFramework.Textures.Enums;
 using Path = System.IO.Path;
 
@@ -76,10 +77,19 @@ namespace Icarus.Util
                         return await WriteMaterialToBytes(mtrlMod, shouldCompress);
                     case TextureMod texMod:
                         return await WriteTextureToBytes(texMod, shouldCompress);
+                    case MetadataMod metaMod:
+                        return await WriteMetadataToBytes(metaMod);
                     case ReadOnlyMod readonlyMod:
-                        _logService.Warning("Trying to export a \"Read Only Mod\" to Penumbra.");
-                        // TODO: What to do here?
-                        break;
+                        if (shouldCompress)
+                        {
+                            return readonlyMod.Data;
+                        }
+                        else
+                        {
+                            _logService.Warning("Trying to export a \"Read Only Mod\" to Penumbra.");
+                            // TODO: What to do here?
+                            break;
+                        }
                 }
             }
             catch (Exception ex)
@@ -92,7 +102,14 @@ namespace Icarus.Util
             return Array.Empty<byte>();
         }
 
-        public async Task<byte[]> WriteTextureToBytes(TextureMod mod, bool shouldCompress)
+        protected async Task<byte[]> WriteMetadataToBytes(MetadataMod mod)
+        {
+            var itemMetadata = mod.ItemMetadata;
+            var bytes = await ItemMetadata.Serialize(itemMetadata);
+            return bytes;
+        }
+
+        protected async Task<byte[]> WriteTextureToBytes(TextureMod mod, bool shouldCompress)
         {
             if (mod.IsInternal)
             {

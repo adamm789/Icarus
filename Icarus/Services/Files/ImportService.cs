@@ -215,11 +215,6 @@ namespace Icarus.Services.Files
         public ModPack ImportTexture(string filePath)
         {
             var retPack = new ModPack();
-
-            // TODO: TextureMod
-            // seems like there's really nothing I can add?
-            // Texture mods don't seem too editable
-
             var texMod = new TextureMod(false)
             {
                 ModFileName = filePath,

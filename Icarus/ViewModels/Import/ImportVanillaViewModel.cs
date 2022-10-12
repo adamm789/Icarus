@@ -192,6 +192,12 @@ namespace Icarus.ViewModels.Import
             get { return _getVanillaMaterial ??= new DelegateCommand(async _ => await GetVanillaMtrl()); }
         }
 
+        DelegateCommand _getVanillaMetadata;
+        public DelegateCommand GetVanillaMetadata
+        {
+            get { return _getVanillaMetadata ??= new DelegateCommand(async _ => await GetVanillaMeta()); }
+        }
+
         // chara/human/c1301/obj/face/f0001/model/c1301f0001_fac.mdl
 
         /*
@@ -224,12 +230,28 @@ namespace Icarus.ViewModels.Import
         }
         */
 
+        private async Task GetVanillaMeta()
+        {
+            MetadataMod? mod;
+            if (_completePath != null)
+            {
+                mod = await _gameFileDataService.TryGetMetadata(_completePath, SelectedItemName);
+                mod.Path = _completePath;
+            }
+            else
+            {
+                mod = await _gameFileDataService.GetMetadata(SelectedItem);
+                mod.Path = SelectedItem.GetMetadataPath();
+            }
+            var modViewModel = _modPackViewModel.Add(mod);
+        }
+
         public ModelMod? GetVanillaMdl()
         {
             IModelGameFile? modelGameFile;
             if (_completePath != null)
             {
-                modelGameFile = _gameFileDataService.TryGetModelFileData(_completePath);
+                modelGameFile = _gameFileDataService.TryGetModelFileData(_completePath, SelectedItemName);
             }
             else
             {
@@ -256,9 +278,9 @@ namespace Icarus.ViewModels.Import
             // TODO: How to handle SmallClothes, Emperor's series, and skin materials
             // TODO: Most of SmallClothes don't seem to have a material
             IMaterialGameFile? materialGameFile;
-            if (_completePath != null )
+            if (_completePath != null)
             {
-                materialGameFile = await _gameFileDataService.TryGetMaterialFileData(_completePath);
+                materialGameFile = await _gameFileDataService.TryGetMaterialFileData(_completePath, SelectedItemName);
             }
             else
             {

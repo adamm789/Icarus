@@ -6,6 +6,8 @@
              xmlns:local="clr-namespace:Icarus.Views.Mods" 
              xmlns:mods="clr-namespace:Icarus.ViewModels.Mods" 
              xmlns:datacontainers="clr-namespace:Icarus.ViewModels.Mods.DataContainers"
+             xmlns:modviewmodels="clr-namespace:Icarus.ViewModels.Mods"
+             xmlns:modviews="clr-namespace:Icarus.Views.Mods"
              xmlns:dd="urn:gong-wpf-dragdrop"
              d:DataContext="{d:DesignInstance Type=datacontainers:ModsListViewModel}"
              mc:Ignorable="d" 
@@ -27,6 +29,24 @@
                 <Setter Property="BorderThickness" Value="2"/>
                 <Setter Property="Margin" Value="0,3,0,3"/>
             </Style>
+            <DataTemplate DataType="{x:Type datacontainers:ModPackMetaViewModel}">
+                <modviews:SimpleModPackMetaView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type modviewmodels:ModelModViewModel}">
+                <modviews:ModelModView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type modviewmodels:MaterialModViewModel}">
+                <modviews:MaterialModView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type modviewmodels:TextureModViewModel}">
+                <modviews:TextureModView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type modviewmodels:MetadataModViewModel}">
+                <modviews:MetadataModView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type modviewmodels:ReadOnlyModViewModel}">
+                <modviews:ReadOnlyViewMod/>
+            </DataTemplate>
         </Grid.Resources>
 
         <TabControl Grid.Row="0">

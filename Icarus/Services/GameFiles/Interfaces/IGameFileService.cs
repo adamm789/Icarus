@@ -1,4 +1,5 @@
-﻿using Icarus.Mods.Interfaces;
+﻿using Icarus.Mods;
+using Icarus.Mods.Interfaces;
 using ItemDatabase.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,11 @@ namespace Icarus.Services.GameFiles.Interfaces
         /// <param name="path"></param>
         /// <returns></returns>
         Task<IGameFile?> TryGetFileData(string path, Type? callingType = null, string name = "");
+
+        // TODO: TryGetMetadata
+        // TODO: GetMetadata
+        Task<MetadataMod> TryGetMetadata(string path, string? itemName = null);
+        Task<MetadataMod> GetMetadata(IItem? itemArg = null);
 
         /// <summary>
         /// Gets a list of races that have a unique mdl file of the given item

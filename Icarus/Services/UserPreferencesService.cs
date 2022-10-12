@@ -1,4 +1,5 @@
 ﻿using Icarus.Services.Interfaces;
+using ItemDatabase.Paths;
 using System;
 using System.Runtime.CompilerServices;
 using xivModdingFramework.General.Enums;
@@ -23,7 +24,7 @@ namespace Icarus.Services
                 case XivRace.Lalafell_Female:
                     return DefaultLalafellVariant;
                 default:
-                    if (IsMaleSkin(race))
+                    if (XivPathParser.IsMaleSkin(race))
                     {
                         return DefaultMaleVariant;
                     }

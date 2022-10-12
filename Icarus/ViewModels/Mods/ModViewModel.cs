@@ -23,7 +23,10 @@ namespace Icarus.ViewModels.Mods
         public IItem? SelectedItem { get; protected set; }
         protected readonly IGameFileService _gameFileService;
         protected readonly ILogService _logService;
-        protected bool _isReadOnly => this is ReadOnlyModViewModel;
+        public virtual bool IsReadOnly
+        {
+            get { return this is ReadOnlyModViewModel || this is MetadataModViewModel; }
+        }
 
         public bool CanParsePath => XivPathParser.CanParsePath(DestinationPath);
 

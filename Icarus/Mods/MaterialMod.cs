@@ -11,7 +11,7 @@ using Half = SharpDX.Half;
 
 namespace Icarus.Mods
 {
-    public class MaterialMod : Mod
+    public class MaterialMod : Mod, IMaterialGameFile
     {
         // TODO: Put related tex files "under" the parent material?
 
@@ -27,8 +27,7 @@ namespace Icarus.Mods
         public bool IsFurniture => ShaderInfo.Shader == MtrlShader.Furniture;
         public bool IsDyeableFurniture => ShaderInfo.Shader == MtrlShader.DyeableFurniture;
 
-        // TODO: Look at all of the options when creating a new material
-        private XivMtrl XivMtrl;
+        public XivMtrl XivMtrl { get; set; }
 
         public MaterialMod()
         {

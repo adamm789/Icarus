@@ -1,6 +1,7 @@
 ﻿using ItemDatabase.Enums;
 using ItemDatabase.Interfaces;
 using Lumina.Excel.GeneratedSheets;
+using xivModdingFramework.Cache;
 using xivModdingFramework.Textures.Enums;
 using LuminaItem = Lumina.Excel.GeneratedSheets.Item;
 
@@ -35,6 +36,10 @@ namespace ItemDatabase
         public abstract string GetTexPath(XivTexType type, string variant = "");
 
         public abstract string GetMtrlFileName();
+        public virtual string GetMetadataPath()
+        {
+            return "";
+        }
 
         public static MainItemCategory GetMainItemCategory(LuminaItem item)
         {
