@@ -40,7 +40,7 @@
         <local:ModView Grid.Row="0" Grid.ColumnSpan="3"/>
         <Button Grid.Row="1" Grid.Column="0" Content="Copy From Search"
                     Command="{Binding SetDestinationCommand}" Margin="2,0,2,0"/>
-        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding DestinationName, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
+        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding DestinationName, UpdateSourceTrigger=PropertyChanged}"/>
 
         <Button Grid.Row="1" Grid.Column="2" Command="{Binding OpenMaterialEditorCommand}" Content="Edit"/>
 
@@ -58,6 +58,5 @@
             <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding ShaderPresets}" SelectedValue="{Binding Preset}"/>
             <local:MaterialTexPathsView Grid.Row="1" Grid.ColumnSpan="2"/>
         </Grid>
-
     </Grid>
 </UserControl>

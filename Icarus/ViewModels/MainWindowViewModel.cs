@@ -59,6 +59,7 @@ namespace Icarus.ViewModels
             ModPackViewModel = new ModPackViewModel(modPack, viewModelService);
             ModPackMetaViewModel = ModPackViewModel.ModPackMetaViewModel;
             ModsListViewModel = ModPackViewModel.ModsListViewModel;
+            FilteredModsListViewModel = ModsListViewModel.FilteredModsList;
 
             ItemListViewModel = new(itemListService, logService);
             ImportVanillaViewModel = new(ModsListViewModel, ItemListViewModel, gameFileDataService, logService);
@@ -115,6 +116,7 @@ namespace Icarus.ViewModels
         public ImportViewModel ImportViewModel { get; set; }
         public ImportVanillaViewModel ImportVanillaViewModel { get; set; }
         public ItemListViewModel ItemListViewModel { get; set; }
+        public FilteredModsListViewModel FilteredModsListViewModel { get; set; }
         public IUserPreferencesService UserPreferencesService { get; set; }
 
         bool _isBusy = false;

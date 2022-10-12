@@ -40,6 +40,6 @@
         <Button Command="{Binding GetVanillaMaterial}" Content="Add Vanilla Mtrl"
                 IsEnabled="{Binding CanImportMtrl}" dd:DragDrop.DragSourceIgnore="True"/>
         
-        <Button Command="{Binding GetVanillaMetadata}" Content="Add Metadaata"/>
+        <Button Command="{Binding GetVanillaMetadata}" Content="Add Metadata"/>
     </StackPanel>
 </UserControl>

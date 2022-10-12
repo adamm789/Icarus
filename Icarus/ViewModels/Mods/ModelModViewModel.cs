@@ -149,5 +149,11 @@ namespace Icarus.ViewModels.Mods
                 group.SetSlotAttributes(slotAttributes);
             }
         }
+
+        protected override void RaiseDestinationPathChanged()
+        {
+            base.RaiseDestinationPathChanged();
+            OnPropertyChanged(nameof(HasSkin));
+        }
     }
 }

@@ -18,5 +18,6 @@ namespace Icarus.ViewModels.Mods.DataContainers.Interfaces
         bool DeleteMod(ModOptionModViewModel mod);
         bool DeleteMod(ModViewModel mod);
         void Move(ModViewModel source, ModViewModel target);
+        FilteredModsListViewModel FilteredModsList { get; }
     }
 }

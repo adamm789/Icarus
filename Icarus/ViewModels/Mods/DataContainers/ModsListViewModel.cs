@@ -34,7 +34,8 @@ namespace Icarus.ViewModels.Mods.DataContainers
             ModPack = modPack;
             _viewModelService = viewModelService;
 
-            UpdateHeaders();
+            FilteredModsList = new(SimpleModsList);
+            SetCanExport();
         }
 
         private int identifier = 0;
@@ -51,6 +52,13 @@ namespace Icarus.ViewModels.Mods.DataContainers
         {
             get { return _simpleModsList; }
             set { _simpleModsList = value; OnPropertyChanged(); }
+        }
+
+        FilteredModsListViewModel _filteredModsList;
+        public FilteredModsListViewModel FilteredModsList
+        {
+            get { return _filteredModsList; }
+            set { _filteredModsList = value; OnPropertyChanged(); }
         }
 
         #region Public Functions
@@ -112,7 +120,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
 
             var eh = new PropertyChangedEventHandler(OnPropertyChanged);
             mod.PropertyChanged += eh;
-            UpdateHeaders();
+            SetCanExport();
         }
 
         public bool DeleteMod(ModOptionModViewModel mod)
@@ -144,7 +152,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
                     throw new ArgumentException("Could not remove mod.");
                 }
 
-                UpdateHeaders();
+                SetCanExport();
                 return true;
             }
             return false;
@@ -186,7 +194,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
         {
             if (e.PropertyName == nameof(ModViewModel.CanExport))
             {
-                UpdateHeaders();
+                SetCanExport();
             }
             if (e.PropertyName == nameof(ModViewModel.ShouldDelete))
             {
@@ -200,16 +208,9 @@ namespace Icarus.ViewModels.Mods.DataContainers
             }
         }
 
-        private void UpdateHeaders()
+        private void SetCanExport()
         {
             CanExport = GetCanExport();
-
-            AllModsHeader = $"All ({SimpleModsList.Count})";
-            ModelModsHeader = $"Models ({ModelMods.Cast<ModViewModel>().Count()})";
-            MaterialModsHeader = $"Materials ({MaterialMods.Cast<ModViewModel>().ToArray().Length})";
-            TextureModsHeader = $"Textures({TextureMods.Cast<ModViewModel>().ToArray().Length})";
-            MetadataModsHeader = $"Metadata({MetadataMods.Cast<ModViewModel>().ToArray().Length})";
-            ReadOnlyModsHeader = $"ReadOnly ({ReadOnlyMods.Cast<ModViewModel>().ToArray().Length})";
         }
 
         /// <summary>
@@ -271,103 +272,5 @@ namespace Icarus.ViewModels.Mods.DataContainers
 
         #endregion
 
-        #region CollectionViews
-        string _allModsHeader = "";
-        public string AllModsHeader
-        {
-            get { return _allModsHeader; }
-            set { _allModsHeader = value; OnPropertyChanged(); }
-        }
-
-        string _modelModsHeader = "";
-        public string ModelModsHeader
-        {
-            get { return _modelModsHeader; }
-            set { _modelModsHeader = value; OnPropertyChanged(); }
-        }
-
-        string _materialModsHeader = "";
-        public string MaterialModsHeader
-        {
-            get { return _materialModsHeader; }
-            set { _materialModsHeader = value; OnPropertyChanged(); }
-        }
-
-        string _readOnlyModsHeader = "";
-        public string ReadOnlyModsHeader
-        {
-            get { return _readOnlyModsHeader; }
-            set { _readOnlyModsHeader = value; OnPropertyChanged(); }
-        }
-
-        string _textureModsHeader = "";
-        public string TextureModsHeader
-        {
-            get { return _textureModsHeader; }
-            set { _textureModsHeader = value; OnPropertyChanged(); }
-        }
-
-        string _metadataModsHeader = "";
-        public string MetadataModsHeader
-        {
-            get { return _metadataModsHeader; }
-            set { _metadataModsHeader = value; OnPropertyChanged(); }
-        }
-
-        ICollectionView _modelMods;
-        public ICollectionView ModelMods
-        {
-            get
-            {
-                _modelMods ??= new CollectionViewSource { Source = SimpleModsList }.View;
-                _modelMods.Filter = m => m is ModelModViewModel;
-                return _modelMods;
-            }
-        }
-
-        ICollectionView _readonlyMods;
-        public ICollectionView ReadOnlyMods
-        {
-            get
-            {
-                _readonlyMods ??= new CollectionViewSource { Source = SimpleModsList }.View;
-                _readonlyMods.Filter = m => m is ReadOnlyModViewModel;
-                return _readonlyMods;
-            }
-        }
-
-        ICollectionView _materialMods;
-        public ICollectionView MaterialMods
-        {
-            get
-            {
-                _materialMods ??= new CollectionViewSource { Source = SimpleModsList }.View;
-                _materialMods.Filter = m => m is MaterialModViewModel;
-                return _materialMods;
-            }
-        }
-
-        ICollectionView _textureMods;
-        public ICollectionView TextureMods
-        {
-            get
-            {
-                _textureMods ??= new CollectionViewSource { Source = SimpleModsList }.View;
-                _textureMods.Filter = m => m is TextureModViewModel;
-                return _textureMods;
-            }
-        }
-
-        ICollectionView _metadataMods;
-        public ICollectionView MetadataMods
-        {
-            get
-            {
-                _metadataMods ??= new CollectionViewSource { Source = SimpleModsList }.View;
-                _metadataMods.Filter = m => m is MetadataModViewModel;
-                return _metadataMods;
-            }
-        }
-        #endregion
     }
 }

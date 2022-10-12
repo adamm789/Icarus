@@ -8,10 +8,30 @@
              xmlns:datacontainers="clr-namespace:Icarus.ViewModels.Mods.DataContainers"
              xmlns:interfaces="clr-namespace:Icarus.ViewModels.Mods.DataContainers.Interfaces"
              d:DataContext="{d:DesignInstance Type=datacontainers:ModsListViewModel}"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             mc:Ignorable="d">
     <Grid>
         <Grid.Resources>
+            <DataTemplate DataType="{x:Type datacontainers:FilteredModsListViewModel }">
+                <modviews:FilteredModsListView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type datacontainers:ModPackMetaViewModel}">
+                <modviews:SimpleModPackMetaView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type modviewmodels:ModelModViewModel}">
+                <modviews:ModelModView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type modviewmodels:MaterialModViewModel}">
+                <modviews:MaterialModView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type modviewmodels:TextureModViewModel}">
+                <modviews:TextureModView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type modviewmodels:MetadataModViewModel}">
+                <modviews:MetadataModView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type modviewmodels:ReadOnlyModViewModel}">
+                <modviews:ReadOnlyViewMod/>
+            </DataTemplate>
 
             <Style TargetType="{x:Type Button}">
                 <Setter Property="FontSize" Value="14"/>
@@ -23,6 +43,6 @@
             </Style>
         </Grid.Resources>
 
-        <modviews:FilteredModsView/>
+        <ContentControl Content="{Binding FilteredModsList}"/>
     </Grid>
 </UserControl>

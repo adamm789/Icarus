@@ -25,7 +25,7 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <Button Grid.Column="0" Command="{Binding SetDestinationCommand}" Content="Copy from Search"/>
-            <TextBox Grid.Column="1" Text="{Binding DestinationName}" IsReadOnly="True" Margin="5,0,5,0"/>
+            <TextBlock Grid.Column="1" Text="{Binding DestinationName}" Margin="5,0,5,0"/>
             <ComboBox Grid.Column="2" ItemsSource="{Binding VariantList}" SelectedValue="{Binding TextureVariant}"
                       Visibility="{Binding CanParsePath, Converter={StaticResource BooleanToVisibilityConverter}}"/>
             <ComboBox Grid.Column="3" ItemsSource="{Binding TexTypeValues}" SelectedValue="{Binding TexType}"/>

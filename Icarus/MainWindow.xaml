@@ -18,9 +18,9 @@
         MouseDown="window1_MouseDown"
         WindowStartupLocation="CenterScreen">
     <Window.DataContext>
-        <viewmodels:MainWindowViewModel/>
+        <viewmodels:MainWindowViewModel />
     </Window.DataContext>
-    <Grid Name="grid1" Focusable="True" >
+    <Grid Name="grid1" Focusable="True" dd:DragDrop.DropHandler="{Binding}" dd:DragDrop.IsDropTarget="True">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -38,7 +38,7 @@
             <MenuItem Header="Log" Command="{Binding OpenLog}"/>
         </Menu>
 
-        <Grid x:Name="MainGrid" Grid.Row="1" IsEnabled="{Binding GamePathSet}" dd:DragDrop.IsDragSource="True" dd:DragDrop.DropHandler="{Binding}">
+        <Grid x:Name="MainGrid" Grid.Row="1" IsEnabled="{Binding GamePathSet}" dd:DragDrop.IsDragSource="True" >
             <TabControl Grid.Row="0">
                 <TabItem Header="Importer/Simple Modpack">
                     <editorviews:SimpleEditorView/>

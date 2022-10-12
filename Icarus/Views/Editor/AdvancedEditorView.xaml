@@ -37,13 +37,16 @@
             <DataTemplate DataType="{x:Type modviewmodels:TextureModViewModel}">
                 <local:AdvancedEditorModView/>
             </DataTemplate>
-            <DataTemplate DataType="{x:Type modviewmodels:ReadOnlyModViewModel}" >
+            <DataTemplate DataType="{x:Type modviewmodels:ReadOnlyModViewModel}">
+                <local:AdvancedEditorModView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type modviewmodels:MetadataModViewModel}">
                 <local:AdvancedEditorModView/>
             </DataTemplate>
         </Grid.Resources>
 
-        <ContentControl DataContext="{Binding ModsListViewModel}" Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Margin="5">
-            <mods:FilteredModsView/>
+        <ContentControl DataContext="{Binding FilteredModsListViewModel}" Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Margin="5">
+            <mods:FilteredModsListView/>
         </ContentControl>
 
         <TabControl Grid.Row="0" Grid.Column="1">

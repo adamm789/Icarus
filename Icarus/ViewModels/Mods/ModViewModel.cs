@@ -63,6 +63,7 @@ namespace Icarus.ViewModels.Mods
             return _mod;
         }
 
+        // TODO: Allow setting personal "DisplayedHeader"? Or otherwise, some string
         string _displayedHeader = "";
         public string DisplayedHeader
         {
@@ -144,7 +145,7 @@ namespace Icarus.ViewModels.Mods
             get { return _setDestinationCommand ??= new DelegateCommand(async o => await SetDestinationItem()); }
         }
 
-        public virtual void RaiseDestinationPathChanged()
+        protected virtual void RaiseDestinationPathChanged()
         {
             OnPropertyChanged(nameof(DestinationPath));
             OnPropertyChanged(nameof(DestinationName));

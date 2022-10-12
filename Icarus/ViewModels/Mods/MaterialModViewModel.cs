@@ -72,7 +72,7 @@ namespace Icarus.ViewModels.Mods
             _windowService.ShowWindow<ShaderInfoWindow>(this);
         }
 
-        public override void RaiseDestinationPathChanged()
+        protected override void RaiseDestinationPathChanged()
         {
             ShaderInfoViewModel.UpdatePaths(DestinationPath);
             base.RaiseDestinationPathChanged();

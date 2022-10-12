@@ -177,7 +177,7 @@ namespace Icarus.Util
                 _logService.Verbose($"Wrote {offset} bytes.");
                 if (numMods == entries.Count)
                 {
-                    _logService.Information($"Sucessfully saved {modPackPath}.");
+                    _logService.Information($"Successfully saved {modPackPath}.");
                 }
                 else
                 {
@@ -383,14 +383,13 @@ namespace Icarus.Util
 
                 if (numMods == entries.Count)
                 {
-                    _logService.Information($"Sucessfully saved {modPackPath}.");
+                    _logService.Information($"Successfully saved {modPackPath}.");
                 }
                 else
                 {
                     _logService.Warning($"Saved {modPackPath}. But only wrote {numMods} out of {entries.Count} mod(s).");
                 }
 
-                _logService.Information($"Sucessfully saved {modPackPath}.");
                 return modPackPath;
             }
             catch (ArgumentException ex)

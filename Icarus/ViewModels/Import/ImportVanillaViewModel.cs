@@ -233,6 +233,7 @@ namespace Icarus.ViewModels.Import
         private async Task GetVanillaMeta()
         {
             MetadataMod? mod;
+            if (SelectedItem == null) return;
             if (_completePath != null)
             {
                 mod = await _gameFileDataService.TryGetMetadata(_completePath, SelectedItemName);

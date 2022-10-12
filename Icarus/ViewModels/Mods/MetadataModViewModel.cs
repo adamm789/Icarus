@@ -44,8 +44,24 @@ namespace Icarus.ViewModels.Mods
             // TODO: Update properties... ?
 
             _metadataMod.EqdpEntries = EqdpViewModel.GetEntries();
-            _metadataMod.EqpEntry = EqpViewModel.EqpEntry;
-            _metadataMod.GmpEntry = GmpViewModel.GimmickParameter;
+
+            if (EqpViewModel != null)
+            {
+                _metadataMod.EqpEntry = EqpViewModel.EqpEntry;
+            }
+            else
+            {
+                _metadataMod.EqpEntry = null;
+            }
+
+            if (GmpViewModel != null)
+            {
+                _metadataMod.GmpEntry = GmpViewModel.GimmickParameter;
+            }
+            else
+            {
+                _metadataMod.GmpEntry = null;
+            }
 
 
             return _metadataMod;

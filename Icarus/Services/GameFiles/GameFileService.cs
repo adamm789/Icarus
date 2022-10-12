@@ -66,6 +66,8 @@ namespace Icarus.Services.GameFiles
             }
         }
 
+        // public async Task<IGameFile?> GetFileData<T>(IItem? itemArg = null) where T : IMod
+
         public async Task<IGameFile?> GetFileData(IItem? itemArg = null, Type? type = null)
         {
             if (type == typeof(ModelMod))

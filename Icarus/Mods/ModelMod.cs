@@ -17,6 +17,8 @@ namespace Icarus.Mods
         public TTModel? TTModel { get; set; }
         public XivMdl? XivMdl { get; set; }
 
+        public bool ShouldExportRawMaterials { get; set; } = true;
+
         public ModelMod(IModelGameFile modelGameFile, bool isInternal = false) : base(modelGameFile, isInternal)
         {
             ImportedModel = modelGameFile.TTModel;

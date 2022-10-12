@@ -90,11 +90,12 @@ namespace Icarus.Util.Export
                 var src = mdlMod.TTModel.Source;
                 if (Path.GetExtension(src) == ".db")
                 {
-                    // Check to see if the original file was an .fbx file
+                    // Check to see if the original file was from a .db file (which came from an .fbx file)
                     // Why would someone want to export to an fbx when they have the original?
                     _logService.Error($"Cannot export mod {mdlMod.Name}.");
                     return;
                 }
+
                 var copy = ApplyModelOptions(mdlMod);
                 try
                 {
@@ -109,11 +110,11 @@ namespace Icarus.Util.Export
                 var model = mdlMod.ImportedModel;
 
                 // TODO: Implement ShouldExportMaterials
-                var shouldExportMaterial = true;
-                if (shouldExportMaterial && mod.IsInternal)
+                if (mdlMod.ShouldExportRawMaterials && mod.IsInternal)
                 {
                     var textureOutputPath = Path.Combine(outputPath, "textures");
                     _logService.Information("Trying to get Materials.");
+                    _logService.Debug("Exceptions may occur. These can be safely ignored.");
                     // TODO?: Textures for (only?) skins, seems wrong
                     await Mdl.ExportMaterialsForModel(model, textureOutputPath, _gameDirectoryFramework);
                     _logService.Verbose("Done with getting materials.");
