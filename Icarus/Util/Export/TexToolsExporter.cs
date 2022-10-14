@@ -10,6 +10,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Security;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -41,6 +42,19 @@ namespace Icarus.Util
             return path;
         }
 
+        private string GetTempDirectory(string outputDir)
+        {
+            try
+            {
+                return Path.Combine(Path.GetTempPath(), "temp");
+            }
+            catch (SecurityException ex)
+            {
+                _logService.Error(ex, "Could not get temporary path.");
+                return Path.Combine(outputDir, "temp");
+            }
+        }
+
         // TODO: Export to Standard...?
 
         // TODO: CancellationToken for TexTools ExportToSimple
@@ -60,8 +74,10 @@ namespace Icarus.Util
             {
                 outputDir = Directory.GetCurrentDirectory();
             }
-            var tempDir = Path.Combine(outputDir, "temp");
+            //var tempDir = Path.Combine(outputDir, "temp");
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
+            var tempDir = GetTempDirectory(outputDir);
 
             if (Directory.Exists(tempDir))
             {
@@ -187,11 +203,11 @@ namespace Icarus.Util
             }
             catch (ArgumentException ex)
             {
-                Log.Error("Caught exception while writing to directory. {ex}.", ex);
+                _logService.Error(ex, $"Caught exception while writing to directory.");
             }
             finally
             {
-                Log.Verbose($"Deleting {tempDir}.");
+                _logService.Verbose($"Deleting {tempDir}.");
                 Directory.Delete(tempDir, true);
             }
             return "";
@@ -204,14 +220,16 @@ namespace Icarus.Util
             {
                 outputDir = Directory.GetCurrentDirectory();
             }
-            var tempDir = Path.Combine(outputDir, "temp");
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
+            var tempDir = GetTempDirectory(outputDir);
 
             if (Directory.Exists(tempDir))
             {
                 Directory.Delete(tempDir, true);
             }
             Directory.CreateDirectory(tempDir);
+
             string _tempMPD = Path.Combine(tempDir, "TTMPD.mpd");
             string _tempMPL = Path.Combine(tempDir, "TTMPL.mpl");
 
@@ -316,51 +334,61 @@ namespace Icarus.Util
 
                                 if (bytes == Array.Empty<byte>())
                                 {
-                                    if (bytes == Array.Empty<byte>())
-                                    {
-                                        _logService.Error($"Could not get bytes for {name}. Skipping.");
-                                        continue;
-                                    }
+                                    _logService.Error($"Could not get bytes for {name}. Skipping.");
+                                    continue;
                                 }
                                 var modOffset = offset;
 
-                                // Don't write duplicate mods
-                                if (offsetDict.ContainsKey(modOptionMod))
+                                // TODO?: Don't write duplicate mods?
+                                /*if (offsetDict.ContainsKey(modOptionMod))
                                 {
                                     modOffset = offsetDict[modOptionMod];
+                                    var modsJson = new ModsJson
+                                    {
+                                        Name = name,
+                                        Category = category,
+                                        FullPath = path,
+                                        ModOffset = modOffset,
+                                        ModSize = bytes.Length,
+                                        DatFile = datFile,
+                                        IsDefault = false,
+                                    };
+                                    modOptionJson.ModsJsons.Add(modsJson);
                                 }
                                 else
                                 {
+                                
                                     offsetDict.Add(modOptionMod, offset);
-                                }
-                                var modsJson = new ModsJson
-                                {
-                                    Name = name,
-                                    Category = category,
-                                    FullPath = path,
-                                    ModOffset = modOffset,
-                                    ModSize = bytes.Length,
-                                    DatFile = datFile,
-                                    IsDefault = false,
-                                };
-                                modOptionJson.ModsJsons.Add(modsJson);
-                                if (modOffset == offset)
-                                {
+                                */
+                                    var modsJson = new ModsJson
+                                    {
+                                        Name = name,
+                                        Category = category,
+                                        FullPath = path,
+                                        ModOffset = modOffset,
+                                        ModSize = bytes.Length,
+                                        DatFile = datFile,
+                                        IsDefault = false,
+                                    };
+                                    modOptionJson.ModsJsons.Add(modsJson);
                                     bw.Write(bytes);
                                     offset += bytes.Length;
+                                //}
+                                /*
+                                if (modOffset == offset)
+                                {
                                 }
+                                */
                                 numMods++;
                             }
                         }
                     }
                 }
             }
-
-            string modPackPath = "";
             try
             {
                 _logService.Information("Saving ttmp2 file.");
-                modPackPath = GetOutputPath(modPack, outputDir);
+                var modPackPath = GetOutputPath(modPack, outputDir);
                 File.WriteAllText(_tempMPL, JsonConvert.SerializeObject(modPackJson));
 
                 var zf = new ZipFile();
@@ -401,7 +429,7 @@ namespace Icarus.Util
                 _logService.Verbose($"Deleting temporary directory {tempDir}.");
                 Directory.Delete(tempDir, true);
             }
-            return modPackPath;
+            return "";
         }
 
         private async Task<byte[]> GetBytes(IMod entry, int counter = 0)

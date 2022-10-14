@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Icarus.Views.Mods.ColorSetRowView"
+﻿<UserControl x:Class="Icarus.Views.Mods.Materials.ColorSetRowView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 

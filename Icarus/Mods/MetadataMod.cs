@@ -49,6 +49,7 @@ namespace Icarus.Mods
             IsInternal = inInternal;
             ItemMetadata = data;
 
+            ModFileName = data.Root.ToRawItem().Name;
             ModFilePath = data.Root.ToString();
             Path = data.Root.ToString();
         }

@@ -25,9 +25,7 @@
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         <Grid.Resources>
-            <DataTemplate DataType="{x:Type mods:ColorSetRowViewModel}">
-                <local:ColorSetRowView/>
-            </DataTemplate>
+
             <DataTemplate DataType="{x:Type mods:ShaderInfoViewModel}">
                 <local:MaterialTexPathsView/>
             </DataTemplate>

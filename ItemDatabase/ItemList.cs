@@ -17,6 +17,7 @@ namespace ItemDatabase
         private List<IItem> _items = new();
 
         private Dictionary<string, SortedDictionary<string, IItem>> _allItems = new();
+        private SortedDictionary<string, IItem> _indoorFurniture = new();
         private SortedDictionary<MainItemCategory, SortedList<string, Item>> OtherItems = new();
         public ItemList(GameData lumina)
         {
@@ -95,16 +96,15 @@ namespace ItemDatabase
                 }
             }
 
-            /*
-            _allItems["Housing Furniture"] = new();
+            
             foreach (var f in furnishings)
             {
                 var item = new IndoorFurniture(f);
                 if (String.IsNullOrWhiteSpace(item.Name)) continue;
 
-                _allItems["Housing Furniture"].Add(item.Name, item);
+                _indoorFurniture.Add(item.Name, item);
             }
-            */
+            
 
             AddBody();
         }
@@ -128,7 +128,6 @@ namespace ItemDatabase
             {
                 // TODO: "An item with the same key has already been added. Key: [Valentione Emissary's Boots, ItemDatabase.Equipment]"
                 _allItems[slot.ToString()].Add(equip.Name, equip);
-
             }
         }
 
@@ -155,6 +154,15 @@ namespace ItemDatabase
                     {
                         ret.Add(item.Value);
                     }
+                }
+            }
+
+            // Include furniture?
+            foreach (var furniture in _indoorFurniture)
+            {
+                if (furniture.Value.IsMatch(str))
+                {
+                    ret.Add(furniture.Value);
                 }
             }
             return ret;

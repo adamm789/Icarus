@@ -72,10 +72,7 @@ namespace Icarus.Mods
 
             var modelGameFile = gameFile as IModelGameFile;
 
-            ModFileName = modelGameFile.Name;
-            ModFilePath = modelGameFile.Path;
             TargetRace = modelGameFile.TargetRace;
-
             TTModel = modelGameFile.TTModel;
             XivMdl = modelGameFile.XivMdl;
         }

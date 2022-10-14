@@ -16,6 +16,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using xivModdingFramework.General.Enums;
+using xivModdingFramework.Materials.DataContainers;
 using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.Mods.FileTypes;
@@ -88,7 +89,7 @@ namespace Icarus.Services.Files
                 {
                     foreach (ModsJson mods in modPack.SimpleModsList)
                     {
-                        var file = await Extract(mods, pack);
+                        var file = await Extract(mods, pack, mods.Name, filePath);
                         if (file == null)
                         {
                             Log.Error($"Could not extract mod {mods.Name}.");
@@ -107,27 +108,32 @@ namespace Icarus.Services.Files
                         var copyPage = new ModPackPage(page);
                         foreach (ModGroupJson group in page.ModGroups)
                         {
+                            var groupNumber = 0;
                             var copyGroup = new ModGroup(group);
                             foreach (ModOptionJson option in group.OptionList)
                             {
+                                var optionNumber = 0;
                                 var copyOption = new ModOption(option);
                                 foreach (ModsJson mods in option.ModsJsons)
                                 {
                                     // TODO: Extract asynchronously?
-                                    var file = await Extract(mods, pack, fileInfo.Name, option);
+                                    var fileName = $"Page{page.PageIndex}/{group.GroupName}/{option.Name}: ({mods.Name})";
+                                    Log.Verbose($"Extracting {fileName}");
 
-                                    if (file == null)
+                                    var mod = await Extract(mods, pack, fileName, filePath);
+
+                                    if (mod == null)
                                     {
-                                        Log.Error($"Could not extract mod. Skipping {mods.Name}.");
+                                        Log.Error($"Could not extract mod. Skipping {fileName}");
                                     }
                                     else
                                     {
-                                        copyOption.AddMod(file);
+                                        copyOption.AddMod(mod);
 
                                         // TODO: Check to see if it already exists?
-                                        if (!retModPack.SimpleModsList.Contains(file))
+                                        if (!retModPack.SimpleModsList.Contains(mod))
                                         {
-                                            retModPack.SimpleModsList.Add(file);
+                                            retModPack.SimpleModsList.Add(mod);
                                         }
                                         else
                                         {
@@ -135,8 +141,10 @@ namespace Icarus.Services.Files
                                         }
                                     }
                                 }
+                                optionNumber++;
                                 copyGroup.AddOption(copyOption);
                             }
+                            groupNumber++;
                             copyPage.AddGroup(copyGroup);
                         }
                         retModPack.ModPackPages.Add(copyPage);
@@ -146,143 +154,160 @@ namespace Icarus.Services.Files
             return retModPack;
         }
 
-        private async Task<IMod?> Extract(ModsJson mods, SqPackStream pack, string fileName = "", ModOptionJson? option = null)
+        private async Task<IMod?> Extract(ModsJson mods, SqPackStream pack, string modFileName, string modFilePath)
         {
-            Log.Verbose("Extracting {mod}.", mods.FullPath);
             var dat = pack.GetFileMetadata(mods.ModOffset);
-
             IMod? result = null;
 
             switch (dat.Type)
             {
                 case FileType.Model:
-                    result = await Task.Run(() => ExtractModel(mods, pack, option));
+                    result = await Task.Run(() => ExtractModel(mods, pack, modFileName, modFilePath));
                     break;
                 case FileType.Texture:
-                    result = await ExtractTexture(mods, pack, option);
+                    result = await ExtractTexture(mods, pack, modFileName, modFilePath);
                     break;
                 default:
-                    result = await ExtractStandard(mods, pack, option);
+                    result = await ExtractStandard(mods, pack, modFileName, modFilePath);
                     break;
             }
-            result ??= ExtractReadOnlyMod(mods, pack, option);
+            result ??= ExtractReadOnlyMod(mods, pack, modFileName, modFilePath);
             return result;
         }
 
-        private string GetModFileName(ModsJson mods, ModOptionJson? option)
+        private ModelMod? ExtractModel(ModsJson mods, SqPackStream pack, string modFileName, string modFilePath)
         {
-            var fileName = mods.FullPath;
-            var file = new FileInfo(mods.FullPath);
-            if (file != null)
+            try
             {
-                fileName = file.Name;
-            }
-            if (option != null)
-            {
-                return $"{option.GroupName} - {option.Name}: {mods.Name} ({fileName})";
-            }
-            return $"{mods.Name} ({fileName})";
-        }
-
-        private ModelMod? ExtractModel(ModsJson mods, SqPackStream pack, ModOptionJson? option = null)
-        {
-            var mdlFile = pack.ReadFile<MdlFile>(mods.ModOffset);
-            var xivMdl = MdlWithFramework.GetRawMdlDataFramework(mods.FullPath, mdlFile.Data, mdlFile.Meshes.Length);
-            var imported = TTModel.FromRaw(xivMdl);
-            var modFileName = GetModFileName(mods, option);
-            var ret = new ModelMod(mods.FullPath, imported)
-            {
-                ModFileName = modFileName,
-
-                Path = mods.FullPath,
-                Name = mods.Name,
-                Category = mods.Category
-            };
-            return ret;
-        }
-
-        private async Task<Mod?> ExtractTexture(ModsJson mods, SqPackStream pack, ModOptionJson? option = null)
-        {
-            if (mods.FullPath.Contains(".tex"))
-            {
-                var bytes = new byte[mods.ModSize];
-                pack.BaseStream.Seek(mods.ModOffset, SeekOrigin.Begin);
-                pack.BaseStream.Read(bytes, 0, mods.ModSize);
-                var xivTex = await DatExtensions.GetType4Data(bytes);
-                var type = XivTexType.Normal;
-
-                try
-                {
-                    type = XivPathParser.GetTexType(mods.FullPath);
-                }
-                catch (ArgumentException)
-                {
-                    Log.Error("Using TexType Normal");
-                }
-                var dataFile = XivDataFiles.GetXivDataFile(mods.FullPath);
-
-                var texTypePath = new TexTypePath()
-                {
-                    Path = mods.FullPath,
-                    Name = mods.Name,
-                    Type = type,
-                    DataFile = dataFile
-                };
-                xivTex.TextureTypeAndPath = texTypePath;
-
-                var modFileName = GetModFileName(mods, option);
-                return new TextureMod(xivTex, false)
+                var mdlFile = pack.ReadFile<MdlFile>(mods.ModOffset);
+                var xivMdl = MdlWithFramework.GetRawMdlDataFramework(mods.FullPath, mdlFile.Data, mdlFile.Meshes.Length);
+                var imported = TTModel.FromRaw(xivMdl);
+                var ret = new ModelMod(mods.FullPath, imported)
                 {
                     ModFileName = modFileName,
-                    ModFilePath = mods.FullPath,
+                    ModFilePath = modFilePath,
+
                     Path = mods.FullPath,
                     Name = mods.Name,
                     Category = mods.Category
                 };
+                return ret;
             }
-            return null;
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Could not extract model");
+                return null;
+            }
         }
 
-        // TODO: Something akin to: ImportStandard(byte[] bytes, ...) ?
-        private async Task<Mod?> ExtractStandard(ModsJson mods, SqPackStream pack, ModOptionJson? option = null)
+        private async Task<TextureMod?> ExtractTexture(ModsJson mods, SqPackStream pack, string modFileName, string modFilePath)
         {
-            if (mods.FullPath.Contains(".mtrl"))
+            if (mods.FullPath.Contains(".tex"))
             {
                 try
                 {
-                    var file = pack.ReadFile<MtrlFile>(mods.ModOffset);
-                    var gameDirectory = new DirectoryInfo(_gameDirectory);
-                    var xivMtrl = await MtrlExtensions.GetMtrlData(gameDirectory, file.Data, mods.FullPath);
+                    var bytes = new byte[mods.ModSize];
+                    pack.BaseStream.Seek(mods.ModOffset, SeekOrigin.Begin);
+                    pack.BaseStream.Read(bytes, 0, mods.ModSize);
 
-                    var modFileName = GetModFileName(mods, option);
-                    var mtrlMod = new MaterialMod(xivMtrl)
+                    var xivTex = await DatExtensions.GetType4Data(bytes);
+
+                    var type = XivTexType.Normal;
+
+                    try
+                    {
+                        type = XivPathParser.GetTexType(mods.FullPath);
+                    }
+                    catch (ArgumentException)
+                    {
+                        Log.Error("Using TexType Normal");
+                    }
+
+                    var dataFile = XivDataFiles.GetXivDataFile(mods.FullPath);
+
+                    var texTypePath = new TexTypePath()
+                    {
+                        Path = mods.FullPath,
+                        Name = mods.Name,
+                        Type = type,
+                        DataFile = dataFile
+                    };
+                    xivTex.TextureTypeAndPath = texTypePath;
+
+                    return new TextureMod(xivTex, false)
                     {
                         ModFileName = modFileName,
-                        ModFilePath = mods.FullPath,
+                        ModFilePath = modFilePath,
 
                         Path = mods.FullPath,
                         Name = mods.Name,
                         Category = mods.Category
                     };
-                    return mtrlMod;
                 }
-                catch (NotImplementedException ex)
+                catch (Exception ex)
                 {
-                    Log.Error(ex, "");
-                    return null;
+                    Log.Error(ex, "Could not extract texture");
                 }
+            }
+            return null;
+        }
 
+        // TODO: Something akin to: ImportStandard(byte[] bytes, ...) ?
+        private async Task<Mod?> ExtractStandard(ModsJson mods, SqPackStream pack, string modFileName, string modFilePath)
+        {
+            if (mods.FullPath.Contains(".mtrl"))
+            {
+                return await ExtractMaterial(mods, pack, modFileName, modFilePath);
             }
             else if (mods.FullPath.Contains(".meta"))
+            {
+                return await ExtractMetadata(mods, pack, modFileName, modFilePath);
+            }
+            else
+            {
+                Log.Error($"Unknown \"standard\" mod {mods.FullPath}");
+                return null;
+            }
+        }
+
+        private async Task<MaterialMod?> ExtractMaterial(ModsJson mods, SqPackStream pack, string modFileName, string modFilePath)
+        {
+            try
+            {
+                var file = pack.ReadFile<MtrlFile>(mods.ModOffset);
+                var gameDirectory = new DirectoryInfo(_gameDirectory);
+
+                var xivMtrl = await MtrlExtensions.GetMtrlData(gameDirectory, file.Data, mods.FullPath);
+
+                var mtrlMod = new MaterialMod(xivMtrl)
+                {
+                    ModFileName = modFileName,
+                    ModFilePath = modFilePath,
+
+                    Path = mods.FullPath,
+                    Name = mods.Name,
+                    Category = mods.Category
+                };
+                return mtrlMod;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Could not extract material");
+            }
+            return null;
+        }
+
+        private async Task<MetadataMod?> ExtractMetadata(ModsJson mods, SqPackStream pack, string modFileName, string modFilePath)
+        {
+            try
             {
                 var file = pack.ReadFile<FileResource>(mods.ModOffset);
                 var meta = await ItemMetadata.Deserialize(file.Data);
 
-                var modFileName = GetModFileName(mods, option);
                 var metaMod = new MetadataMod(meta)
                 {
                     ModFileName = modFileName,
-                    ModFilePath = mods.FullPath,
+                    ModFilePath = modFilePath,
 
                     Path = mods.FullPath,
                     Name = mods.Name,
@@ -290,31 +315,42 @@ namespace Icarus.Services.Files
                 };
                 return metaMod;
             }
-            return ExtractReadOnlyMod(mods, pack);
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Could not extract metadata");
+            }
+            return null;
         }
 
-        private ReadOnlyMod? ExtractReadOnlyMod(ModsJson mods, SqPackStream pack, ModOptionJson? option = null)
+        private ReadOnlyMod? ExtractReadOnlyMod(ModsJson mods, SqPackStream pack, string modFileName, string modFilePath)
         {
-            var bytes = new byte[mods.ModSize];
-            var startPosition = pack.BaseStream.Position;
-
-            pack.BaseStream.Seek(mods.ModOffset, SeekOrigin.Begin);
-            pack.BaseStream.Read(bytes, 0, mods.ModSize);
-
-            pack.BaseStream.Position = startPosition;
-
-            var modFileName = GetModFileName(mods, option);
-            var ret = new ReadOnlyMod()
+            try
             {
-                ModFileName = modFileName,
-                ModFilePath = mods.FullPath,
+                var bytes = new byte[mods.ModSize];
+                var startPosition = pack.BaseStream.Position;
 
-                Name = mods.Name,
-                Path = mods.FullPath,
-                Category = mods.Category,
-                Data = bytes
-            };
-            return ret;
+                pack.BaseStream.Seek(mods.ModOffset, SeekOrigin.Begin);
+                pack.BaseStream.Read(bytes, 0, mods.ModSize);
+
+                pack.BaseStream.Position = startPosition;
+
+                var ret = new ReadOnlyMod()
+                {
+                    ModFileName = modFileName,
+                    ModFilePath = modFilePath,
+
+                    Name = mods.Name,
+                    Path = mods.FullPath,
+                    Category = mods.Category,
+                    Data = bytes
+                };
+                return ret;
+            }
+            catch (Exception ex)
+            {
+                Log.Fatal(ex, "Could not extract ???");
+                return null;
+            }
         }
     }
 }

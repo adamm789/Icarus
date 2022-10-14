@@ -199,7 +199,10 @@ namespace Icarus.ViewModels.Mods.DataContainers
             {
                 AddPage();
             }
-            PageIndex++;
+            if (PageIndex < ModPackPages.Count)
+            {
+                PageIndex++;
+            }
         }
 
         private void UpdatePagesView()
@@ -233,16 +236,15 @@ namespace Icarus.ViewModels.Mods.DataContainers
 
         private bool ShouldAddPage()
         {
-            if (DisplayedViewModel is ModPackPageViewModel modPackPage)
-            {
-                if (modPackPage.ModGroups.Count > 0)
-                {
-                    return true;
-                }
-            }
-            if (DisplayedViewModel is ModPackMetaViewModel)
+            if (PageIndex == 0)
             {
                 return true;
+            }
+            else
+            {
+                var lastIndex = ModPackPages.Count - 1;
+                return ModPackPages[lastIndex].ModGroups.Count > 0;
+                
             }
             return false;
         }

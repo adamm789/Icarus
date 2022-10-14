@@ -46,6 +46,7 @@ namespace Icarus.ViewModels.Mods
                 FileName = mod.ModFilePath;
             }
 
+            /*
             if (mod.IsInternal)
             {
                 DisplayedHeader = mod.Path;
@@ -54,7 +55,8 @@ namespace Icarus.ViewModels.Mods
             {
                 DisplayedHeader = FileName;
             }
-
+            */
+            DisplayedHeader = mod.ModFileName;
             //RaiseModPropertyChanged();
         }
 
@@ -174,7 +176,7 @@ namespace Icarus.ViewModels.Mods
 
         /// <summary>
         /// Tries to get data from the user-provided path
-        /// Must match in-game exactly
+        /// Must match in-game path exactly
         /// </summary>
         /// <param name="path"></param>
         /// <returns>Whether or not the file data was successfully found.</returns>
@@ -211,12 +213,12 @@ namespace Icarus.ViewModels.Mods
             }
         }
 
-        public void Drop(IDropInfo dropInfo)
+        public async void Drop(IDropInfo dropInfo)
         {
             var item = dropInfo.Data;
             if (item is IItemViewModel vm)
             {
-                SetDestinationItem(vm.Item);
+                await SetDestinationItem(vm.Item);
             }
         }
     }

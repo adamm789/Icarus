@@ -21,6 +21,13 @@ namespace Icarus.Mods
         public Mod(IGameFile gameFile, bool isInternal = false)
         {
             IsInternal = isInternal;
+
+            if (isInternal)
+            {
+                ModFileName = $"{gameFile.Path} ({gameFile.Name})";
+                ModFilePath = gameFile.Path;
+            }
+
             SetModData(gameFile);
         }
 
@@ -31,9 +38,6 @@ namespace Icarus.Mods
 
         public virtual void SetModData(IGameFile gameFile)
         {
-            ModFileName = gameFile.Name;
-            ModFilePath = gameFile.Path;
-
             Path = gameFile.Path;
             Name = gameFile.Name;
             Category = gameFile.Category;

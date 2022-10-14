@@ -14,9 +14,9 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal" Grid.Row="0">
+        <StackPanel Orientation="Horizontal" Grid.Row="0" ToolTip="{Binding DisplayedHeader}">
             <TextBlock Text="{Binding Identifier}"/>
-            <TextBlock Text="{Binding FileName}" Grid.Row="0"/>
+            <TextBlock Text="{Binding DisplayedHeader}" Grid.Row="0"/>
         </StackPanel>
         <TextBlock Text="{Binding DestinationName}" Grid.Row="1"/>
     </Grid>

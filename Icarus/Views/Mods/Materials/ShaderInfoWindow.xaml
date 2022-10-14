@@ -6,20 +6,23 @@
         xmlns:local="clr-namespace:Icarus.Views.Mods"
         xmlns:ui="clr-namespace:Icarus.UI" 
         xmlns:mods="clr-namespace:Icarus.ViewModels.Mods"
+        xmlns:materials="clr-namespace:Icarus.ViewModels.Mods.Materials"
+        xmlns:materialviews="clr-namespace:Icarus.Views.Mods.Materials"
         d:DataContext="{d:DesignInstance Type=mods:MaterialModViewModel}"
         mc:Ignorable="d" 
         d:DesignHeight="250" d:DesignWidth="300"
         Height="250" Width="500"
         MinHeight="350" MinWidth="500"
-        FontSize="14">
+        FontSize="14"
+        Title="{Binding DestinationPath}">
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.Resources>
-            <DataTemplate DataType="{x:Type mods:ColorSetRowViewModel}">
-                <local:ColorSetRowView/>
+            <DataTemplate DataType="{x:Type materials:ColorSetViewModel}">
+                <materialviews:ColorSetView/>
             </DataTemplate>
             <Style TargetType="{x:Type ComboBox}">
                 <Setter Property="Margin" Value="0 0 10 0"/>
@@ -71,8 +74,8 @@
             <local:MaterialTexPathsView Grid.Row="3" Grid.ColumnSpan="4"/>
 
         </Grid>
-        <ListBox Grid.Row="4" Grid.ColumnSpan="4" ItemsSource="{Binding ColorSetViewModels}" VirtualizingPanel.IsVirtualizing="True">
-        </ListBox>
+        <ContentControl Grid.Row="4" Grid.ColumnSpan="4" Content="{Binding ColorSetViewModel}">
+        </ContentControl>
     </Grid>
 
 </Window>

@@ -37,12 +37,19 @@ namespace Icarus.ViewModels.Mods.DataContainers
         private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             OnPropertyChanged(nameof(SimpleModsList));
+            /*
+            if (e.NewItems != null)
+            {
+                DisplayedMod = e.NewItems[0] as ModViewModel;
+            }
+            */
             UpdateHeaders();
         }
 
+
         private void UpdateHeaders()
         {
-            AllModsHeader = $"All ({SearchedMods.Cast<ModViewModel>().Count()})";
+            AllModsHeader = $"All ({SimpleModsList.Count})";
             ModelModsHeader = $"Models ({ModelMods.Cast<ModViewModel>().Count()})";
             MaterialModsHeader = $"Materials ({MaterialMods.Cast<ModViewModel>().Count()})";
             TextureModsHeader = $"Textures({TextureMods.Cast<ModViewModel>().Count()})";
@@ -126,14 +133,14 @@ namespace Icarus.ViewModels.Mods.DataContainers
 
         private void Search(string str)
         {
-            SearchedMods.Refresh();
+            //SearchedMods.Refresh();
             ModelMods.Refresh();
             ReadonlyMods.Refresh();
 
             UpdateHeaders();
         }
 
-        
+        /*
         ICollectionView _searchedMods;
         public ICollectionView SearchedMods
         {
@@ -145,6 +152,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
                 return _searchedMods;
             }
         }
+        */
 
         ICollectionView _modelMods;
         public ICollectionView ModelMods

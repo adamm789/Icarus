@@ -48,7 +48,7 @@ namespace Icarus.ViewModels.Mods
 
             if (modelMod.IsComplete())
             {
-                DisplayedHeader = $"{FileName} ({modelMod.Name})";
+                //DisplayedHeader = $"{FileName} ({modelMod.Name})";
 
                 //DestinationItem = modelMod.Item;
                 if (HasSkin)

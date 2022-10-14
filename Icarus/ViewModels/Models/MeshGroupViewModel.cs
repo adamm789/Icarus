@@ -62,6 +62,8 @@ namespace Icarus.ViewModels.Models
                 foreach (var key in bodyPresets.Keys)
                 {
                     var presets = new AttributePresetsViewModel(key, bodyPresets[key]);
+
+                    // TODO: CanCopyPreset -> CanExecute in this DelegateCommand?
                     presets.CopyPresetCommand = new DelegateCommand(o => CopyPreset(presets));
                     AttributePresets.Add(presets);
                 }

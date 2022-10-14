@@ -21,8 +21,9 @@
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Identifier}"/>
-        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding DisplayedHeader}" IsReadOnly="True"/>
-        <Button Grid.Row="0" Grid.Column="2" Command="{Binding DeleteCommand}" Content="Delete"/>
+        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding DisplayedHeader}"/>
+        <Button Grid.Row="0" Grid.Column="3" Command="{Binding DeleteCommand}" Content="Delete"/>
+        
         <TextBlock Grid.Row="1" Grid.Column="0" Text="Destination:"/>
         <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding DestinationPath, UpdateSourceTrigger=LostFocus}"
                      IsReadOnly="{Binding IsReadOnly}"/>

@@ -128,7 +128,10 @@ namespace Icarus.Services.Files
                 _logService.Information("Checking for common user errors.");
                 TTModel.CheckCommonUserErrors(importedModel, _logService.LoggingFunction);
 
-                var mod = new ModelMod(filePath, importedModel);
+                var mod = new ModelMod(filePath, importedModel)
+                {
+                    ModFileName = filePath
+                };
 
                 var retVal = new ModPack();
                 if (mod == null) return retVal;

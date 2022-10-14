@@ -14,6 +14,5 @@
 
         bool IsComplete();
         string ToVerboseString();
-
     }
 }

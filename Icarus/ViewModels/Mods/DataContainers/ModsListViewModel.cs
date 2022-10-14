@@ -29,6 +29,12 @@ namespace Icarus.ViewModels.Mods.DataContainers
         Dictionary<ModViewModel, List<NotifyPropertyChanged>> mtrlDictionary = new();
         Dictionary<ModViewModel, List<NotifyPropertyChanged>> texDictionary = new();
 
+        NotifyPropertyChanged _displayedMod;
+        public NotifyPropertyChanged DisplayedMod
+        {
+            get { return _displayedMod; }
+            set { _displayedMod = value; OnPropertyChanged(); }
+        }
         public ModsListViewModel(ModPack modPack, ViewModelService viewModelService)
         {
             ModPack = modPack;
@@ -37,7 +43,6 @@ namespace Icarus.ViewModels.Mods.DataContainers
             FilteredModsList = new(SimpleModsList);
             SetCanExport();
         }
-
         private int identifier = 0;
 
         bool _canExport = false;
@@ -82,6 +87,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
             if (modViewModel != null)
             {
                 Add(modViewModel);
+
                 return modViewModel;
             }
             return null;

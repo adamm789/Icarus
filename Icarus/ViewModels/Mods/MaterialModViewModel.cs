@@ -27,17 +27,6 @@ namespace Icarus.ViewModels.Mods
             ShaderInfoViewModel = new(_material);
             ColorSetViewModel = new(_material.ColorSetData);
 
-            var colorset = _material.ColorSetData;
-
-            // TODO: Figure out what Material.ColorSetDyeData is and how to display it
-            if (colorset.Count == 256)
-            {
-                for (var i = 0; i < 16; i++)
-                {
-                    ColorSetViewModels.Add(new ColorSetRowViewModel(i, colorset.GetRange(i * 16, 16)));
-                }
-            }
-
             SetCanExport();
         }
 
@@ -46,13 +35,6 @@ namespace Icarus.ViewModels.Mods
         {
             get { return _colorSetViewModel; }
             set { _colorSetViewModel = value; OnPropertyChanged(); }
-        }
-
-        ObservableCollection<ColorSetRowViewModel> _colorSetViewModels = new();
-        public ObservableCollection<ColorSetRowViewModel> ColorSetViewModels
-        {
-            get { return _colorSetViewModels; }
-            set { _colorSetViewModels = value; OnPropertyChanged(); }
         }
 
         public ShaderInfoViewModel ShaderInfoViewModel
@@ -69,7 +51,7 @@ namespace Icarus.ViewModels.Mods
 
         public void OpenMaterialEditor()
         {
-            _windowService.ShowWindow<ShaderInfoWindow>(this);
+            _windowService.Show<ShaderInfoWindow>(this);
         }
 
         protected override void RaiseDestinationPathChanged()
