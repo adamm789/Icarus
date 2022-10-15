@@ -27,20 +27,12 @@ namespace Icarus.ViewModels
         private LuminaService _luminaService;
         private IWindowService _windowService = ServiceManager.GetRequiredService<IWindowService>();
         private AppSettingsViewModel _appSettings;
-        private UserPreferencesViewModel _userPreferences;
 
         public MainWindowViewModel()
-        {
-            Init();
-        }
-
-        private void Init()
         {
             var modPack = new ModPack();
             _luminaService = ServiceManager.GetRequiredService<LuminaService>();
             UserPreferencesService = ServiceManager.GetRequiredService<IUserPreferencesService>();
-            //_userPreferences = new(_userPreferencesService);
-
 
             var _messageBoxService = ServiceManager.GetRequiredService<IMessageBoxService>();
             var _exportService = ServiceManager.GetRequiredService<ExportService>();
@@ -52,7 +44,6 @@ namespace Icarus.ViewModels
             var logService = ServiceManager.GetRequiredService<ILogService>();
 
             _logViewModel = new LogViewModel(logService);
-
             _appSettings = new(settingsService, _messageBoxService);
             _luminaService.TrySetLumina();
 

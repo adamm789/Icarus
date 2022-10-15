@@ -13,7 +13,8 @@ using xivModdingFramework.Models.DataContainers;
 namespace Icarus.ViewModels.Mods.Metadata
 {
     public class EqdpViewModel : NotifyPropertyChanged
-    {        public EqdpViewModel(Dictionary<XivRace, EquipmentDeformationParameter> dict)
+    {
+        public EqdpViewModel(Dictionary<XivRace, EquipmentDeformationParameter> dict)
         {
             foreach (var race in XivRaces.PlayableRaces)
             {

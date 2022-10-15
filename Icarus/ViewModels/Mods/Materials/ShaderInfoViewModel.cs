@@ -11,7 +11,7 @@ using System.Linq;
 using System.Windows.Data;
 using xivModdingFramework.Materials.DataContainers;
 
-namespace Icarus.ViewModels.Mods
+namespace Icarus.ViewModels.Mods.Materials
 {
     public class ShaderInfoViewModel : NotifyPropertyChanged
     {

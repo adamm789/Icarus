@@ -66,6 +66,12 @@ namespace Icarus.Services.GameFiles
             }
         }
 
+        public StainingTemplateFile GetStainingTemplateFile()
+        {
+            var bytes = _lumina.GetFile("chara/base_material/stainingtemplate.stm").Data;
+            return new StainingTemplateFile(bytes);
+        }
+
         // public async Task<IGameFile?> GetFileData<T>(IItem? itemArg = null) where T : IMod
 
         public async Task<IGameFile?> GetFileData(IItem? itemArg = null, Type? type = null)

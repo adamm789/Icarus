@@ -5,6 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Icarus.Views.Mods" 
              xmlns:mods="clr-namespace:Icarus.ViewModels.Mods"
+             xmlns:materials="clr-namespace:Icarus.ViewModels.Mods.Materials"
+             xmlns:materialviews="clr-namespace:Icarus.Views.Mods.Materials"
              xmlns:ui="clr-namespace:Icarus.UI"
              d:DataContext="{d:DesignInstance Type=mods:MaterialModViewModel}"
              xmlns:dd="urn:gong-wpf-dragdrop"
@@ -26,8 +28,8 @@
         </Grid.ColumnDefinitions>
         <Grid.Resources>
 
-            <DataTemplate DataType="{x:Type mods:ShaderInfoViewModel}">
-                <local:MaterialTexPathsView/>
+            <DataTemplate DataType="{x:Type materials:ShaderInfoViewModel}">
+                <materialviews:MaterialTexPathsView/>
             </DataTemplate>
             <ui:BooleanToVisibilityConverter 
                 x:Key="BooleanToVisibilityConverter"
@@ -54,7 +56,7 @@
             
             <TextBlock Grid.Row="0" Grid.Column="0" Text="Preset"/>
             <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding ShaderPresets}" SelectedValue="{Binding Preset}"/>
-            <local:MaterialTexPathsView Grid.Row="1" Grid.ColumnSpan="2"/>
+            <materialviews:MaterialTexPathsView Grid.Row="1" Grid.ColumnSpan="2"/>
         </Grid>
     </Grid>
 </UserControl>

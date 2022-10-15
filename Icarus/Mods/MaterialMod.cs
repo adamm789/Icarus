@@ -5,6 +5,7 @@ using Serilog;
 using System;
 using System.Collections.Generic;
 using xivModdingFramework.Materials.DataContainers;
+using xivModdingFramework.Materials.FileTypes;
 using xivModdingFramework.Textures.Enums;
 using Half = SharpDX.Half;
 
@@ -14,7 +15,6 @@ namespace Icarus.Mods
     public class MaterialMod : Mod, IMaterialGameFile
     {
         // TODO: Put related tex files "under" the parent material?
-
         public ShaderInfo ShaderInfo { get; set; } = new();
         public List<Half> ColorSetData { get; set; }
         public byte[] ColorSetDyeData { get; set; }
@@ -24,10 +24,13 @@ namespace Icarus.Mods
         public string DiffuseTexPath { get; set; }
         public string ReflectionTexPath { get; set; }
 
+        // StainingTemplateFile?
+
         public bool IsFurniture => ShaderInfo.Shader == MtrlShader.Furniture;
         public bool IsDyeableFurniture => ShaderInfo.Shader == MtrlShader.DyeableFurniture;
 
         public XivMtrl XivMtrl { get; set; }
+
 
         public MaterialMod()
         {
@@ -37,7 +40,18 @@ namespace Icarus.Mods
         public MaterialMod(List<Half> colorSetData, byte[]? colorSetExtraData)
         {
             ColorSetData = colorSetData;
-            ColorSetDyeData = colorSetExtraData;
+            if (colorSetExtraData == null)
+            {
+                ColorSetDyeData = new byte[32];
+                for (var i = 0; i < 32; i ++)
+                {
+                    ColorSetDyeData[i] = 0;
+                }
+            }
+            else
+            {
+                ColorSetDyeData = colorSetExtraData;
+            }
         }
 
         public MaterialMod(IGameFile gameFile, bool isInternal = false) : base(gameFile, isInternal)
@@ -194,6 +208,8 @@ namespace Icarus.Mods
         public XivMtrl GetMtrl()
         {
             UpdateMtrl();
+            XivMtrl.ColorSetData = ColorSetData;
+            XivMtrl.ColorSetDyeData = ColorSetDyeData;
             return XivMtrl;
         }
 
@@ -250,7 +266,7 @@ namespace Icarus.Mods
                 throw new ArgumentException($"ModData was not of MaterialGameFile. It was {gameFile.GetType()}.");
             }
             base.SetModData(materialGameFile);
-            Init(materialGameFile.XivMtrl);
+            //Init(materialGameFile.XivMtrl);
         }
     }
 }

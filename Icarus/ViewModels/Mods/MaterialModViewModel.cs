@@ -1,4 +1,5 @@
 ﻿using Icarus.Mods;
+using Icarus.Mods.Interfaces;
 using Icarus.Services;
 using Icarus.Services.GameFiles;
 using Icarus.Services.GameFiles.Interfaces;
@@ -6,6 +7,7 @@ using Icarus.Services.Interfaces;
 using Icarus.ViewModels.Mods.Materials;
 using Icarus.ViewModels.Util;
 using Icarus.Views.Mods;
+using Icarus.Views.Mods.Materials;
 using System.Collections.ObjectModel;
 using xivModdingFramework.Materials.DataContainers;
 
@@ -24,11 +26,15 @@ namespace Icarus.ViewModels.Mods
         {
             _material = mod;
             _windowService = windowService;
+            var stainingTemplateFile = gameFileDataService.GetStainingTemplateFile();
+
             ShaderInfoViewModel = new(_material);
-            ColorSetViewModel = new(_material.ColorSetData);
+            ColorSetViewModel = new(_material, stainingTemplateFile);
 
             SetCanExport();
         }
+
+        // TODO: Update MaterialMod with color set stuff
 
         ColorSetViewModel _colorSetViewModel;
         public ColorSetViewModel ColorSetViewModel

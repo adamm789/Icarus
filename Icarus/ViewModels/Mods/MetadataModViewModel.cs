@@ -63,7 +63,6 @@ namespace Icarus.ViewModels.Mods
                 _metadataMod.GmpEntry = null;
             }
 
-
             return _metadataMod;
         }
 

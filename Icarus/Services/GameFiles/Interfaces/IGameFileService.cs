@@ -5,11 +5,12 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using xivModdingFramework.General.Enums;
+using xivModdingFramework.Materials.FileTypes;
 
 namespace Icarus.Services.GameFiles.Interfaces
 {
 
-    public interface IGameFileService : IServiceProvider, IModelFileService, IMaterialFileService, ITextureFileService
+    public interface IGameFileService : IServiceProvider, IModelFileService, IMaterialFileService, ITextureFileService, IMetadataFileService
     {
         IItem? GetItem(IItem? itemArg = null);
         Task<IGameFile?> GetFileData(IItem? itemArg = null, Type? type = null);
@@ -19,11 +20,6 @@ namespace Icarus.Services.GameFiles.Interfaces
         /// <param name="path"></param>
         /// <returns></returns>
         Task<IGameFile?> TryGetFileData(string path, Type? callingType = null, string name = "");
-
-        // TODO: TryGetMetadata
-        // TODO: GetMetadata
-        Task<MetadataMod> TryGetMetadata(string path, string? itemName = null);
-        Task<MetadataMod> GetMetadata(IItem? itemArg = null);
 
         /// <summary>
         /// Gets a list of races that have a unique mdl file of the given item

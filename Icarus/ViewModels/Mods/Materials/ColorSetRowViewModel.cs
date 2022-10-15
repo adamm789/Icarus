@@ -1,37 +1,37 @@
-﻿using Icarus.ViewModels.Util;
+﻿using Icarus.Mods;
+using Icarus.ViewModels.Util;
+using Lumina.Data.Parsing;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Windows.Media;
+using xivModdingFramework.Materials.DataContainers;
+using xivModdingFramework.Materials.FileTypes;
 using Color = SharpDX.Color;
 using Half = SharpDX.Half;
 using WindowsColor = System.Windows.Media.Color;
 
-namespace Icarus.ViewModels.Mods
+namespace Icarus.ViewModels.Mods.Materials
 {
     public class ColorSetRowViewModel : NotifyPropertyChanged
     {
         List<Half> _colorsetData;
-        public ColorSetRowViewModel(int rowNumber, List<Half> values)
+        public string ToolTip { get; }
+        public ColorSetRowViewModel(int rowNumber, MaterialMod material, StainingTemplateFile stainingTemplateFile)
         {
-            _colorsetData = values;
             RowNumber = rowNumber;
-            Diffuse = new(GetColor(GetColorSetDataRange(values, 0)));
-            Specular = new(GetColor(GetColorSetDataRange(values, 4)));
-            Emissive = new(GetColor(GetColorSetDataRange(values, 8)));
-            Red = new(GetColor(GetColorSetDataRange(values, 12)));
-        }
-        public ColorSetRowViewModel(List<Color> values)
-        {
-            if (values.Count != 4)
-            {
-                throw new ArgumentException("Could not create ColorSetRow. Length was not four.");
-            }
+            _colorsetData = material.ColorSetData;
 
-            Diffuse = new(GetColor(values[0]));
-            Specular = new(GetColor(values[1]));
-            Emissive = new(GetColor(values[2]));
-            Red = new(GetColor(values[3]));
+            var currRange = _colorsetData.GetRange(rowNumber * 16, 16);
+
+            Diffuse = new(GetColor(GetColorSetDataRange(currRange, 0)));
+            Specular = new(GetColor(GetColorSetDataRange(currRange, 4)));
+            Emissive = new(GetColor(GetColorSetDataRange(currRange, 8)));
+
+            DyeDataViewModel = new ColorSetRowDyeDataViewModel(rowNumber, material, stainingTemplateFile);
         }
+
+        public ColorSetRowDyeDataViewModel DyeDataViewModel { get; }
 
         private Color GetColorSetDataRange(List<Half> values, int index)
         {
@@ -44,12 +44,7 @@ namespace Icarus.ViewModels.Mods
             {
                 throw new ArgumentException("List was not of length four.");
             }
-            return new Color(values[0], values[1], values[2], values[3]);
-        }
-
-        public List<Half> GetList()
-        {
-            return _colorsetData;
+            return new Color(values[0], values[1], values[2], 255);
         }
 
         public WindowsColor GetColor(Color c)
@@ -57,44 +52,55 @@ namespace Icarus.ViewModels.Mods
             return WindowsColor.FromArgb(c.A, c.R, c.G, c.B);
         }
 
-        // TODO: Get an edited Colorset row
-        public List<Color> GetRow()
-        {
-            var retVal = new List<Color>();
-            //retVal.Add(new SharpDXColor(Diffuse.Color));
-
-            return retVal;
-        }
-
         SolidColorBrush _diffuse;
         public SolidColorBrush Diffuse
         {
             get { return _diffuse; }
-            set { _diffuse = value; OnPropertyChanged(); }
+            set {
+                _diffuse = value;
+                OnPropertyChanged();
+                _colorsetData[(RowNumber * 16) + 0] = _diffuse.Color.R;
+                _colorsetData[(RowNumber * 16) + 1] = _diffuse.Color.G;
+                _colorsetData[(RowNumber * 16) + 2] = _diffuse.Color.B;
+            }
         }
         SolidColorBrush _specular;
         public SolidColorBrush Specular
         {
             get { return _specular; }
-            set { _specular = value; OnPropertyChanged(); }
+            set {
+                _specular = value; 
+                OnPropertyChanged();
+                _colorsetData[(RowNumber * 16) + 4] = _specular.Color.R;
+                _colorsetData[(RowNumber * 16) + 5] = _specular.Color.G;
+                _colorsetData[(RowNumber * 16) + 6] = _specular.Color.B;
+            }
         }
         SolidColorBrush _emissive;
         public SolidColorBrush Emissive
         {
             get { return _emissive; }
-            set { _emissive = value; OnPropertyChanged(); }
+            set { 
+                _emissive = value; 
+                OnPropertyChanged();
+                _colorsetData[(RowNumber * 16) + 8] = _emissive.Color.R;
+                _colorsetData[(RowNumber * 16) + 9] = _emissive.Color.G;
+                _colorsetData[(RowNumber * 16) + 10] = _emissive.Color.B;
+            }
         }
-        SolidColorBrush _red;
-        public SolidColorBrush Red
-        {
-            get { return _red; }
-            set { _red = value; OnPropertyChanged(); }
-        }
+
         int _rowNumber;
         public int RowNumber
         {
             get { return _rowNumber; }
             set { _rowNumber = value; OnPropertyChanged(); }
+        }
+
+        bool _hasDyeData = false;
+        public bool HasDyeData
+        {
+            get { return _hasDyeData; }
+            set { _hasDyeData = value; OnPropertyChanged(); }
         }
     }
 }

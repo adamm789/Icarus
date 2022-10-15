@@ -5,10 +5,11 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Icarus.Views.Mods"
              xmlns:mods="clr-namespace:Icarus.ViewModels.Mods"
-             d:DataContext="{d:DesignInstance Type=mods:ColorSetRowViewModel}"
+             xmlns:materials="clr-namespace:Icarus.ViewModels.Mods.Materials"
+             d:DataContext="{d:DesignInstance Type=materials:ColorSetRowViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="250" d:DesignWidth="300">
-    <Grid ToolTip="{Binding RowNumber}">
+    <Grid ToolTip="{Binding ToolTip}">
         <Grid.Resources>
             <Style TargetType="{x:Type Label}">
                 <Setter Property="BorderBrush" Value="Black"/>
@@ -21,7 +22,6 @@
             <Label Background="{Binding Diffuse}"/>
             <Label Background="{Binding Specular}"/>
             <Label Background="{Binding Emissive}"/>
-            <Label Background="{Binding Red}"/>
         </StackPanel>
     </Grid>
 </UserControl>

@@ -1,4 +1,4 @@
-﻿<Window x:Class="Icarus.Views.Mods.ShaderInfoWindow"
+﻿<Window x:Class="Icarus.Views.Mods.Materials.ShaderInfoWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -14,7 +14,7 @@
         Height="250" Width="500"
         MinHeight="350" MinWidth="500"
         FontSize="14"
-        Title="{Binding DestinationPath}">
+        Title="{Binding DestinationName}">
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -71,11 +71,11 @@
             <TextBlock Grid.Row="2" Grid.Column="0" Text="Backfaces"/>
             <ComboBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding BackfaceValues}" SelectedValue="{Binding Backfaces}"/>
 
-            <local:MaterialTexPathsView Grid.Row="3" Grid.ColumnSpan="4"/>
+            <materialviews:MaterialTexPathsView Grid.Row="3" Grid.ColumnSpan="4"/>
 
         </Grid>
-        <ContentControl Grid.Row="4" Grid.ColumnSpan="4" Content="{Binding ColorSetViewModel}">
-        </ContentControl>
+        <ContentControl Grid.Row="4" Grid.ColumnSpan="4" Content="{Binding ColorSetViewModel}"/>
+
     </Grid>
 
 </Window>

@@ -11,10 +11,21 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <Grid.Resources>
-            <DataTemplate DataType="{x:Type mods:ColorSetRowViewModel}">
+            <DataTemplate DataType="{x:Type materials:ColorSetRowViewModel}">
                 <local:ColorSetRowView/>
             </DataTemplate>
+            <DataTemplate DataType="{x:Type materials:ColorSetRowDyeDataViewModel}">
+                <local:ColorSetRowDyeDataView/>
+            </DataTemplate>
         </Grid.Resources>
-        <ListBox ItemsSource="{Binding ColorSetRows}"/>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <ComboBox Grid.Column="0" ItemsSource="{Binding ColorSetRows}" SelectedIndex="{Binding SelectedIndex}">
+
+        </ComboBox>
+        <ContentControl Grid.Column="1" Content="{Binding DisplayedDyeData}"/>
     </Grid>
 </UserControl>

@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Input;
 
-namespace Icarus.Views.Mods
+namespace Icarus.Views.Mods.Materials
 {
     /// <summary>
     /// Interaction logic for MaterialEditorWindow.xaml
