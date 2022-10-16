@@ -191,8 +191,6 @@ namespace Icarus.Services.GameFiles
         #region Models
         public IModelGameFile? TryGetModelFileData(string path, string itemName = "")
         {
-            //var mdl = _lumina.GetFile<MdlFile>(path);
-            //var file = _lumina.GetFileMetadata(path);
             try
             {
                 (var model, var xivMdl) = TryGetOriginalModel(path);
@@ -325,11 +323,10 @@ namespace Icarus.Services.GameFiles
             XivMtrl? xivMtrl;
             string path = "";
             var category = "";
-            // TODO: Material when item is not equipment
-            if (item is IGear equip)
+            if (item is IGear gear)
             {
-                xivMtrl = await mtrl.GetMtrlData(equip.GetMtrlPath());
-                category = equip.Slot.ToString();
+                xivMtrl = await mtrl.GetMtrlData(gear.GetMtrlPath());
+                category = gear.Slot.ToString();
             }
             else
             {

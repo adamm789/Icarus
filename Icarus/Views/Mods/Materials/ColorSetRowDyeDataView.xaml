@@ -9,41 +9,70 @@
              d:DataContext="{d:DesignInstance Type=material:ColorSetRowDyeDataViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-        <StackPanel>
-            <CheckBox IsChecked="{Binding UseDiffuse}" Content="Use Diffuse"/>
-            <CheckBox IsChecked="{Binding UseSpecular}" Content="Use Specular"/>
-            <CheckBox IsChecked="{Binding UseEmissive}" Content="Use Emissive"/>
-            <CheckBox IsChecked="{Binding UseGloss}" Content="Use Gloss"/>
-            <CheckBox IsChecked="{Binding UseSpecPower}" Content="Use Specular Power"/>
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Tile ID"/>
-                <TextBox Text="{Binding TileId}"/>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Gloss"/>
-                <TextBox Text="{Binding GlossBox}"/>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Specular Power"/>
-                <TextBox Text="{Binding SpecularPower}"/>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="TileCountX"/>
-                <TextBox Text="{Binding TileCountX}"/>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="TileCountY"/>
-                <TextBox Text="{Binding TileCountY}"/>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="TileSkewX"/>
-                <TextBox Text="{Binding TileSkewX}"/>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="TileSkewY"/>
-                <TextBox Text="{Binding TileSkewY}"/>
-            </StackPanel>
+    <StackPanel>
+        <Label Content="{Binding RowNumber}"/>
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Text="Specular Power"/>
+            <TextBox Text="{Binding SpecularPower}"/>
         </StackPanel>
-    </Grid>
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Text="Gloss"/>
+            <TextBox Text="{Binding GlossBox}"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Text="Tile ID"/>
+            <TextBox Text="{Binding TileId}"/>
+        </StackPanel>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="TileCountX"/>
+                    <TextBox Text="{Binding TileCountX}"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="TileSkewX"/>
+                    <TextBox Text="{Binding TileSkewX}"/>
+                </StackPanel>
+            </StackPanel>
+            <StackPanel Grid.Column="1">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="TileCountY"/>
+                    <TextBox Text="{Binding TileCountY}"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="TileSkewY"/>
+                    <TextBox Text="{Binding TileSkewY}"/>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <ComboBox Grid.Row="0" Grid.ColumnSpan="2"
+                    ItemsSource="{Binding Templates}" SelectedValue="{Binding DyeTemplateId}"/>
+            <CheckBox Grid.Row="1" Grid.Column="0"
+                    IsChecked="{Binding UseDiffuse}" Content="Use Diffuse"/>
+            <CheckBox Grid.Row="1" Grid.Column="1"
+                    IsChecked="{Binding UseSpecular}" Content="Use Specular"/>
+            <CheckBox Grid.Row="2" Grid.Column="0"
+                    IsChecked="{Binding UseEmissive}" Content="Use Emissive"/>
+            <CheckBox Grid.Row="2" Grid.Column="1"
+                    IsChecked="{Binding UseGloss}" Content="Use Gloss"/>
+            <CheckBox Grid.Row="3"
+                    IsChecked="{Binding UseSpecPower}" Content="Use Specular Power"/>
+        </Grid>
+    </StackPanel>
 </UserControl>

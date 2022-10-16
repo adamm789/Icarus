@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Icarus.Views.Mods.Materials"
              xmlns:materials="clr-namespace:Icarus.ViewModels.Mods.Materials"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:mods="clr-namespace:Icarus.ViewModels.Mods"
              d:DataContext="{d:DesignInstance Type=materials:ColorSetViewModel}"
              mc:Ignorable="d" 
@@ -23,9 +24,7 @@
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
-        <ComboBox Grid.Column="0" ItemsSource="{Binding ColorSetRows}" SelectedIndex="{Binding SelectedIndex}">
-
-        </ComboBox>
+        <ListView Grid.Column="0" ItemsSource="{Binding ColorSetRows}" SelectedValue="{Binding SelectedRow}"/>
         <ContentControl Grid.Column="1" Content="{Binding DisplayedDyeData}"/>
     </Grid>
 </UserControl>

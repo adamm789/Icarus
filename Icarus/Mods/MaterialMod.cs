@@ -98,9 +98,15 @@ namespace Icarus.Mods
                 ShaderInfo = XivMtrl.GetShaderInfo();
             }
 
+            UpdatePaths(xivMtrl);
+        }
+
+        private void UpdatePaths(XivMtrl xivMtrl)
+        {
             Path = xivMtrl.MTRLPath;
 
-            NormalTexPath = xivMtrl.GetMapInfo(XivTexType.Normal, false).Path;
+            //NormalTexPath = xivMtrl.GetMapInfo(XivTexType.Normal, false).Path;
+            NormalTexPath = XivPathParser.GetTexPathFromMtrl(Path, XivTexType.Normal);
             SpecularTexPath = XivPathParser.GetTexPathFromMtrl(Path, XivTexType.Specular);
             MultiTexPath = XivPathParser.GetTexPathFromMtrl(Path, XivTexType.Multi);
             DiffuseTexPath = XivPathParser.GetTexPathFromMtrl(Path, XivTexType.Diffuse);
@@ -150,11 +156,6 @@ namespace Icarus.Mods
             XivMtrl.MTRLPath = Path;
 
             Log.Debug("Calling SetShaderInfo. InvalidOperationExceptions will probably occur and can probably be ignored.");
-
-            // TODO: Maybe have to re-assign these?
-            var colorSetCount = XivMtrl.ColorSetCount;
-            var colorSetData = XivMtrl.ColorSetData;
-            var colorSetDyeData = XivMtrl.ColorSetDyeData;
 
             XivMtrl.SetShaderInfo(ShaderInfo, true);
             Log.Debug("Done calling SetShaderInfo.");
@@ -266,6 +267,7 @@ namespace Icarus.Mods
                 throw new ArgumentException($"ModData was not of MaterialGameFile. It was {gameFile.GetType()}.");
             }
             base.SetModData(materialGameFile);
+            UpdatePaths(materialGameFile.XivMtrl);
             //Init(materialGameFile.XivMtrl);
         }
     }

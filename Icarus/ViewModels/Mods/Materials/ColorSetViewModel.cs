@@ -24,6 +24,7 @@ namespace Icarus.ViewModels.Mods.Materials
                 var row = new ColorSetRowViewModel(i, material, stainingTemplateFile);
                 ColorSetRows.Add(row);
             }
+            SelectedRow = ColorSetRows[0];
         }
 
         int _selectedIndex;
@@ -48,13 +49,6 @@ namespace Icarus.ViewModels.Mods.Materials
                 DisplayedDyeData = value.DyeDataViewModel;
             }
         }
-
-        DelegateCommand _onSelected;
-        public DelegateCommand OnSelected
-        {
-            get { return _onSelected ??= new DelegateCommand(_ => SelectedIndex=0); }
-        }
-
 
         ColorSetRowDyeDataViewModel? _displayedDyeData = null;
         public ColorSetRowDyeDataViewModel? DisplayedDyeData

@@ -95,12 +95,5 @@ namespace Icarus.ViewModels.Mods.Materials
             get { return _rowNumber; }
             set { _rowNumber = value; OnPropertyChanged(); }
         }
-
-        bool _hasDyeData = false;
-        public bool HasDyeData
-        {
-            get { return _hasDyeData; }
-            set { _hasDyeData = value; OnPropertyChanged(); }
-        }
     }
 }

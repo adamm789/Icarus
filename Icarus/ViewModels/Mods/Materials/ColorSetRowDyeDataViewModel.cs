@@ -16,15 +16,17 @@ namespace Icarus.ViewModels.Mods.Materials
     public class ColorSetRowDyeDataViewModel : NotifyPropertyChanged
     {
         List<Half> _colorSetData;
-        ushort _dyeTemplateId;
         BitArray arr = new BitArray(16);
 
         MaterialMod _materialMod;
 
         ushort _dyeInfo;
         int _rowNumber;
+
+        public int RowNumber { get; }
         public ColorSetRowDyeDataViewModel(int rowNumber, MaterialMod material, StainingTemplateFile dyeTemplateFile)
         {
+            RowNumber = rowNumber;
             _rowNumber = rowNumber;
             _materialMod = material;
             _colorSetData = _materialMod.ColorSetData;
@@ -34,34 +36,86 @@ namespace Icarus.ViewModels.Mods.Materials
                 _materialMod.ColorSetDyeData = new byte[32];
             }
 
-            _dyeInfo = BitConverter.ToUInt16(_materialMod.ColorSetDyeData, rowNumber);
+            _dyeInfo = BitConverter.ToUInt16(_materialMod.ColorSetDyeData, rowNumber * 2);
 
             var flags = (_dyeInfo & 0x1F);
+
             UseDiffuse = (flags & 0x01) > 0;
             UseSpecular = (flags & 0x02) > 0;
             UseEmissive = (flags & 0x04) > 0;
             UseGloss = (flags & 0x08) > 0;
             UseSpecPower = (flags & 0x10) > 0;
 
-            _dyeTemplateId = (ushort)(_dyeInfo >> 5);
-            var template = dyeTemplateFile.GetTemplate(_dyeTemplateId);
+            //var template = dyeTemplateFile.GetTemplate(_dyeTemplateId);
+
+            foreach (var t in dyeTemplateFile.GetKeys())
+            {
+                Templates.Add(Convert.ToString(t));
+            }
+
+            Templates.Insert(0, "None");
+            var val = (ushort)(_dyeInfo >> 5);
+
+            if (val == 0)
+            {
+                DyeTemplateId = "None";
+            }
+            else
+            {
+                DyeTemplateId = Convert.ToString(val);
+            }
 
             SpecularPower = _colorSetData[(_rowNumber * 16) + 3];
             GlossBox = _colorSetData[(_rowNumber * 16) + 7];
-            TileId = _colorSetData[(_rowNumber * 16) + 11] * 64;
+            TileId = (int)(_colorSetData[(_rowNumber * 16) + 11] * 64);
 
             TileCountX = _colorSetData[(_rowNumber * 16) + 12];
             TileSkewX = _colorSetData[(_rowNumber * 16) + 13];
             TileSkewY = _colorSetData[(_rowNumber * 16) + 14];
             TileCountY = _colorSetData[(_rowNumber * 16) + 15];
-            
+        }
+
+        List<string> _templates = new();
+        public List<string> Templates
+        {
+            get { return _templates; }
+            set { _templates = value; OnPropertyChanged(); }
+        }
+
+        string _dyeTemplateId;
+        public string DyeTemplateId
+        {
+            get { return _dyeTemplateId; }
+            set
+            {
+                _dyeTemplateId = value;
+                OnPropertyChanged();
+                BitArray b;
+
+                if (value == "None")
+                {
+                    b = new BitArray(BitConverter.GetBytes((ushort)0));
+                }
+                else
+                {
+                    var val = Convert.ToUInt16(value);
+                    b = new BitArray(BitConverter.GetBytes((ushort)(val << 5)));
+                }
+                if (b.Length == 16)
+                {
+                    arr.Or(b);
+                    arr.CopyTo(_materialMod.ColorSetDyeData, _rowNumber * 2);
+                }
+                //_materialMod.ColorSetDyeData[_rowNumber * 2] = (byte)value;
+            }
         }
 
         bool _useDiffuse = false;
         public bool UseDiffuse
         {
             get { return _useDiffuse; }
-            set {
+            set
+            {
                 _useDiffuse = value;
                 OnPropertyChanged();
                 arr[0] = value;
@@ -73,7 +127,8 @@ namespace Icarus.ViewModels.Mods.Materials
         public bool UseSpecular
         {
             get { return _useSpecular; }
-            set {
+            set
+            {
                 _useSpecular = value;
                 OnPropertyChanged();
                 arr[1] = value;
@@ -85,10 +140,11 @@ namespace Icarus.ViewModels.Mods.Materials
         public bool UseEmissive
         {
             get { return _useEmissive; }
-            set {
+            set
+            {
                 _useEmissive = value;
                 OnPropertyChanged();
-                arr[3] = value;
+                arr[2] = value;
                 arr.CopyTo(_materialMod.ColorSetDyeData, _rowNumber * 2);
             }
         }
@@ -97,10 +153,11 @@ namespace Icarus.ViewModels.Mods.Materials
         public bool UseGloss
         {
             get { return _useGloss; }
-            set {
-                _useGloss = value; 
+            set
+            {
+                _useGloss = value;
                 OnPropertyChanged();
-                arr[7] = value;
+                arr[3] = value;
                 arr.CopyTo(_materialMod.ColorSetDyeData, _rowNumber * 2);
             }
         }
@@ -109,10 +166,11 @@ namespace Icarus.ViewModels.Mods.Materials
         public bool UseSpecPower
         {
             get { return _useSpecPower; }
-            set {
+            set
+            {
                 _useSpecPower = value;
                 OnPropertyChanged();
-                arr[9] = value;
+                arr[4] = value;
                 arr.CopyTo(_materialMod.ColorSetDyeData, _rowNumber * 2);
             }
         }
@@ -127,8 +185,8 @@ namespace Icarus.ViewModels.Mods.Materials
             get { return _colorSetData[(_rowNumber * 16) + 7]; }
             set { _colorSetData[(_rowNumber * 16) + 7] = value; OnPropertyChanged(); }
         }
-        float _tileId;
-        public float TileId
+        int _tileId;
+        public int TileId
         {
             get { return _tileId; }
             set

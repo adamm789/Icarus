@@ -58,6 +58,7 @@ namespace Icarus.ViewModels.Import
 
                     CanImportMdl = true;
                     CanImportMtrl = true;
+                    CanImportMeta = true;
                 }
                 else
                 {
@@ -91,11 +92,13 @@ namespace Icarus.ViewModels.Import
                 {
                     CanImportMdl = true;
                     CanImportMtrl = true;
+                    CanImportMeta = true;
                 }
                 else
                 {
                     CanImportMdl = false;
                     CanImportMtrl = false;
+                    CanImportMeta = false;
                 }
             }
         }
@@ -178,6 +181,13 @@ namespace Icarus.ViewModels.Import
         {
             get { return _canImportMtrl; }
             set { _canImportMtrl = value; OnPropertyChanged(); }
+        }
+
+        bool _canImportMeta = false;
+        public bool CanImportMeta
+        {
+            get { return _canImportMeta; }
+            set { _canImportMeta = value; OnPropertyChanged(); }
         }
 
         DelegateCommand _getVanillaModel;
