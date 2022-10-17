@@ -261,12 +261,10 @@ namespace Icarus.ViewModels.Mods.Materials
                 _transparency = value;
                 if (value == enabled)
                 {
-                    Log.Verbose("Transparency enabed");
                     ShaderInfo.TransparencyEnabled = true;
                 }
                 else if (value == disabled)
                 {
-                    Log.Verbose("Transparency disabled");
                     ShaderInfo.TransparencyEnabled = false;
                 }
             }

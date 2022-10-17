@@ -76,6 +76,8 @@ namespace Icarus.Mods
             {
                 Log.Verbose($"Initializing mtrl: {xivMtrl.MTRLPath}");
                 XivMtrl = xivMtrl;
+
+                // Keep any existing colorset data. replace if it does not exist
                 if (ColorSetData == null)
                 {
                     Log.Verbose("Keeping old colorset data.");
@@ -83,6 +85,7 @@ namespace Icarus.Mods
                 }
                 else
                 {
+                    Log.Verbose("Setting colorset data.");
                     XivMtrl.ColorSetData = ColorSetData;
                 }
 
@@ -93,6 +96,7 @@ namespace Icarus.Mods
                 }
                 else
                 {
+                    Log.Verbose("Settings colorset dye data.");
                     XivMtrl.ColorSetDyeData = ColorSetDyeData;
                 }
                 ShaderInfo = XivMtrl.GetShaderInfo();
@@ -267,8 +271,8 @@ namespace Icarus.Mods
                 throw new ArgumentException($"ModData was not of MaterialGameFile. It was {gameFile.GetType()}.");
             }
             base.SetModData(materialGameFile);
-            UpdatePaths(materialGameFile.XivMtrl);
-            //Init(materialGameFile.XivMtrl);
+            //UpdatePaths(materialGameFile.XivMtrl);
+            Init(materialGameFile.XivMtrl);
         }
     }
 }
