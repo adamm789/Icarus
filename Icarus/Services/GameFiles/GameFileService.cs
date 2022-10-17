@@ -30,17 +30,20 @@ namespace Icarus.Services.GameFiles
         readonly IItemListService _itemListService;
         readonly ILogService _logService;
         readonly ISettingsService _settingsService;
-        readonly string _gameDirectory;
-        readonly DirectoryInfo _frameworkGameDirectory;
+        DirectoryInfo _frameworkGameDirectory;
 
         public GameFileService(LuminaService luminaService, IItemListService itemListService, ISettingsService settingsService, ILogService logService) : base(luminaService)
         {
             _itemListService = itemListService;
             _settingsService = settingsService;
-            _gameDirectory = settingsService.GameDirectoryLumina;
             _logService = logService;
+        }
 
-            _frameworkGameDirectory = new(Path.Combine(_gameDirectory, "ffxiv"));
+        protected override void OnLuminaSet()
+        {
+            base.OnLuminaSet();
+            var gameDirectory = _settingsService.GameDirectoryLumina;
+            _frameworkGameDirectory = new(Path.Combine(gameDirectory, "ffxiv"));
         }
 
         public IItem? GetItem(IItem? item = null)
