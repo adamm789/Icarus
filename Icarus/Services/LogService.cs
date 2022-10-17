@@ -71,7 +71,9 @@ namespace Icarus.Services
                 .CreateLogger();
 #else
             Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Information().WriteTo.File(logPath, rollingInterval: RollingInterval.Day, rollOnFileSizeLimit: true, retainedFileCountLimit: 7)
+                .MinimumLevel.Information()
+                .WriteTo.File(logPath, rollingInterval: RollingInterval.Day, rollOnFileSizeLimit: true, retainedFileCountLimit: 7)
+                .WriteTo.Sink(Sink)
                 .CreateLogger();
 #endif
 

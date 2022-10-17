@@ -27,7 +27,7 @@ namespace Icarus.Util
         internal async Task<string> ExportToSimple(ModPack modPack, string outputDir, bool toPmp = true)
         {
             _logService.Information("Starting export to simple penumbra modpack.");
-            var tempDir = Path.Combine(outputDir, "temp");
+            var tempDir = GetTempDirectory(outputDir);
 
             if (Directory.Exists(tempDir))
             {

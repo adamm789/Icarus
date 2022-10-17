@@ -7,6 +7,7 @@ using Lumina;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Security;
 using System.Threading.Tasks;
 using TeximpNet;
 using TeximpNet.Compression;
@@ -100,6 +101,19 @@ namespace Icarus.Util
 
             _logService.Warning($"Currently unknown export method. Skipping {mod.Name}.");
             return Array.Empty<byte>();
+        }
+
+        protected string GetTempDirectory(string outputDir)
+        {
+            try
+            {
+                return Path.Combine(Path.GetTempPath(), "temp");
+            }
+            catch (SecurityException ex)
+            {
+                _logService.Error(ex, "Could not get temporary path.");
+                return Path.Combine(outputDir, "temp");
+            }
         }
 
         protected async Task<byte[]> WriteMetadataToBytes(MetadataMod mod)

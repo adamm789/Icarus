@@ -73,6 +73,11 @@ namespace Icarus.ViewModels.Export
                     success = false;
                     Log.Warning("Export was cancelled.");
                 }
+                catch (Exception ex)
+                {
+                    success = false;
+                    Log.Error(ex, "Export threw an exception.");
+                }
             }
             if (success)
             {

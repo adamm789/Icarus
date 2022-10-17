@@ -43,18 +43,7 @@ namespace Icarus.Util
             return path;
         }
 
-        private string GetTempDirectory(string outputDir)
-        {
-            try
-            {
-                return Path.Combine(Path.GetTempPath(), "temp");
-            }
-            catch (SecurityException ex)
-            {
-                _logService.Error(ex, "Could not get temporary path.");
-                return Path.Combine(outputDir, "temp");
-            }
-        }
+
 
         // TODO: Export to Standard...?
 
