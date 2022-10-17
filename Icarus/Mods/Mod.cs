@@ -1,5 +1,7 @@
 ﻿using Icarus.Mods.GameFiles;
 using Icarus.Mods.Interfaces;
+using System;
+using SystemPath = System.IO.Path;
 
 namespace Icarus.Mods
 {
@@ -24,11 +26,25 @@ namespace Icarus.Mods
 
             if (isInternal)
             {
-                ModFileName = $"{gameFile.Path} ({gameFile.Name})";
+                string fileName;
+                try
+                {
+                    fileName = SystemPath.GetFileNameWithoutExtension(gameFile.Path);
+                }
+                catch (ArgumentException)
+                {
+                    fileName = gameFile.Path;
+                }
+                ModFileName = $"{fileName} ({gameFile.Name})";
                 ModFilePath = gameFile.Path;
             }
 
             SetModData(gameFile);
+        }
+
+        public object Clone()
+        {
+            return MemberwiseClone();
         }
 
         public virtual bool IsComplete()

@@ -241,7 +241,9 @@ namespace Icarus.Services.Files
 
                         Path = mods.FullPath,
                         Name = mods.Name,
-                        Category = mods.Category
+                        Category = mods.Category,
+
+                        TexType = type
                     };
                 }
                 catch (Exception ex)

@@ -12,8 +12,8 @@ namespace Icarus.Services.Interfaces
     public interface IItemListService : INotifyPropertyChanged, IServiceProvider
     {
         bool IsLoaded { get; }
-        List<IItem> Search(string str);
-        List<IItem> Search(string str, string variantCode);
+        List<IItem> Search(string str, bool exactMatch = false);
+        List<IItem> Search(string str, string variantCode, bool exactMatch = false);
         public bool TrySearch(string path);
         public Dictionary<string, SortedDictionary<string, IItem>> GetAllItems();
         public IItem? SelectedItem { get; set; }

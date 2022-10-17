@@ -20,7 +20,8 @@ namespace Icarus.ViewModels.Mods.DataContainers
         public string SearchTerm
         {
             get { return _searchTerm; }
-            set { 
+            set
+            {
                 _searchTerm = value;
                 OnPropertyChanged();
                 Search(value);
@@ -49,12 +50,15 @@ namespace Icarus.ViewModels.Mods.DataContainers
 
         private void UpdateHeaders()
         {
+            
             AllModsHeader = $"All ({SimpleModsList.Count})";
+            
             ModelModsHeader = $"Models ({ModelMods.Cast<ModViewModel>().Count()})";
             MaterialModsHeader = $"Materials ({MaterialMods.Cast<ModViewModel>().Count()})";
             TextureModsHeader = $"Textures({TextureMods.Cast<ModViewModel>().Count()})";
             MetadataModsHeader = $"Metadata({MetadataMods.Cast<ModViewModel>().Count()})";
             ReadOnlyModsHeader = $"ReadOnly ({ReadonlyMods.Cast<ModViewModel>().Count()})";
+            
         }
 
         string _allModsHeader = "";
@@ -99,12 +103,13 @@ namespace Icarus.ViewModels.Mods.DataContainers
             set { _metadataModsHeader = value; OnPropertyChanged(); }
         }
 
-        private bool FilterFunction<T>(object obj) where T: ModViewModel
+        private bool FilterFunction<T>(object obj) where T : ModViewModel
         {
             if (obj == null)
                 return false;
             var correctType = obj is T;
-            if (String.IsNullOrWhiteSpace(SearchTerm)) {
+            if (String.IsNullOrWhiteSpace(SearchTerm))
+            {
                 return correctType;
             }
             else
@@ -159,8 +164,10 @@ namespace Icarus.ViewModels.Mods.DataContainers
         {
             get
             {
-                _modelMods ??= new CollectionViewSource { Source = SimpleModsList }.View;
-                _modelMods.Filter = m => FilterFunction<ModelModViewModel>(m);
+                _modelMods = new CollectionViewSource { Source = SimpleModsList }.View;
+
+                //_modelMods.Filter = m => FilterFunction<ModelModViewModel>(m);
+                _modelMods.Filter = m => m is ModelModViewModel;
                 return _modelMods;
             }
         }
@@ -170,8 +177,8 @@ namespace Icarus.ViewModels.Mods.DataContainers
         {
             get
             {
-                _readonlyMods ??= new CollectionViewSource { Source = SimpleModsList }.View;
-                _readonlyMods.Filter = m => FilterFunction<ReadOnlyModViewModel>(m);
+                _readonlyMods = new CollectionViewSource { Source = SimpleModsList }.View;
+                _readonlyMods.Filter = m => m is ReadOnlyModViewModel;
                 return _readonlyMods;
             }
         }
@@ -181,8 +188,8 @@ namespace Icarus.ViewModels.Mods.DataContainers
         {
             get
             {
-                _materialMods ??= new CollectionViewSource { Source = SimpleModsList }.View;
-                _materialMods.Filter = m => FilterFunction<MaterialModViewModel>(m);
+                _materialMods = new CollectionViewSource { Source = SimpleModsList }.View;
+                _materialMods.Filter = m => m is MaterialModViewModel;
                 return _materialMods;
             }
         }
@@ -192,8 +199,8 @@ namespace Icarus.ViewModels.Mods.DataContainers
         {
             get
             {
-                _textureMods ??= new CollectionViewSource { Source = SimpleModsList }.View;
-                _textureMods.Filter = m => FilterFunction<TextureModViewModel>(m);
+                _textureMods = new CollectionViewSource { Source = SimpleModsList }.View;
+                _textureMods.Filter = m => m is TextureModViewModel;
                 return _textureMods;
             }
         }
@@ -203,8 +210,8 @@ namespace Icarus.ViewModels.Mods.DataContainers
         {
             get
             {
-                _metadataMods ??= new CollectionViewSource { Source = SimpleModsList }.View;
-                _metadataMods.Filter = m => FilterFunction<MetadataModViewModel>(m);
+                _metadataMods = new CollectionViewSource { Source = SimpleModsList }.View;
+                _metadataMods.Filter = m => m is MetadataModViewModel;
                 return _metadataMods;
             }
         }

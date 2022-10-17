@@ -11,8 +11,8 @@
         d:DataContext="{d:DesignInstance Type=mods:MaterialModViewModel}"
         mc:Ignorable="d" 
         d:DesignHeight="250" d:DesignWidth="300"
-        Height="250" Width="500"
-        MinHeight="350" MinWidth="500"
+        Height="500" Width="600"
+        MinHeight="500" MinWidth="600"
         FontSize="14"
         Title="{Binding DestinationName}">
     <Grid Margin="10">
@@ -75,7 +75,6 @@
 
         </Grid>
         <ContentControl Grid.Row="4" Grid.ColumnSpan="4" Content="{Binding ColorSetViewModel}"/>
-
     </Grid>
 
 </Window>

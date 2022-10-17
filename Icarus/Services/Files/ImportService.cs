@@ -18,22 +18,27 @@ namespace Icarus.Services.Files
     {
         readonly ConverterService _converterService;
         readonly ILogService _logService;
-        readonly TexToolsModPackImporter _ttmpImporter;
         readonly IGameFileService _gameFileDataService;
+        readonly ISettingsService _settingsService;
 
+        TexToolsModPackImporter _ttmpImporter;
         DirectoryInfo gameDirectoryFramework;
-
         protected Queue<string> _importFileQueue = new();
 
         public ImportService(IGameFileService gameFileDataService, ISettingsService settingsService, ConverterService converterService, ILogService logService, LuminaService lumina) : base(lumina)
         {
+            _settingsService = settingsService;
             _logService = logService;
             _converterService = converterService;
             _gameFileDataService = gameFileDataService;
+        }
 
-            var projectDirectory = settingsService.ProjectDirectory;
+        protected override void OnLuminaSet()
+        {
+            base.OnLuminaSet();
 
-            var gamePathFramework = Path.Combine(settingsService.GameDirectoryLumina, "ffxiv");
+            var projectDirectory = _settingsService.ProjectDirectory;
+            var gamePathFramework = Path.Combine(_settingsService.GameDirectoryLumina, "ffxiv");
             gameDirectoryFramework = new(gamePathFramework);
             _ttmpImporter = new(projectDirectory, gamePathFramework);
         }

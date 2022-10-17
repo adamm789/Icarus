@@ -23,6 +23,7 @@ namespace Icarus.ViewModels.Mods.Materials
             _colorsetData = material.ColorSetData;
 
             var currRange = _colorsetData.GetRange(rowNumber * 16, 16);
+            DiffuseColor = GetColor(GetColorSetDataRange(currRange, 0));
 
             Diffuse = new(GetColor(GetColorSetDataRange(currRange, 0)));
             Specular = new(GetColor(GetColorSetDataRange(currRange, 4)));
@@ -52,6 +53,18 @@ namespace Icarus.ViewModels.Mods.Materials
             return WindowsColor.FromArgb(c.A, c.R, c.G, c.B);
         }
 
+        WindowsColor _diffuseColor;
+        public WindowsColor DiffuseColor
+        {
+            get { return _diffuseColor; }
+            set {
+                _diffuseColor = value;
+                OnPropertyChanged();
+                Diffuse = new(value);
+            }
+        }
+
+        // TODO: ColorSetRow editor
         SolidColorBrush _diffuse;
         public SolidColorBrush Diffuse
         {

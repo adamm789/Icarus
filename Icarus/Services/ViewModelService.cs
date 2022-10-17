@@ -33,7 +33,7 @@ namespace Icarus.Services
             return new ModPackMetaViewModel(modPack, _userPreferencesService);
         }
 
-        public ModViewModel GetModViewModel(IGameFile file)
+        public ModViewModel GetModViewModel(IMod file)
         {
             if (file is ModelMod modelMod)
             {

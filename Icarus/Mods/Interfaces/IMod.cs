@@ -1,4 +1,6 @@
-﻿namespace Icarus.Mods.Interfaces
+﻿using System;
+
+namespace Icarus.Mods.Interfaces
 {
     public interface IMod : IGameFile
     {

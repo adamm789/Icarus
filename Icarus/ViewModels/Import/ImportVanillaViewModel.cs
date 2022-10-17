@@ -268,6 +268,7 @@ namespace Icarus.ViewModels.Import
             {
                 modelGameFile = _gameFileDataService.GetModelFileData(SelectedItem, SelectedRace);
             }
+
             if (modelGameFile != null)
             {
                 var mod = new ModelMod(modelGameFile, true);

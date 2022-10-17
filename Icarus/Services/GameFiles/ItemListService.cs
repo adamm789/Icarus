@@ -33,7 +33,7 @@ namespace Icarus.Services.GameFiles
             set { _selectedItem = value; OnPropertyChanged(); }
         }
 
-        public List<IItem> Search(string str)
+        public List<IItem> Search(string str, bool exactMatch = false)
         {
             var ret = new List<IItem>();
             if (Data == null)
@@ -42,13 +42,13 @@ namespace Icarus.Services.GameFiles
             }
             else
             {
-                ret = Data.Search(str);
+                ret = Data.Search(str, exactMatch);
                 _logService.Debug($"Searched for {str}. Found {ret.Count} matching entries.");
             }
             return ret;
         }
 
-        public List<IItem> Search(string str, string variantCode)
+        public List<IItem> Search(string str, string variantCode, bool exactMatch = false)
         {
             var ret = new List<IItem>();
             if (Data == null)
@@ -57,7 +57,7 @@ namespace Icarus.Services.GameFiles
             }
             else
             {
-                ret = Data.Search(str, variantCode);
+                ret = Data.Search(str, variantCode, exactMatch);
                 _logService.Information($"Searched for {str}. Found {ret.Count} matching entries.");
             }
             return ret;

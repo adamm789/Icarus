@@ -168,14 +168,21 @@ namespace Icarus.Services.GameFiles
             return await GetTextureFileData(result);
         }
 
-
         private IItem? TryGetItem(string path, string? itemName = null)
         {
             List<IItem> results = new();
             if (!String.IsNullOrWhiteSpace(itemName))
             {
-                results = _itemListService.Search(itemName);
+                results = _itemListService.Search(itemName, true);
+                foreach (var r in results)
+                {
+                    if (r.Name == itemName)
+                    {
+                        return r;
+                    }
+                }
             }
+
             if (results.Count == 0)
             {
                 results = _itemListService.Search(path);

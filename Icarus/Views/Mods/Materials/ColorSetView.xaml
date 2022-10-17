@@ -7,6 +7,8 @@
              xmlns:materials="clr-namespace:Icarus.ViewModels.Mods.Materials"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:mods="clr-namespace:Icarus.ViewModels.Mods"
+                                  xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+
              d:DataContext="{d:DesignInstance Type=materials:ColorSetViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -20,11 +22,15 @@
             </DataTemplate>
         </Grid.Resources>
 
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <ListView Grid.Column="0" ItemsSource="{Binding ColorSetRows}" SelectedValue="{Binding SelectedRow}"/>
-        <ContentControl Grid.Column="1" Content="{Binding DisplayedDyeData}"/>
+        <ListView Grid.Column="0" Grid.RowSpan="2" ItemsSource="{Binding ColorSetRows}" SelectedValue="{Binding SelectedRow}"/>
+        <ContentControl Grid.Row="1" Grid.Column="1" Content="{Binding DisplayedDyeData}"/>
     </Grid>
 </UserControl>

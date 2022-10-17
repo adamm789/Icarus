@@ -59,15 +59,21 @@ namespace Icarus.Services.Files
             }
         }
 
+        private void ReportProgress((int a, int b) pair)
+        {
+
+        }
+
         public async Task<string> Export(ModPack modPack, ExportType exportType, bool toPmp = true)
         {
             IsBusy = true;
+            var progress = new Progress<(int, int)>(ReportProgress);
             try
             {
                 switch (exportType)
                 {
                     case ExportType.TexToolsSimple:
-                        return await _textoolsExporter.ExportToSimple(modPack, _outputDirectory);
+                        return await _textoolsExporter.ExportToSimple(modPack, _outputDirectory, null, progress);
                     case ExportType.TexToolsAdvanced:
                         return await _textoolsExporter.ExportToAdvanced(modPack, _outputDirectory);
                     case ExportType.PenumbraSimple:

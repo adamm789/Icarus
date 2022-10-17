@@ -96,7 +96,7 @@ namespace ItemDatabase
                 }
             }
 
-            
+
             foreach (var f in furnishings)
             {
                 var item = new IndoorFurniture(f);
@@ -104,7 +104,7 @@ namespace ItemDatabase
 
                 _indoorFurniture.Add(item.Name, item);
             }
-            
+
 
             AddBody();
         }
@@ -133,12 +133,12 @@ namespace ItemDatabase
 
         public bool Contains(string str)
         {
-            var results = Search(str);
+            var results = Search(str, false);
             return results.Count > 0;
         }
 
         // TODO: Implement "filter"?
-        public List<IItem> Search(string str)
+        public List<IItem> Search(string str, bool exactMatch = false)
         {
             var ret = new List<IItem>();
             if (String.IsNullOrWhiteSpace(str))
@@ -152,7 +152,18 @@ namespace ItemDatabase
                 {
                     if (item.Value.IsMatch(str))
                     {
-                        ret.Add(item.Value);
+                        if (exactMatch)
+                        {
+                            if (item.Value.Name == str)
+                            {
+                                ret.Add(item.Value);
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            ret.Add(item.Value);
+                        }
                     }
                 }
             }
@@ -168,9 +179,9 @@ namespace ItemDatabase
             return ret;
         }
 
-        public List<IItem> Search(string str, string variantCode = "")
+        public List<IItem> Search(string str, string variantCode = "", bool exactMatch = false)
         {
-            var results = Search(str);
+            var results = Search(str, exactMatch);
             var ret = new List<IItem>();
             foreach (var r in results)
             {

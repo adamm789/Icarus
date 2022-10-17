@@ -46,6 +46,7 @@ namespace Icarus.Util.Export
         private string GetOutputFileName(IMod mod, ModOption? option = null)
         {
             var retVal = mod.ModFileName;
+            
             if (option != null)
             {
                 retVal = option.GroupName + " - " + option.Name;

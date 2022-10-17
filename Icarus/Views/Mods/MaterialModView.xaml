@@ -27,7 +27,6 @@
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         <Grid.Resources>
-
             <DataTemplate DataType="{x:Type materials:ShaderInfoViewModel}">
                 <materialviews:MaterialTexPathsView/>
             </DataTemplate>
@@ -35,8 +34,8 @@
                 x:Key="BooleanToVisibilityConverter"
                 True="Visible"
                 False="Collapsed"/>
-
         </Grid.Resources>
+        
         <local:ModView Grid.Row="0" Grid.ColumnSpan="3"/>
         <Button Grid.Row="1" Grid.Column="0" Content="Copy From Search"
                     Command="{Binding SetDestinationCommand}" Margin="2,0,2,0"/>
@@ -53,7 +52,7 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            
+
             <TextBlock Grid.Row="0" Grid.Column="0" Text="Preset"/>
             <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding ShaderPresets}" SelectedValue="{Binding Preset}"/>
             <materialviews:MaterialTexPathsView Grid.Row="1" Grid.ColumnSpan="2"/>

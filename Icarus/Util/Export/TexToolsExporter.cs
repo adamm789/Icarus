@@ -6,6 +6,7 @@ using ItemDatabase.Paths;
 using Lumina;
 using Newtonsoft.Json;
 using Serilog;
+using SharpDX.Direct2D1;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -108,7 +109,9 @@ namespace Icarus.Util
                 var j = i;
                 tasks[j] = Task.Run(() => GetBytes(entries[j], j));
             }
+            var num = 0;
 
+            // TODO: Report progress
             await Task.WhenAll(tasks);
 
             var offset = 0;

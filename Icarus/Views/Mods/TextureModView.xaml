@@ -28,7 +28,8 @@
             <TextBlock Grid.Column="1" Text="{Binding DestinationName}" Margin="5,0,5,0"/>
             <ComboBox Grid.Column="2" ItemsSource="{Binding VariantList}" SelectedValue="{Binding TextureVariant}"
                       Visibility="{Binding CanParsePath, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-            <ComboBox Grid.Column="3" ItemsSource="{Binding TexTypeValues}" SelectedValue="{Binding TexType}"/>
+            <ComboBox Grid.Column="3" ItemsSource="{Binding TexTypeValues}" SelectedValue="{Binding TexType}"
+                      Visibility="{Binding CanParsePath, Converter={StaticResource BooleanToVisibilityConverter}}"/>
         </Grid>
     </StackPanel>
 </UserControl>

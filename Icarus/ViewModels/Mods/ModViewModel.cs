@@ -65,7 +65,6 @@ namespace Icarus.ViewModels.Mods
             return _mod;
         }
 
-        // TODO: Allow setting personal "DisplayedHeader"? Or otherwise, some string
         string _displayedHeader = "";
         public string DisplayedHeader
         {

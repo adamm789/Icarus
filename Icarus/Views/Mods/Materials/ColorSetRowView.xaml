@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:Icarus.Views.Mods"
              xmlns:mods="clr-namespace:Icarus.ViewModels.Mods"
              xmlns:materials="clr-namespace:Icarus.ViewModels.Mods.Materials"
+
              d:DataContext="{d:DesignInstance Type=materials:ColorSetRowViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="250" d:DesignWidth="300">

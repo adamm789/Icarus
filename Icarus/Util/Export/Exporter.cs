@@ -207,6 +207,11 @@ namespace Icarus.Util
             }
         }
 
+        /// <summary>
+        /// Creates a copy of the TTModel and returns it with model options applied
+        /// </summary>
+        /// <param name="mm"></param>
+        /// <returns></returns>
         protected TTModel ApplyModelOptions(ModelMod mm)
         {
             _logService.Information($"Applying ModelModifiers to {mm.Name}");

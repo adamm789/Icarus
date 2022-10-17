@@ -9,8 +9,8 @@
              d:DataContext="{d:DesignInstance Type=material:ColorSetRowDyeDataViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <StackPanel>
-        <Label Content="{Binding RowNumber}"/>
+    <StackPanel HorizontalAlignment="Stretch">
+        <TextBlock Text="{Binding RowNumber, StringFormat={}Row {0}}"/>
         <StackPanel Orientation="Horizontal">
             <TextBlock Text="Specular Power"/>
             <TextBox Text="{Binding SpecularPower}"/>
@@ -27,7 +27,24 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Tile Count X" Margin="5"/>
+            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding TileCountX}" Margin="5" HorizontalContentAlignment="Center"/>
+            <TextBlock Grid.Row="0" Grid.Column="2" Text="Tile Count Y" Margin="5"/>
+            <TextBox Grid.Row="0" Grid.Column="3" Text="{Binding TileCountY}" Margin="5" HorizontalContentAlignment="Center"/>
+
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Tile Skew X" Margin="5"/>
+            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding TileSkewX}" Margin="5" HorizontalContentAlignment="Center"/>
+            <TextBlock Grid.Row="1" Grid.Column="2" Text="Tile Skew Y" Margin="5"/>
+            <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding TileSkewY}" Margin="5" HorizontalContentAlignment="Center"/>
+
+            <!--
             <StackPanel Grid.Column="0">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="TileCountX"/>
@@ -48,6 +65,7 @@
                     <TextBox Text="{Binding TileSkewY}"/>
                 </StackPanel>
             </StackPanel>
+            -->
         </Grid>
         <Grid>
             <Grid.RowDefinitions>
@@ -61,7 +79,7 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <ComboBox Grid.Row="0" Grid.ColumnSpan="2"
+            <ComboBox Grid.Row="0"
                     ItemsSource="{Binding Templates}" SelectedValue="{Binding DyeTemplateId}"/>
             <CheckBox Grid.Row="1" Grid.Column="0"
                     IsChecked="{Binding UseDiffuse}" Content="Use Diffuse"/>
