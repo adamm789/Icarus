@@ -96,7 +96,7 @@ namespace Icarus.Mods
                 }
                 else
                 {
-                    Log.Verbose("Settings colorset dye data.");
+                    Log.Verbose("Setting colorset dye data.");
                     XivMtrl.ColorSetDyeData = ColorSetDyeData;
                 }
                 ShaderInfo = XivMtrl.GetShaderInfo();

@@ -65,6 +65,11 @@
                      ToolTip="For some reason, these mods could not be imported. These entries cannot be edited.">
                 <ListView ItemsSource="{Binding ReadonlyMods}"/>
             </TabItem>
+            <!--
+            <TabItem Header="{Binding IncompleteModsHeader}">
+                <ListView ItemsSource="{Binding IncompleteMods}"/>
+            </TabItem>
+            -->
         </TabControl>
     </Grid>
 </UserControl>

@@ -31,32 +31,7 @@ namespace Icarus.ViewModels.Mods.Metadata
             }
         }
 
-        public Dictionary<XivRace, EquipmentDeformationParameter> GetEntries()
-        {
-            var ret = new Dictionary<XivRace, EquipmentDeformationParameter>();
-            foreach (var vm in MaleEqdpEntries)
-            {
-                ret.Add(vm.Race, vm.Parameter);
-            }
-            foreach (var vm in FemaleEqdpEntries)
-            {
-                ret.Add(vm.Race, vm.Parameter);
-            }
-            return ret;
-        }
-
-        ObservableCollection<EqdpEntryViewModel> _maleEqdpEntries = new();
-        public ObservableCollection<EqdpEntryViewModel> MaleEqdpEntries
-        {
-            get { return _maleEqdpEntries; }
-            set { _maleEqdpEntries = value; OnPropertyChanged(); }
-        }
-
-        ObservableCollection<EqdpEntryViewModel> _femaleEqdpEntries = new();
-        public ObservableCollection<EqdpEntryViewModel> FemaleEqdpEntries
-        {
-            get { return _femaleEqdpEntries; }
-            set { _femaleEqdpEntries = value; OnPropertyChanged(); }
-        }
+        public ObservableCollection<EqdpEntryViewModel> MaleEqdpEntries { get; } = new();
+        public ObservableCollection<EqdpEntryViewModel> FemaleEqdpEntries { get; } = new();
     }
 }

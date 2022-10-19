@@ -36,6 +36,14 @@ namespace Icarus.ViewModels.Mods.DataContainers
             }
             RemoveCommand = new DelegateCommand(o => parent.RemoveGroup(this));
         }
+
+        ModOptionViewModel _selectedOption;
+        public ModOptionViewModel SelectedOption
+        {
+            get { return _selectedOption; }
+            set { _selectedOption = value; OnPropertyChanged(); }
+        }
+
         public void OnRemove()
         {
             RemoveCommand = null;

@@ -177,6 +177,8 @@ namespace Icarus.ViewModels.Mods.DataContainers
             return true;
         }
 
+        // TODO: Consider the scenario: user has page 1 open, swaps page 2 and page 1, which page should it display?
+        // Assuming moving pages are on a separate screen/control
         public void Move(ModPackPageViewModel source, ModPackPageViewModel target)
         {
             // TODO: More error checks?

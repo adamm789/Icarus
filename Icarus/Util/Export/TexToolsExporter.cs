@@ -43,8 +43,6 @@ namespace Icarus.Util
             return path;
         }
 
-
-
         // TODO: Export to Standard...?
 
         // TODO: CancellationToken for TexTools ExportToSimple
@@ -66,9 +64,7 @@ namespace Icarus.Util
             }
             //var tempDir = Path.Combine(outputDir, "temp");
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-
             var tempDir = GetTempDirectory(outputDir);
-
             if (Directory.Exists(tempDir))
             {
                 Directory.Delete(tempDir, true);
@@ -90,7 +86,6 @@ namespace Icarus.Util
                 SimpleModsList = new List<ModsJson>()
             };
 
-            _logService.Verbose("Creating ModPackJson.");
             var tasks = new Task<byte[]>[entries.Count];
 
             for (var i = 0; i < entries.Count; i++)
@@ -159,7 +154,7 @@ namespace Icarus.Util
                     }
                     catch (Exception ex)
                     {
-                        _logService.Error(ex, "Could not add something.");
+                        _logService.Error(ex, "Could not add mod.");
                     }
                 }
             }
@@ -197,6 +192,10 @@ namespace Icarus.Util
             {
                 _logService.Error(ex, $"Caught exception while writing to directory.");
             }
+            catch (Exception ex)
+            {
+                _logService.Error(ex, $"Caught exception.");
+            }
             finally
             {
                 _logService.Verbose($"Deleting {tempDir}.");
@@ -215,7 +214,6 @@ namespace Icarus.Util
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
             var tempDir = GetTempDirectory(outputDir);
-
             if (Directory.Exists(tempDir))
             {
                 Directory.Delete(tempDir, true);
@@ -352,19 +350,19 @@ namespace Icarus.Util
                                 
                                     offsetDict.Add(modOptionMod, offset);
                                 */
-                                    var modsJson = new ModsJson
-                                    {
-                                        Name = name,
-                                        Category = category,
-                                        FullPath = path,
-                                        ModOffset = modOffset,
-                                        ModSize = bytes.Length,
-                                        DatFile = datFile,
-                                        IsDefault = false,
-                                    };
-                                    modOptionJson.ModsJsons.Add(modsJson);
-                                    bw.Write(bytes);
-                                    offset += bytes.Length;
+                                var modsJson = new ModsJson
+                                {
+                                    Name = name,
+                                    Category = category,
+                                    FullPath = path,
+                                    ModOffset = modOffset,
+                                    ModSize = bytes.Length,
+                                    DatFile = datFile,
+                                    IsDefault = false,
+                                };
+                                modOptionJson.ModsJsons.Add(modsJson);
+                                bw.Write(bytes);
+                                offset += bytes.Length;
                                 //}
                                 /*
                                 if (modOffset == offset)
@@ -377,6 +375,7 @@ namespace Icarus.Util
                     }
                 }
             }
+
             try
             {
                 _logService.Information("Saving ttmp2 file.");

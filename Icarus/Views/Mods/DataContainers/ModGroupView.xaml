@@ -15,7 +15,19 @@
         <Grid>
             <Grid.Resources>
                 <DataTemplate DataType="{x:Type datacontainers:ModOptionViewModel}">
+                    <!--
                     <local:ModOptionView/>
+                    -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="{Binding Name}"/>
+                        <TextBlock Grid.Column="1" Text="{Binding Header}"/>
+                        <Button Grid.Column="2" Content="Remove" Command="{Binding RemoveCommand}"/>
+                    </Grid>
                 </DataTemplate>
             </Grid.Resources>
 
@@ -73,15 +85,16 @@
             </Grid>
 
             <ListView Grid.Row="2" Grid.Column="1"
-                 ItemsSource="{Binding OptionList}"
-                 HorizontalContentAlignment="Stretch"
-                 VerticalContentAlignment="Stretch"
-                 ScrollViewer.CanContentScroll="False"
-                 VirtualizingStackPanel.IsVirtualizing="True"
-                 PreviewMouseWheel="HandlePreviewMouseWheel"
-                 dd:DragDrop.IsDragSource="True"
-                 dd:DragDrop.IsDropTarget="True"
-                 dd:DragDrop.DropHandler="{Binding}">
+                    ItemsSource="{Binding OptionList}"
+                    SelectedItem="{Binding SelectedOption}"
+                    HorizontalContentAlignment="Stretch"
+                    VerticalContentAlignment="Stretch"
+                    ScrollViewer.CanContentScroll="False"
+                    VirtualizingStackPanel.IsVirtualizing="True"
+                    PreviewMouseWheel="HandlePreviewMouseWheel"
+                    dd:DragDrop.IsDragSource="True"
+                    dd:DragDrop.IsDropTarget="True"
+                    dd:DragDrop.DropHandler="{Binding}">
             </ListView>
         </Grid>
     </Border>

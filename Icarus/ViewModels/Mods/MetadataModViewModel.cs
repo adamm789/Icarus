@@ -28,6 +28,8 @@ namespace Icarus.ViewModels.Mods
 
             EqdpViewModel = new(_metadataMod.EqdpEntries);
 
+            EstViewModel = new(_metadataMod.EstEntries);
+
             if (_metadataMod.EqpEntry != null)
             {
                 EqpViewModel = new(_metadataMod.EqpEntry);
@@ -38,54 +40,11 @@ namespace Icarus.ViewModels.Mods
                 GmpViewModel = new(_metadataMod.GmpEntry);
             }
         }
+        public EqdpViewModel EqdpViewModel { get; }
+        public EstViewModel EstViewModel { get; }
+        public EqpViewModel EqpViewModel { get; }
+        public GmpViewModel GmpViewModel { get; }
 
-        public override IMod GetMod()
-        {
-            // TODO: Update properties... ?
-
-            _metadataMod.EqdpEntries = EqdpViewModel.GetEntries();
-
-            if (EqpViewModel != null)
-            {
-                _metadataMod.EqpEntry = EqpViewModel.EqpEntry;
-            }
-            else
-            {
-                _metadataMod.EqpEntry = null;
-            }
-
-            if (GmpViewModel != null)
-            {
-                _metadataMod.GmpEntry = GmpViewModel.GimmickParameter;
-            }
-            else
-            {
-                _metadataMod.GmpEntry = null;
-            }
-
-            return _metadataMod;
-        }
-
-        EqdpViewModel _eqdpViewModel;
-        public EqdpViewModel EqdpViewModel
-        {
-            get { return _eqdpViewModel; }
-            set { _eqdpViewModel = value; OnPropertyChanged(); }
-        }
-
-        EqpViewModel _eqpViewModel;
-        public EqpViewModel EqpViewModel
-        {
-            get { return _eqpViewModel; }
-            set { _eqpViewModel = value; OnPropertyChanged(); }
-        }
-
-        GmpViewModel _gmpViewModel;
-        public GmpViewModel GmpViewModel
-        {
-            get { return _gmpViewModel; }
-            set { _gmpViewModel = value; OnPropertyChanged(); }
-        }
 
         DelegateCommand _openMetadataEditorCommand;
         public DelegateCommand OpenMetadataEditorCommand

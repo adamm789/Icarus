@@ -16,7 +16,7 @@
         </Grid.ColumnDefinitions>
         
         <CheckBox Grid.Column="0" IsChecked="{Binding Enabled}">
-            <TextBox Text="Enabled /visor"/>
+            <TextBlock Text="Enabled /visor"/>
         </CheckBox>
 
         <StackPanel Grid.Column="1">

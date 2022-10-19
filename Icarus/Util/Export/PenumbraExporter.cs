@@ -19,10 +19,6 @@ namespace Icarus.Util
         {
 
         }
-        public override string GetOutputPath(ModPack modPack, string outputDir)
-        {
-            return base.GetOutputPath(modPack, outputDir);
-        }
 
         internal async Task<string> ExportToSimple(ModPack modPack, string outputDir, bool toPmp = true)
         {
@@ -80,10 +76,6 @@ namespace Icarus.Util
             WriteGroups(modPack, tempDir);
             var outputPath = GetOutputPath(modPack, outputDir);
             WriteFiles(tempDir, outputPath, toPmp);
-            if (Directory.Exists(tempDir))
-            {
-                Directory.Delete(tempDir, true);
-            }
 
             return outputPath;
         }
@@ -107,6 +99,11 @@ namespace Icarus.Util
                     Directory.Delete(outputPath, true);
                 }
                 Directory.Move(tempDir, outputPath);
+            }
+
+            if (Directory.Exists(tempDir))
+            {
+                Directory.Delete(tempDir, true);
             }
         }
 

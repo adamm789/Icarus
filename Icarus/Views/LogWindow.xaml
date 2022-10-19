@@ -11,8 +11,12 @@
              Height="350" Width="500"
         MinHeight="350" MinWidth="700">
     <Grid>
-        <ScrollViewer>
-            <TextBox Text="{Binding Text}" IsReadOnly="True"/>
-        </ScrollViewer>
+        <TabControl>
+            <TabItem Header="Log">
+                <ScrollViewer>
+                    <TextBox Text="{Binding Text}" IsReadOnly="True"/>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
     </Grid>
 </Window>

@@ -3,6 +3,7 @@ using Icarus.Services;
 using Icarus.ViewModels.Util;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 
 namespace Icarus.ViewModels.Mods.DataContainers
 {
@@ -31,6 +32,14 @@ namespace Icarus.ViewModels.Mods.DataContainers
             RemoveCommand = new(o => parent.RemovePage(this));
         }
 
+        private void OnSelectedOption(object sender, PropertyChangedEventArgs e)
+        {
+            if (sender is ModGroupViewModel vm)
+            {
+                DisplayedOption = vm.SelectedOption;
+            }
+        }
+
         public int PageIndex
         {
             get { return _modPackPage.PageIndex; }
@@ -39,6 +48,13 @@ namespace Icarus.ViewModels.Mods.DataContainers
                 _modPackPage.PageIndex = value;
                 OnPropertyChanged();
             }
+        }
+
+        ModOptionViewModel _displayedOption;
+        public ModOptionViewModel DisplayedOption
+        {
+            get { return _displayedOption; }
+            set { _displayedOption = value; OnPropertyChanged(); }
         }
 
         string _newGroupName;
@@ -73,6 +89,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
             ModGroups.Add(group);
             _modPackPage.AddGroup(group.GetGroup());
             group.RemoveCommand = new(o => RemoveGroup(group));
+            group.PropertyChanged += new PropertyChangedEventHandler(OnSelectedOption);
         }
 
         public void RemoveGroup(ModGroupViewModel group)

@@ -1,8 +1,10 @@
 ﻿using Icarus.Mods.Interfaces;
+using ItemDatabase.Enums;
 using System;
 using System.Collections.Generic;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Models.DataContainers;
+using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Mods.FileTypes;
 using xivModdingFramework.Variants.DataContainers;
 
@@ -11,6 +13,7 @@ namespace Icarus.Mods
     public class MetadataMod : Mod, IMetadataFile
     {
         public ItemMetadata ItemMetadata { get; set; }
+        public string Slot { get; set; }
         public Dictionary<XivRace, EquipmentDeformationParameter> EqdpEntries
         {
             get { return ItemMetadata.EqdpEntries; }
@@ -37,6 +40,8 @@ namespace Icarus.Mods
             set { ItemMetadata.ImcEntries = value; }
         }
 
+        //public static 
+
         // EqdpEntries
         // EqpEntry
         // EstEntries
@@ -52,6 +57,7 @@ namespace Icarus.Mods
             ModFileName = data.Root.ToRawItem().Name;
             ModFilePath = data.Root.ToString();
             Path = data.Root.ToString();
+            Slot = data.Root.Info.Slot;
         }
 
         public override void SetModData(IGameFile gameFile)

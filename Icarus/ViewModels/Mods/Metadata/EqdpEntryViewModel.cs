@@ -1,4 +1,5 @@
-﻿using Icarus.ViewModels.Util;
+﻿using Icarus.Mods;
+using Icarus.ViewModels.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,6 @@ namespace Icarus.ViewModels.Mods.Metadata
     {
         public EquipmentDeformationParameter Parameter { get; }
         public XivRace Race { get; }
-
 
         public bool Bit0
         {

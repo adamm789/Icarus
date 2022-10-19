@@ -38,19 +38,31 @@ namespace Icarus.ViewModels.Mods.DataContainers
         private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             OnPropertyChanged(nameof(SimpleModsList));
-            /*
+            
             if (e.NewItems != null)
             {
-                DisplayedMod = e.NewItems[0] as ModViewModel;
+                var newItems = e.NewItems.Cast<ModViewModel>();
+                foreach (var item in newItems)
+                {
+                    item.PropertyChanged += new(OnExportStatusChanged);
+                }
             }
-            */
+            
             UpdateHeaders();
+        }
+
+        private void OnExportStatusChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (sender is ModViewModel mod && e.PropertyName == nameof(ModViewModel.CanExport))
+            {
+                UpdateHeaders();
+                IncompleteMods.Refresh();
+            }
         }
 
 
         private void UpdateHeaders()
         {
-            
             AllModsHeader = $"All ({SimpleModsList.Count})";
             
             ModelModsHeader = $"Models ({ModelMods.Cast<ModViewModel>().Count()})";
@@ -58,7 +70,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
             TextureModsHeader = $"Textures({TextureMods.Cast<ModViewModel>().Count()})";
             MetadataModsHeader = $"Metadata({MetadataMods.Cast<ModViewModel>().Count()})";
             ReadOnlyModsHeader = $"ReadOnly ({ReadonlyMods.Cast<ModViewModel>().Count()})";
-            
+            IncompleteModsHeader = $"Incomplete({IncompleteMods.Cast<ModViewModel>().Count()})";
         }
 
         string _allModsHeader = "";
@@ -101,6 +113,13 @@ namespace Icarus.ViewModels.Mods.DataContainers
         {
             get { return _metadataModsHeader; }
             set { _metadataModsHeader = value; OnPropertyChanged(); }
+        }
+
+        string _incompleteModsHeader = "";
+        public string IncompleteModsHeader
+        {
+            get { return _incompleteModsHeader; }
+            set { _incompleteModsHeader = value; OnPropertyChanged(); }
         }
 
         private bool FilterFunction<T>(object obj) where T : ModViewModel
@@ -213,6 +232,21 @@ namespace Icarus.ViewModels.Mods.DataContainers
                 _metadataMods = new CollectionViewSource { Source = SimpleModsList }.View;
                 _metadataMods.Filter = m => m is MetadataModViewModel;
                 return _metadataMods;
+            }
+        }
+
+
+        // TODO: "Incomplete" mods
+        ICollectionView _incompleteMods;
+        public ICollectionView IncompleteMods
+        {
+            // TODO: This needs a different "trigger"
+            // CollectionChanged does not get called when a destination path changes
+            get
+            {
+                _incompleteMods = new CollectionViewSource {  Source = SimpleModsList }.View;
+                _incompleteMods.Filter = m => !(m as ModViewModel).CanExport;
+                return _incompleteMods;
             }
         }
     }

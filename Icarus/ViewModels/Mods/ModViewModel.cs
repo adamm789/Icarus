@@ -19,7 +19,7 @@ namespace Icarus.ViewModels.Mods
     // TODO: Set MaxWidth for textboxes
     public abstract class ModViewModel : NotifyPropertyChanged, IDropTarget
     {
-        protected IMod _mod;
+        public IMod Mod { get; }
         public IItem? SelectedItem { get; protected set; }
         protected readonly IGameFileService _gameFileService;
         protected readonly ILogService _logService;
@@ -32,7 +32,7 @@ namespace Icarus.ViewModels.Mods
 
         public ModViewModel(IMod mod, IGameFileService gameFileService, ILogService logService)
         {
-            _mod = mod;
+            Mod = mod;
             _gameFileService = gameFileService;
             _logService = logService;
 
@@ -62,7 +62,7 @@ namespace Icarus.ViewModels.Mods
 
         public virtual IMod GetMod()
         {
-            return _mod;
+            return Mod;
         }
 
         string _displayedHeader = "";
@@ -91,7 +91,7 @@ namespace Icarus.ViewModels.Mods
         /// </summary>
         public string FilePath
         {
-            get { return _mod.ModFilePath; }
+            get { return Mod.ModFilePath; }
         }
 
         /// <summary>
@@ -99,13 +99,13 @@ namespace Icarus.ViewModels.Mods
         /// </summary>
         public virtual string DestinationPath
         {
-            get { return _mod.Path; }
+            get { return Mod.Path; }
             set
             {
-                if (_mod.Path == value) return;
+                if (Mod.Path == value) return;
                 var couldSetDestinationPath = Task.Run(() => TrySetDestinationPath(value, DestinationName)).Result;
                 if (!couldSetDestinationPath) return;
-                _mod.Path = value;
+                Mod.Path = value;
                 RaiseDestinationPathChanged();
             }
         }
@@ -115,8 +115,8 @@ namespace Icarus.ViewModels.Mods
         /// </summary>
         public string DestinationName
         {
-            get { return _mod.Name; }
-            set { _mod.Name = value; OnPropertyChanged(); }
+            get { return Mod.Name; }
+            set { Mod.Name = value; OnPropertyChanged(); }
         }
 
         bool _canExport = true;
@@ -156,12 +156,12 @@ namespace Icarus.ViewModels.Mods
 
         public void SetCanExport()
         {
-            CanExport = _mod.IsComplete();
+            CanExport = Mod.IsComplete();
         }
 
         public virtual async Task<bool> SetDestinationItem(IItem? itemArg = null)
         {
-            var data = await _gameFileService.GetFileData(itemArg, _mod.GetType());
+            var data = await _gameFileService.GetFileData(itemArg, Mod.GetType());
             if (data != null)
             {
                 SelectedItem = _gameFileService.GetItem();
@@ -197,7 +197,7 @@ namespace Icarus.ViewModels.Mods
 
         public virtual bool SetModData(IGameFile gameFile)
         {
-            _mod.SetModData(gameFile);
+            Mod.SetModData(gameFile);
             return true;
             //RaiseModPropertyChanged();
         }

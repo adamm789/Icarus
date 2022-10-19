@@ -23,11 +23,11 @@ namespace Icarus.ViewModels.Mods.Materials
             _colorsetData = material.ColorSetData;
 
             var currRange = _colorsetData.GetRange(rowNumber * 16, 16);
-            DiffuseColor = GetColor(GetColorSetDataRange(currRange, 0));
+            //DiffuseColor = GetColor(GetColorSetDataRange(currRange, 0));
 
-            Diffuse = new(GetColor(GetColorSetDataRange(currRange, 0)));
-            Specular = new(GetColor(GetColorSetDataRange(currRange, 4)));
-            Emissive = new(GetColor(GetColorSetDataRange(currRange, 8)));
+            Diffuse = new SolidColorBrush(GetColor(GetColorSetDataRange(currRange, 0)));
+            Specular = new SolidColorBrush(GetColor(GetColorSetDataRange(currRange, 4)));
+            Emissive = new SolidColorBrush(GetColor(GetColorSetDataRange(currRange, 8)));
 
             DyeDataViewModel = new ColorSetRowDyeDataViewModel(rowNumber, material, stainingTemplateFile);
         }
@@ -45,7 +45,9 @@ namespace Icarus.ViewModels.Mods.Materials
             {
                 throw new ArgumentException("List was not of length four.");
             }
-            return new Color(values[0], values[1], values[2], 255);
+            return new Color((byte)Math.Round(values[0]*255), 
+                (byte)Math.Round(values[1]*255),
+                (byte)Math.Round(values[2]*255), (byte)255);
         }
 
         public WindowsColor GetColor(Color c)
@@ -72,9 +74,11 @@ namespace Icarus.ViewModels.Mods.Materials
             set {
                 _diffuse = value;
                 OnPropertyChanged();
-                _colorsetData[(RowNumber * 16) + 0] = _diffuse.Color.R;
-                _colorsetData[(RowNumber * 16) + 1] = _diffuse.Color.G;
-                _colorsetData[(RowNumber * 16) + 2] = _diffuse.Color.B;
+                
+                // TODO: This changes the color slightly (less than before, but... it does)
+                _colorsetData[(RowNumber * 16) + 0] = new Half(_diffuse.Color.R/255f);
+                _colorsetData[(RowNumber * 16) + 1] = new Half(_diffuse.Color.G/255f);
+                _colorsetData[(RowNumber * 16) + 2] = new Half(_diffuse.Color.B/255f);
             }
         }
         SolidColorBrush _specular;
@@ -84,9 +88,9 @@ namespace Icarus.ViewModels.Mods.Materials
             set {
                 _specular = value; 
                 OnPropertyChanged();
-                _colorsetData[(RowNumber * 16) + 4] = _specular.Color.R;
-                _colorsetData[(RowNumber * 16) + 5] = _specular.Color.G;
-                _colorsetData[(RowNumber * 16) + 6] = _specular.Color.B;
+                _colorsetData[(RowNumber * 16) + 4] = new Half(_specular.Color.R/255f);
+                _colorsetData[(RowNumber * 16) + 5] = new Half(_specular.Color.G/255f);
+                _colorsetData[(RowNumber * 16) + 6] = new Half(_specular.Color.B/255f);
             }
         }
         SolidColorBrush _emissive;
@@ -96,9 +100,9 @@ namespace Icarus.ViewModels.Mods.Materials
             set { 
                 _emissive = value; 
                 OnPropertyChanged();
-                _colorsetData[(RowNumber * 16) + 8] = _emissive.Color.R;
-                _colorsetData[(RowNumber * 16) + 9] = _emissive.Color.G;
-                _colorsetData[(RowNumber * 16) + 10] = _emissive.Color.B;
+                _colorsetData[(RowNumber * 16) + 8] = new Half(_emissive.Color.R/255f);
+                _colorsetData[(RowNumber * 16) + 9] = new Half(_emissive.Color.G/255f);
+                _colorsetData[(RowNumber * 16) + 10] = new Half(_emissive.Color.B/255f);
             }
         }
 

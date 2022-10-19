@@ -69,6 +69,8 @@ namespace Icarus.Services.GameFiles
             }
         }
 
+        // TODO: Est.GetAllExtraSkeletons(EstType type, XivRace raceFilter = XivRace.All_Races, bool includeNpcs = false) (EST L140)
+
         public StainingTemplateFile GetStainingTemplateFile()
         {
             var bytes = _lumina.GetFile("chara/base_material/stainingtemplate.stm").Data;

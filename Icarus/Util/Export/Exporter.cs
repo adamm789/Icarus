@@ -17,6 +17,7 @@ using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Models.Helpers;
 using xivModdingFramework.Mods.FileTypes;
 using xivModdingFramework.Textures.Enums;
+using xivModdingFramework.Textures.FileTypes;
 using Path = System.IO.Path;
 
 namespace Icarus.Util
@@ -105,6 +106,7 @@ namespace Icarus.Util
 
         protected string GetTempDirectory(string outputDir)
         {
+            /*
             try
             {
                 return Path.Combine(Path.GetTempPath(), "temp");
@@ -114,6 +116,9 @@ namespace Icarus.Util
                 _logService.Error(ex, "Could not get temporary path.");
                 return Path.Combine(outputDir, "temp");
             }
+            */
+            return Path.Combine(outputDir, "temp");
+
         }
 
         protected async Task<byte[]> WriteMetadataToBytes(MetadataMod mod)
@@ -173,6 +178,8 @@ namespace Icarus.Util
 
                 if (!isDds)
                 {
+                    // TODO: How to export when source is from ttmp2?
+
                     using (var surface = Surface.LoadFromFile(externalPath))
                     {
                         if (surface == null)
@@ -201,6 +208,7 @@ namespace Icarus.Util
                             compressor.Process(out ddsContainer);
                         }
                     }
+
                 }
 
                 // If we're not a DDS, write the DDS to file temporarily.

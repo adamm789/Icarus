@@ -3,8 +3,13 @@ using Icarus.Mods.Interfaces;
 using Icarus.Services.GameFiles;
 using Icarus.Services.GameFiles.Interfaces;
 using Icarus.Services.Interfaces;
+using Icarus.Util;
+using Icarus.ViewModels.Util;
+using Lumina.Data.Files;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.IO;
 using System.Threading.Tasks;
@@ -24,6 +29,8 @@ namespace Icarus.Services.Files
         TexToolsModPackImporter _ttmpImporter;
         DirectoryInfo gameDirectoryFramework;
         protected Queue<string> _importFileQueue = new();
+
+        public ObservableQueue<string> _stringQueue = new();
 
         public ImportService(IGameFileService gameFileDataService, ISettingsService settingsService, ConverterService converterService, ILogService logService, LuminaService lumina) : base(lumina)
         {
@@ -71,7 +78,7 @@ namespace Icarus.Services.Files
             var importingFile = "Importing: " + filePath;
             _logService.Information(importingFile);
             _importFileQueue.Enqueue(importingFile);
-            UpdateUI();
+            UpdateProperties();
 
             var ext = Path.GetExtension(filePath);
             var retModPack = new ModPack();
@@ -85,15 +92,18 @@ namespace Icarus.Services.Files
             }
             else if (ext == ".dds")
             {
-                // TODO: How to handle dds, which, I believe, can be both a texture or a material
                 retModPack = await Task.Run(() => ImportColorset(filePath));
             }
             else if (ext == ".png" || ext == ".bmp")
             {
                 retModPack = ImportTexture(filePath);
             }
+            else if (ext == ".mdl")
+            {
+                retModPack = ImportRawModel(filePath);
+            }
             _importFileQueue.Dequeue();
-            UpdateUI();
+            UpdateProperties();
 
             _logService.Verbose("Returning modpack.");
             return retModPack;
@@ -104,7 +114,12 @@ namespace Icarus.Services.Files
             IsImportingAdvanced = true;
             try
             {
-                var modPack = await ImportTexToolsModPack(filePath);
+                var modPack = await _ttmpImporter.ExtractTexToolsModPack(filePath);
+
+                foreach (var mod in modPack.SimpleModsList)
+                {
+                    CompleteMod(mod);
+                }
                 _logService.Information($"Imported {modPack.SimpleModsList.Count} mods.");
                 return modPack;
             }
@@ -129,6 +144,11 @@ namespace Icarus.Services.Files
             {
                 var importedModel = await _converterService.FbxToTTModel(filePath);
                 var sane = TTModel.SanityCheck(importedModel, _logService.LoggingFunction);
+
+                if (!sane)
+                {
+                    _logService.Error("Model was deemed insane.");
+                }
 
                 _logService.Information("Checking for common user errors.");
                 TTModel.CheckCommonUserErrors(importedModel, _logService.LoggingFunction);
@@ -167,6 +187,29 @@ namespace Icarus.Services.Files
             return new ModPack();
         }
 
+        public ModPack ImportRawModel(string filePath)
+        { 
+            // TODO: ImportRawModel?
+            try
+            {
+                var model = _lumina.GetFileFromDisk<MdlFile>(filePath);
+                if (model != null)
+                {
+                    var mldWithLumina = new MdlWithLumina(model);
+                }
+            }
+            catch(Exception ex)
+            {
+                _logService.Error(ex, "An exception has occurred.");
+            }
+            return new ModPack();
+        }
+
+        /// <summary>
+        /// Tries to import a dds file and convert it into a colorset
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns>A <see cref="ModPack">ModPack</see> with a single colorset mod, if successful. An empty modpack otherwise.</returns>
         public ModPack ImportColorset(string filePath)
         {
             try
@@ -189,17 +232,20 @@ namespace Icarus.Services.Files
             {
                 _logService.Error(ex, $"Could not get colorset data from {filePath}");
             }
-            return new ModPack();
+            return ImportTexture(filePath);
         }
 
-        public async Task<ModPack> ImportTexToolsModPack(string filePath)
+        public ModPack ImportTexture(string filePath)
         {
-            var retPack = await _ttmpImporter.ExtractTexToolsModPack(filePath);
-
-            foreach (var mod in retPack.SimpleModsList)
+            // TODO: Some sort of check for the file?
+            var retPack = new ModPack();
+            var texMod = new TextureMod(false)
             {
-                CompleteMod(mod);
-            }
+                ModFileName = filePath,
+                ModFilePath = filePath
+            };
+            retPack.SimpleModsList.Add(texMod);
+
             return retPack;
         }
 
@@ -220,20 +266,7 @@ namespace Icarus.Services.Files
             }
         }
 
-        public ModPack ImportTexture(string filePath)
-        {
-            var retPack = new ModPack();
-            var texMod = new TextureMod(false)
-            {
-                ModFileName = filePath,
-                ModFilePath = filePath
-            };
-            retPack.SimpleModsList.Add(texMod);
-
-            return retPack;
-        }
-
-        private void UpdateUI()
+        private void UpdateProperties()
         {
             OnPropertyChanged(nameof(ImportingFile));
             OnPropertyChanged(nameof(IsImporting));

@@ -9,10 +9,13 @@
         d:DataContext="{d:DesignInstance Type=mods:MetadataModViewModel}"
         mc:Ignorable="d"
         Title="MetadataWindow" Height="450" Width="800">
-    <StackPanel>
-        <StackPanel.Resources>
+    <Grid>
+        <Grid.Resources>
             <DataTemplate DataType="{x:Type modviewmodels:EqdpViewModel}">
                 <local:EqdpView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type modviewmodels:EstViewModel}">
+                <local:EstView/>
             </DataTemplate>
             <DataTemplate DataType="{x:Type modviewmodels:EqpViewModel}">
                 <local:EqpView/>
@@ -20,12 +23,15 @@
             <DataTemplate DataType="{x:Type modviewmodels:GmpViewModel}">
                 <local:GmpView/>
             </DataTemplate>
-        </StackPanel.Resources>
-        
-        <StackPanel>
-            <ContentControl Content="{Binding EqdpViewModel}" HorizontalContentAlignment="Stretch"/>
-            <ContentControl Content="{Binding EqpViewModel}"/>
-            <ContentControl Content="{Binding GmpViewModel}"/>
-        </StackPanel>
-    </StackPanel>
+
+        </Grid.Resources>
+        <ScrollViewer>
+            <StackPanel>
+                <ContentControl Content="{Binding EqdpViewModel}" HorizontalContentAlignment="Stretch"/>
+                <ContentControl Content="{Binding EstViewModel}"/>
+                <ContentControl Content="{Binding EqpViewModel}"/>
+                <ContentControl Content="{Binding GmpViewModel}"/>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
 </Window>

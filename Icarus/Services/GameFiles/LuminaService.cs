@@ -48,7 +48,7 @@ namespace Icarus.Services.GameFiles
                 _logService.Information("Trying to set Lumina. Please wait.");
                 // TODO: Seems this can temporarily freeze the UI
                 Lumina = new GameData(_settingsService.GameDirectoryLumina);
-                _logService.Information($"Successfully initialized Lumina using {_settingsService.GameDirectoryLumina}");
+                _logService.Information($"Lumina game path set to: {_settingsService.GameDirectoryLumina}");
             }
             catch (ArgumentException ex)
             {

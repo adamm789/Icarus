@@ -211,7 +211,6 @@ namespace Icarus.Services.Files
                     pack.BaseStream.Read(bytes, 0, mods.ModSize);
 
                     var xivTex = await DatExtensions.GetType4Data(bytes);
-
                     var type = XivTexType.Normal;
 
                     try
@@ -303,8 +302,12 @@ namespace Icarus.Services.Files
         {
             try
             {
-                var file = pack.ReadFile<FileResource>(mods.ModOffset);
-                var meta = await ItemMetadata.Deserialize(file.Data);
+                //var file = pack.ReadFile<FileResource>(mods.ModOffset);
+                var bytes = new byte[mods.ModSize];
+                pack.BaseStream.Seek(mods.ModOffset, SeekOrigin.Begin);
+                pack.BaseStream.Read(bytes, 0, mods.ModSize);
+
+                var meta = await ItemMetadata.Deserialize(bytes);
 
                 var metaMod = new MetadataMod(meta)
                 {

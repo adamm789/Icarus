@@ -13,6 +13,7 @@ namespace Icarus.Mods
         public XivTexType TexType { get; set; }
 
         public Dictionary<XivTexType, XivTexFormat>? TypeFormatDict { get; set; }
+        public XivTex XivTex {get;}
 
         public TextureMod(bool isInternal = false)
         {
@@ -21,6 +22,7 @@ namespace Icarus.Mods
 
         public TextureMod(XivTex tex, bool isInternal = true)
         {
+            XivTex = tex;
             Path = tex.TextureTypeAndPath.Path;
             IsInternal = isInternal;
         }

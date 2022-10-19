@@ -65,7 +65,7 @@ namespace Icarus.Services
                 .WriteTo.Logger(l => l.Filter.ByExcluding(e => e.Level == LogEventLevel.Verbose)
                 .WriteTo.Debug()
                 .WriteTo.Logger(l => l.Filter.ByExcluding(e => e.Level == LogEventLevel.Debug)
-                .WriteTo.File(path: logPath, rollingInterval: RollingInterval.Day, rollOnFileSizeLimit: true, retainedFileCountLimit: 7,
+                .WriteTo.File(logPath, rollingInterval: RollingInterval.Day, rollOnFileSizeLimit: true, retainedFileCountLimit: 7,
                 outputTemplate: outputTemplate)
                 .WriteTo.Sink(Sink)))
                 .CreateLogger();
