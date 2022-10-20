@@ -97,6 +97,7 @@ namespace Icarus.Services.Files
                         else
                         {
                             retModPack.SimpleModsList.Add(file);
+                            
                         }
                     }
                 }
@@ -304,10 +305,12 @@ namespace Icarus.Services.Files
             {
                 //var file = pack.ReadFile<FileResource>(mods.ModOffset);
                 var bytes = new byte[mods.ModSize];
+
                 pack.BaseStream.Seek(mods.ModOffset, SeekOrigin.Begin);
                 pack.BaseStream.Read(bytes, 0, mods.ModSize);
 
-                var meta = await ItemMetadata.Deserialize(bytes);
+                var uncompressedBytes = await DatExtensions.GetType2Data(bytes);
+                var meta = await ItemMetadata.Deserialize(uncompressedBytes);
 
                 var metaMod = new MetadataMod(meta)
                 {

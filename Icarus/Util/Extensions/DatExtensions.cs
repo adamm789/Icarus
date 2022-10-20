@@ -11,6 +11,13 @@ namespace Icarus.Util.Extensions
 {
     public static class DatExtensions
     {
+        /// <summary>
+        /// Type4 data is textures
+        /// data is data from XivTex
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="offset"></param>
+        /// <returns></returns>
         public static async Task<XivTex> GetType4Data(byte[] data, long offset = 0)
         {
             var xivTex = new XivTex();
@@ -125,6 +132,51 @@ namespace Icarus.Util.Extensions
             xivTex.TexData = decompressedData.ToArray();
 
             return xivTex;
+        }
+
+        public static async Task<byte[]> GetType2Data(byte[] data, long offset = 0)
+        {
+            var type2Bytes = new List<byte>();
+            using (var br = new BinaryReader(new MemoryStream(data)))
+            {
+                br.BaseStream.Seek(offset, SeekOrigin.Begin);
+
+                var headerLength = br.ReadInt32();
+
+                br.ReadBytes(16);
+
+                var dataBlockCount = br.ReadInt32();
+
+                for (var i = 0; i < dataBlockCount; i++)
+                {
+                    br.BaseStream.Seek(offset + (24 + (8 * i)), SeekOrigin.Begin);
+
+                    var dataBlockOffset = br.ReadInt32();
+
+                    br.BaseStream.Seek(offset + headerLength + dataBlockOffset, SeekOrigin.Begin);
+
+                    br.ReadBytes(8);
+
+                    var compressedSize = br.ReadInt32();
+                    var uncompressedSize = br.ReadInt32();
+
+                    // When the compressed size of a data block shows 32000, it is uncompressed.
+                    if (compressedSize == 32000)
+                    {
+                        type2Bytes.AddRange(br.ReadBytes(uncompressedSize));
+                    }
+                    else
+                    {
+                        var compressedData = br.ReadBytes(compressedSize);
+
+                        var decompressedData = await IOUtil.Decompressor(compressedData, uncompressedSize);
+
+                        type2Bytes.AddRange(decompressedData);
+                    }
+                }
+            }
+
+            return type2Bytes.ToArray();
         }
 
         public static async Task<byte[]> CreateType2Data(byte[] dataToCreate)

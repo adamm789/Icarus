@@ -9,9 +9,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Security;
 using System.Threading.Tasks;
+using SixLabors.ImageSharp;
 using TeximpNet;
 using TeximpNet.Compression;
 using TeximpNet.DDS;
+using xivModdingFramework.General.Enums;
 using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Models.Helpers;
@@ -19,6 +21,8 @@ using xivModdingFramework.Mods.FileTypes;
 using xivModdingFramework.Textures.Enums;
 using xivModdingFramework.Textures.FileTypes;
 using Path = System.IO.Path;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Formats.Png;
 
 namespace Icarus.Util
 {
@@ -31,6 +35,10 @@ namespace Icarus.Util
         public Exporter(ILogService logService)
         {
             _logService = logService;
+
+            // TODO: Better way to "GetFullRaceTree"?
+            // Set the race tree so we don't have a race condition setting it later
+            XivRaceTree.GetFullRaceTree();
         }
 
         public Exporter(GameData lumina, ILogService logService)
@@ -38,6 +46,9 @@ namespace Icarus.Util
             _logService = logService;
             _lumina = lumina;
             _gameDirectoryFramework = new DirectoryInfo(Path.Combine(_lumina.DataPath.FullName, "ffxiv"));
+
+            // Set race tree here
+            XivRaceTree.GetFullRaceTree();
         }
 
         // https://github.com/TexTools/xivModdingFramework/blob/81c234e7b767d56665185e07aabeeae21d895f0b/xivModdingFramework/Mods/FileTypes/TTMP.cs
@@ -125,7 +136,7 @@ namespace Icarus.Util
         {
             var itemMetadata = mod.ItemMetadata;
             var bytes = await ItemMetadata.Serialize(itemMetadata);
-            return bytes;
+            return await DatExtensions.CreateType2Data(bytes);
         }
 
         protected async Task<byte[]> WriteTextureToBytes(TextureMod mod, bool shouldCompress)
@@ -144,6 +155,18 @@ namespace Icarus.Util
             var texFormat = mod.GetTexFormat();
             var externalPath = mod.ModFilePath;
             var internalPath = mod.Path;
+
+
+            if (mod.XivTex != null)
+            {
+                var x = await TexExtensions.GetImageData(_gameDirectoryFramework, mod.XivTex);
+                externalPath = Path.GetTempFileName();
+
+                using (var img = Image.LoadPixelData<Rgba32>(x, mod.XivTex.Width, mod.XivTex.Height))
+                {
+                    img.Save(externalPath, new PngEncoder());
+                }
+            }
 
             if (!File.Exists(externalPath))
             {
@@ -179,7 +202,6 @@ namespace Icarus.Util
                 if (!isDds)
                 {
                     // TODO: How to export when source is from ttmp2?
-
                     using (var surface = Surface.LoadFromFile(externalPath))
                     {
                         if (surface == null)
@@ -188,7 +210,7 @@ namespace Icarus.Util
                         surface.FlipVertically();
 
                         var maxMipCount = 1;
-                        // TODO: root?
+                        // TODO: root and maxMipCount?
 
                         //if (root != null)
                         //{
@@ -208,7 +230,6 @@ namespace Icarus.Util
                             compressor.Process(out ddsContainer);
                         }
                     }
-
                 }
 
                 // If we're not a DDS, write the DDS to file temporarily.

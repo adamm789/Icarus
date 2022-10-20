@@ -13,6 +13,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.IO;
 using System.Threading.Tasks;
+using System.Windows.Media.Animation;
 using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Textures.FileTypes;
 using ModPack = Icarus.Mods.DataContainers.ModPack;
@@ -242,7 +243,7 @@ namespace Icarus.Services.Files
             var texMod = new TextureMod(false)
             {
                 ModFileName = filePath,
-                ModFilePath = filePath
+                ModFilePath = filePath,
             };
             retPack.SimpleModsList.Add(texMod);
 

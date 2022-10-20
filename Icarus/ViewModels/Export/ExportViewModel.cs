@@ -78,11 +78,12 @@ namespace Icarus.ViewModels.Export
                     success = false;
                     Log.Error(ex, "Export threw an exception.");
                 }
+                if (success)
+                {
+                    DisplayFinished(outputPath);
+                }
             }
-            if (success)
-            {
-                DisplayFinished(outputPath);
-            }
+
             IsBusy = false;
             ExportCommand.RaiseCanExecuteChanged();
         }

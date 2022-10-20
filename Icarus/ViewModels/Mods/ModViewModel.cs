@@ -161,7 +161,8 @@ namespace Icarus.ViewModels.Mods
 
         public virtual async Task<bool> SetDestinationItem(IItem? itemArg = null)
         {
-            var data = await _gameFileService.GetFileData(itemArg, Mod.GetType());
+            //var data = await _gameFileService.GetFileData(itemArg, Mod.GetType());
+            var data = await GetFileData(itemArg);
             if (data != null)
             {
                 SelectedItem = _gameFileService.GetItem();
@@ -170,7 +171,11 @@ namespace Icarus.ViewModels.Mods
                 return true;
             }
             return await TrySetDestinationPath(DestinationPath);
+        }
 
+        public virtual async Task<IGameFile?> GetFileData(IItem? itemArg = null)
+        {
+            return await _gameFileService.GetFileData(itemArg, Mod.GetType());
         }
 
         /// <summary>

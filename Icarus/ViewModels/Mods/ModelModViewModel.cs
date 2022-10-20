@@ -9,9 +9,11 @@ using Icarus.ViewModels.Import;
 using Icarus.ViewModels.Models;
 using ItemDatabase;
 using ItemDatabase.Enums;
+using ItemDatabase.Interfaces;
 using ItemDatabase.Paths;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using xivModdingFramework.General.Enums;
 
 namespace Icarus.ViewModels.Mods
@@ -96,6 +98,11 @@ namespace Icarus.ViewModels.Mods
         {
             DestinationPath = XivPathParser.ChangeToRace(DestinationPath, race);
             OptionsViewModel.UpdateTargetRace(race);
+        }
+
+        public async override Task<IGameFile?> GetFileData(IItem? itemArg = null)
+        {
+            return await Task.Run(() => _gameFileService.GetModelFileData(itemArg, TargetRace));
         }
 
         public override bool SetModData(IGameFile? gameFile)

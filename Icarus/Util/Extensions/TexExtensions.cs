@@ -227,5 +227,11 @@ namespace Icarus.Util.Extensions
                 }
             }
         }
+
+        public static async Task<byte[]> GetImageData(DirectoryInfo gameDirectory, XivTex xivTex, int layer = -1)
+        {
+            var tex = new Tex(gameDirectory);
+            return await tex.GetImageData(xivTex, layer);
+        }
     }
 }

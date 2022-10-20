@@ -13,7 +13,9 @@ namespace Icarus.Mods
         public XivTexType TexType { get; set; }
 
         public Dictionary<XivTexType, XivTexFormat>? TypeFormatDict { get; set; }
-        public XivTex XivTex {get;}
+
+        // Only set when source is from ttmp2
+        public XivTex? XivTex { get; }
 
         public TextureMod(bool isInternal = false)
         {
