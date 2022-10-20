@@ -3,7 +3,7 @@ Work-In-Progress project that packs mods for Final Fantasy XIV.
 
 Currently supports:
 * Importing .fbx files and .ttmp2 files
-* Modding .fbx files onto <i>only equipment and accessories</i>
+* Modding .fbx files onto equipment and accessories
 * Changing material assignments
 * Exporting to a Simple TexTools modpack or a basic Penumbra mod folder structure
 * Creating, editing, and exporting to an Advanced TexTools modpack
@@ -15,7 +15,7 @@ Currently supports:
 
 # Usage
 Set game path  
-"Browse" to your fbx or ttmp2 file  
+"Browse" to your file  
 "Copy" item from the search on the left  
 Export to TexTools modpack or Penumbra file structure   
 
@@ -26,7 +26,8 @@ If you wish to build your own copy, you will need the "converters" (for importin
 * While you can theoretically assign any destination path, this is a courtesy. Use at your own risk.  
 * When exporting vanilla mdls with skins, the resulting png is incorrect.  
 * When importing via fbx, attributes are not automatically set. While intentional, down the line, there may be a setting to change that.  
-* Models with custom skeletons will not export to fbx correctly. They appear to work fine in-game.
+* Models with custom skeletons will not export to fbx correctly. They appear to work fine in-game.  
+* Materials get their colorsets edited slightly upon export  
 
 # Comments
 UI is very bare bones and honestly, quite ugly.
