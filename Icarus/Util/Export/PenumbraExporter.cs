@@ -1,8 +1,10 @@
 ﻿using Icarus.Mods;
 using Icarus.Mods.Interfaces;
 using Icarus.Mods.Penumbra;
+using Icarus.Services.GameFiles;
 using Icarus.Services.Interfaces;
 using Ionic.Zip;
+using Lumina;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -15,7 +17,7 @@ namespace Icarus.Util
 {
     public class PenumbraExporter : Exporter
     {
-        public PenumbraExporter(ILogService logService) : base(logService)
+        public PenumbraExporter(GameData lumina, ILogService logService) : base(lumina, logService)
         {
 
         }

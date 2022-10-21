@@ -9,6 +9,7 @@ using Icarus.ViewModels.Util;
 using Icarus.Views.Mods.Metadata;
 using ItemDatabase.Paths;
 using System.Collections.ObjectModel;
+using System.Drawing.Imaging;
 using xivModdingFramework.General.Enums;
 
 namespace Icarus.ViewModels.Mods
@@ -19,7 +20,6 @@ namespace Icarus.ViewModels.Mods
         IWindowService _windowService;
         MetadataMod _metadataMod;
 
-        // TODO: Est
         public MetadataModViewModel(MetadataMod mod, IGameFileService gameFileDataService, IWindowService windowService, ILogService logService)
             : base(mod, gameFileDataService, logService)
         {
@@ -28,17 +28,19 @@ namespace Icarus.ViewModels.Mods
 
             EqdpViewModel = new(_metadataMod.EqdpEntries);
 
-            EstViewModel = new(_metadataMod.EstEntries);
-
             if (_metadataMod.EqpEntry != null)
             {
                 EqpViewModel = new(_metadataMod.EqpEntry);
             }
 
+            EstViewModel = new(_metadataMod.EstEntries);
+
             if (_metadataMod.GmpEntry != null)
             {
                 GmpViewModel = new(_metadataMod.GmpEntry);
             }
+
+            // TOOD: ImcEntries
         }
         public EqdpViewModel EqdpViewModel { get; }
         public EstViewModel EstViewModel { get; }
@@ -55,6 +57,19 @@ namespace Icarus.ViewModels.Mods
         public void OpenMetadataEditor()
         {
             _windowService.ShowWindow<MetadataWindow>(this);
+        }
+
+        public override bool SetModData(IGameFile gameFile)
+        {
+            if (gameFile is IMetadataFile metaFile)
+            {
+                var ret = base.SetModData(gameFile);
+
+                // TODO: Figure out EstEntries...
+                EstViewModel.SetAllSkelId(metaFile.ItemMetadata.EstEntries);
+                return ret;
+            }
+            return false;
         }
     }
 }

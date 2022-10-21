@@ -11,18 +11,33 @@ namespace Icarus.ViewModels.Mods.Metadata
 {
     public class EstEntryViewModel : NotifyPropertyChanged
     {
-        public XivRace Race { get; }
-        public ushort SetId { get; }
-        public ushort SkelId { get; }
+        ExtraSkeletonEntry _est;
+        public XivRace Race
+        {
+            get { return _est.Race; }
+        }
+        public ushort SetId
+        {
+            get { return _est.SetId; }
+            set { _est.SetId = value; OnPropertyChanged(); } 
+        }
+        public ushort SkelId
+        {
+            get { return _est.SkelId; }
+            set { _est.SkelId = value; OnPropertyChanged(); }
+        }
 
-        public bool IsEnabled { get; }
+        bool _isEnabled;
+        public bool IsEnabled
+        {
+            get { return _isEnabled; }
+            set { _isEnabled = value; OnPropertyChanged(); }
+        }
         public EstEntryViewModel(XivRace race, ExtraSkeletonEntry est)
         {
-            Race = race;
-            SetId = est.SetId;
-            SkelId = est.SkelId;
+            _est = est;
 
-            IsEnabled = est.SkelId != 0;
+            IsEnabled = _est.SkelId != 0;
         }
     }
 }

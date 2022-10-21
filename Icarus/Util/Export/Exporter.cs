@@ -32,15 +32,6 @@ namespace Icarus.Util
         protected GameData? _lumina;
         protected DirectoryInfo? _gameDirectoryFramework;
 
-        public Exporter(ILogService logService)
-        {
-            _logService = logService;
-
-            // TODO: Better way to "GetFullRaceTree"?
-            // Set the race tree so we don't have a race condition setting it later
-            XivRaceTree.GetFullRaceTree();
-        }
-
         public Exporter(GameData lumina, ILogService logService)
         {
             _logService = logService;
@@ -99,8 +90,8 @@ namespace Icarus.Util
                         }
                         else
                         {
+                            // Readonly mods can only be written to ttmp2 files
                             _logService.Warning("Trying to export a \"Read Only Mod\" to Penumbra.");
-                            // TODO: What to do here?
                             break;
                         }
                 }
@@ -108,10 +99,7 @@ namespace Icarus.Util
             catch (Exception ex)
             {
                 _logService.Error(ex, $"Exception thrown during WriteToBytes with {mod.Name}.");
-                return Array.Empty<byte>();
             }
-
-            _logService.Warning($"Currently unknown export method. Skipping {mod.Name}.");
             return Array.Empty<byte>();
         }
 
@@ -150,19 +138,20 @@ namespace Icarus.Util
                 throw new NotImplementedException("Unknown export method for Penumbra texture (.tex)");
             }
 
-            var ddsContainer = new DDSContainer();
             var isDds = Path.GetExtension(mod.ModFilePath).ToLower() == ".dds";
             var texFormat = mod.GetTexFormat();
             var externalPath = mod.ModFilePath;
             var internalPath = mod.Path;
+            var tempImageFile = Path.GetTempFileName();
 
-
+            // TODO: Put this out into some other function?
             if (mod.XivTex != null)
             {
-                var x = await TexExtensions.GetImageData(_gameDirectoryFramework, mod.XivTex);
-                externalPath = Path.GetTempFileName();
+                var imageData = await TexExtensions.GetImageData(_gameDirectoryFramework, mod.XivTex);
+                // TODO: Delete temp file...?
+                externalPath = tempImageFile;
 
-                using (var img = Image.LoadPixelData<Rgba32>(x, mod.XivTex.Width, mod.XivTex.Height))
+                using (var img = Image.LoadPixelData<Rgba32>(imageData, mod.XivTex.Width, mod.XivTex.Height))
                 {
                     img.Save(externalPath, new PngEncoder());
                 }
@@ -172,6 +161,8 @@ namespace Icarus.Util
             {
                 throw new FileNotFoundException($"The external texture path: {externalPath} could not be found.");
             }
+
+            var ddsContainer = new DDSContainer();
 
             // MakeTexData
             // https://github.com/TexTools/xivModdingFramework/blob/81c234e7b767d56665185e07aabeeae21d895f0b/xivModdingFramework/Textures/FileTypes/Tex.cs#L905
@@ -235,18 +226,36 @@ namespace Icarus.Util
                 // If we're not a DDS, write the DDS to file temporarily.
                 // TODO: Where to write temp file?... To Temp folder?
                 var ddsFilePath = externalPath;
+                string tempDdsFile = "";
                 if (!isDds)
                 {
-                    var tempFile = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".dds");
-                    ddsContainer.Write(tempFile, DDSFlags.None);
-                    ddsFilePath = tempFile;
+                    tempDdsFile = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".dds");
+                    ddsContainer.Write(tempDdsFile, DDSFlags.None);
+                    ddsFilePath = tempDdsFile;
                 }
 
-                return await TexExtensions.DDSToTex(ddsFilePath, internalPath, texFormat);
+                var bytes = await TexExtensions.DDSToTex(ddsFilePath, internalPath, texFormat);
+
+                if (File.Exists(tempImageFile))
+                {
+                    _logService.Verbose($"Deleting temp path: {tempImageFile}");
+                    File.Delete(tempImageFile);
+                }
+                if (File.Exists(tempDdsFile))
+                {
+                    _logService.Verbose($"Deleting temp dds file: {tempDdsFile}");
+                    File.Delete(tempDdsFile);
+                }
+
+                return bytes;
             } // Not catching so any exception should be handled by calling function
             finally
             {
                 ddsContainer.Dispose();
+                if (File.Exists(tempImageFile))
+                {
+                    File.Delete(tempImageFile);
+                }
             }
         }
 

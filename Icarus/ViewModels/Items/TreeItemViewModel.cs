@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
+using System.Windows.Forms;
 
 namespace Icarus.ViewModels.Items
 {
@@ -97,7 +98,7 @@ namespace Icarus.ViewModels.Items
                 return 0;
             }
             var items = (CollectionView)CollectionViewSource.GetDefaultView(Children);
-            items.Refresh();
+            items.Filter = ChildSearchFilter;
 
             var numMatches =  items.Count;
 

@@ -21,9 +21,11 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <TextBox AcceptsReturn="False"
-                Grid.Row="0" Grid.Column="0" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Center">
-            </TextBox>
+            <Border BorderBrush="Black" BorderThickness="2">
+                <TextBox AcceptsReturn="False" Grid.Row="0" Grid.Column="0"
+                         Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Center">
+                </TextBox>
+            </Border>
         </Grid>
 
     </Grid>

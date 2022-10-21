@@ -30,10 +30,6 @@ namespace Icarus.Util
 
         public TexToolsExporter(GameData lumina, ILogService logService) : base(lumina, logService)
         {
-        }
-
-        public TexToolsExporter(ILogService logService) : base(logService)
-        {
 
         }
 

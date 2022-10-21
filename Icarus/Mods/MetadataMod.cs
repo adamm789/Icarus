@@ -49,13 +49,15 @@ namespace Icarus.Mods
         // ImcEntries
         // Root
 
-        public MetadataMod(ItemMetadata data, bool inInternal = false)
+
+        public MetadataMod(ItemMetadata data, bool isInternal = false)
         {
-            IsInternal = inInternal;
+            IsInternal = isInternal;
             ItemMetadata = data;
 
             ModFileName = data.Root.ToRawItem().Name;
             ModFilePath = data.Root.ToString();
+
             Path = data.Root.ToString();
             Slot = data.Root.Info.Slot;
         }
@@ -66,9 +68,17 @@ namespace Icarus.Mods
             {
                 throw new ArgumentException($"ModData was not of MetadataGameFile. It was {gameFile.GetType()}.");
             }
+
+            if (metaFile.ItemMetadata.Root.Info.Slot != Slot)
+            {
+                // TODO?: Don't change it if it's not the same slot
+                return;
+            }
             base.SetModData(gameFile);
 
             ItemMetadata.Root = metaFile.ItemMetadata.Root;
+            Path = metaFile.Path;
+            EstEntries = metaFile.ItemMetadata.EstEntries;
         }
     }
 }

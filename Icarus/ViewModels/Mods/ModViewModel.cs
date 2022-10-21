@@ -25,7 +25,7 @@ namespace Icarus.ViewModels.Mods
         protected readonly ILogService _logService;
         public virtual bool IsReadOnly
         {
-            get { return this is ReadOnlyModViewModel || this is MetadataModViewModel; }
+            get { return this is ReadOnlyModViewModel; }
         }
 
         public bool CanParsePath => XivPathParser.CanParsePath(DestinationPath);

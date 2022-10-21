@@ -31,12 +31,26 @@ namespace Icarus.ViewModels.Mods.Metadata
                 }
             }
         }
+
+        public void SetAllSkelId(Dictionary<XivRace, ExtraSkeletonEntry> dict)
+        {
+            foreach (var entry in MaleEstEntries)
+            {
+                entry.SkelId = dict[entry.Race].SkelId;
+            }
+            foreach (var entry in FemaleEstEntries)
+            {
+                entry.SkelId = dict[entry.Race].SkelId;
+            }
+        }
+
         public EstViewModel(Dictionary<XivRace, ExtraSkeletonEntry> dict)
         {
             foreach (var kvp in dict)
             {
                 var vm = new EstEntryViewModel(kvp.Key, kvp.Value);
-                if (XivPathParser.IsMaleSkin(kvp.Key)) {
+                if (XivPathParser.IsMaleSkin(kvp.Key))
+                {
                     MaleEstEntries.Add(vm);
                 }
                 else

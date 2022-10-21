@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using TeximpNet.Compression;
+using TeximpNet.DDS;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Textures.DataContainers;
 using xivModdingFramework.Textures.Enums;
@@ -227,10 +229,10 @@ namespace Icarus.Util.Extensions
                 }
             }
         }
-
         public static async Task<byte[]> GetImageData(DirectoryInfo gameDirectory, XivTex xivTex, int layer = -1)
         {
             var tex = new Tex(gameDirectory);
+            // TODO: Extract GetImageData so that it does not depend on game directory (?)
             return await tex.GetImageData(xivTex, layer);
         }
     }
