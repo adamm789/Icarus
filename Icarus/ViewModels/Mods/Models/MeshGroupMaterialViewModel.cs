@@ -14,40 +14,15 @@ namespace Icarus.ViewModels.Models
     {
         // TODO: Consider when changing the race, it changes the material race as well
         // This probably results in materials that don't actually exist
+        // TODO: implement DefaultSkinVariant
+        // TODO: 
         TTMeshGroup _importedGroup;
         ModelModViewModel _modelModViewModel;
         readonly IUserPreferencesService _userPreferencesService;
 
         private string _materialName = "";
-
         private string _skinName = "/mt_c0101b0001_";
-
         private string _initialMaterial = "";
-
-
-        string _skinVariant = "a";
-        public string SkinVariant
-        {
-            get { return _skinVariant; }
-            set {
-                _skinVariant = value;
-                OnPropertyChanged();
-                UpdateDisplayedMaterial();
-            }
-        }
-
-        string _materialVariant = "a";
-        public string MaterialVariant
-        {
-            get { return _materialVariant; }
-            set {
-                _materialVariant = value;
-                OnPropertyChanged();
-                UpdateDisplayedMaterial();
-            }
-        }
-
-        public bool CanParsePath => XivPathParser.CanParsePath(DestinationModelPath);
 
         public MeshGroupMaterialViewModel(TTMeshGroup group, ModelModViewModel model, IUserPreferencesService userPreferences, ISettingsService settingsService)
         {
@@ -66,6 +41,33 @@ namespace Icarus.ViewModels.Models
             var eh = new PropertyChangedEventHandler(ParentChanged);
             model.PropertyChanged += eh;
         }
+
+
+        string _skinVariant = "a";
+        public string SkinVariant
+        {
+            get { return _skinVariant; }
+            set
+            {
+                _skinVariant = value;
+                OnPropertyChanged();
+                UpdateDisplayedMaterial();
+            }
+        }
+
+        string _materialVariant = "a";
+        public string MaterialVariant
+        {
+            get { return _materialVariant; }
+            set
+            {
+                _materialVariant = value;
+                OnPropertyChanged();
+                UpdateDisplayedMaterial();
+            }
+        }
+
+        public bool CanParsePath => XivPathParser.CanParsePath(DestinationModelPath);
 
         private void ParentChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -90,7 +92,8 @@ namespace Icarus.ViewModels.Models
         public string DestinationModelPath
         {
             get { return _destinationModelPath; }
-            set {
+            set
+            {
                 _destinationModelPath = value;
                 UpdateDisplayedMaterial();
                 OnPropertyChanged(nameof(CanParsePath));
@@ -139,7 +142,8 @@ namespace Icarus.ViewModels.Models
         public string DisplayedMaterial
         {
             get { return _importedGroup.Material; }
-            set {
+            set
+            {
                 if (_importedGroup.Material == value) return;
 
                 _importedGroup.Material = value;
@@ -179,7 +183,7 @@ namespace Icarus.ViewModels.Models
 
         private void UpdateRace(XivRace race)
         {
-            _skinName = XivPathParser.ChangeToRace(_skinName, race);
+            // TODO: UserPreferences of default skin material will overwrite any assignment in, for example, a ttmp2
             if (!_modelModViewModel.IsInternal)
             {
                 _skinVariant = _userPreferencesService.GetDefaultSkinMaterialVariant(race);

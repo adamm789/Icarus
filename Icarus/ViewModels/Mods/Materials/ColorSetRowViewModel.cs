@@ -25,6 +25,8 @@ namespace Icarus.ViewModels.Mods.Materials
             var currRange = _colorsetData.GetRange(rowNumber * 16, 16);
             //DiffuseColor = GetColor(GetColorSetDataRange(currRange, 0));
 
+            DiffuseColor = new(currRange[0], currRange[1], currRange[2]);
+
             Diffuse = new SolidColorBrush(GetColor(GetColorSetDataRange(currRange, 0)));
             Specular = new SolidColorBrush(GetColor(GetColorSetDataRange(currRange, 4)));
             Emissive = new SolidColorBrush(GetColor(GetColorSetDataRange(currRange, 8)));
@@ -55,16 +57,7 @@ namespace Icarus.ViewModels.Mods.Materials
             return WindowsColor.FromArgb(c.A, c.R, c.G, c.B);
         }
 
-        WindowsColor _diffuseColor;
-        public WindowsColor DiffuseColor
-        {
-            get { return _diffuseColor; }
-            set {
-                _diffuseColor = value;
-                OnPropertyChanged();
-                Diffuse = new(value);
-            }
-        }
+        public ColorViewModel DiffuseColor { get; }
 
         // TODO: ColorSetRow editor
         SolidColorBrush _diffuse;
@@ -76,6 +69,7 @@ namespace Icarus.ViewModels.Mods.Materials
                 OnPropertyChanged();
                 
                 // TODO: This changes the color slightly (less than before, but... it does)
+                // DiffuseR, DiffuseG, DiffuseB? And have the display color relatively separated from these values?
                 _colorsetData[(RowNumber * 16) + 0] = new Half(_diffuse.Color.R/255f);
                 _colorsetData[(RowNumber * 16) + 1] = new Half(_diffuse.Color.G/255f);
                 _colorsetData[(RowNumber * 16) + 2] = new Half(_diffuse.Color.B/255f);

@@ -33,7 +33,7 @@ namespace Icarus.ViewModels.Mods
                 EqpViewModel = new(_metadataMod.EqpEntry);
             }
 
-            EstViewModel = new(_metadataMod.EstEntries);
+            EstViewModel = new(_metadataMod, EqdpViewModel);
 
             if (_metadataMod.GmpEntry != null)
             {

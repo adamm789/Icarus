@@ -14,6 +14,14 @@ namespace Icarus.ViewModels.Mods.Metadata
 {
     public class EqpViewModel : NotifyPropertyChanged
     {
+        public EqpViewModel(EquipmentParameter eqpEntry)
+        {
+            EqpEntry = eqpEntry;
+            UpdateEntries();
+            SetPresets();
+            UpdatePreset();
+        }
+
         EquipmentParameter _eqpEntry;
         public EquipmentParameter EqpEntry
         {
@@ -66,14 +74,6 @@ namespace Icarus.ViewModels.Mods.Metadata
                     UpdateEntries();
                 }
             }
-        }
-
-        public EqpViewModel(EquipmentParameter eqpEntry)
-        {
-            EqpEntry = eqpEntry;
-            UpdateEntries();
-            SetPresets();
-            UpdatePreset();
         }
 
         private void UpdateEntries()

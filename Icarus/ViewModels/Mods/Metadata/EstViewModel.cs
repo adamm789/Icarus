@@ -15,12 +15,13 @@ namespace Icarus.ViewModels.Mods.Metadata
     public class EstViewModel : NotifyPropertyChanged
     {
         //public static AllSkeletonEntries;
-        public EstViewModel(MetadataMod mod)
+        public EstViewModel(MetadataMod mod, EqdpViewModel eqdpViewModel)
         {
             var dict = mod.EstEntries;
             foreach (var kvp in dict)
             {
-                var vm = new EstEntryViewModel(kvp.Key, kvp.Value);
+                var eqdpEntyViewModel = eqdpViewModel.GetEntry(kvp.Key);
+                var vm = new EstEntryViewModel(kvp.Key, mod, eqdpEntyViewModel);
                 if (XivPathParser.IsMaleSkin(kvp.Key))
                 {
                     MaleEstEntries.Add(vm);
@@ -41,22 +42,6 @@ namespace Icarus.ViewModels.Mods.Metadata
             foreach (var entry in FemaleEstEntries)
             {
                 entry.SkelId = dict[entry.Race].SkelId;
-            }
-        }
-
-        public EstViewModel(Dictionary<XivRace, ExtraSkeletonEntry> dict)
-        {
-            foreach (var kvp in dict)
-            {
-                var vm = new EstEntryViewModel(kvp.Key, kvp.Value);
-                if (XivPathParser.IsMaleSkin(kvp.Key))
-                {
-                    MaleEstEntries.Add(vm);
-                }
-                else
-                {
-                    FemaleEstEntries.Add(vm);
-                }
             }
         }
 

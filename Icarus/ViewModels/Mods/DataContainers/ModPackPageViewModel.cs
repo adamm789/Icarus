@@ -1,4 +1,5 @@
-﻿using Icarus.Mods.DataContainers;
+﻿using GongSolutions.Wpf.DragDrop;
+using Icarus.Mods.DataContainers;
 using Icarus.Services;
 using Icarus.ViewModels.Util;
 using System.Collections.Generic;
@@ -7,10 +8,12 @@ using System.ComponentModel;
 
 namespace Icarus.ViewModels.Mods.DataContainers
 {
-    public class ModPackPageViewModel : NotifyPropertyChanged
+    public class ModPackPageViewModel : NotifyPropertyChanged, IDropTarget
     {
         protected ModPackPage _modPackPage;
         readonly ViewModelService _modFileService;
+        public DelegateCommand? RemoveCommand { get; set; }
+
 
         public ModPackPageViewModel(int index, ModPackViewModel parent, ViewModelService modFileService)
         {
@@ -139,6 +142,20 @@ namespace Icarus.ViewModels.Mods.DataContainers
             return true;
         }
 
-        public DelegateCommand? RemoveCommand { get; set; }
+        public void DragOver(IDropInfo dropInfo)
+        {
+            var source = dropInfo.Data;
+            var target = dropInfo.TargetItem;
+
+            if (source is ModOptionViewModel sourceOption && target is ModOptionViewModel targetOption)
+            {
+
+            }
+        }
+
+        public void Drop(IDropInfo dropInfo)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

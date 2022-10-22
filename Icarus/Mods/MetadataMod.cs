@@ -48,7 +48,11 @@ namespace Icarus.Mods
         // GmpEntry
         // ImcEntries
         // Root
-
+        public MetadataMod(IMetadataFile file, bool isInternal = false) : base(file, isInternal)
+        {
+            ItemMetadata = file.ItemMetadata;
+            Slot = file.Slot;
+        }
 
         public MetadataMod(ItemMetadata data, bool isInternal = false)
         {

@@ -15,8 +15,7 @@
         </Grid.ColumnDefinitions>
         <TextBlock Text="{Binding Race}" Grid.Column="0"/>
         <StackPanel Orientation="Horizontal" Grid.Column="1">
-            <CheckBox Content="bit0" IsChecked="{Binding Bit0}"/>
-            <CheckBox Content="bit1" IsChecked="{Binding Bit1}"/>
+            <CheckBox IsChecked="{Binding Bit1}"/>
         </StackPanel>
     </Grid>
 </UserControl>

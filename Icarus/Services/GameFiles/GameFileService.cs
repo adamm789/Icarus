@@ -298,7 +298,7 @@ namespace Icarus.Services.GameFiles
             var xivMtrl = await TryGetMaterialFromPath(path);
             var result = TryGetItem(path, itemName);
 
-            if (result!= null)
+            if (result != null)
             {
                 return await GetMaterialFileData(result);
             }
@@ -307,7 +307,7 @@ namespace Icarus.Services.GameFiles
             {
                 var category = XivPathParser.GetCategory(path);
                 var name = path;
-                if (result!=null)
+                if (result != null)
                 {
                     name = result.Name;
                 }
@@ -359,6 +359,31 @@ namespace Icarus.Services.GameFiles
         }
 
         #endregion
+
+        /*
+         * TODO: Return IMetadataFile from TryGetMetadata
+        public async Task<IMetadataFile?> TryGetMetadata(string path, string? itemName)
+        {
+            var itemMetadata = await ItemMetadata.GetMetadata(path, true);
+            //var metadata = new MetadataMod(itemMetadata);
+
+            var name = $"{path} (?)";
+            var result = TryGetItem(path, itemName);
+
+            if (result != null)
+            {
+                name = result.Name;
+            }
+            //metadata.Name = name;
+            return new MetadataFile()
+            {
+                Name = name,
+                Path = path,
+                Category = itemMetadata.Root.Info.Slot,
+                ItemMetadata = itemMetadata
+            };
+        }
+        */
 
         public async Task<MetadataMod?> TryGetMetadata(string path, string? itemName = null)
         {

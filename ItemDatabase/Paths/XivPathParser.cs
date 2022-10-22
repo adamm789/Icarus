@@ -287,6 +287,13 @@ namespace ItemDatabase.Paths
             return "";
         }
 
+        public static string ChangeMtrlVariant(string input, string variant = "a")
+        {
+            var regex = new Regex(@"([a-z]).mtrl$");
+            var ret = $"{regex.Replace(input, variant)}.mtrl";
+            return ret;
+        }
+
         #endregion
     }
 }

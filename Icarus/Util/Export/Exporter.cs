@@ -20,9 +20,12 @@ using xivModdingFramework.Models.Helpers;
 using xivModdingFramework.Mods.FileTypes;
 using xivModdingFramework.Textures.Enums;
 using xivModdingFramework.Textures.FileTypes;
-using Path = System.IO.Path;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Formats.Png;
+using xivModdingFramework.Mods.DataContainers;
+
+using Path = System.IO.Path;
+using ModPack = Icarus.Mods.DataContainers.ModPack;
 
 namespace Icarus.Util
 {
@@ -129,14 +132,19 @@ namespace Icarus.Util
 
         protected async Task<byte[]> WriteTextureToBytes(TextureMod mod, bool shouldCompress)
         {
+            // TODO: Export texture to .pmp
+
+            _logService.Verbose($"Exporting texture: {mod.ModFileName} with shouldCompress={shouldCompress}");
             if (mod.IsInternal)
             {
                 throw new NotImplementedException("Unknown export method for internal textures.");
             }
+            /*
             if (!shouldCompress)
             {
                 throw new NotImplementedException("Unknown export method for Penumbra texture (.tex)");
             }
+            */
 
             var isDds = Path.GetExtension(mod.ModFilePath).ToLower() == ".dds";
             var texFormat = mod.GetTexFormat();
@@ -144,11 +152,10 @@ namespace Icarus.Util
             var internalPath = mod.Path;
             var tempImageFile = Path.GetTempFileName();
 
-            // TODO: Put this out into some other function?
+            // TODO: Pull this out into some other function?
             if (mod.XivTex != null)
             {
                 var imageData = await TexExtensions.GetImageData(_gameDirectoryFramework, mod.XivTex);
-                // TODO: Delete temp file...?
                 externalPath = tempImageFile;
 
                 using (var img = Image.LoadPixelData<Rgba32>(imageData, mod.XivTex.Width, mod.XivTex.Height))
@@ -192,7 +199,6 @@ namespace Icarus.Util
 
                 if (!isDds)
                 {
-                    // TODO: How to export when source is from ttmp2?
                     using (var surface = Surface.LoadFromFile(externalPath))
                     {
                         if (surface == null)
@@ -234,7 +240,7 @@ namespace Icarus.Util
                     ddsFilePath = tempDdsFile;
                 }
 
-                var bytes = await TexExtensions.DDSToTex(ddsFilePath, internalPath, texFormat);
+                var bytes = await TexExtensions.DDSToTex(ddsFilePath, internalPath, texFormat, shouldCompress);
 
                 if (File.Exists(tempImageFile))
                 {
@@ -284,24 +290,20 @@ namespace Icarus.Util
         /// <summary>
         /// Writes a model to bytes
         /// </summary>
-        /// <param name="file"></param>
+        /// <param name="mod"></param>
         /// <param name="shouldCompress">Whether to compress the vertex information or not</param>
         /// <returns></returns>
-        protected async Task<byte[]> WriteModelToBytes(ModelMod file, bool shouldCompress, int counter = 0)
+        protected async Task<byte[]> WriteModelToBytes(ModelMod mod, bool shouldCompress, int counter = 0)
         {
-            _logService.Verbose($"{file.Name} ({counter}) has started.");
-            var ttModel = file.ImportedModel;
-            var ogMdl = file.XivMdl;
-            // TODO: I need to un-apply these options after exporting
-            // After applying modelmodifiers and then exporting, the model is not reverted to its original state
-            var copy = ApplyModelOptions(file);
+            _logService.Verbose($"Exporting model: {mod.ModFileName} with shouldCompress={shouldCompress}");
 
+            var copy = ApplyModelOptions(mod);
+
+            var ogMdl = mod.XivMdl;
             var mdl = new Mdl(copy, ogMdl);
             var bytes = await mdl.MakeNewMdlFileLumina(shouldCompress);
 
-            // ModelModifiers.MakeExportReady(ttModel, _logService.LoggingFunction);
-
-            _logService.Verbose($"{file.Name} ({counter}) has finished.");
+            _logService.Verbose($"{mod.Name} ({counter}) has finished.");
             return bytes;
         }
 
@@ -310,12 +312,14 @@ namespace Icarus.Util
         /// If ShouldCompress, the resulting file is with TexTools
         /// If not, the resulting file is used with Penumbra
         /// </summary>
-        /// <param name="file"></param>
+        /// <param name="mod"></param>
         /// <param name="shouldCompress"></param>
         /// <returns></returns>
-        protected async Task<byte[]> WriteMaterialToBytes(MaterialMod file, bool shouldCompress = true)
+        protected async Task<byte[]> WriteMaterialToBytes(MaterialMod mod, bool shouldCompress = true)
         {
-            var xivMtrl = file.GetMtrl();
+            _logService.Verbose($"Exporting material: {mod.ModFileName} with shouldCompress={shouldCompress}");
+
+            var xivMtrl = mod.GetMtrl();
             var bytes = MtrlExtensions.CreateMtrlFile(xivMtrl);
 
             if (!shouldCompress)

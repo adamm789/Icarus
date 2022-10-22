@@ -4,6 +4,7 @@ using Icarus.Services.GameFiles;
 using Icarus.Services.GameFiles.Interfaces;
 using Icarus.Services.Interfaces;
 using Icarus.Util;
+using Icarus.Util.Extensions;
 using Icarus.ViewModels.Util;
 using Lumina.Data.Files;
 using System;
@@ -148,8 +149,21 @@ namespace Icarus.Services.Files
 
                 if (!sane)
                 {
-                    _logService.Error("Model was deemed insane.");
+                    _logService.Error("Model was deemed insane. Model has no data.");
                 }
+
+                // TODO: Check size of model
+                var size = importedModel.GetModelSize();
+                /*
+                 * From https://github.com/TexTools/FFXIV_TexTools_UI/blob/37290b2897c79dd1e913bb4ff90285f0e620ca9d/FFXIV_TexTools/ViewModels/ImportModelEditViewModel.cs#L206
+                 * 
+                 * minAcceptableSize = 0.5f
+                 * MaxAcceptableSize = 2.0f
+                 * 
+                 * if (size < minAcceptableSize * oldModelSize)
+                 * 
+                 * if (size > maxAcceptableSize * oldModelSize)
+                 */
 
                 _logService.Information("Checking for common user errors.");
                 TTModel.CheckCommonUserErrors(importedModel, _logService.LoggingFunction);
@@ -168,7 +182,6 @@ namespace Icarus.Services.Files
             }
             catch (InvalidOperationException ex)
             {
-                //_logService.Error(ex, "Conversion did not succeed.");
                 string err = "";
                 err = int.Parse(ex.Message) switch
                 {

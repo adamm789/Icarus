@@ -38,7 +38,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
         private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             OnPropertyChanged(nameof(SimpleModsList));
-            
+
             if (e.NewItems != null)
             {
                 var newItems = e.NewItems.Cast<ModViewModel>();
@@ -47,7 +47,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
                     item.PropertyChanged += new(OnExportStatusChanged);
                 }
             }
-            
+
             UpdateHeaders();
         }
 
@@ -64,7 +64,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
         private void UpdateHeaders()
         {
             AllModsHeader = $"All ({SimpleModsList.Count})";
-            
+
             ModelModsHeader = $"Models ({ModelMods.Cast<ModViewModel>().Count()})";
             MaterialModsHeader = $"Materials ({MaterialMods.Cast<ModViewModel>().Count()})";
             TextureModsHeader = $"Textures({TextureMods.Cast<ModViewModel>().Count()})";
@@ -244,7 +244,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
             // CollectionChanged does not get called when a destination path changes
             get
             {
-                _incompleteMods = new CollectionViewSource {  Source = SimpleModsList }.View;
+                _incompleteMods = new CollectionViewSource { Source = SimpleModsList }.View;
                 _incompleteMods.Filter = m => !(m as ModViewModel).CanExport;
                 return _incompleteMods;
             }

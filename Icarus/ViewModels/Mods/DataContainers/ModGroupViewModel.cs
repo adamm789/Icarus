@@ -156,7 +156,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
         {
             _modGroup.OptionList.Add(option.GetModOption());
             OptionList.Add(option);
-            //option._parent = this;
+            option.Parent = this;
             NewOptionName = string.Empty;
             option.RemoveCommand = new DelegateCommand(o => RemoveOption(option));
         }
@@ -222,6 +222,9 @@ namespace Icarus.ViewModels.Mods.DataContainers
             else if (source is ModOptionViewModel sourceOption && target is ModOptionViewModel targetOption)
             {
 
+                dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
+                dropInfo.Effects = DragDropEffects.Copy;
+
             }
         }
 
@@ -236,6 +239,21 @@ namespace Icarus.ViewModels.Mods.DataContainers
                 if (modOption.CanAcceptMod(mod))
                 {
                     modOption.AddMod(mod);
+                }
+            }
+            else if (source is ModOptionViewModel sourceOption && target is ModOptionViewModel targetOption)
+            {
+                if (OptionList.Contains(sourceOption) && OptionList.Contains(targetOption))
+                {
+                    MoveTo(sourceOption, targetOption);
+                }
+                else
+                {
+                    var sourceParent = sourceOption.Parent;
+                    var targetParent = targetOption.Parent;
+
+                    sourceParent.RemoveOption(sourceOption);
+                    targetParent.AddOption(sourceOption);
                 }
             }
         }

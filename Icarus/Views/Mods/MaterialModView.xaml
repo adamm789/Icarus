@@ -25,6 +25,7 @@
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         <Grid.Resources>
             <DataTemplate DataType="{x:Type materials:ShaderInfoViewModel}">
@@ -36,14 +37,13 @@
                 False="Collapsed"/>
         </Grid.Resources>
         
-        <local:ModView Grid.Row="0" Grid.ColumnSpan="3"/>
-        <Button Grid.Row="1" Grid.Column="0" Content="Copy From Search"
-                    Command="{Binding SetDestinationCommand}" Margin="2,0,2,0"/>
+        <local:ModView Grid.Row="0" Grid.ColumnSpan="4"/>
+        <Button Grid.Row="1" Grid.Column="0" Content="Copy From Search" Command="{Binding SetDestinationCommand}" Margin="2,0,2,0"/>
         <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding DestinationName, UpdateSourceTrigger=PropertyChanged}"/>
+        <ComboBox Grid.Row="1" Grid.Column="2" ItemsSource="{Binding VariantList}" SelectedValue="{Binding MaterialVariant}"/>
+        <Button Grid.Row="1" Grid.Column="3" Command="{Binding OpenMaterialEditorCommand}" Content="Edit"/>
 
-        <Button Grid.Row="1" Grid.Column="2" Command="{Binding OpenMaterialEditorCommand}" Content="Edit"/>
-
-        <Grid Grid.Row="3" Grid.ColumnSpan="2" DataContext="{Binding ShaderInfoViewModel}">
+        <Grid Grid.Row="3" Grid.ColumnSpan="4" DataContext="{Binding ShaderInfoViewModel}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -51,11 +51,12 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Row="0" Grid.Column="0" Text="Preset"/>
             <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding ShaderPresets}" SelectedValue="{Binding Preset}"/>
-            <materialviews:MaterialTexPathsView Grid.Row="1" Grid.ColumnSpan="2"/>
+            <materialviews:MaterialTexPathsView Grid.Row="1" Grid.ColumnSpan="3"/>
         </Grid>
     </Grid>
 </UserControl>

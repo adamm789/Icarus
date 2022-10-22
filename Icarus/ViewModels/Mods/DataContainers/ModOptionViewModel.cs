@@ -17,7 +17,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
     {
         protected ModOption _modOption = new();
         readonly ViewModelService _modFileService;
-        ModGroupViewModel _parent;
+        public ModGroupViewModel Parent;
 
         PropertyChangedEventHandler eh;
 
@@ -25,9 +25,9 @@ namespace Icarus.ViewModels.Mods.DataContainers
         {
             _modOption = new ModOption(option);
             _modFileService = modFileService;
-            _parent = parent;
+            Parent = parent;
 
-            RemoveCommand = new(o => _parent.RemoveOption(this));
+            RemoveCommand = new(o => Parent.RemoveOption(this));
 
             foreach (var mod in option.Mods)
             {
@@ -35,7 +35,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
                 AddMod(modViewModel);
             }
             eh = new(OnSelectionTypeChanged);
-            _parent.PropertyChanged += eh;
+            Parent.PropertyChanged += eh;
             UpdateHeader();
         }
 
@@ -124,7 +124,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
 
         public void OnRemove()
         {
-            _parent.PropertyChanged -= eh;
+            Parent.PropertyChanged -= eh;
         }
 
         public void RemoveMod(IMod mod)
@@ -249,14 +249,14 @@ namespace Icarus.ViewModels.Mods.DataContainers
             }
             else if (dropItem is ModOptionViewModel modOption)
             {
-                if (_parent == modOption._parent)
+                if (Parent == modOption.Parent)
                 {
-                    _parent.MoveTo(modOption, this);
+                    Parent.MoveTo(modOption, this);
                 }
                 else
                 {
-                    modOption._parent.RemoveOption(modOption);
-                    _parent.AddOption(modOption);
+                    modOption.Parent.RemoveOption(modOption);
+                    Parent.AddOption(modOption);
                 }
             }
         }

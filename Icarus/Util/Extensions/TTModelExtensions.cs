@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SharpDX;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +11,33 @@ namespace Icarus.Util.Extensions
 {
     public static class TTModelExtensions
     {
+        public static float GetModelSize(this TTModel model)
+        {
+            float minX = 9999.0f, minY = 9999.0f, minZ = 9999.0f;
+            float maxX = -9999.0f, maxY = -9999.0f, maxZ = -9999.0f;
+            foreach (var m in model.MeshGroups)
+            {
+                foreach (var p in m.Parts)
+                {
+                    foreach (var v in p.Vertices)
+                    {
+                        minX = minX < v.Position.X ? minX : v.Position.X;
+                        minY = minY < v.Position.Y ? minY : v.Position.Y;
+                        minZ = minZ < v.Position.Z ? minZ : v.Position.Z;
+
+                        maxX = maxX > v.Position.X ? maxX : v.Position.X;
+                        maxY = maxY > v.Position.Y ? maxY : v.Position.Y;
+                        maxZ = maxZ > v.Position.Z ? maxZ : v.Position.Z;
+                    }
+                }
+            }
+
+            Vector3 min = new Vector3(minX, minY, minZ);
+            Vector3 max = new Vector3(maxX, maxY, maxZ);
+
+            return Vector3.Distance(min, max);
+        }
+
         public static TTVertex DeepCopy(this TTVertex vertex)
         {
             var clone = new TTVertex();

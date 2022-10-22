@@ -240,23 +240,6 @@ namespace Icarus.ViewModels.Import
         }
         */
 
-        private async Task GetVanillaMeta()
-        {
-            MetadataMod? mod;
-            if (SelectedItem == null) return;
-            if (_completePath != null)
-            {
-                mod = await _gameFileDataService.TryGetMetadata(_completePath, SelectedItemName);
-                mod.Path = _completePath;
-            }
-            else
-            {
-                mod = await _gameFileDataService.GetMetadata(SelectedItem);
-                mod.Path = SelectedItem.GetMetadataPath();
-            }
-            var modViewModel = _modPackViewModel.Add(mod);
-        }
-
         public ModelMod? GetVanillaMdl()
         {
             IModelGameFile? modelGameFile;
@@ -316,6 +299,23 @@ namespace Icarus.ViewModels.Import
                 return mod;
             }
             return null;
+        }
+
+        private async Task GetVanillaMeta()
+        {
+            MetadataMod? mod;
+            if (SelectedItem == null) return;
+            if (_completePath != null)
+            {
+                mod = await _gameFileDataService.TryGetMetadata(_completePath, SelectedItemName);
+                mod.Path = _completePath;
+            }
+            else
+            {
+                mod = await _gameFileDataService.GetMetadata(SelectedItem);
+                mod.Path = SelectedItem.GetMetadataPath();
+            }
+            var modViewModel = _modPackViewModel.Add(mod);
         }
     }
 }

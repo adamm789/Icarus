@@ -12,6 +12,9 @@
              d:DesignHeight="250" d:DesignWidth="300">
     <Grid ToolTip="{Binding ToolTip}">
         <Grid.Resources>
+            <DataTemplate DataType="{x:Type materials:ColorViewModel}">
+                <Label Background="{Binding BrushColor}"/>
+            </DataTemplate>
             <Style TargetType="{x:Type Label}">
                 <Setter Property="BorderBrush" Value="Black"/>
                 <Setter Property="BorderThickness" Value="1"/>
@@ -20,6 +23,7 @@
             </Style>
         </Grid.Resources>
         <StackPanel Orientation="Horizontal">
+            <ContentControl Content="{Binding DiffuseColor}"/>
             <Label Background="{Binding Diffuse}"/>
             <Label Background="{Binding Specular}"/>
             <Label Background="{Binding Emissive}"/>

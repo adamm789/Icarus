@@ -8,6 +8,8 @@ using Icarus.ViewModels.Mods.Materials;
 using Icarus.ViewModels.Util;
 using Icarus.Views.Mods;
 using Icarus.Views.Mods.Materials;
+using ItemDatabase.Paths;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using xivModdingFramework.Materials.DataContainers;
 
@@ -15,6 +17,7 @@ namespace Icarus.ViewModels.Mods
 {
     public class MaterialModViewModel : ModViewModel
     {
+        // TODO: ComboBox for variants
         MaterialMod _material;
         IWindowService _windowService;
         ShaderInfoViewModel _shaderInfoViewModel;
@@ -65,5 +68,33 @@ namespace Icarus.ViewModels.Mods
             ShaderInfoViewModel.UpdatePaths(DestinationPath);
             base.RaiseDestinationPathChanged();
         }
+
+        string _materialVariant = "a";
+        public string MaterialVariant
+        {
+            get { return _materialVariant; }
+            set
+            {
+                _materialVariant = value;
+                OnPropertyChanged();
+                base.DestinationPath = XivPathParser.ChangeMtrlVariant(base.DestinationPath, value);
+            }
+        }
+
+        public override string DestinationPath
+        {
+            get => base.DestinationPath;
+            set
+            {
+                MaterialVariant = XivPathParser.GetMtrlVariant(value);
+                base.DestinationPath = value;
+            }
+        }
+
+        public List<string> VariantList { get; } = new()
+        {
+            "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m",
+            "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"
+        };
     }
 }

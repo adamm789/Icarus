@@ -103,7 +103,7 @@ namespace Icarus.ViewModels.Mods
             set
             {
                 if (Mod.Path == value) return;
-                var couldSetDestinationPath = Task.Run(() => TrySetDestinationPath(value, DestinationName)).Result;
+                var couldSetDestinationPath = TrySetDestinationPath(value);
                 if (!couldSetDestinationPath) return;
                 Mod.Path = value;
                 RaiseDestinationPathChanged();
@@ -170,7 +170,7 @@ namespace Icarus.ViewModels.Mods
                 RaiseDestinationPathChanged();
                 return true;
             }
-            return await TrySetDestinationPath(DestinationPath);
+            return TrySetDestinationPath(DestinationPath);
         }
 
         public virtual async Task<IGameFile?> GetFileData(IItem? itemArg = null)
@@ -184,10 +184,10 @@ namespace Icarus.ViewModels.Mods
         /// </summary>
         /// <param name="path"></param>
         /// <returns>Whether or not the file data was successfully found.</returns>
-        protected virtual async Task<bool> TrySetDestinationPath(string path, string name = "")
+        protected virtual bool TrySetDestinationPath(string path, string name = "")
         {
             //if (path == DestinationPath) return false;
-            var modData = await _gameFileService.TryGetFileData(path, GetType(), name);
+            var modData = Task.Run(() => _gameFileService.TryGetFileData(path, GetType(), name)).Result;
             if (modData == null)
             {
                 _logService.Warning($"Could not set {path} as {GetType().Name}");

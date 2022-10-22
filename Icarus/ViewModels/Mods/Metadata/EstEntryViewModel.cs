@@ -1,6 +1,8 @@
-﻿using Icarus.ViewModels.Util;
+﻿using Icarus.Mods;
+using Icarus.ViewModels.Util;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,7 +13,10 @@ namespace Icarus.ViewModels.Mods.Metadata
 {
     public class EstEntryViewModel : NotifyPropertyChanged
     {
+        // TODO: ComboBox of all available EstEntries...
+
         ExtraSkeletonEntry _est;
+        EqdpEntryViewModel _eqdpViewModel;
         public XivRace Race
         {
             get { return _est.Race; }
@@ -33,11 +38,22 @@ namespace Icarus.ViewModels.Mods.Metadata
             get { return _isEnabled; }
             set { _isEnabled = value; OnPropertyChanged(); }
         }
-        public EstEntryViewModel(XivRace race, ExtraSkeletonEntry est)
-        {
-            _est = est;
 
-            IsEnabled = _est.SkelId != 0;
+        public EstEntryViewModel(XivRace race, MetadataMod mod, EqdpEntryViewModel eqdpViewModel)
+        {
+            _est = mod.EstEntries[race];
+            _eqdpViewModel = eqdpViewModel;
+
+            _eqdpViewModel.PropertyChanged += new PropertyChangedEventHandler(OnEqdpChanged);
+            IsEnabled = _eqdpViewModel.Bit1;
+        }
+
+        private void OnEqdpChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(EqdpEntryViewModel.Bit1))
+            {
+                IsEnabled = _eqdpViewModel.Bit1;
+            }
         }
     }
 }

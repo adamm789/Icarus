@@ -179,8 +179,10 @@ namespace Icarus.Util.Extensions
             return type2Bytes.ToArray();
         }
 
-        public static async Task<byte[]> CreateType2Data(byte[] dataToCreate)
+        public static async Task<byte[]> CreateType2Data(byte[] dataToCreate, bool shouldCompress = true)
         {
+            // TODO: CreateType2Data shouldCompress?
+
             var newData = new List<byte>();
             var headerData = new List<byte>();
             var dataBlocks = new List<byte>();
@@ -208,7 +210,16 @@ namespace Icarus.Util.Extensions
                 {
                     if (i == partCount)
                     {
-                        var compressedData = await IOUtil.Compressor(binaryReader.ReadBytes(remainder));
+                        byte[] compressedData;
+                        if (shouldCompress)
+                        {
+                            compressedData = await IOUtil.Compressor(binaryReader.ReadBytes(remainder));
+                        }
+                        else
+                        {
+                            compressedData = binaryReader.ReadBytes(remainder);
+                        }
+
                         var padding = 128 - (compressedData.Length + 16) % 128;
 
                         dataBlocks.AddRange(BitConverter.GetBytes(16));
@@ -226,7 +237,15 @@ namespace Icarus.Util.Extensions
                     }
                     else
                     {
-                        var compressedData = await IOUtil.Compressor(binaryReader.ReadBytes(16000));
+                        byte[] compressedData;
+                        if (shouldCompress)
+                        {
+                            compressedData = await IOUtil.Compressor(binaryReader.ReadBytes(16000));
+                        }
+                        else
+                        {
+                            compressedData = binaryReader.ReadBytes(16000);
+                        }
                         var padding = 128 - (compressedData.Length + 16) % 128;
 
                         dataBlocks.AddRange(BitConverter.GetBytes(16));

@@ -29,7 +29,7 @@ namespace Icarus.Mods
                 string fileName;
                 try
                 {
-                    fileName = SystemPath.GetFileNameWithoutExtension(gameFile.Path);
+                    fileName = SystemPath.GetFileName(gameFile.Path);
                 }
                 catch (ArgumentException)
                 {

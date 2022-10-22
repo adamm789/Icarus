@@ -14,12 +14,14 @@ namespace Icarus.ViewModels.Mods.Metadata
 {
     public class EqdpViewModel : NotifyPropertyChanged
     {
+        private Dictionary<XivRace, EqdpEntryViewModel> _entries = new();
         public EqdpViewModel(Dictionary<XivRace, EquipmentDeformationParameter> dict)
         {
             foreach (var race in XivRaces.PlayableRaces)
             {
                 dict.TryGetValue(race, out var eqdp);
                 var vm = new EqdpEntryViewModel(race, eqdp);
+                _entries.Add(race, vm);
                 if (XivPathParser.IsMaleSkin(race))
                 {
                     MaleEqdpEntries.Add(vm);
@@ -29,6 +31,11 @@ namespace Icarus.ViewModels.Mods.Metadata
                     FemaleEqdpEntries.Add(vm);
                 }
             }
+        }
+
+        public EqdpEntryViewModel GetEntry(XivRace race)
+        {
+            return _entries[race];
         }
 
         public ObservableCollection<EqdpEntryViewModel> MaleEqdpEntries { get; } = new();

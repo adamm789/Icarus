@@ -37,8 +37,7 @@
                 </ComboBox>
             </Grid>
             
-            <CheckBox VerticalContentAlignment="Center"
-                        IsChecked="{Binding IsSkinMaterial, Mode=TwoWay}"
+            <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding IsSkinMaterial, Mode=TwoWay}"
                         Visibility="{Binding CanAssignSkin, Converter={StaticResource BooleanToVisibilityConverter}}">Is Skin?</CheckBox>
         </StackPanel>
     </Grid>

@@ -185,8 +185,9 @@ namespace Icarus.Util.Extensions
 
         // MakeTexData
         // https://github.com/TexTools/xivModdingFramework/blob/81c234e7b767d56665185e07aabeeae21d895f0b/xivModdingFramework/Textures/FileTypes/Tex.cs#L905
-        public static async Task<byte[]> DDSToTex(string ddsFilePath, string internalPath, XivTexFormat texFormat)
+        public static async Task<byte[]> DDSToTex(string ddsFilePath, string internalPath, XivTexFormat texFormat, bool shouldCompress = true)
         {
+            // TODO: DDSToTex compression?
             using (var br = new BinaryReader(File.OpenRead(ddsFilePath)))
             {
                 br.BaseStream.Seek(12, SeekOrigin.Begin);
@@ -224,7 +225,7 @@ namespace Icarus.Util.Extensions
                     br.BaseStream.Seek(128, SeekOrigin.Begin);
                     newTex.AddRange(TexExtensions.MakeTextureInfoHeader(texFormat, newWidth, newHeight, newMipCount));
                     newTex.AddRange(br.ReadBytes((int)uncompressedLength));
-                    var data = await DatExtensions.CreateType2Data(newTex.ToArray());
+                    var data = await DatExtensions.CreateType2Data(newTex.ToArray(), shouldCompress);
                     return data;
                 }
             }

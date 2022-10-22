@@ -26,6 +26,7 @@ namespace Icarus.ViewModels.Mods.Metadata
             set { Parameter.bit1 = value; OnPropertyChanged(); }
         }
 
+        // TODO: Seems like bit1 is the only bit that matters...?
         public EqdpEntryViewModel(XivRace race, EquipmentDeformationParameter parameter)
         {
             Race = race;

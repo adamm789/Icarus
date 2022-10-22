@@ -42,7 +42,7 @@ namespace Icarus.ViewModels.Export
         // TODO: Show user feedback that export is happening
         // Unsurprisingly, export raw does not really work with ivcs models (the model itself seems fine, but no armature and no weights)
         // It does seem to work with (at least) TexTools export
-
+        // TODO: For raw exporter, allow options to include or not include pngs? or even certain files?
         public async Task Export(ExportType type)
         {
             IsBusy = true;

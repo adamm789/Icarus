@@ -14,7 +14,7 @@
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="{Binding Race}" Margin="5"/>
                     <TextBlock Text="{Binding SetId}" Margin="5"/>
-                    <TextBlock Text="{Binding SkelId}" Margin="5"/>
+                    <TextBox Text="{Binding SkelId}" Margin="5"/>
                 </StackPanel>
             </DataTemplate>
         </Grid.Resources>
