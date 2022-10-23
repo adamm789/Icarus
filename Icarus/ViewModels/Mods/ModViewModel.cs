@@ -103,7 +103,7 @@ namespace Icarus.ViewModels.Mods
             set
             {
                 if (Mod.Path == value) return;
-                var couldSetDestinationPath = TrySetDestinationPath(value);
+                var couldSetDestinationPath = TrySetDestinationPath(value, DestinationName);
                 if (!couldSetDestinationPath) return;
                 Mod.Path = value;
                 RaiseDestinationPathChanged();

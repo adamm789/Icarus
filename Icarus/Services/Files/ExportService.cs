@@ -35,7 +35,6 @@ namespace Icarus.Services.Files
         }
         protected override void OnLuminaSet()
         {
-            base.OnLuminaSet();
             _rawExporter = new(_converterService, _lumina, _logService);
             _penumbraExporter = new(_lumina, _logService);
             _textoolsExporter = new(_lumina, _logService);

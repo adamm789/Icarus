@@ -16,30 +16,22 @@ namespace Icarus.ViewModels
 {
     public class LogViewModel : NotifyPropertyChanged
     {
-        ILogService _logService;
-        ILogger _logger;
-        StringWriter _stringWriter;
-        LogSink sink;
+        LogSink _sink;
 
         public LogViewModel(ILogService logService)
         {
-            _logService = logService;
-            _logger = logService.Logger;
-            _stringWriter = logService.StringWriter;
-
-            sink = logService.Sink;
-            sink.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(foo);
-            var events = sink.Events;
+            _sink = logService.Sink;
+            _sink.PropertyChanged += new PropertyChangedEventHandler(OnPropertyChanged);
+            var events = _sink.Events;
 
             while (!events.IsEmpty)
             {
                 events.TryDequeue(out _text2);
                 Text += $"{_text2}\n";
-
             }
         }
 
-        void foo(object sender, PropertyChangedEventArgs e)
+        void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             var s = sender as LogSink;
             var events = s.Events;

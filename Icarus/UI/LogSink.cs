@@ -24,6 +24,18 @@ namespace Icarus.UI
         {
             if (logEvent == null) throw new ArgumentNullException(nameof(logEvent));
             var renderSpace = new StringWriter();
+            if (logEvent.Level == LogEventLevel.Information)
+            {
+                
+            }
+            else if (logEvent.Level == LogEventLevel.Warning)
+            {
+
+            }
+            else if (logEvent.Level >= LogEventLevel.Error)
+            {
+
+            }
             _textFormatter.Format(logEvent, renderSpace);
             Events.Enqueue(renderSpace.ToString());
             OnPropertyChanged(nameof(Events));

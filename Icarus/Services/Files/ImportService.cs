@@ -44,8 +44,6 @@ namespace Icarus.Services.Files
 
         protected override void OnLuminaSet()
         {
-            base.OnLuminaSet();
-
             var projectDirectory = _settingsService.ProjectDirectory;
             var gamePathFramework = Path.Combine(_settingsService.GameDirectoryLumina, "ffxiv");
             gameDirectoryFramework = new(gamePathFramework);
@@ -78,7 +76,6 @@ namespace Icarus.Services.Files
         {
             // TODO: ImportFile: return null on import fail? Or empty modPAck?
             var importingFile = "Importing: " + filePath;
-            _logService.Information(importingFile);
             _importFileQueue.Enqueue(importingFile);
             UpdateProperties();
 
@@ -116,13 +113,14 @@ namespace Icarus.Services.Files
             IsImportingAdvanced = true;
             try
             {
+                _logService.Information($"Trying to import {filePath} as ttmp2.");
                 var modPack = await _ttmpImporter.ExtractTexToolsModPack(filePath);
 
                 foreach (var mod in modPack.SimpleModsList)
                 {
                     CompleteMod(mod);
                 }
-                _logService.Information($"Imported {modPack.SimpleModsList.Count} mods.");
+                _logService.Information($"Success. Imported {modPack.SimpleModsList.Count} mods.");
                 return modPack;
             }
             catch (Exception ex)
@@ -135,6 +133,8 @@ namespace Icarus.Services.Files
             }
             return new ModPack();
         }
+        const float minAcceptableSize = 0.5f;
+        const float maxAcceptableSize = 2.0f;
 
         public async Task<ModPack> ImportModel(string filePath)
         {
@@ -144,6 +144,7 @@ namespace Icarus.Services.Files
             // new Mdl(Imported, OgMdl).MakeNewMdlFile
             try
             {
+                _logService.Information($"Trying to import {filePath} as model.");
                 var importedModel = await _converterService.FbxToTTModel(filePath);
                 var sane = TTModel.SanityCheck(importedModel, _logService.LoggingFunction);
 
@@ -164,6 +165,15 @@ namespace Icarus.Services.Files
                  * 
                  * if (size > maxAcceptableSize * oldModelSize)
                  */
+
+                if (size < minAcceptableSize)
+                {
+                    _logService.Warning($"Model is probably too small: {size}");
+                }
+                if (size > maxAcceptableSize)
+                {
+                    _logService.Warning($"Model is probably too big: {size}");
+                }
 
                 _logService.Information("Checking for common user errors.");
                 TTModel.CheckCommonUserErrors(importedModel, _logService.LoggingFunction);
@@ -228,6 +238,7 @@ namespace Icarus.Services.Files
         {
             try
             {
+                _logService.Information($"Trying to import {filePath} as colorset/material.");
                 var directory = new DirectoryInfo(filePath);
                 var colorsetData = Tex.GetColorsetDataFromDDS(directory);
                 var colorsetDyeData = Tex.GetColorsetExtraDataFromDDS(directory);
@@ -251,7 +262,10 @@ namespace Icarus.Services.Files
 
         public ModPack ImportTexture(string filePath)
         {
+            _logService.Information($"Trying to import {filePath} as texture.");
+
             // TODO: Some sort of check for the file?
+            // TODO: Store some actual data as opposed to just the file path?
             var retPack = new ModPack();
             var texMod = new TextureMod(false)
             {

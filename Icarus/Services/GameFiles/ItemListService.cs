@@ -86,7 +86,6 @@ namespace Icarus.Services.GameFiles
 
         protected override void OnLuminaSet()
         {
-            base.OnLuminaSet();
             _logService.Verbose("Creating item list.");
             Data = new(_lumina);
             IsLoaded = true;

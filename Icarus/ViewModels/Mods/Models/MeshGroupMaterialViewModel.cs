@@ -183,6 +183,7 @@ namespace Icarus.ViewModels.Models
 
         private void UpdateRace(XivRace race)
         {
+            _skinName = XivPathParser.ChangeToRace(_skinName, race);
             // TODO: UserPreferences of default skin material will overwrite any assignment in, for example, a ttmp2
             if (!_modelModViewModel.IsInternal)
             {

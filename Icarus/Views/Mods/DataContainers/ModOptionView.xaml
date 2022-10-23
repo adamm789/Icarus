@@ -10,6 +10,8 @@
              xmlns:datacontainers="clr-namespace:Icarus.ViewModels.Mods.DataContainers"
              xmlns:dd="urn:gong-wpf-dragdrop"
              xmlns:ui="clr-namespace:Icarus.UI"
+             xmlns:xtk1="http://schemas.xceed.com/wpf/xaml/toolkit"
+
              d:DataContext="{d:DesignInstance Type=datacontainers:ModOptionViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -49,8 +51,11 @@
         <Label Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Width="25"/>
         -->
         <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"/>
+        <xtk1:WatermarkTextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding Description}" Watermark="Description"
+                               AcceptsReturn="True" TextWrapping="Wrap"/>
+        <!--
         <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding Description}" AcceptsReturn="True" VerticalAlignment="Stretch" TextWrapping="Wrap"/>
-
+-->
         <Grid Grid.Row="0" Grid.Column="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>

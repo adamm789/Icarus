@@ -41,7 +41,6 @@ namespace Icarus.Services.GameFiles
 
         protected override void OnLuminaSet()
         {
-            base.OnLuminaSet();
             var gameDirectory = _settingsService.GameDirectoryLumina;
             _frameworkGameDirectory = new(Path.Combine(gameDirectory, "ffxiv"));
         }

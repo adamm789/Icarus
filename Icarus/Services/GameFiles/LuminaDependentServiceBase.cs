@@ -33,9 +33,6 @@ namespace Icarus.Services.GameFiles
         /// <summary>
         /// Functions to be called after Lumina has been initialized
         /// </summary>
-        protected virtual void OnLuminaSet()
-        {
-            // This function intentionally left blank
-        }
+        protected abstract void OnLuminaSet();
     }
 }
