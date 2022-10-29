@@ -8,6 +8,7 @@ using ItemDatabase.Paths;
 using Lumina.Data;
 using Lumina.Data.Files;
 using Lumina.Data.Structs;
+using Icarus.Util.Import;
 using Newtonsoft.Json;
 using Serilog;
 using System;
@@ -183,7 +184,7 @@ namespace Icarus.Services.Files
                 var mdlFile = pack.ReadFile<MdlFile>(mods.ModOffset);
                 var xivMdl = MdlWithFramework.GetRawMdlDataFramework(mods.FullPath, mdlFile.Data, mdlFile.Meshes.Length);
                 var imported = TTModel.FromRaw(xivMdl);
-                var ret = new ModelMod(mods.FullPath, imported)
+                var ret = new ModelMod(mods.FullPath, imported, ImportSource.TexToolsModPack)
                 {
                     ModFileName = modFileName,
                     ModFilePath = modFilePath,
@@ -234,7 +235,7 @@ namespace Icarus.Services.Files
                     };
                     xivTex.TextureTypeAndPath = texTypePath;
 
-                    return new TextureMod(xivTex, false)
+                    return new TextureMod(xivTex, ImportSource.TexToolsModPack)
                     {
                         ModFileName = modFileName,
                         ModFilePath = modFilePath,

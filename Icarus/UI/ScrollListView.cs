@@ -6,7 +6,7 @@ namespace Icarus.UI
 {
     public class ScrollListView : ListView
     {
-        public static void HandlePreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        public void HandlePreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
             if (!e.Handled)
             {

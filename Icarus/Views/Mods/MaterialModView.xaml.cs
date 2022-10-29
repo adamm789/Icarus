@@ -14,11 +14,9 @@ namespace Icarus.Views.Mods
         {
             InitializeComponent();
         }
-
-        // TODO: Create a "ListView_PreviewMouseWheel" class that these views inherit from?
         private void ListView_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
-            if (!e.Handled)
+            if (!e.Handled && !this.IsMouseCaptureWithin)
             {
                 e.Handled = true;
                 var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta);

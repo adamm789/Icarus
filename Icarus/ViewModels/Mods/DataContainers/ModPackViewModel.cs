@@ -300,7 +300,6 @@ namespace Icarus.ViewModels.Mods.DataContainers
                 dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
                 dropInfo.Effects = DragDropEffects.Copy;
             }
-
         }
 
         void IDropTarget.Drop(IDropInfo dropInfo)

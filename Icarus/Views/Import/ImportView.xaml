@@ -24,10 +24,8 @@
             Minimum="0" Maximum="100" 
                      IsIndeterminate="{Binding IsProgressIndeterminate}">
         </ProgressBar>
-        <TextBlock Grid.Row="0" Grid.Column="0" 
-                   Text="{Binding ImportingFile}"/>
-        <Button Grid.Row="0" Grid.Column="1" Content="Browse..."
-                    Command="{Binding OnBrowseCommand}"/>
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding ImportingFile}"/>
+        <Button Grid.Row="0" Grid.Column="1" Content="Browse..." Command="{Binding OnBrowseCommand}"/>
 
     </Grid>
 </UserControl>

@@ -13,10 +13,8 @@
     <Grid Margin="0,0,0,10">
         <Grid.Resources>
             <ui:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
-            <ui:BooleanToVisibilityConverter 
-                x:Key="BooleanToVisibilityConverter"
-                True="Visible"
-                False="Collapsed"/>
+            <ui:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"
+                True="Visible" False="Collapsed"/>
             <Style TargetType="{x:Type TextBox}">
                 <Setter Property="Margin" Value="10 0 0 0"/>
                 <Setter Property="IsReadOnly" Value="{Binding CanSetTexPaths, Converter={StaticResource InverseBooleanConverter}}"/>

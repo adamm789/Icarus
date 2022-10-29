@@ -23,43 +23,41 @@ namespace Icarus.ViewModels.Mods.Materials
             _colorsetData = material.ColorSetData;
 
             var currRange = _colorsetData.GetRange(rowNumber * 16, 16);
-            //DiffuseColor = GetColor(GetColorSetDataRange(currRange, 0));
 
-            DiffuseColor = new(currRange[0], currRange[1], currRange[2]);
+            DiffuseColor = new(material, rowNumber * 16);
+            SpecularColor = new(material, rowNumber * 16 + 4);
+            EmissiveColor = new(material, rowNumber * 16 + 8);
 
-            Diffuse = new SolidColorBrush(GetColor(GetColorSetDataRange(currRange, 0)));
-            Specular = new SolidColorBrush(GetColor(GetColorSetDataRange(currRange, 4)));
-            Emissive = new SolidColorBrush(GetColor(GetColorSetDataRange(currRange, 8)));
 
-            DyeDataViewModel = new ColorSetRowDyeDataViewModel(rowNumber, material, stainingTemplateFile);
+            //DiffuseColor = new(material.ColorSetData[rowNumber * 16 + 0], material.ColorSetData[rowNumber * 16 + 1], material.ColorSetData[rowNumber * 16 + 2]);
+            //SpecularColor = new(currRange[4], currRange[5], currRange[6]);
+            //EmissiveColor = new(currRange[8], currRange[9], currRange[10]);
+
+            EditorViewModel = new ColorSetRowEditorViewModel(this, material, stainingTemplateFile);
         }
 
-        public ColorSetRowDyeDataViewModel DyeDataViewModel { get; }
-
-        private Color GetColorSetDataRange(List<Half> values, int index)
+        public void CopyRow(ColorSetRowViewModel other)
         {
-            return ListToColor(values.GetRange(index, 4));
+            DiffuseColor.Copy(other.DiffuseColor);
+            EmissiveColor.Copy(other.EmissiveColor);
+            SpecularColor.Copy(other.SpecularColor);
         }
 
-        private Color ListToColor(List<Half> values)
-        {
-            if (values.Count != 4)
-            {
-                throw new ArgumentException("List was not of length four.");
-            }
-            return new Color((byte)Math.Round(values[0]*255), 
-                (byte)Math.Round(values[1]*255),
-                (byte)Math.Round(values[2]*255), (byte)255);
-        }
-
-        public WindowsColor GetColor(Color c)
-        {
-            return WindowsColor.FromArgb(c.A, c.R, c.G, c.B);
-        }
-
+        public ColorSetRowEditorViewModel EditorViewModel { get; }
         public ColorViewModel DiffuseColor { get; }
+        public ColorViewModel EmissiveColor { get; }
+        public ColorViewModel SpecularColor { get; }
 
-        // TODO: ColorSetRow editor
+        public int DisplayedRowNumber { get { return RowNumber + 1; } }
+
+        int _rowNumber;
+        public int RowNumber
+        {
+            get { return _rowNumber; }
+            set { _rowNumber = value; OnPropertyChanged(); }
+        }
+
+        /*
         SolidColorBrush _diffuse;
         public SolidColorBrush Diffuse
         {
@@ -99,12 +97,6 @@ namespace Icarus.ViewModels.Mods.Materials
                 _colorsetData[(RowNumber * 16) + 10] = new Half(_emissive.Color.B/255f);
             }
         }
-
-        int _rowNumber;
-        public int RowNumber
-        {
-            get { return _rowNumber; }
-            set { _rowNumber = value; OnPropertyChanged(); }
-        }
+        */
     }
 }

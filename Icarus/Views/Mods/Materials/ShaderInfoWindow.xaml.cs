@@ -20,5 +20,10 @@ namespace Icarus.Views.Mods.Materials
             if (e.Key == Key.Escape)
                 Close();
         }
+
+        private void window1_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            grid1.Focus();
+        }
     }
 }

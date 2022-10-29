@@ -16,7 +16,7 @@ using System.Windows.Shapes;
 namespace Icarus.Views.Mods.Materials
 {
     /// <summary>
-    /// Interaction logic for ColorSetRowEditorView.xaml
+    /// Interaction logic for ColorSetDyeDataView.xaml
     /// </summary>
     public partial class ColorSetRowEditorView : UserControl
     {

@@ -1,4 +1,6 @@
-﻿using Icarus.Mods.Interfaces;
+﻿using Icarus.Mods.GameFiles;
+using Icarus.Mods.Interfaces;
+using Icarus.Util.Import;
 using ItemDatabase.Paths;
 using System;
 using System.Collections.Generic;
@@ -19,7 +21,8 @@ namespace Icarus.Mods
 
         public bool ShouldExportRawMaterials { get; set; } = true;
 
-        public ModelMod(IModelGameFile modelGameFile, bool isInternal = false) : base(modelGameFile, isInternal)
+
+        public ModelMod(IModelGameFile modelGameFile, ImportSource source = ImportSource.Vanilla) : base(modelGameFile, source)
         {
             ImportedModel = modelGameFile.TTModel;
             TTModel = modelGameFile.TTModel;
@@ -33,12 +36,7 @@ namespace Icarus.Mods
             };
         }
 
-        public ModelMod(string filePath, TTModel imported, IModelGameFile? modelGameFile = null)
-        {
-            Init(filePath, imported, modelGameFile);
-        }
-
-        private void Init(string filePath, TTModel imported, IModelGameFile? modelGameFile = null)
+        public ModelMod(string filePath, TTModel imported, ImportSource source, IModelGameFile? modelGameFile = null) : base(source)
         {
             ModFilePath = filePath;
             ImportedModel = imported;
@@ -64,13 +62,11 @@ namespace Icarus.Mods
 
         public override void SetModData(IGameFile gameFile)
         {
-            if (gameFile is not IModelGameFile)
+            if (gameFile is not IModelGameFile modelGameFile)
             {
                 throw new ArgumentException($"ModData was not of ModelGameFile. It was {gameFile.GetType()}.");
             }
             base.SetModData(gameFile);
-
-            var modelGameFile = gameFile as IModelGameFile;
 
             TargetRace = modelGameFile.TargetRace;
             TTModel = modelGameFile.TTModel;

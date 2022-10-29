@@ -53,9 +53,9 @@ namespace Icarus.Util
             File.WriteAllText(Path.Combine(tempDir, "default_mod.json"), defaultJson);
 
             var outputPath = GetOutputPath(modPack, outputDir);
-            WriteFiles(tempDir, outputPath, toPmp);
+            var finalOutputPath = WriteFiles(tempDir, outputPath, toPmp);
 
-            return outputPath;
+            return finalOutputPath;
         }
 
         // TODO: Implement Advanced Penumbra mods
@@ -77,22 +77,26 @@ namespace Icarus.Util
 
             WriteGroups(modPack, tempDir);
             var outputPath = GetOutputPath(modPack, outputDir);
-            WriteFiles(tempDir, outputPath, toPmp);
+            var finalOutputPath = WriteFiles(tempDir, outputPath, toPmp);
+            
 
-            return outputPath;
+            return await Task.Run(() => finalOutputPath);
         }
 
-        private void WriteFiles(string tempDir, string outputPath, bool toPmp = true)
+        private string WriteFiles(string tempDir, string outputPath, bool toPmp = true)
         {
             _logService.Verbose($"Writing from {tempDir} to {outputPath}.");
 
             if (toPmp)
             {
+                var pmpOutputPath = outputPath + ".pmp";
                 var zf = new ZipFile();
                 zf.AddDirectory(tempDir);
                 zf.UseZip64WhenSaving = Zip64Option.AsNecessary;
                 zf.CompressionLevel = Ionic.Zlib.CompressionLevel.None;
-                zf.Save(outputPath + ".pmp");
+                zf.Save(pmpOutputPath);
+
+                return pmpOutputPath;
             }
             else
             {
@@ -107,6 +111,7 @@ namespace Icarus.Util
             {
                 Directory.Delete(tempDir, true);
             }
+            return outputPath;
         }
 
         private void WriteGroups(ModPack modPack, string modDir)

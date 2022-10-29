@@ -16,9 +16,13 @@ namespace Icarus.ViewModels.Import
 {
     public class ImportViewModel : NotifyPropertyChanged
     {
-        public static string FilePathLabel = "File path";
-        public static string ReplacementPathLabel = "In-Game";
-        public static string OpenEditorLabel = "Open Editor";
+        readonly string _filter = "Valid Files | *.fbx; *.ttmp2; *.dds; *.png; *.bmp" + "|FBX File | *.fbx" + "|TexTools ModPack | *.ttmp2" + "| dds | *.dds" + "| png | *.png" + "| bmp | *.bmp";
+        //var filter = "Valid Files | *.fbx; *.ttmp2; *.dds; *.png; *.bmp; *.mdl" + "|FBX File | *.fbx" + "|TexTools ModPack | *.ttmp2" + "| dds | *.dds" + "| png | *.png" + "| bmp | *.bmp";
+
+        //var filter = "Valid Files | *.fbx; *.ttmp2; *.dds; *.png; *.bmp" + "|FBX File | *.fbx" + "|TexTools ModPack | *.ttmp2" + "| dds | *.dds" + "| png | *.png" + "| bmp | *.bmp";
+        //var filter = "Valid Files | *.fbx; *.ttmp2; *.dds; *.png" + "|FBX File | *.fbx" + "|TexTools ModPack | *.ttmp2" + "| dds | *.dds" + "| png | *.png";
+        //var filter = "Valid Files | *.fbx; *.ttmp2; *.dds" + "|FBX File | *.fbx" + "|TexTools ModPack | *.ttmp2" + "| dds | *.dds";
+        //var filter = "Valid Files | *.fbx; *.ttmp2" + "|FBX File | *.fbx" + "|TexTools ModPack | *.ttmp2";
 
         readonly IModPackViewModel _modPackViewModel;
         readonly ImportService _importService;
@@ -95,20 +99,13 @@ namespace Icarus.ViewModels.Import
 
         private async Task ImportFile()
         {
-            //var filter = "Valid Files | *.fbx; *.ttmp2; *.dds; *.png; *.bmp; *.mdl" + "|FBX File | *.fbx" + "|TexTools ModPack | *.ttmp2" + "| dds | *.dds" + "| png | *.png" + "| bmp | *.bmp";
-
-            var filter = "Valid Files | *.fbx; *.ttmp2; *.dds; *.png; *.bmp" + "|FBX File | *.fbx" + "|TexTools ModPack | *.ttmp2" + "| dds | *.dds" + "| png | *.png" + "| bmp | *.bmp";
-            //var filter = "Valid Files | *.fbx; *.ttmp2; *.dds; *.png" + "|FBX File | *.fbx" + "|TexTools ModPack | *.ttmp2" + "| dds | *.dds" + "| png | *.png";
-            //var filter = "Valid Files | *.fbx; *.ttmp2; *.dds" + "|FBX File | *.fbx" + "|TexTools ModPack | *.ttmp2" + "| dds | *.dds";
-            //var filter = "Valid Files | *.fbx; *.ttmp2" + "|FBX File | *.fbx" + "|TexTools ModPack | *.ttmp2";
-
             if (String.IsNullOrWhiteSpace(_initialDirectory))
             {
                 _initialDirectory = _settingsService.BrowseDirectory;
             }
             var dlg = new OpenFileDialog
             {
-                Filter = filter,
+                Filter = _filter,
                 InitialDirectory = _initialDirectory,
                 Multiselect = true
             };

@@ -1,5 +1,6 @@
 ﻿using Icarus.Mods.GameFiles;
 using Icarus.Mods.Interfaces;
+using Icarus.Util.Import;
 using ItemDatabase.Paths;
 using Serilog;
 using System;
@@ -31,13 +32,7 @@ namespace Icarus.Mods
 
         public XivMtrl XivMtrl { get; set; }
 
-
-        public MaterialMod()
-        {
-
-        }
-
-        public MaterialMod(List<Half> colorSetData, byte[]? colorSetExtraData)
+        public MaterialMod(List<Half> colorSetData, byte[]? colorSetExtraData, ImportSource source = ImportSource.Raw) : base(source)
         {
             ColorSetData = colorSetData;
             if (colorSetExtraData == null)
@@ -54,7 +49,12 @@ namespace Icarus.Mods
             }
         }
 
-        public MaterialMod(IGameFile gameFile, bool isInternal = false) : base(gameFile, isInternal)
+        public MaterialMod(XivMtrl xivMtrl, ImportSource source = ImportSource.TexToolsModPack) : base(source)
+        {
+            Init(xivMtrl);
+        }
+
+        public MaterialMod(IGameFile gameFile, ImportSource source = ImportSource.Vanilla) : base(gameFile, source)
         {
             if (gameFile is not MaterialGameFile)
             {
@@ -65,10 +65,6 @@ namespace Icarus.Mods
             Init(materialGameFile.XivMtrl);
         }
 
-        public MaterialMod(XivMtrl xivMtrl)
-        {
-            Init(xivMtrl);
-        }
 
         private void Init(XivMtrl xivMtrl)
         {

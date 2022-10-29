@@ -13,21 +13,23 @@ using Half = SharpDX.Half;
 
 namespace Icarus.ViewModels.Mods.Materials
 {
-    public class ColorSetRowDyeDataViewModel : NotifyPropertyChanged
+    public class ColorSetRowEditorViewModel : NotifyPropertyChanged
     {
         List<Half> _colorSetData;
         BitArray arr = new BitArray(16);
+        ColorSetRowViewModel _parent;
 
         MaterialMod _materialMod;
 
         ushort _dyeInfo;
-        int _rowNumber;
 
-        public int RowNumber { get; }
-        public ColorSetRowDyeDataViewModel(int rowNumber, MaterialMod material, StainingTemplateFile dyeTemplateFile)
+        int _rowNumber;
+        public int DisplayedRowNumber { get; }
+        public ColorSetRowEditorViewModel(ColorSetRowViewModel parent, MaterialMod material, StainingTemplateFile dyeTemplateFile)
         {
-            RowNumber = rowNumber;
-            _rowNumber = rowNumber;
+            _parent = parent;
+            _rowNumber = _parent.RowNumber;
+            DisplayedRowNumber = _rowNumber + 1;
             _materialMod = material;
             _colorSetData = _materialMod.ColorSetData;
 
@@ -36,7 +38,7 @@ namespace Icarus.ViewModels.Mods.Materials
                 _materialMod.ColorSetDyeData = new byte[32];
             }
 
-            _dyeInfo = BitConverter.ToUInt16(_materialMod.ColorSetDyeData, rowNumber * 2);
+            _dyeInfo = BitConverter.ToUInt16(_materialMod.ColorSetDyeData, _rowNumber * 2);
 
             var flags = (_dyeInfo & 0x1F);
 
@@ -75,11 +77,29 @@ namespace Icarus.ViewModels.Mods.Materials
             TileCountY = _colorSetData[(_rowNumber * 16) + 15];
         }
 
+        public ColorViewModel DiffuseColor => _parent.DiffuseColor;
+        public ColorViewModel SpecularColor => _parent.SpecularColor;
+        public ColorViewModel EmissiveColor => _parent.EmissiveColor;
+
         List<string> _templates = new();
         public List<string> Templates
         {
             get { return _templates; }
             set { _templates = value; OnPropertyChanged(); }
+        }
+
+        bool _canEditDye = false;
+        public bool CanEditDye
+        {
+            get { return _canEditDye; }
+            set { _canEditDye = value; OnPropertyChanged(); }
+        }
+
+        bool _canApplyToEmissive = false;
+        public bool CanApplyToEmissive
+        {
+            get { return _canApplyToEmissive; }
+            set { _canApplyToEmissive = value; OnPropertyChanged(); }
         }
 
         string _dyeTemplateId;
@@ -95,11 +115,23 @@ namespace Icarus.ViewModels.Mods.Materials
                 if (value == "None")
                 {
                     b = new BitArray(BitConverter.GetBytes((ushort)0));
+                    CanEditDye = false;
                 }
                 else
                 {
                     var val = Convert.ToUInt16(value);
                     b = new BitArray(BitConverter.GetBytes((ushort)(val << 5)));
+                    CanEditDye = true;
+
+                    // I guess?
+                    if (val >= 510 && val <= 522)
+                    {
+                        CanApplyToEmissive = true;
+                    }
+                    else
+                    {
+                        CanApplyToEmissive = false;
+                    }
                 }
                 if (b.Length == 16)
                 {

@@ -25,8 +25,6 @@ namespace Icarus.ViewModels.Mods
     // Will I have to distinguish between an "EquipmentModelModViewModel" and "FurnitureModelModViewModel"?
     public class ModelModViewModel : ModViewModel
     {
-        public bool IsInternal => _modelMod.IsInternal;
-
         readonly ModelMod _modelMod;
 
         #region Constructors

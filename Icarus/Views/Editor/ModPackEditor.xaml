@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:dd="urn:gong-wpf-dragdrop"
+             xmlns:ui="clr-namespace:Icarus.UI"
              xmlns:datacontainers="clr-namespace:Icarus.ViewModels.Mods.DataContainers"
              xmlns:local="clr-namespace:Icarus.Views.Editor"
              d:DataContext="{d:DesignInstance Type=datacontainers:ModPackViewModel}"
@@ -12,27 +13,34 @@
     <Grid>
         <Grid.Resources>
             <DataTemplate DataType="{x:Type datacontainers:ModPackPageViewModel}">
-                <ItemsControl ItemsSource="{Binding ModGroups}" HorizontalContentAlignment="Stretch">
-                </ItemsControl>
+                <Border BorderBrush="Black" BorderThickness="2" Margin="5">
+                    <ItemsControl ItemsSource="{Binding ModGroups}" 
+                              ScrollViewer.CanContentScroll="False" VirtualizingPanel.IsVirtualizing="True"
+                                  HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
+                    </ItemsControl>
+                </Border>
             </DataTemplate>
             <DataTemplate DataType="{x:Type datacontainers:ModGroupViewModel}">
-                <Border BorderBrush="Black" BorderThickness="1">
-                    <StackPanel>
-                            <TextBlock Text="{Binding GroupName}"></TextBlock>
-                        <ListView ItemsSource="{Binding OptionList}">
+                <Grid Margin="3">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Text="{Binding GroupName}"></TextBlock>
+                        <ListView Grid.Row="1" Margin="5 1 1 1" ItemsSource="{Binding OptionList}">
                         </ListView>
-                    </StackPanel>
-                </Border>
+                </Grid>
             </DataTemplate>
             <DataTemplate DataType="{x:Type datacontainers:ModOptionViewModel}">
                 <TextBlock Text="{Binding Name}" dd:DragDrop.DragSourceIgnore="True"/>
             </DataTemplate>
         </Grid.Resources>
 
-        <ItemsControl ItemsSource="{Binding ModPackPages}" dd:DragDrop.IsDragSource="True" dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding}">
+        <ItemsControl ItemsSource="{Binding ModPackPages}"
+                      dd:DragDrop.IsDragSource="True" dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <WrapPanel/>
+                    <UniformGrid/>
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
         </ItemsControl>

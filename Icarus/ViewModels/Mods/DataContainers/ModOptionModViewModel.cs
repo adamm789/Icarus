@@ -19,6 +19,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
         public string Identifier => ModViewModel.Identifier;
         public string FileName => ModViewModel.FileName;
         public string DestinationName => ModViewModel.DestinationName;
+        public string DisplayedHeader => ModViewModel.DisplayedHeader;
         public DelegateCommand RemoveCommand { get; }
     }
 }

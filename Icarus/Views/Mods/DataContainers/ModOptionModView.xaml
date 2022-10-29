@@ -21,7 +21,7 @@
 
             <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0">
                 <TextBlock Text="{Binding Identifier}"/>
-                <TextBlock Text="{Binding FileName}"/>
+                <TextBlock Text="{Binding DisplayedHeader}"/>
             </StackPanel>
             <TextBlock Text="{Binding DestinationName}" Grid.Row="1" Grid.Column="0"/>
 

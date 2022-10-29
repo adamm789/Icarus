@@ -39,6 +39,8 @@ namespace Icarus.ViewModels.Mods.Materials
             }
         }
 
+        ColorSetRowEditorViewModel _rowEditorViewModel;
+
         ColorSetRowViewModel _selectedRow;
         public ColorSetRowViewModel SelectedRow
         {
@@ -46,15 +48,15 @@ namespace Icarus.ViewModels.Mods.Materials
             set {
                 _selectedRow = value;
                 OnPropertyChanged();
-                DisplayedDyeData = value.DyeDataViewModel;
+                DisplayedRow = value.EditorViewModel;
             }
         }
 
-        ColorSetRowDyeDataViewModel? _displayedDyeData = null;
-        public ColorSetRowDyeDataViewModel? DisplayedDyeData
+        ColorSetRowEditorViewModel? _displayedRow = null;
+        public ColorSetRowEditorViewModel? DisplayedRow
         {
-            get { return _displayedDyeData; }
-            set { _displayedDyeData = value; OnPropertyChanged(); }
+            get { return _displayedRow; }
+            set { _displayedRow = value; OnPropertyChanged(); }
         }
 
         ObservableCollection<ColorSetRowViewModel> _colorSetRows = new();

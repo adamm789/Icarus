@@ -1,4 +1,5 @@
 ﻿using Icarus.Mods.Interfaces;
+using Icarus.Util.Import;
 using ItemDatabase.Paths;
 using System;
 using System.Collections.Generic;
@@ -17,16 +18,15 @@ namespace Icarus.Mods
         // Only set when source is from ttmp2
         public XivTex? XivTex { get; }
 
-        public TextureMod(bool isInternal = false)
+        public TextureMod(ImportSource source) : base(source)
         {
-            IsInternal = isInternal;
+
         }
 
-        public TextureMod(XivTex tex, bool isInternal = true)
+        public TextureMod(XivTex tex, ImportSource source = ImportSource.Vanilla) : base(source)
         {
             XivTex = tex;
             Path = tex.TextureTypeAndPath.Path;
-            IsInternal = isInternal;
         }
 
         public override bool IsComplete()

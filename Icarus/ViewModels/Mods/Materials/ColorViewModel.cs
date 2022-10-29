@@ -8,36 +8,95 @@ using System.Threading.Tasks;
 using Half = SharpDX.Half;
 using SolidColorBrush = System.Windows.Media.SolidColorBrush;
 using Color = System.Windows.Media.Color;
+using System.Windows.Data;
+using Icarus.Mods;
 
 namespace Icarus.ViewModels.Mods.Materials
 {
     public class ColorViewModel : NotifyPropertyChanged
     {
-        public ColorViewModel(Half r, Half g, Half b)
+        MaterialMod _material;
+        int _offset;
+        public ColorViewModel(MaterialMod material, int offset)
         {
-            R = r;
-            G = g;
-            B = b;
+            _material = material;
+            _offset = offset;
         }
 
+        public Half OriginalR { get; }
+        public Half OriginalG { get; }
+        public Half OriginalB { get; }
+
+        public void Copy(ColorViewModel color)
+        {
+            R = color.R;
+            G = color.G;
+            B = color.B;
+        }
+
+        public void ResetValues()
+        {
+            R = OriginalR;
+            G = OriginalG;
+            B = OriginalB;
+        }
+
+        DelegateCommand _resetCommand;
+        public DelegateCommand ResetCommand
+        {
+            get { return _resetCommand ??= new DelegateCommand(o => ResetValues()); }
+        }
+
+        private bool IsValidValue(float value)
+        {
+            return value >= 0 && value <= 1;
+        }
+
+        /*
         Half _r;
-        public Half R
+        public float R
         {
             get { return _r; }
-            set { _r = value; OnPropertyChanged(); OnPropertyChanged(nameof(BrushColor)); }
+            set
+            {
+                if (!IsValidValue(value)) return;
+                _r = (Half)value; OnPropertyChanged(); OnPropertyChanged(nameof(BrushColor));
+            }
+        }
+        */
+        public float R
+        {
+            get { return _material.ColorSetData[_offset]; }
+            set
+            {
+                if (!IsValidValue(value)) return;
+                _material.ColorSetData[_offset] = (Half)value;
+                OnPropertyChanged(); OnPropertyChanged(nameof(BrushColor));
+            }
         }
         Half _g;
-        public Half G
+        public float G
         {
-            get { return _g; }
-            set { _g = value; OnPropertyChanged(); OnPropertyChanged(nameof(BrushColor)); }
+            get { return _material.ColorSetData[_offset + 1]; }
+            set
+            {
+                if (!IsValidValue(value)) return;
+                _material.ColorSetData[_offset + 1] = (Half)value;
+                OnPropertyChanged(); OnPropertyChanged(nameof(BrushColor));
+            }
         }
         Half _b;
-        public Half B
+        public float B
         {
-            get { return _b; }
-            set { _b = value; OnPropertyChanged(); OnPropertyChanged(nameof(BrushColor)); }
+            get { return _material.ColorSetData[_offset + 2]; }
+            set
+            {
+                if (!IsValidValue(value)) return;
+                _material.ColorSetData[_offset + 2] = (Half)value;
+                OnPropertyChanged(); OnPropertyChanged(nameof(BrushColor));
+            }
         }
+
         public SolidColorBrush BrushColor
         {
             get

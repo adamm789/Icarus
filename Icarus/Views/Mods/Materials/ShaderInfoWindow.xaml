@@ -10,12 +10,11 @@
         xmlns:materialviews="clr-namespace:Icarus.Views.Mods.Materials"
         d:DataContext="{d:DesignInstance Type=mods:MaterialModViewModel}"
         mc:Ignorable="d" 
-        d:DesignHeight="250" d:DesignWidth="300"
-        Height="500" Width="600"
-        MinHeight="500" MinWidth="600"
-        FontSize="14"
+        MinHeight="600" MinWidth="700"
+        Height="600" Width="700"
+        MouseDown="window1_MouseDown"
         Title="{Binding DestinationName}">
-    <Grid Margin="10">
+    <Grid x:Name="grid1" Margin="10" Focusable="True">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -32,10 +31,8 @@
                 True="Visible" False="Collapsed"/>
             <ui:BooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter"
                 True="Collapsed" False="Visible"/>
-            <ui:BooleanToStringConverter
-                x:Key="TransparancyBooleanConverter"
-                True="Enabled"
-                False="Disabled"/>
+            <ui:BooleanToStringConverter x:Key="TransparancyBooleanConverter"
+                True="Enabled" False="Disabled"/>
         </Grid.Resources>
         <Grid DataContext="{Binding ShaderInfoViewModel}">
             <Grid.RowDefinitions>

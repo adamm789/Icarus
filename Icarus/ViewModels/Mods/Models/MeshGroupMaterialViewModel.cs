@@ -1,4 +1,7 @@
-﻿using Icarus.Services.Interfaces;
+﻿using Icarus.Mods;
+using Icarus.Mods.Interfaces;
+using Icarus.Services.Interfaces;
+using Icarus.Util.Import;
 using Icarus.ViewModels.Mods;
 using Icarus.ViewModels.Util;
 using ItemDatabase.Paths;
@@ -29,14 +32,18 @@ namespace Icarus.ViewModels.Models
             _importedGroup = group;
             _userPreferencesService = userPreferences;
             _modelModViewModel = model;
-            _materialName = group.Material;
 
+            _materialName = group.Material;
             _isSkinMaterial = XivPathParser.IsSkinMtrl(_importedGroup.Material);
             _initialMaterial = group.Material;
             DisplayedMaterial = _initialMaterial;
             DestinationModelPath = model.DestinationPath;
 
-            UpdateRace(model.TargetRace);
+            InitializeSkinVariant(model.TargetRace);
+
+            //UpdateRace(model.TargetRace);
+
+            PropertyChanged += new PropertyChangedEventHandler(OnMyPropertyChanged);
 
             var eh = new PropertyChangedEventHandler(ParentChanged);
             model.PropertyChanged += eh;
@@ -47,27 +54,19 @@ namespace Icarus.ViewModels.Models
         public string SkinVariant
         {
             get { return _skinVariant; }
-            set
-            {
-                _skinVariant = value;
-                OnPropertyChanged();
-                UpdateDisplayedMaterial();
-            }
+            set { _skinVariant = value; OnPropertyChanged(); }
         }
 
         string _materialVariant = "a";
         public string MaterialVariant
         {
             get { return _materialVariant; }
-            set
-            {
-                _materialVariant = value;
-                OnPropertyChanged();
-                UpdateDisplayedMaterial();
-            }
+            set { _materialVariant = value; OnPropertyChanged(); }
         }
 
         public bool CanParsePath => XivPathParser.CanParsePath(DestinationModelPath);
+        public bool CanAssignSkin { get => _modelModViewModel.HasSkin; }
+
 
         private void ParentChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -80,10 +79,21 @@ namespace Icarus.ViewModels.Models
 
             if (sender is not ModelModViewModel modelMod) return;
 
+            /*
             if (e.PropertyName == nameof(modelMod.TargetRace))
             {
                 //TargetRace = modelMod.TargetRace;
                 UpdateRace(modelMod.TargetRace);
+                UpdateDisplayedMaterial();
+            }
+            */
+        }
+
+        private void OnMyPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(SkinVariant) || e.PropertyName == nameof(MaterialVariant)
+                || e.PropertyName == nameof(DestinationModelPath) || e.PropertyName == nameof(IsSkinMaterial))
+            {
                 UpdateDisplayedMaterial();
             }
         }
@@ -95,8 +105,11 @@ namespace Icarus.ViewModels.Models
             set
             {
                 _destinationModelPath = value;
+                OnPropertyChanged();
+                /*
                 UpdateDisplayedMaterial();
                 OnPropertyChanged(nameof(CanParsePath));
+                */
             }
         }
 
@@ -108,12 +121,8 @@ namespace Icarus.ViewModels.Models
             {
                 _isSkinMaterial = value;
                 OnPropertyChanged();
-                UpdateDisplayedMaterial();
             }
         }
-
-        public bool CanAssignSkin => _modelModViewModel.HasSkin;
-
 
         // TODO: Implement an "exists" function, which keeps track of if a material exists or not
         // Whether the material is vanilla, or added as a mod
@@ -167,7 +176,8 @@ namespace Icarus.ViewModels.Models
 
         private void UpdateDisplayedMaterial()
         {
-            if (XivPathParser.CanParsePath(DestinationModelPath))
+            OnPropertyChanged(nameof(CanParsePath));
+            if (CanParsePath)
             {
                 UpdateItem();
                 if (IsSkinMaterial)
@@ -185,9 +195,40 @@ namespace Icarus.ViewModels.Models
         {
             _skinName = XivPathParser.ChangeToRace(_skinName, race);
             // TODO: UserPreferences of default skin material will overwrite any assignment in, for example, a ttmp2
-            if (!_modelModViewModel.IsInternal)
+
+            if (_modelModViewModel.ImportSource == ImportSource.Raw)
             {
                 _skinVariant = _userPreferencesService.GetDefaultSkinMaterialVariant(race);
+            }
+            else if (_modelModViewModel.ImportSource == ImportSource.TexToolsModPack)
+            {
+                if (IsSkinMaterial)
+                {
+                    _skinVariant = XivPathParser.GetMtrlVariant(DisplayedMaterial);
+                }
+                else
+                {
+                    _skinVariant = _userPreferencesService.GetDefaultSkinMaterialVariant(race);
+                }
+            }
+        }
+
+        private void InitializeSkinVariant(XivRace race)
+        {
+            if (_modelModViewModel.ImportSource == ImportSource.Raw)
+            {
+                _skinVariant = _userPreferencesService.GetDefaultSkinMaterialVariant(race);
+            }
+            else if (_modelModViewModel.ImportSource == ImportSource.TexToolsModPack)
+            {
+                if (IsSkinMaterial)
+                {
+                    _skinVariant = XivPathParser.GetMtrlVariant(DisplayedMaterial);
+                }
+                else
+                {
+                    _skinVariant = _userPreferencesService.GetDefaultSkinMaterialVariant(race);
+                }
             }
         }
 

@@ -1,4 +1,5 @@
 ﻿using Icarus.Mods.Interfaces;
+using Icarus.Util.Import;
 using ItemDatabase.Enums;
 using System;
 using System.Collections.Generic;
@@ -48,15 +49,18 @@ namespace Icarus.Mods
         // GmpEntry
         // ImcEntries
         // Root
+
+        /*
         public MetadataMod(IMetadataFile file, bool isInternal = false) : base(file, isInternal)
         {
             ItemMetadata = file.ItemMetadata;
             Slot = file.Slot;
         }
+        */
 
-        public MetadataMod(ItemMetadata data, bool isInternal = false)
+        public MetadataMod(ItemMetadata data, ImportSource source = ImportSource.Vanilla) : base(source)
         {
-            IsInternal = isInternal;
+            
             ItemMetadata = data;
 
             ModFileName = data.Root.ToRawItem().Name;

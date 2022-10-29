@@ -15,6 +15,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Media.Animation;
+using Icarus.Util.Import;
 using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Textures.FileTypes;
 using ModPack = Icarus.Mods.DataContainers.ModPack;
@@ -29,7 +30,6 @@ namespace Icarus.Services.Files
         readonly ISettingsService _settingsService;
 
         TexToolsModPackImporter _ttmpImporter;
-        DirectoryInfo gameDirectoryFramework;
         protected Queue<string> _importFileQueue = new();
 
         public ObservableQueue<string> _stringQueue = new();
@@ -46,7 +46,6 @@ namespace Icarus.Services.Files
         {
             var projectDirectory = _settingsService.ProjectDirectory;
             var gamePathFramework = Path.Combine(_settingsService.GameDirectoryLumina, "ffxiv");
-            gameDirectoryFramework = new(gamePathFramework);
             _ttmpImporter = new(projectDirectory, gamePathFramework);
         }
 
@@ -178,7 +177,7 @@ namespace Icarus.Services.Files
                 _logService.Information("Checking for common user errors.");
                 TTModel.CheckCommonUserErrors(importedModel, _logService.LoggingFunction);
 
-                var mod = new ModelMod(filePath, importedModel)
+                var mod = new ModelMod(filePath, importedModel, ImportSource.Raw)
                 {
                     ModFileName = filePath
                 };
@@ -267,7 +266,7 @@ namespace Icarus.Services.Files
             // TODO: Some sort of check for the file?
             // TODO: Store some actual data as opposed to just the file path?
             var retPack = new ModPack();
-            var texMod = new TextureMod(false)
+            var texMod = new TextureMod(ImportSource.Raw)
             {
                 ModFileName = filePath,
                 ModFilePath = filePath,

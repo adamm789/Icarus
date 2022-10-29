@@ -5,6 +5,7 @@ using Icarus.Services;
 using Icarus.Services.GameFiles;
 using Icarus.Services.GameFiles.Interfaces;
 using Icarus.Services.Interfaces;
+using Icarus.Util.Import;
 using Icarus.ViewModels.Items;
 using Icarus.ViewModels.Mods.DataContainers.Interfaces;
 using Icarus.ViewModels.Util;
@@ -254,7 +255,7 @@ namespace Icarus.ViewModels.Import
 
             if (modelGameFile != null)
             {
-                var mod = new ModelMod(modelGameFile, true);
+                var mod = new ModelMod(modelGameFile, ImportSource.Vanilla);
                 var modViewModel = _modPackViewModel.Add(mod);
                 if (modViewModel == null)
                 {
@@ -288,7 +289,7 @@ namespace Icarus.ViewModels.Import
                     _logService.Error($"Could not find the material for {item.Name}");
                     return null;
                 }
-                var mod = new MaterialMod(materialGameFile, true);
+                var mod = new MaterialMod(materialGameFile, ImportSource.Vanilla);
                 var modViewModel = _modPackViewModel.Add(mod);
                 if (modViewModel == null)
                 {

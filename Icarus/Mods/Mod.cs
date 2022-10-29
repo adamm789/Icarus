@@ -1,5 +1,6 @@
 ﻿using Icarus.Mods.GameFiles;
 using Icarus.Mods.Interfaces;
+using Icarus.Util.Import;
 using System;
 using SystemPath = System.IO.Path;
 
@@ -15,16 +16,18 @@ namespace Icarus.Mods
         public string ModFilePath { get; set; } = "";
 
         public bool IsInternal { get; set; } = false;
-        public Mod()
-        {
+        public bool IsDefault { get; set; } = false;
+        public ImportSource ImportSource { get; set; }
 
+        public Mod(ImportSource source)
+        {
+            ImportSource = source;
         }
 
-        public Mod(IGameFile gameFile, bool isInternal = false)
+        public Mod(IGameFile gameFile, ImportSource source)
         {
-            IsInternal = isInternal;
-
-            if (isInternal)
+            ImportSource = source;
+            if (source == ImportSource.Vanilla)
             {
                 string fileName;
                 try
@@ -38,13 +41,7 @@ namespace Icarus.Mods
                 ModFileName = $"{fileName} ({gameFile.Name})";
                 ModFilePath = gameFile.Path;
             }
-
             SetModData(gameFile);
-        }
-
-        public object Clone()
-        {
-            return MemberwiseClone();
         }
 
         public virtual bool IsComplete()

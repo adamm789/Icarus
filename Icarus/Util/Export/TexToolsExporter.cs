@@ -109,6 +109,7 @@ namespace Icarus.Util
                         var name = entry.Name;
                         var category = entry.Category;
                         var path = entry.Path;
+                        var isDefault = entry.IsDefault;
 
                         var bytes = await tasks[i];
                         if (bytes == Array.Empty<Byte>())
@@ -132,10 +133,10 @@ namespace Icarus.Util
                             Name = name,
                             Category = category,
                             FullPath = path,
-                            ModOffset = offset,
                             ModSize = bytes.Length,
                             DatFile = datFile,
-                            IsDefault = false,
+                            IsDefault = isDefault,
+                            ModOffset = offset,
                             ModPackEntry = new FrameworkModPack
                             {
                                 name = modPack.Name,
@@ -146,7 +147,6 @@ namespace Icarus.Util
                         };
 
                         modPackJson.SimpleModsList.Add(modsJson);
-                        modsJson.ModOffset = offset;
                         offset += bytes.Length;
                         bw.Write(bytes);
                     }
@@ -175,6 +175,7 @@ namespace Icarus.Util
                     File.Delete(modPackPath);
                 }
                 zf.Save(modPackPath);
+
                 _logService.Verbose($"Wrote {offset} bytes.");
                 if (numMods == entries.Count)
                 {

@@ -7,12 +7,17 @@
              xmlns:materials="clr-namespace:Icarus.ViewModels.Mods.Materials"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:mods="clr-namespace:Icarus.ViewModels.Mods"
-                                  xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              d:DataContext="{d:DesignInstance Type=materials:ColorSetViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
+        <Grid.Resources>
+            <DataTemplate DataType="{x:Type materials:ColorSetRowEditorViewModel}">
+                <local:ColorSetRowEditorView/>
+            </DataTemplate>
+        </Grid.Resources>
+        <!--
         <Grid.Resources>
             <DataTemplate DataType="{x:Type materials:ColorSetRowViewModel}">
                 <local:ColorSetRowView/>
@@ -32,5 +37,41 @@
         </Grid.ColumnDefinitions>
         <ListView Grid.Column="0" Grid.RowSpan="2" ItemsSource="{Binding ColorSetRows}" SelectedValue="{Binding SelectedRow}"/>
         <ContentControl Grid.Row="1" Grid.Column="1" Content="{Binding DisplayedDyeData}"/>
+        -->
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="5*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- ColorSetRows -->
+        <ListView Grid.Column="0" ItemsSource="{Binding ColorSetRows}" SelectedValue="{Binding SelectedRow}" ScrollViewer.CanContentScroll="False" HorizontalContentAlignment="Stretch">
+            <ListView.ItemTemplate>
+                <DataTemplate DataType="{x:Type materials:ColorSetRowViewModel}">
+                    <DockPanel LastChildFill="True">
+                        <DockPanel.Resources>
+                            <DataTemplate DataType="{x:Type materials:ColorViewModel}">
+                                <Label Background="{Binding BrushColor}"/>
+                            </DataTemplate>
+                            <Style TargetType="{x:Type Label}">
+                                <Setter Property="BorderBrush" Value="Black"/>
+                                <Setter Property="BorderThickness" Value="1"/>
+                                <Setter Property="Width" Value="20"/>
+                                <Setter Property="Height" Value="20"/>
+                            </Style>
+                        </DockPanel.Resources>
+
+                        <TextBlock Text="{Binding DisplayedRowNumber, StringFormat={}Row {0}}" DockPanel.Dock="Left" Margin="0 0 5 0"/>
+                        <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" HorizontalAlignment="Right">
+                            <ContentControl Grid.Column="1" Content="{Binding DiffuseColor}"/>
+                            <ContentControl Grid.Column="2" Content="{Binding SpecularColor}"/>
+                            <ContentControl Grid.Column="3" Content="{Binding EmissiveColor}"/>
+                        </StackPanel>
+                    </DockPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <!-- Row Editor -->
+        <ContentControl Grid.Column="1" Content="{Binding DisplayedRow}"/>
     </Grid>
 </UserControl>

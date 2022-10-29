@@ -3,6 +3,7 @@ using Icarus.Mods.Interfaces;
 using Icarus.Services.GameFiles;
 using Icarus.Services.GameFiles.Interfaces;
 using Icarus.Services.Interfaces;
+using Icarus.Util.Import;
 using Icarus.ViewModels.Items;
 using Icarus.ViewModels.Util;
 using ItemDatabase.Interfaces;
@@ -23,6 +24,8 @@ namespace Icarus.ViewModels.Mods
         public IItem? SelectedItem { get; protected set; }
         protected readonly IGameFileService _gameFileService;
         protected readonly ILogService _logService;
+        public ImportSource ImportSource => Mod.ImportSource;
+        public bool IsInternal => Mod.ImportSource == ImportSource.Vanilla;
         public virtual bool IsReadOnly
         {
             get { return this is ReadOnlyModViewModel; }
@@ -190,7 +193,7 @@ namespace Icarus.ViewModels.Mods
             var modData = Task.Run(() => _gameFileService.TryGetFileData(path, GetType(), name)).Result;
             if (modData == null)
             {
-                _logService.Warning($"Could not set {path} as {GetType().Name}");
+                _logService.Warning($"Could not set \"{path}\" as {GetType().Name}");
                 return false;
             }
             else
