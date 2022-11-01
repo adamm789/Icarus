@@ -19,7 +19,6 @@ using System.Windows;
 using IDropTarget = GongSolutions.Wpf.DragDrop.IDropTarget;
 
 [assembly: InternalsVisibleTo("UnitTests")]
-
 namespace Icarus.ViewModels
 {
     public class MainWindowViewModel : NotifyPropertyChanged, IDropTarget
@@ -99,7 +98,6 @@ namespace Icarus.ViewModels
         }
 
         #region Bindings
-
         public IModsListViewModel ModsListViewModel { get; set; }
         public IModPackViewModel ModPackViewModel { get; set; }
         public IModPackMetaViewModel ModPackMetaViewModel { get; set; }
@@ -163,13 +161,13 @@ namespace Icarus.ViewModels
         }
 
         public void OpenLogWindow()
-       {
+        {
             if (!_windowService.IsWindowOpen<LogWindow>())
             {
                 _windowService.Show<LogWindow>(_logViewModel);
             }
         }
-        public void DragOver(IDropInfo dropInfo)
+        void IDropTarget.DragOver(IDropInfo dropInfo)
         {
             var dataObject = dropInfo.Data as System.Windows.DataObject;
             var target = dropInfo.TargetItem;
@@ -188,7 +186,7 @@ namespace Icarus.ViewModels
             }
         }
 
-        public void Drop(IDropInfo dropInfo)
+        void IDropTarget.Drop(IDropInfo dropInfo)
         {
             var dataObject = dropInfo.Data as DataObject;
             if (dataObject != null && dataObject.ContainsFileDropList())

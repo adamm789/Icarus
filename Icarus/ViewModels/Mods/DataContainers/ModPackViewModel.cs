@@ -17,10 +17,15 @@ namespace Icarus.ViewModels.Mods.DataContainers
     {
         public ModPack ModPack { get; }
         public IModsListViewModel ModsListViewModel { get; }
+        public IModPackMetaViewModel ModPackMetaViewModel { get; }
+        // TODO: Ability to see all imported advanced modpacks and their options
+        // TODO: Allow user to drag and drop groups, options, and pages to the current pack
+        public ObservableCollection<ModPackPageViewModel> ModPackPages { get; } = new();
+
+
         ViewModelService _viewModelService;
 
         //IModPackMetaViewModel _modPackMetaViewModel;
-        public IModPackMetaViewModel ModPackMetaViewModel { get; }
 
         public ModPackViewModel(ModPack modPack, ViewModelService viewModelService)
         {
@@ -85,14 +90,6 @@ namespace Icarus.ViewModels.Mods.DataContainers
                 ModPackViewModelImportFlags.OverwritePages | ModPackViewModelImportFlags.AppendPagesToEnd;
         }
 
-        // TODO: Ability to see all imported advanced modpacks and their options
-        // TODO: Allow user to drag and drop groups, options, and pages to the current pack
-        ObservableCollection<ModPackPageViewModel> _modPackPages = new();
-        public ObservableCollection<ModPackPageViewModel> ModPackPages
-        {
-            get { return _modPackPages; }
-            set { _modPackPages = value; OnPropertyChanged(); }
-        }
 
         string _newOrNext = "New Page";
         public string NewOrNext
@@ -246,9 +243,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
             {
                 var lastIndex = ModPackPages.Count - 1;
                 return ModPackPages[lastIndex].ModGroups.Count > 0;
-                
             }
-            return false;
         }
 
         private void UpdatePageIndices()
@@ -300,6 +295,10 @@ namespace Icarus.ViewModels.Mods.DataContainers
                 dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
                 dropInfo.Effects = DragDropEffects.Copy;
             }
+            else
+            {
+                dropInfo.NotHandled = true;
+            }
         }
 
         void IDropTarget.Drop(IDropInfo dropInfo)
@@ -310,6 +309,10 @@ namespace Icarus.ViewModels.Mods.DataContainers
             if (source is ModPackPageViewModel sourcePage && target is ModPackPageViewModel targetPage)
             {
                 Move(sourcePage, targetPage);
+            }
+            else
+            {
+                dropInfo.NotHandled = true;
             }
         }
     }

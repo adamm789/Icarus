@@ -25,8 +25,6 @@ namespace Icarus.Mods
         public string DiffuseTexPath { get; set; }
         public string ReflectionTexPath { get; set; }
 
-        // StainingTemplateFile?
-
         public bool IsFurniture => ShaderInfo.Shader == MtrlShader.Furniture;
         public bool IsDyeableFurniture => ShaderInfo.Shader == MtrlShader.DyeableFurniture;
 
@@ -68,7 +66,7 @@ namespace Icarus.Mods
 
         private void Init(XivMtrl xivMtrl)
         {
-            if (XivMtrl == null)
+            if (this.XivMtrl == null)
             {
                 Log.Verbose($"Initializing mtrl: {xivMtrl.MTRLPath}");
                 XivMtrl = xivMtrl;
@@ -77,7 +75,7 @@ namespace Icarus.Mods
                 if (ColorSetData == null)
                 {
                     Log.Verbose("Keeping old colorset data.");
-                    ColorSetData = XivMtrl.ColorSetData;
+                    ColorSetData = xivMtrl.ColorSetData;
                 }
                 else
                 {
@@ -88,14 +86,14 @@ namespace Icarus.Mods
                 if (ColorSetDyeData == null)
                 {
                     Log.Verbose("Keeping old colorset dye data.");
-                    ColorSetDyeData = XivMtrl.ColorSetDyeData;
+                    ColorSetDyeData = xivMtrl.ColorSetDyeData;
                 }
                 else
                 {
                     Log.Verbose("Setting colorset dye data.");
                     XivMtrl.ColorSetDyeData = ColorSetDyeData;
                 }
-                ShaderInfo = XivMtrl.GetShaderInfo();
+                ShaderInfo = xivMtrl.GetShaderInfo();
             }
 
             UpdatePaths(xivMtrl);
@@ -105,7 +103,6 @@ namespace Icarus.Mods
         {
             Path = xivMtrl.MTRLPath;
 
-            //NormalTexPath = xivMtrl.GetMapInfo(XivTexType.Normal, false).Path;
             NormalTexPath = XivPathParser.GetTexPathFromMtrl(Path, XivTexType.Normal);
             SpecularTexPath = XivPathParser.GetTexPathFromMtrl(Path, XivTexType.Specular);
             MultiTexPath = XivPathParser.GetTexPathFromMtrl(Path, XivTexType.Multi);
@@ -121,7 +118,7 @@ namespace Icarus.Mods
         /// <summary>
         /// Updates the Mtrl to the current settings
         /// </summary>
-        public void UpdateMtrl()
+        private void UpdateMtrl()
         {
             Log.Information($"Updating mtrl: {Name}");
             // Adapted from: https://github.com/TexTools/FFXIV_TexTools_UI/blob/37290b2897c79dd1e913bb4ff90285f0e620ca9d/FFXIV_TexTools/ViewModels/MaterialEditorViewModel.cs#L255
@@ -156,7 +153,6 @@ namespace Icarus.Mods
             XivMtrl.MTRLPath = Path;
 
             Log.Debug("Calling SetShaderInfo. InvalidOperationExceptions will probably occur and can probably be ignored.");
-
             XivMtrl.SetShaderInfo(ShaderInfo, true);
             Log.Debug("Done calling SetShaderInfo.");
 
@@ -165,6 +161,9 @@ namespace Icarus.Mods
             XivMtrl.SetMapInfo(XivTexType.Multi, newMulti);
             XivMtrl.SetMapInfo(XivTexType.Diffuse, newDiffuse);
             XivMtrl.SetMapInfo(XivTexType.Reflection, newReflection);
+
+            XivMtrl.ColorSetData = ColorSetData;
+            XivMtrl.ColorSetDyeData = ColorSetDyeData;
         }
 
         public void SetMtrlPath(string str, bool forced = true)
@@ -209,14 +208,7 @@ namespace Icarus.Mods
         public XivMtrl GetMtrl()
         {
             UpdateMtrl();
-            XivMtrl.ColorSetData = ColorSetData;
-            XivMtrl.ColorSetDyeData = ColorSetDyeData;
             return XivMtrl;
-        }
-
-        public List<SharpDX.Half>? GetColorSetData()
-        {
-            return XivMtrl?.ColorSetData;
         }
 
         public bool IsParentMaterial(string texPath)

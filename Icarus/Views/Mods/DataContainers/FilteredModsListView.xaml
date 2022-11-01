@@ -3,11 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:Icarus.Views.Mods" 
-             xmlns:mods="clr-namespace:Icarus.ViewModels.Mods" 
              xmlns:datacontainers="clr-namespace:Icarus.ViewModels.Mods.DataContainers"
-             xmlns:modviewmodels="clr-namespace:Icarus.ViewModels.Mods"
-             xmlns:modviews="clr-namespace:Icarus.Views.Mods"
              xmlns:dd="urn:gong-wpf-dragdrop"
              d:DataContext="{d:DesignInstance Type=datacontainers:FilteredModsListViewModel}"
              mc:Ignorable="d" 
@@ -20,6 +16,7 @@
                 <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
                 <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True"/>
                 <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Visible"/>
+                <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Hidden"/>
                 <Setter Property="dd:DragDrop.IsDragSource" Value="True"/>
                 <Setter Property="dd:DragDrop.IsDropTarget" Value="True"/>
                 <Setter Property="dd:DragDrop.DropHandler" Value="{Binding}"/>
@@ -40,11 +37,8 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        
-        <TextBox Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="False"  Grid.Row="0" Grid.Column="1">
-            
-        </TextBox>
-       
+
+        <TextBox Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="False" Grid.Row="0" Grid.Column="1"/>
 
         <TabControl Grid.Row="1" Grid.ColumnSpan="2">
             <TabItem Header="{Binding AllModsHeader}">

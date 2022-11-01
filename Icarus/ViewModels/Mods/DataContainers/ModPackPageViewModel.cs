@@ -1,35 +1,37 @@
 ﻿using GongSolutions.Wpf.DragDrop;
 using Icarus.Mods.DataContainers;
 using Icarus.Services;
+using Icarus.Util.Extensions;
 using Icarus.ViewModels.Util;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Windows;
 
 namespace Icarus.ViewModels.Mods.DataContainers
 {
     public class ModPackPageViewModel : NotifyPropertyChanged, IDropTarget
     {
         protected ModPackPage _modPackPage;
-        readonly ViewModelService _modFileService;
+        readonly ViewModelService _viewModelService;
+        public ObservableCollection<ModGroupViewModel> ModGroups { get; } = new();
         public DelegateCommand? RemoveCommand { get; set; }
 
-
-        public ModPackPageViewModel(int index, ModPackViewModel parent, ViewModelService modFileService)
+        public ModPackPageViewModel(int index, ModPackViewModel parent, ViewModelService viewModelService)
         {
             _modPackPage = new(index + 1);
-            _modFileService = modFileService;
+            _viewModelService = viewModelService;
             RemoveCommand = new(o => parent.RemovePage(this));
         }
 
-        public ModPackPageViewModel(ModPackPage page, ModPackViewModel parent, ViewModelService modFileService)
+        public ModPackPageViewModel(ModPackPage page, ModPackViewModel parent, ViewModelService viewModelService)
         {
             _modPackPage = new(page);
-            _modFileService = modFileService;
+            _viewModelService = viewModelService;
             foreach (var group in page.ModGroups)
             {
                 //var groupViewModel = new ModGroupViewModel(group, gameFileDataService, windowService);
-                var groupViewModel = new ModGroupViewModel(group, this, _modFileService);
+                var groupViewModel = new ModGroupViewModel(group, this, _viewModelService);
                 AddGroup(groupViewModel);
             }
             RemoveCommand = new(o => parent.RemovePage(this));
@@ -46,11 +48,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
         public int PageIndex
         {
             get { return _modPackPage.PageIndex; }
-            set
-            {
-                _modPackPage.PageIndex = value;
-                OnPropertyChanged();
-            }
+            set { _modPackPage.PageIndex = value; OnPropertyChanged(); }
         }
 
         ModOptionViewModel _displayedOption;
@@ -73,16 +71,9 @@ namespace Icarus.ViewModels.Mods.DataContainers
             get { return _addGroupCommand ??= new DelegateCommand(o => AddGroup()); }
         }
 
-        ObservableCollection<ModGroupViewModel> _modGroups = new();
-        public ObservableCollection<ModGroupViewModel> ModGroups
-        {
-            get { return _modGroups; }
-            set { _modGroups = value; OnPropertyChanged(); }
-        }
-
         public ModGroupViewModel AddGroup(string groupName)
         {
-            var vm = new ModGroupViewModel(groupName, this, _modFileService);
+            var vm = new ModGroupViewModel(groupName, this, _viewModelService);
             ModGroups.Add(vm);
             return vm;
         }
@@ -117,7 +108,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
             if (!string.IsNullOrWhiteSpace(NewGroupName))
             {
                 NewGroupName = NewGroupName.Trim();
-                var vm = new ModGroupViewModel(NewGroupName, this, _modFileService);
+                var vm = new ModGroupViewModel(NewGroupName, this, _viewModelService);
 
                 AddGroup(vm);
                 NewGroupName = string.Empty;
@@ -127,6 +118,25 @@ namespace Icarus.ViewModels.Mods.DataContainers
         public ModPackPage GetModPackPage()
         {
             return _modPackPage;
+        }
+
+        public void MoveTo(ModGroupViewModel oldGroup, ModGroupViewModel newGroup)
+        {
+            var oldIndex = ModGroups.IndexOf(oldGroup);
+            var newIndex = ModGroups.IndexOf(newGroup);
+
+            MoveTo(oldIndex, newIndex);
+        }
+
+        public void MoveTo(int oldIndex, int newIndex)
+        {
+            if (oldIndex < 0 || oldIndex > ModGroups.Count || newIndex < 0 || newIndex > ModGroups.Count)
+            {
+                return;
+            }
+
+            ModGroups.Move(oldIndex, newIndex);
+            _modPackPage.ModGroups.Move(oldIndex, newIndex);
         }
 
         public bool IsEmpty()
@@ -142,20 +152,40 @@ namespace Icarus.ViewModels.Mods.DataContainers
             return true;
         }
 
-        public void DragOver(IDropInfo dropInfo)
+        void IDropTarget.DragOver(IDropInfo dropInfo)
         {
             var source = dropInfo.Data;
             var target = dropInfo.TargetItem;
 
             if (source is ModOptionViewModel sourceOption && target is ModOptionViewModel targetOption)
             {
-
+                dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
+                dropInfo.Effects = DragDropEffects.Copy;
+            }
+            else if (source is ModGroupViewModel && target is ModGroupViewModel)
+            {
+                dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
+                dropInfo.Effects = DragDropEffects.Copy;
+            }
+            else
+            {
+                dropInfo.NotHandled = true;
             }
         }
 
-        public void Drop(IDropInfo dropInfo)
+        void IDropTarget.Drop(IDropInfo dropInfo)
         {
-            throw new System.NotImplementedException();
+            var source = dropInfo.Data;
+            var target = dropInfo.TargetItem;
+
+            if (source is ModGroupViewModel sourceGroup && target is ModGroupViewModel targetGroup)
+            {
+                MoveTo(sourceGroup, targetGroup);
+            }
+            else
+            {
+                dropInfo.NotHandled = false;
+            }
         }
     }
 }

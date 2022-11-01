@@ -82,26 +82,12 @@ namespace ItemDatabase.Paths
             return "";
         }
 
-        // TODO: 
         public static XivTexType GetTexType(string path)
         {
-            var texTypeRegex = new Regex(@"_([a-z]).tex$");
-            if (texTypeRegex.IsMatch(path))
-            {
-                var matches = texTypeRegex.Matches(path);
-                if (matches.Count == 1 && matches[0].Groups.Count == 2)
-                {
-                    var type = matches[0].Groups[1].Value;
-                    switch (type)
-                    {
-                        case "m": return XivTexType.Multi;
-                        case "n": return XivTexType.Normal;
-                        case "s": return XivTexType.Specular;
-                        case "d": return XivTexType.Diffuse;
-                            // TODO: All the other TexTypes?
-                    }
-                }
-            }
+            if (path.EndsWith("m.tex")) return XivTexType.Multi;
+            else if (path.EndsWith("n.tex")) return XivTexType.Normal;
+            else if (path.EndsWith("s.tex")) return XivTexType.Specular;
+            else if (path.EndsWith("d.tex")) return XivTexType.Diffuse;
 
             throw new ArgumentException($"Could not get TexType from {path}.");
         }
@@ -150,10 +136,9 @@ namespace ItemDatabase.Paths
                 {
                     var variant = matches[0].Groups[1].Value;
 
-                    var underscoreVariant = "_" + variant;
                     foreach (var r in gearRegex)
                     {
-                        if (r.IsMatch(underscoreVariant))
+                        if (r.IsMatch($"_{variant}"))
                         {
                             return "";
                         }
@@ -161,7 +146,7 @@ namespace ItemDatabase.Paths
                     return variant;
                 }
             }
-            return "";
+            return "a";
         }
 
         public static string ChangeTexVariant(string path, string variant = "")

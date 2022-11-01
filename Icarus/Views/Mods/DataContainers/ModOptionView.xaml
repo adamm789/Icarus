@@ -4,22 +4,15 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Icarus.Views.Mods.DataContainers"
-             xmlns:viewmodels="clr-namespace:Icarus.ViewModels" 
              xmlns:modviewmodels="clr-namespace:Icarus.ViewModels.Mods"
-             xmlns:mods="clr-namespace:Icarus.ViewModels.Mods" 
              xmlns:datacontainers="clr-namespace:Icarus.ViewModels.Mods.DataContainers"
              xmlns:dd="urn:gong-wpf-dragdrop"
-             xmlns:ui="clr-namespace:Icarus.UI"
              xmlns:xtk1="http://schemas.xceed.com/wpf/xaml/toolkit"
-
              d:DataContext="{d:DesignInstance Type=datacontainers:ModOptionViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 
-    <Grid HorizontalAlignment="Stretch"
-          dd:DragDrop.IsDragSource="True"
-          dd:DragDrop.IsDropTarget="True"
-          dd:DragDrop.DropHandler="{Binding}">
+    <Grid HorizontalAlignment="Stretch">
         
         <Grid.Resources>
             <DataTemplate DataType="{x:Type datacontainers:ModOptionModViewModel}">
@@ -37,7 +30,6 @@
         </Grid.Resources>
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
@@ -50,26 +42,26 @@
         <!--
         <Label Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Width="25"/>
         -->
-        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"/>
-        <xtk1:WatermarkTextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding Description}" Watermark="Description"
-                               AcceptsReturn="True" TextWrapping="Wrap"/>
+        <TextBox Grid.Row="0" Grid.Column="0" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"/>
+        <xtk1:WatermarkTextBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding Description}" Watermark="Description"
+                               AcceptsReturn="True" TextWrapping="Wrap" Margin="5"/>
         <!--
         <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding Description}" AcceptsReturn="True" VerticalAlignment="Stretch" TextWrapping="Wrap"/>
 -->
-        <Grid Grid.Row="0" Grid.Column="2">
+        <Grid Grid.Row="0" Grid.Column="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Header}"/>
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Header}" HorizontalAlignment="Center"/>
             <Button Command="{Binding RemoveCommand}" Grid.Column="1" Content="Remove"/>
         </Grid>
         
         <ListView Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" ItemsSource="{Binding ModViewModels}"
-                 HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
-                 ScrollViewer.CanContentScroll="False"
-                 VirtualizingStackPanel.IsVirtualizing="True"/>
+                  HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
+                  ScrollViewer.CanContentScroll="False"
+                  VirtualizingStackPanel.IsVirtualizing="True"
+                  ScrollViewer.HorizontalScrollBarVisibility="Hidden"/>
         
     </Grid>
-
 </UserControl>

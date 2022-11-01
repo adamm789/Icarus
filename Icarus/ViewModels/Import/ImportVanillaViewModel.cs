@@ -71,6 +71,7 @@ namespace Icarus.ViewModels.Import
                     SelectedItemName = "";
                 }
             }
+
             // TODO: Behavior: Type in invalid path, CanImportMdl/Mtrl will still be enabled
             if (e.PropertyName == nameof(ItemListViewModel.CompletePath) && itemList != null)
             {

@@ -15,17 +15,17 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0">
+            <Button Content="Remove" Command="{Binding RemoveCommand}" Grid.Row="0" Grid.Column="0"/>
+
+            <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="1">
                 <TextBlock Text="{Binding Identifier}"/>
                 <TextBlock Text="{Binding DisplayedHeader}"/>
             </StackPanel>
-            <TextBlock Text="{Binding DestinationName}" Grid.Row="1" Grid.Column="0"/>
-
-            <Button Content="Remove" Command="{Binding RemoveCommand}" Grid.Row="0" Grid.Column="1"/>
+            <TextBlock Text="{Binding DestinationName}" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"/>
         </Grid>
     </Border>
 </UserControl>

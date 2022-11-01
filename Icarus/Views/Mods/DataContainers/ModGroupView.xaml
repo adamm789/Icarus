@@ -53,7 +53,7 @@
                 <!-- TODO: Temp element for a re-order tab thingy -->
                 <Label Grid.Column="0" Width="25"/>
 
-                <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding GroupName}"/>
+                <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding GroupName}" MaxWidth="250" TextWrapping="WrapWithOverflow"/>
                 <Button Grid.Row="0" Grid.Column="3" Command="{Binding RemoveCommand}" Content="Remove" IsTabStop="False" Focusable="False"/>
             </Grid>
 

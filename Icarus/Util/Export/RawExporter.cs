@@ -88,12 +88,11 @@ namespace Icarus.Util.Export
 
             if (mod is ModelMod mdlMod)
             {
-                var src = mdlMod.TTModel.Source;
-                if (Path.GetExtension(src) == ".db")
+                if (mdlMod.ImportSource == Import.ImportSource.Raw)
                 {
                     // Check to see if the original file was from a .db file (which came from an .fbx file)
                     // Why would someone want to export to an fbx when they have the original?
-                    _logService.Error($"Cannot export mod {mdlMod.Name}.");
+                    _logService.Error($"Cannot export mod {mdlMod.Name} because it originated from a raw file.");
                     return;
                 }
 
@@ -121,7 +120,7 @@ namespace Icarus.Util.Export
                     _logService.Verbose("Done with getting materials.");
                 }
             }
-            if (mod is MaterialMod mtrlMod)
+            else if (mod is MaterialMod mtrlMod)
             {
                 // TODO: Only allow .dds file as raw exports for materials?
                 var xivMtrl = mtrlMod.GetMtrl();
@@ -136,7 +135,7 @@ namespace Icarus.Util.Export
                 var texData = MtrlExtensions.MtrlToXivTex(xivMtrl, ttp);
                 TexExtensions.SaveTexAsDDS(outputPath, texData, outputDirectory);
             }
-            if (mod is TextureMod texMod)
+            else if (mod is TextureMod texMod)
             {
                 if (mod.IsInternal)
                 {

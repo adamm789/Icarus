@@ -235,6 +235,10 @@ namespace Icarus.ViewModels.Mods.DataContainers
                 dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
                 dropInfo.Effects = DragDropEffects.Copy;
             }
+            else
+            {
+                dropInfo.NotHandled = true;
+            }
         }
 
         void IDropTarget.Drop(IDropInfo dropInfo)
@@ -258,6 +262,10 @@ namespace Icarus.ViewModels.Mods.DataContainers
                     modOption.Parent.RemoveOption(modOption);
                     Parent.AddOption(modOption);
                 }
+            }
+            else
+            {
+                dropInfo.NotHandled = true;
             }
         }
         #endregion

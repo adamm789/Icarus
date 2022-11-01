@@ -9,8 +9,8 @@
              d:DataContext="{d:DesignInstance Type=materials:ColorSetRowViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="250" d:DesignWidth="300">
-    <Grid ToolTip="{Binding ToolTip}">
-        <Grid.Resources>
+    <DockPanel ToolTip="{Binding ToolTip}" LastChildFill="True">
+        <DockPanel.Resources>
             <DataTemplate DataType="{x:Type materials:ColorViewModel}">
                 <Label Background="{Binding BrushColor}"/>
             </DataTemplate>
@@ -20,12 +20,12 @@
                 <Setter Property="Width" Value="20"/>
                 <Setter Property="Height" Value="20"/>
             </Style>
-        </Grid.Resources>
-        <StackPanel Orientation="Horizontal">
-            <TextBlock Text="{Binding RowNumber}"/>
+        </DockPanel.Resources>
+        <TextBlock Text="{Binding DisplayedRowNumber, StringFormat={}Row {0}}" DockPanel.Dock="Left" Margin="0 0 5 0"/>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
             <ContentControl Content="{Binding DiffuseColor}"/>
             <ContentControl Content="{Binding SpecularColor}"/>
             <ContentControl Content="{Binding EmissiveColor}"/>
         </StackPanel>
-    </Grid>
+    </DockPanel>
 </UserControl>

@@ -113,6 +113,12 @@ namespace Icarus.Util
             return Array.Empty<byte>();
         }
 
+        /// <summary>
+        /// Gets the temporary directory based off of the argument.
+        /// Deletes the directory if it exists, then creates it.
+        /// </summary>
+        /// <param name="outputDir"></param>
+        /// <returns></returns>
         protected string GetTempDirectory(string outputDir)
         {
             /*
@@ -126,8 +132,29 @@ namespace Icarus.Util
                 return Path.Combine(outputDir, "temp");
             }
             */
-            return Path.Combine(outputDir, "temp");
+            var tempDir = Path.Combine(outputDir, "temp");
+            if (!Directory.Exists(tempDir))
+            {
+                _logService.Verbose($"Creating temporary directory.");
+                Directory.CreateDirectory(tempDir);
+            }
 
+            return tempDir;
+        }
+
+        /// <summary>
+        /// Returns the current directory if the argument is an invalid directory.
+        /// Otherwise, returns the argument.
+        /// </summary>
+        /// <param name="outputDir"></param>
+        /// <returns></returns>
+        protected string GetOutputDirectory(string outputDir)
+        {
+            if (String.IsNullOrWhiteSpace(outputDir) || !Directory.Exists(outputDir))
+            {
+                outputDir = Directory.GetCurrentDirectory();
+            }
+            return outputDir;
         }
 
         protected async Task<byte[]> WriteMetadataToBytes(MetadataMod mod)

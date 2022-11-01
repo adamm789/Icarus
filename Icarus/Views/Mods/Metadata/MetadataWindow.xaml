@@ -8,7 +8,7 @@
         xmlns:modviewmodels="clr-namespace:Icarus.ViewModels.Mods.Metadata"
         d:DataContext="{d:DesignInstance Type=mods:MetadataModViewModel}"
         mc:Ignorable="d"
-        Title="MetadataWindow" Height="450" Width="800">
+        Title="{Binding DisplayedHeader}" Height="450" Width="800">
     <Grid>
         <Grid.Resources>
             <DataTemplate DataType="{x:Type modviewmodels:EqdpViewModel}">
@@ -23,6 +23,9 @@
             <DataTemplate DataType="{x:Type modviewmodels:GmpViewModel}">
                 <local:GmpView/>
             </DataTemplate>
+            <DataTemplate DataType="{x:Type modviewmodels:ImcViewModel}">
+                <local:ImcView/>
+            </DataTemplate>
 
         </Grid.Resources>
         <ScrollViewer>
@@ -31,6 +34,7 @@
                 <ContentControl Content="{Binding EstViewModel}"/>
                 <ContentControl Content="{Binding EqpViewModel}"/>
                 <ContentControl Content="{Binding GmpViewModel}"/>
+                <ContentControl Content="{Binding ImcViewModel}"/>
             </StackPanel>
         </ScrollViewer>
     </Grid>

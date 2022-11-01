@@ -28,6 +28,7 @@ namespace Icarus.Services
             _settingsService = settingsService;
             _logService = logService;
         }
+
         public ModPackMetaViewModel GetModPackMetaViewModel(ModPack modPack)
         {
             return new ModPackMetaViewModel(modPack, _userPreferencesService);

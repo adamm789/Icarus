@@ -18,13 +18,10 @@ namespace Icarus.ViewModels.Mods.Materials
         List<Half> _colorSetData;
         BitArray arr = new BitArray(16);
         ColorSetRowViewModel _parent;
-
         MaterialMod _materialMod;
-
         ushort _dyeInfo;
-
         int _rowNumber;
-        public int DisplayedRowNumber { get; }
+
         public ColorSetRowEditorViewModel(ColorSetRowViewModel parent, MaterialMod material, StainingTemplateFile dyeTemplateFile)
         {
             _parent = parent;
@@ -77,6 +74,8 @@ namespace Icarus.ViewModels.Mods.Materials
             TileCountY = _colorSetData[(_rowNumber * 16) + 15];
         }
 
+        #region Bindings
+        public int DisplayedRowNumber { get; }
         public ColorViewModel DiffuseColor => _parent.DiffuseColor;
         public ColorViewModel SpecularColor => _parent.SpecularColor;
         public ColorViewModel EmissiveColor => _parent.EmissiveColor;
@@ -250,5 +249,6 @@ namespace Icarus.ViewModels.Mods.Materials
             get { return _colorSetData[(_rowNumber * 16) + 15]; }
             set { _colorSetData[(_rowNumber * 16) + 15] = value; OnPropertyChanged(); }
         }
+        #endregion
     }
 }

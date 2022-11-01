@@ -221,10 +221,16 @@ namespace Icarus.ViewModels.Mods.DataContainers
             }
             else if (source is ModOptionViewModel sourceOption && target is ModOptionViewModel targetOption)
             {
-
                 dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
                 dropInfo.Effects = DragDropEffects.Copy;
+            }
+            else if (source is ModOptionViewModel && target is ModGroupViewModel)
+            {
 
+            }
+            else
+            {
+                dropInfo.NotHandled = true;
             }
         }
 
@@ -255,6 +261,10 @@ namespace Icarus.ViewModels.Mods.DataContainers
                     sourceParent.RemoveOption(sourceOption);
                     targetParent.AddOption(sourceOption);
                 }
+            }
+            else
+            {
+                dropInfo.NotHandled = true;
             }
         }
     }

@@ -27,12 +27,6 @@ namespace Icarus.Util
             _logService.Information("Starting export to simple penumbra modpack.");
             var tempDir = GetTempDirectory(outputDir);
 
-            if (Directory.Exists(tempDir))
-            {
-                Directory.Delete(tempDir, true);
-            }
-            Directory.CreateDirectory(tempDir);
-
             var metaJson = GetMetaJson(modPack);
             var defaultJson = GetDefaultModJson(modPack.SimpleModsList, true);
 
@@ -63,12 +57,6 @@ namespace Icarus.Util
         {
             var tempDir = Path.Combine(outputDir, "temp");
 
-            if (Directory.Exists(tempDir))
-            {
-                Directory.Delete(tempDir, true);
-            }
-            Directory.CreateDirectory(tempDir);
-
             var metaJson = GetMetaJson(modPack);
             var defaultJson = GetDefaultModJson(modPack.SimpleModsList, false);
 
@@ -79,7 +67,6 @@ namespace Icarus.Util
             var outputPath = GetOutputPath(modPack, outputDir);
             var finalOutputPath = WriteFiles(tempDir, outputPath, toPmp);
             
-
             return await Task.Run(() => finalOutputPath);
         }
 

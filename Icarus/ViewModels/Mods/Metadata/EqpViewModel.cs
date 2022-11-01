@@ -136,7 +136,6 @@ namespace Icarus.ViewModels.Mods.Metadata
                 { "Hat", new byte [] { 227, 118, 3} },
                 { "Open Helmet", new byte [] { 21, 240, 3} },
                 { "Full Helmet", new byte [] { 23, 48, 3} },
-
             } },
             { "top", new Dictionary<string, byte[]>()
             {
@@ -152,7 +151,6 @@ namespace Icarus.ViewModels.Mods.Metadata
                 {  "Bare Hands", new byte [] { 115 } },
                 {  "Mid Gloves", new byte [] { 13 } },
                 {  "Long Gloves", new byte [] { 15 } },
-
             } },
             { "dwn", new Dictionary<string, byte[]>()
             {
@@ -160,7 +158,6 @@ namespace Icarus.ViewModels.Mods.Metadata
                 {  "Shorts", new byte [] { 97 } },
                 {  "Pants", new byte [] { 105 } },
                 {  "Pants and Shoes", new byte [] { 65 } },
-
             } },
             { "sho", new Dictionary<string, byte[]>()
             {
@@ -168,7 +165,6 @@ namespace Icarus.ViewModels.Mods.Metadata
                 {  "Shoes", new byte [] { 3 } },
                 {  "Mid Boots", new byte [] { 13 } },
                 {  "Long Boots", new byte [] { 15 } },
-
             } }
         };
     }

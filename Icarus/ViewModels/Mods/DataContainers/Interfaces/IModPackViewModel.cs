@@ -9,7 +9,7 @@ namespace Icarus.ViewModels.Mods.DataContainers.Interfaces
         ModPack ModPack { get; }
         IModPackMetaViewModel ModPackMetaViewModel { get; }
         IModsListViewModel ModsListViewModel { get; }
-        ObservableCollection<ModPackPageViewModel> ModPackPages { get; set; }
+        ObservableCollection<ModPackPageViewModel> ModPackPages { get; }
         ModPackPageViewModel AddPage();
         void AddPage(ModPackPageViewModel packPage);
         void RemovePage(ModPackPageViewModel packPage);

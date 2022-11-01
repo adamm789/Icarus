@@ -69,9 +69,7 @@
             <ComboBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding BackfaceValues}" SelectedValue="{Binding Backfaces}"/>
 
             <materialviews:MaterialTexPathsView Grid.Row="3" Grid.ColumnSpan="4"/>
-
         </Grid>
         <ContentControl Grid.Row="4" Grid.ColumnSpan="4" Content="{Binding ColorSetViewModel}"/>
     </Grid>
-
 </Window>

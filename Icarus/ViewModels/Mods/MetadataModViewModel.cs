@@ -14,7 +14,7 @@ using xivModdingFramework.General.Enums;
 
 namespace Icarus.ViewModels.Mods
 {
-
+    // TODO: Double check that there are actually changing the metadata mod
     public class MetadataModViewModel : ModViewModel
     {
         IWindowService _windowService;
@@ -41,11 +41,13 @@ namespace Icarus.ViewModels.Mods
             }
 
             // TOOD: ImcEntries
+            ImcViewModel = new(_metadataMod.ImcEntries);
         }
         public EqdpViewModel EqdpViewModel { get; }
         public EstViewModel EstViewModel { get; }
         public EqpViewModel EqpViewModel { get; }
         public GmpViewModel GmpViewModel { get; }
+        public ImcViewModel ImcViewModel { get; }
 
 
         DelegateCommand _openMetadataEditorCommand;

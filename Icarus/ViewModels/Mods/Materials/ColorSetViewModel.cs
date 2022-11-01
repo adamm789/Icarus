@@ -13,8 +13,6 @@ using Half = SharpDX.Half;
 
 namespace Icarus.ViewModels.Mods.Materials
 {
-    // TODO: Figure out where to put all of this stuff
-    // DyeData, ColorSet Rows, the checkboxes
     public class ColorSetViewModel : NotifyPropertyChanged
     {
         public ColorSetViewModel(MaterialMod material, StainingTemplateFile stainingTemplateFile)
@@ -27,6 +25,8 @@ namespace Icarus.ViewModels.Mods.Materials
             SelectedRow = ColorSetRows[0];
         }
 
+
+        #region Bindings
         int _selectedIndex;
         public int SelectedIndex
         {
@@ -38,8 +38,6 @@ namespace Icarus.ViewModels.Mods.Materials
                 SelectedRow = ColorSetRows[value];
             }
         }
-
-        ColorSetRowEditorViewModel _rowEditorViewModel;
 
         ColorSetRowViewModel _selectedRow;
         public ColorSetRowViewModel SelectedRow
@@ -65,5 +63,6 @@ namespace Icarus.ViewModels.Mods.Materials
             get { return _colorSetRows; }
             set { _colorSetRows = value; OnPropertyChanged(); }
         }
+        #endregion
     }
 }

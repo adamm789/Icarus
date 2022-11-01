@@ -60,7 +60,7 @@ namespace Icarus.Services.Files
 
         private void ReportProgress((int a, int b) pair)
         {
-
+            _logService.Information($"{pair.a} - {pair.b}");
         }
 
         public async Task<string> Export(ModPack modPack, ExportType exportType, bool toPmp = true)

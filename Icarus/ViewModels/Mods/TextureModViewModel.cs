@@ -49,6 +49,11 @@ namespace Icarus.ViewModels.Mods
             set
             {
                 TextureVariant = XivPathParser.GetTexVariant(value);
+                try
+                {
+                    _textureMod.TexType = XivPathParser.GetTexType(value);
+                }
+                catch (ArgumentException) { }
                 base.DestinationPath = value;
             }
         }

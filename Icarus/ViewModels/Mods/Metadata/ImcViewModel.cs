@@ -1,49 +1,61 @@
 ﻿using Icarus.ViewModels.Util;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using xivModdingFramework.Variants.DataContainers;
+using static HelixToolkit.SharpDX.Core.Model.Metadata;
 
 namespace Icarus.ViewModels.Mods.Metadata
 {
     public class ImcViewModel : NotifyPropertyChanged
     {
-        public XivImc XivImc { get; set; }
+        public ObservableCollection<ImcEntryViewModel> Entries { get; } = new();
+        public ObservableCollection<int> AvailableEntries { get; } = new();
 
-        public byte MaterialSet { 
-            get { return XivImc.MaterialSet; } 
-            set { XivImc.MaterialSet = value; OnPropertyChanged(); }
+        public ImcViewModel(List<XivImc> entries)
+        {
+            for (var i = 0; i < entries.Count; i++)
+            {
+                var imc = new ImcEntryViewModel(entries[i]);
+                Entries.Add(imc);
+                AvailableEntries.Add(i);
+            }
+            SelectedIndex = 0;
         }
 
-        public byte Decal
+        DelegateCommand _addEntryCommand;
+        public DelegateCommand AddEntryCommand
         {
-            get { return XivImc.Decal; }
-            set { XivImc.Decal = value; OnPropertyChanged(); }
+            get { return _addEntryCommand ??= new DelegateCommand(_ => AddEntry()); }
         }
 
-        public ushort Mask
+        private void AddEntry()
         {
-            get { return XivImc.Mask; }
-            set { XivImc.Mask = value; OnPropertyChanged(); }
+            var imc = new XivImc();
+            var vm = new ImcEntryViewModel(imc);
+            Entries.Add(vm);
+            AvailableEntries.Add(AvailableEntries.Count + 1);
         }
 
-        public byte Vfx
+        int _selectedIndex;
+        public int SelectedIndex
         {
-            get { return XivImc.Vfx; }
-            set { XivImc.Vfx = value; OnPropertyChanged(); }
+            get { return _selectedIndex; }
+            set {
+                _selectedIndex = value;
+                OnPropertyChanged();
+                DisplayedEntry = Entries[value];
+            }
         }
 
-        public byte Animation
+        ImcEntryViewModel _displayedEntry;
+        public ImcEntryViewModel DisplayedEntry
         {
-            get { return XivImc.Animation; }
-            set { XivImc.Animation = value; OnPropertyChanged(); }
-        }
-
-        public ImcViewModel(XivImc imc)
-        {
-            XivImc = imc;
+            get { return _displayedEntry; }
+            set { _displayedEntry = value; OnPropertyChanged(); }
         }
     }
 }

@@ -4,9 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:dd="urn:gong-wpf-dragdrop"
-             xmlns:ui="clr-namespace:Icarus.UI"
              xmlns:datacontainers="clr-namespace:Icarus.ViewModels.Mods.DataContainers"
-             xmlns:local="clr-namespace:Icarus.Views.Editor"
              d:DataContext="{d:DesignInstance Type=datacontainers:ModPackViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">

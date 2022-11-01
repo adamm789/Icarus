@@ -36,37 +36,6 @@ namespace Icarus.Util
     {
         // https://github.com/TexTools/xivModdingFramework/blob/81c234e7b767d56665185e07aabeeae21d895f0b/xivModdingFramework/Models/FileTypes/Mdl.cs#L515
 
-        public static async Task<XivMdl> GetRawMdlDataFramework(string mdlPath, bool getOriginal = false, long offset = 0)
-        {
-            //var _gamePath = Properties.Settings.Default.GameDirectoryTexTools;
-            var _gamePath = "";
-            var _gameDirectory = new DirectoryInfo(_gamePath);
-            var dat = new Dat(_gameDirectory);
-            var modding = new Modding(_gameDirectory);
-            var mod = await modding.TryGetModEntry(mdlPath);
-
-            var modded = mod != null && mod.enabled;
-            var getShapeData = true;
-
-            if (offset == 0)
-            {
-                var index = new Index(_gameDirectory);
-                offset = await index.GetDataOffset(mdlPath);
-
-                if (getOriginal)
-                {
-                    if (modded)
-                    {
-                        offset = mod.data.originalOffset;
-                        modded = false;
-                    }
-                }
-            }
-
-            var mdlData = await dat.GetType3Data(offset, IOUtil.GetDataFileFromPath(mdlPath));
-            return GetRawMdlDataFramework(mdlPath, mdlData.Data, mdlData.MeshCount);
-        }
-
         public static XivMdl GetRawMdlDataFramework(string mdlPath, byte[] mdlData, int meshCount)
         {
             var modded = false;
