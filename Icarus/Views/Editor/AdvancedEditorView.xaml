@@ -24,7 +24,6 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="4*"/>
             <ColumnDefinition Width="9*"/>
-            <ColumnDefinition Width="4*"/>
         </Grid.ColumnDefinitions>
 
         <Grid.Resources>
@@ -68,6 +67,8 @@
             </TabItem>
         </TabControl>
         <ContentControl Grid.Row="2" Grid.Column="1" Content="{Binding ExportViewModel}" Margin="5"/>
+        <!--
         <ContentControl Grid.Row="0" Grid.Column="2" Content="{Binding ModPackListViewModel}"/>
+        -->
     </Grid>
 </UserControl>

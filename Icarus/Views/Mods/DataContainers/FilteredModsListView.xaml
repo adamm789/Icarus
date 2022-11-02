@@ -37,9 +37,9 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-
+<!--
         <TextBox Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="False" Grid.Row="0" Grid.Column="1"/>
-
+-->
         <TabControl Grid.Row="1" Grid.ColumnSpan="2">
             <TabItem Header="{Binding AllModsHeader}">
                 <ListView ItemsSource="{Binding SimpleModsList}"/>
