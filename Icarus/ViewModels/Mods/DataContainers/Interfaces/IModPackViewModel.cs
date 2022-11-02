@@ -15,6 +15,7 @@ namespace Icarus.ViewModels.Mods.DataContainers.Interfaces
         void RemovePage(ModPackPageViewModel packPage);
         void Move(ModPackPageViewModel source, ModPackPageViewModel target);
         bool ArePagesEmpty();
+        void Add(ModPack pack);
         void SetModPack(ModPack pack);
         void SetModPack(ModPack pack, ModPackViewModelImportFlags flags);
         void IncreasePageIndex();

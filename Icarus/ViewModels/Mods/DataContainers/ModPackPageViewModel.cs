@@ -3,6 +3,7 @@ using Icarus.Mods.DataContainers;
 using Icarus.Services;
 using Icarus.Util.Extensions;
 using Icarus.ViewModels.Util;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -16,6 +17,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
         readonly ViewModelService _viewModelService;
         public ObservableCollection<ModGroupViewModel> ModGroups { get; } = new();
         public DelegateCommand? RemoveCommand { get; set; }
+        public bool IsReadOnly = false;
 
         public ModPackPageViewModel(int index, ModPackViewModel parent, ViewModelService viewModelService)
         {
@@ -24,7 +26,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
             RemoveCommand = new(o => parent.RemovePage(this));
         }
 
-        public ModPackPageViewModel(ModPackPage page, ModPackViewModel parent, ViewModelService viewModelService)
+        public ModPackPageViewModel(ModPackPage page, ModPackViewModel parent, ViewModelService viewModelService, bool isReadOnly = false)
         {
             _modPackPage = new(page);
             _viewModelService = viewModelService;
@@ -35,6 +37,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
                 AddGroup(groupViewModel);
             }
             RemoveCommand = new(o => parent.RemovePage(this));
+            IsReadOnly = isReadOnly;
         }
 
         private void OnSelectedOption(object sender, PropertyChangedEventArgs e)
@@ -167,6 +170,11 @@ namespace Icarus.ViewModels.Mods.DataContainers
                 dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
                 dropInfo.Effects = DragDropEffects.Copy;
             }
+            else if (source is ModGroupViewModel)
+            {
+                dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
+                dropInfo.Effects = DragDropEffects.Copy;
+            }
             else
             {
                 dropInfo.NotHandled = true;
@@ -178,9 +186,21 @@ namespace Icarus.ViewModels.Mods.DataContainers
             var source = dropInfo.Data;
             var target = dropInfo.TargetItem;
 
-            if (source is ModGroupViewModel sourceGroup && target is ModGroupViewModel targetGroup)
+            // TODO: BEtter method for determining if MoveTo should be called
+            // i.e. from the ModPackListViewModel, groups and options shouldn't be removed
+            if (source is ModGroupViewModel sourceGroup)
             {
-                MoveTo(sourceGroup, targetGroup);
+                if (target is ModGroupViewModel targetGroup)
+                {
+                    if (!sourceGroup.IsReadOnly)
+                    {
+                        MoveTo(sourceGroup, targetGroup);
+                    }
+                }
+                else
+                {
+                    AddGroup(sourceGroup);
+                }
             }
             else
             {

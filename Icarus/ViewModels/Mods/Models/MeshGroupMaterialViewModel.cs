@@ -5,6 +5,7 @@ using Icarus.Util.Import;
 using Icarus.ViewModels.Mods;
 using Icarus.ViewModels.Util;
 using ItemDatabase.Paths;
+using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
@@ -79,14 +80,14 @@ namespace Icarus.ViewModels.Models
 
             if (sender is not ModelModViewModel modelMod) return;
 
-            /*
+            
             if (e.PropertyName == nameof(modelMod.TargetRace))
             {
                 //TargetRace = modelMod.TargetRace;
                 UpdateRace(modelMod.TargetRace);
                 UpdateDisplayedMaterial();
             }
-            */
+            
         }
 
         private void OnMyPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -95,6 +96,11 @@ namespace Icarus.ViewModels.Models
                 || e.PropertyName == nameof(DestinationModelPath) || e.PropertyName == nameof(IsSkinMaterial))
             {
                 UpdateDisplayedMaterial();
+            }
+
+            if (e.PropertyName == nameof(DisplayedMaterial))
+            {
+                UpdateVariants();
             }
         }
 
@@ -153,13 +159,16 @@ namespace Icarus.ViewModels.Models
             get { return _importedGroup.Material; }
             set
             {
+                _importedGroup.Material = value; OnPropertyChanged();
+                // TODO: Fix up changing race and manually changing displayed material
+                /*
                 if (_importedGroup.Material == value) return;
 
                 _importedGroup.Material = value;
                 if (XivPathParser.IsSkinMtrl(value))
                 {
                     _isSkinMaterial = true;
-                    OnPropertyChanged(nameof(IsSkinMaterial));
+                    //OnPropertyChanged(nameof(IsSkinMaterial));
                 }
 
                 OnPropertyChanged();
@@ -171,6 +180,19 @@ namespace Icarus.ViewModels.Models
                 {
                     MaterialVariant = XivPathParser.GetMtrlVariant(value);
                 }
+                */
+            }
+        }
+
+        private void UpdateVariants()
+        {
+            if (IsSkinMaterial)
+            {
+                _skinVariant = XivPathParser.GetMtrlVariant(DisplayedMaterial);
+            }
+            else
+            {
+                _materialVariant = XivPathParser.GetMtrlVariant(DisplayedMaterial);
             }
         }
 
@@ -198,17 +220,17 @@ namespace Icarus.ViewModels.Models
 
             if (_modelModViewModel.ImportSource == ImportSource.Raw)
             {
-                _skinVariant = _userPreferencesService.GetDefaultSkinMaterialVariant(race);
+                SkinVariant = _userPreferencesService.GetDefaultSkinMaterialVariant(race);
             }
             else if (_modelModViewModel.ImportSource == ImportSource.TexToolsModPack)
             {
                 if (IsSkinMaterial)
                 {
-                    _skinVariant = XivPathParser.GetMtrlVariant(DisplayedMaterial);
+                    SkinVariant = XivPathParser.GetMtrlVariant(DisplayedMaterial);
                 }
                 else
                 {
-                    _skinVariant = _userPreferencesService.GetDefaultSkinMaterialVariant(race);
+                    SkinVariant = _userPreferencesService.GetDefaultSkinMaterialVariant(race);
                 }
             }
         }

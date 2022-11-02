@@ -11,10 +11,12 @@ using ItemDatabase;
 using ItemDatabase.Enums;
 using ItemDatabase.Interfaces;
 using ItemDatabase.Paths;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using xivModdingFramework.General.Enums;
+using xivModdingFramework.Models.Helpers;
 
 namespace Icarus.ViewModels.Mods
 {
@@ -117,7 +119,6 @@ namespace Icarus.ViewModels.Mods
                         MeshGroups[i].MaterialViewModel.DisplayedMaterial = ttModel.MeshGroups[i].Material;
                     }
                 }
-
                 return base.SetModData(modelGameFile);
             }
             return false;

@@ -73,6 +73,7 @@ namespace Icarus.Util
         private string WriteFiles(string tempDir, string outputPath, bool toPmp = true)
         {
             _logService.Verbose($"Writing from {tempDir} to {outputPath}.");
+            var ret = outputPath;
 
             if (toPmp)
             {
@@ -83,7 +84,7 @@ namespace Icarus.Util
                 zf.CompressionLevel = Ionic.Zlib.CompressionLevel.None;
                 zf.Save(pmpOutputPath);
 
-                return pmpOutputPath;
+                ret = pmpOutputPath;
             }
             else
             {
@@ -98,7 +99,7 @@ namespace Icarus.Util
             {
                 Directory.Delete(tempDir, true);
             }
-            return outputPath;
+            return ret;
         }
 
         private void WriteGroups(ModPack modPack, string modDir)

@@ -195,10 +195,25 @@ namespace Icarus.Util
             modPackJson.TTMPVersion = _currentWizardTTMPVersion;
             modPackJson.ModPackPages = new();
 
-            var entries = modPack.SimpleModsList;
-            var tasks = new Task<byte[]>[entries.Count];
+            //var entries = modPack.SimpleModsList;
+            var entries = new List<IMod>();
             // var tasks = new Task< Dictionary<IMod, byte[]> >[entries.Count];
 
+            foreach (var page in modPack.ModPackPages)
+            {
+                foreach (var group in page.ModGroups)
+                {
+                    foreach (var option in group.OptionList)
+                    {
+                        foreach (var mod in option.Mods)
+                        {
+                            // Only convert the ones that are actually used
+                            entries.Add(mod);
+                        }
+                    }
+                }
+            }
+            var tasks = new Task<byte[]>[entries.Count];
             var concurrentDict = new ConcurrentDictionary<IMod, Task<byte[]>>();
 
             for (var i = 0; i < entries.Count; i++)

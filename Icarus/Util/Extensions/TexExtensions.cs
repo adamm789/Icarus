@@ -212,7 +212,8 @@ namespace Icarus.Util.Extensions
 
                 if (!internalPath.Contains(".atex"))
                 {
-                    var DDSInfo = await DDS.ReadDDS(br, texFormat, newWidth, newHeight, newMipCount);
+                    //var DDSInfo = await DDS.ReadDDS(br, texFormat, newWidth, newHeight, newMipCount);
+                    var DDSInfo = await DDSExtensions.ReadDDS(br, texFormat, newWidth, newHeight, newMipCount, shouldCompress);
 
                     newTex.AddRange(DatExtensions.MakeType4DatHeader(texFormat, DDSInfo.mipPartOffsets, DDSInfo.mipPartCounts, (int)uncompressedLength, newMipCount, newWidth, newHeight));
                     newTex.AddRange(TexExtensions.MakeTextureInfoHeader(texFormat, newWidth, newHeight, newMipCount));

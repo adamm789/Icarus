@@ -13,10 +13,11 @@
              xmlns:importviews="clr-namespace:Icarus.Views.Import"
              xmlns:mods="clr-namespace:Icarus.Views.Mods"
              xmlns:datacontainers="clr-namespace:Icarus.ViewModels.Mods.DataContainers"
-             d:DataContext="{d:DesignInstance Type=viewmodels:MainWindowViewModel}"
+             xmlns:editors="clr-namespace:Icarus.ViewModels.Editor"
+             d:DataContext="{d:DesignInstance Type=editors:SimpleEditorViewModel}"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid IsEnabled="{Binding CanExport}">
+    <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="4*"/>
             <ColumnDefinition Width="11*"/>

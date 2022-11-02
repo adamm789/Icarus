@@ -5,6 +5,7 @@ using Icarus.Services.Files;
 using Icarus.Services.GameFiles;
 using Icarus.Services.GameFiles.Interfaces;
 using Icarus.Services.Interfaces;
+using Icarus.ViewModels.Editor;
 using Icarus.ViewModels.Export;
 using Icarus.ViewModels.Import;
 using Icarus.ViewModels.Items;
@@ -47,14 +48,19 @@ namespace Icarus.ViewModels
             _luminaService.TrySetLumina();
 
             ModPackViewModel = new ModPackViewModel(modPack, viewModelService);
-            ModPackMetaViewModel = ModPackViewModel.ModPackMetaViewModel;
-            ModsListViewModel = ModPackViewModel.ModsListViewModel;
-            FilteredModsListViewModel = ModsListViewModel.FilteredModsList;
+            //ModPackMetaViewModel = ModPackViewModel.ModPackMetaViewModel;
+            //ModsListViewModel = ModPackViewModel.ModsListViewModel;
+            //FilteredModsListViewModel = ModsListViewModel.FilteredModsList;
+
+            ModPackListViewModel = new ModPackListViewModel(viewModelService);
 
             ItemListViewModel = new(itemListService, logService);
-            ImportVanillaViewModel = new(ModsListViewModel, ItemListViewModel, gameFileDataService, logService);
-            ExportViewModel = new(ModsListViewModel, _messageBoxService, _exportService);
-            ImportViewModel = new(ModPackViewModel, _importService, settingsService, logService);
+            ImportVanillaViewModel = new(ModPackViewModel.ModsListViewModel, ItemListViewModel, gameFileDataService, logService);
+            ExportViewModel = new(ModPackViewModel.ModsListViewModel, _messageBoxService, _exportService);
+            ImportViewModel = new(ModPackViewModel, ModPackListViewModel, _importService, settingsService, logService);
+
+            SimpleEditorViewModel = new(ModPackViewModel, ItemListViewModel, ImportVanillaViewModel, ImportViewModel, ExportViewModel);
+            AdvancedEditorViewModel = new(ModPackViewModel, ExportViewModel, ModPackListViewModel);
 
             var exportStatusChange = new PropertyChangedEventHandler(OnExportStatusChanged);
             ExportViewModel.PropertyChanged += exportStatusChange;
@@ -98,6 +104,9 @@ namespace Icarus.ViewModels
         }
 
         #region Bindings
+        public SimpleEditorViewModel SimpleEditorViewModel { get; }
+        public AdvancedEditorViewModel AdvancedEditorViewModel { get; }
+
         public IModsListViewModel ModsListViewModel { get; set; }
         public IModPackViewModel ModPackViewModel { get; set; }
         public IModPackMetaViewModel ModPackMetaViewModel { get; set; }
@@ -107,6 +116,7 @@ namespace Icarus.ViewModels
         public ItemListViewModel ItemListViewModel { get; set; }
         public FilteredModsListViewModel FilteredModsListViewModel { get; set; }
         public IUserPreferencesService UserPreferencesService { get; set; }
+        public ModPackListViewModel ModPackListViewModel { get; set; }
 
         bool _isBusy = false;
         public bool IsBusy

@@ -22,7 +22,6 @@ namespace Icarus.ViewModels.Mods.DataContainers
         // TODO: Allow user to drag and drop groups, options, and pages to the current pack
         public ObservableCollection<ModPackPageViewModel> ModPackPages { get; } = new();
 
-
         ViewModelService _viewModelService;
 
         //IModPackMetaViewModel _modPackMetaViewModel;
@@ -36,7 +35,13 @@ namespace Icarus.ViewModels.Mods.DataContainers
             ModsListViewModel = new ModsListViewModel(modPack, _viewModelService);
 
             DisplayedViewModel = ModPackMetaViewModel;
+
             ModsListViewModel.SimpleModsList.CollectionChanged += new NotifyCollectionChangedEventHandler(OnCollectionChanged);
+            foreach (var page in ModPack.ModPackPages)
+            {
+                var packPage = new ModPackPageViewModel(page, this, _viewModelService);
+                ModPackPages.Add(packPage);
+            }
         }
 
         private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -50,6 +55,11 @@ namespace Icarus.ViewModels.Mods.DataContainers
             }
         }
 
+        public void Add(ModPack modPack)
+        {
+            ModsListViewModel.AddRange(modPack.SimpleModsList);
+        }
+
         public void SetModPack(ModPack modPack)
         {
             SetModPack(modPack, GetDefaultFlags());
@@ -61,7 +71,8 @@ namespace Icarus.ViewModels.Mods.DataContainers
             ModsListViewModel.AddRange(modPack.SimpleModsList);
             if (flags.HasFlag(ModPackViewModelImportFlags.OverwriteData))
             {
-                ModPack.CopyFrom(modPack);
+                //ModPack.CopyFrom(modPack);
+                ModPackMetaViewModel.CopyFrom(modPack);
             }
             if (flags.HasFlag(ModPackViewModelImportFlags.OverwritePages))
             {
@@ -118,6 +129,8 @@ namespace Icarus.ViewModels.Mods.DataContainers
             get { return _isNotFirstPage; }
             set { _isNotFirstPage = value; OnPropertyChanged(); }
         }
+
+        // ModPackPageViewModel or ModPackMetaViewModel
 
         INotifyPropertyChanged _displayedViewModel;
         public INotifyPropertyChanged DisplayedViewModel
@@ -294,6 +307,10 @@ namespace Icarus.ViewModels.Mods.DataContainers
             {
                 dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
                 dropInfo.Effects = DragDropEffects.Copy;
+            }
+            else if (source is ModGroupViewModel)
+            {
+
             }
             else
             {

@@ -28,14 +28,16 @@ namespace Icarus.ViewModels.Import
         readonly ImportService _importService;
         readonly ILogService _logService;
         readonly ISettingsService _settingsService;
+        readonly ModPackListViewModel _modPackListViewModel;
 
         private string _initialDirectory = "";
         private OpenFileDialog _dlg;
 
-        public ImportViewModel(IModPackViewModel modPack, ImportService importService, ISettingsService settingsService, ILogService logService)
+        public ImportViewModel(IModPackViewModel modPack, ModPackListViewModel modPackList, ImportService importService, ISettingsService settingsService, ILogService logService)
         {
             _settingsService = settingsService;
             _modPackViewModel = modPack;
+            _modPackListViewModel = modPackList;
             _importService = importService;
             _logService = logService;
 
@@ -65,7 +67,7 @@ namespace Icarus.ViewModels.Import
         DelegateCommand _onBrowseCommand;
         public DelegateCommand OnBrowseCommand
         {
-            get { return _onBrowseCommand ??= new DelegateCommand(o => ImportFile()); }
+            get { return _onBrowseCommand ??= new DelegateCommand(async _ => await ImportFile()); }
         }
 
         double _individualProgressValue = 0;
@@ -150,9 +152,16 @@ namespace Icarus.ViewModels.Import
                         // TODO: Window to show import options
                         flags |= ModPackViewModelImportFlags.AppendPagesToEnd;
                         flags |= ModPackViewModelImportFlags.OverwriteData;
+
+                        _modPackListViewModel.Add(modPack);
                     }
+                    else
+                    {
+                        //_modPackViewModel.SetModPack(modPack);
+                    }
+                    _modPackViewModel.Add(modPack);
                     _logService.Verbose($"Setting modpack. {modPack.SimpleModsList.Count} simple mods and {modPack.ModPackPages.Count} pack pages");
-                    _modPackViewModel.SetModPack(modPack, flags);
+                    //_modPackViewModel.SetModPack(modPack, flags);
                 }
             }
         }

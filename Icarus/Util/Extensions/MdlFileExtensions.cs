@@ -1,118 +1,67 @@
 ﻿using HelixToolkit.SharpDX.Core;
-using Lumina;
 using Lumina.Data.Files;
 using Lumina.Models.Models;
-using Newtonsoft.Json.Linq;
-using Serilog;
 using SharpDX;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Models.Enums;
 using static Lumina.Data.Parsing.MdlStructs;
 using static Lumina.Models.Models.Model;
 
-namespace Icarus.Util
+namespace Icarus.Util.Extensions
 {
-    public class MdlWithLumina
+    public static class MdlFileExtensions
     {
-        private static readonly bool _modded = false;   // *should* always be false because we're only loading original game data (I hope)
-
-        // The new, user-provided Mdl file
-        private readonly XivMdl ImportedXivMdl = new();
-
-        // The Mdl file that is being replaced
-        private readonly MdlFile OriginalMdlFile;
-
-        private readonly Dictionary<int, string> OffsetToName = new();
-        readonly Dictionary<VertexUsageType, VertexDataType> VertexDict = new();
-
-        public MdlWithLumina(GameData _lumina, string mdlPath)
-        {
-            if (_lumina == null)
-            {
-                var err = "Lumina was not instantiated.";
-                Log.Error(err);
-                throw new NullReferenceException(err);
-            }
-
-            OriginalMdlFile = _lumina.GetFile<MdlFile>(mdlPath);
-
-            if (OriginalMdlFile == null)
-            {
-                var err = string.Format("Count not find mdl file: {0}.", mdlPath);
-                throw new ArgumentException(err);
-            }
-            ImportedXivMdl.MdlPath = mdlPath;
-        }
-
-        public MdlWithLumina(MdlFile mdlFile)
-        {
-            OriginalMdlFile = mdlFile;
-            ImportedXivMdl.MdlPath = mdlFile.FilePath;
-        }
-
-        public MdlWithLumina(MdlFile mdlFile, string mdlPath)
-        {
-            OriginalMdlFile = mdlFile;
-            ImportedXivMdl.MdlPath = mdlPath;
-        }
-
-        public static XivMdl GetRawMdlDataLumina(GameData _lumina, string mdlPath)
+        // TODO: Steel Locker flickers for some reason...
+        public static XivMdl GetXivMdl(this MdlFile mdlFile)
         {
             XivMdl ret = new();
+            ret.MdlPath = mdlFile.FilePath.Path;
+
+            ret.SetModelData(mdlFile);
+            var OffsetToName = ret.SetPathData(mdlFile);
+            ret.SetUnknownData0(mdlFile);
+
+            // GetShapeData should always be true
+            ret.SetLoDList(mdlFile);
+            ret.SetExtraLoDList(mdlFile);
+
+            ret.SetVertexDataStruct(mdlFile);
+
+            ret.SetMeshDataInformation(mdlFile);
+            ret.SetAttributeDataBlock(mdlFile);
+            ret.SetUnknownData1(mdlFile);
+            ret.SetMeshParts(mdlFile);
+            ret.SetUnknownData2(mdlFile);
+            ret.SetMaterialNameOffsets(mdlFile);
+            ret.SetBoneNameOffsets(mdlFile);
+
+            ret.SetBoneLists(mdlFile);
+            ret.SetMeshShapeData(mdlFile, OffsetToName);
+            ret.AssignMeshAndLoDNumber(mdlFile);
+
+            ret.HasShapeData = ret.ModelData.ShapeCount > 0;
+
+            ret.SetBoneIndices(mdlFile);
+
+            // Does this number matter or can I just set it to 7?
+            // I assume that these two items have to sum to a number divisible by 8?
+            ret.PaddingSize = 7;
+            ret.PaddedBytes = new byte[ret.PaddingSize];
+
+            ret.SetBoundingBoxes(mdlFile);
+            ret.SetBoneTransformData(mdlFile);
+            ret.SetVertexData(mdlFile);
 
             return ret;
         }
 
-        // https://github.com/TexTools/xivModdingFramework/blob/81c234e7b767d56665185e07aabeeae21d895f0b/xivModdingFramework/Models/FileTypes/Mdl.cs#L515
-        // MDl.GetRawMdlData(string mdlPath, bool getOriginal = false, long offset = 0) but trying with Lumina
-        // MdlFile https://github.com/NotAdam/Lumina/blob/master/src/Lumina/Data/Files/MdlFile.cs
-        public XivMdl GetRawMdlDataLumina()
-        {
-            SetModelData();
-            SetPathData();
-
-            SetUnknownData0();
-
-            bool getShapeData = SetLoDList();
-            SetExtraLoDList();
-
-            SetVertexDataStruct();
-            SetMeshDataInformation();
-
-            SetAttributeDataBlock();
-            SetUnknownData1();
-
-            SetMeshParts();
-            SetUnknownData2();
-            SetMaterialNameOffsets();
-            SetBoneNameOffsets();
-
-            SetBoneLists();
-            SetMeshShapeData();
-            AssignMeshAndLoDNumber();
-
-            ImportedXivMdl.HasShapeData = ImportedXivMdl.ModelData.ShapeCount > 0 && getShapeData;
-
-            SetBoneIndices();
-
-            // Does this number matter or can I just set it to 7?
-            // I assume that these two items have to sum to a number divisible by 8?
-            ImportedXivMdl.PaddingSize = 7;
-            ImportedXivMdl.PaddedBytes = new byte[ImportedXivMdl.PaddingSize];
-
-            SetBoundingBoxes();
-            SetBoneTransformData();
-            SetVertexData(getShapeData);
-
-            return ImportedXivMdl;
-        }
-
-        private byte ToBytes(BitArray bits)
+        private static byte ToBytes(BitArray bits)
         {
             if (bits.Count != 8)
             {
@@ -124,7 +73,7 @@ namespace Icarus.Util
             return bytes[0];
         }
 
-        private void SetModelData()
+        private static void SetModelData(this XivMdl ImportedXivMdl, MdlFile OriginalMdlFile)
         {
             var mdlHeader = OriginalMdlFile.ModelHeader;
 
@@ -183,8 +132,7 @@ namespace Icarus.Util
             ImportedXivMdl.ModelData = mdlModelData;
         }
 
-
-        private void SetPathData()
+        private static Dictionary<int, string> SetPathData(this XivMdl ImportedXivMdl, MdlFile OriginalMdlFile)
         {
             var mdlPathData = new MdlPathData()
             {
@@ -264,15 +212,17 @@ namespace Icarus.Util
             names.AddRange(l[3]);
             names.AddRange(l[4]);
 
+            var OffsetToName = new Dictionary<int, string>();
             for (int i = 0; i < offsets.Count; i++)
             {
                 OffsetToName.Add(offsets[i], names[i]);
             }
 
             ImportedXivMdl.PathData = mdlPathData;
+            return OffsetToName;
         }
 
-        private void SetUnknownData0()
+        private static void SetUnknownData0(this XivMdl ImportedXivMdl, MdlFile OriginalMdlFile)
         {
             var e = OriginalMdlFile.ElementIds;
             List<byte> l = new List<byte>();
@@ -291,7 +241,7 @@ namespace Icarus.Util
             ImportedXivMdl.UnkData0 = new UnknownData0 { Unknown = l.ToArray() };
         }
 
-        private bool SetLoDList()
+        private static void SetLoDList(this XivMdl ImportedXivMdl, MdlFile OriginalMdlFile)
         {
             ImportedXivMdl.LoDList = new List<LevelOfDetail>();
 
@@ -332,20 +282,11 @@ namespace Icarus.Util
                     lod.MeshCount = 1;
                 }
 
-                // This is a simple check to identify old mods that may have broken shape data.
-                // Old mods still have LoD 1+ data.
-                if (_modded && i > 0 && lod.MeshCount > 0)
-                {
-                    getShapeData = false;
-                }
-
                 ImportedXivMdl.LoDList.Add(lod);
             }
-
-            return getShapeData;
         }
 
-        private void SetExtraLoDList()
+        private static void SetExtraLoDList(this XivMdl ImportedXivMdl, MdlFile OriginalMdlFile)
         {
             if (OriginalMdlFile.ModelHeader.ExtraLodEnabled)
             {
@@ -381,9 +322,8 @@ namespace Icarus.Util
             }
         }
 
-        private void SetMeshDataInformation()
+        private static void SetMeshDataInformation(this XivMdl ImportedXivMdl, MdlFile OriginalMdlFile)
         {
-            var meshNum = 0;    // Unnecessary?
             var i = 0;
             for (var lodIdx = 0; lodIdx < ImportedXivMdl.LoDList.Count; lodIdx++)
             {
@@ -433,13 +373,12 @@ namespace Icarus.Util
                     {
 
                     }
-                    meshNum++;
                     i++;
                 }
             }
         }
 
-        private void SetVertexDataStruct()
+        private static void SetVertexDataStruct(this XivMdl ImportedXivMdl, MdlFile OriginalMdlFile)
         {
             var idx = 0;
             for (int i = 0; i < ImportedXivMdl.LoDList.Count; i++)
@@ -460,25 +399,13 @@ namespace Icarus.Util
                             DataUsage = VertexUsageDictionary[ve.Usage]
                         };
                         currLoD.MeshDataList[j].VertexDataStructList.Add(vertexDataStruct);
-
-                        // TODO: Make dict here?
-                        
-                        if (VertexDict.ContainsKey(vertexDataStruct.DataUsage))
-                        {
-                        }
-                        else
-                        {
-                            VertexDict.Add(vertexDataStruct.DataUsage, vertexDataStruct.DataType);
-                        }
-                        
                     }
                     idx++;
                 }
             }
         }
 
-
-        private void SetAttributeDataBlock()
+        private static void SetAttributeDataBlock(this XivMdl ImportedXivMdl, MdlFile OriginalMdlFile)
         {
             var attr = new AttributeDataBlock();
             int attrCount = OriginalMdlFile.ModelHeader.AttributeCount;
@@ -492,7 +419,7 @@ namespace Icarus.Util
             ImportedXivMdl.AttrDataBlock = attr;
         }
 
-        private void SetUnknownData1()
+        private static void SetUnknownData1(this XivMdl ImportedXivMdl, MdlFile OriginalMdlFile)
         {
             // UnkData1.Unknown is uninitialized in the framework
 
@@ -511,7 +438,7 @@ namespace Icarus.Util
             ImportedXivMdl.UnkData1 = new UnknownData1 { Unknown = l.ToArray() };
         }
 
-        private void SetMeshParts()
+        private static void SetMeshParts(this XivMdl ImportedXivMdl, MdlFile OriginalMdlFile)
         {
             var mdlFileIdx = 0;
             foreach (var lod in ImportedXivMdl.LoDList)
@@ -538,7 +465,7 @@ namespace Icarus.Util
             }
         }
 
-        private void SetUnknownData2()
+        private static void SetUnknownData2(this XivMdl ImportedXivMdl, MdlFile OriginalMdlFile)
         {
             List<byte> l = new List<byte>();
             foreach (var submesh in OriginalMdlFile.TerrainShadowSubmeshes)
@@ -551,7 +478,7 @@ namespace Icarus.Util
             ImportedXivMdl.UnkData2 = new UnknownData2 { Unknown = l.ToArray() };
         }
 
-        private void SetMaterialNameOffsets()
+        private static void SetMaterialNameOffsets(this XivMdl ImportedXivMdl, MdlFile OriginalMdlFile)
         {
             var matDataBlock = new MaterialDataBlock
             {
@@ -566,7 +493,7 @@ namespace Icarus.Util
             ImportedXivMdl.MatDataBlock = matDataBlock;
         }
 
-        private void SetBoneNameOffsets()
+        private static void SetBoneNameOffsets(this XivMdl ImportedXivMdl, MdlFile OriginalMdlFile)
         {
             var boneDataBlock = new BoneDataBlock
             {
@@ -581,7 +508,7 @@ namespace Icarus.Util
             ImportedXivMdl.BoneDataBlock = boneDataBlock;
         }
 
-        private void SetBoneLists()
+        private static void SetBoneLists(this XivMdl ImportedXivMdl, MdlFile OriginalMdlFile)
         {
             ImportedXivMdl.MeshBoneSets = new List<BoneSet>();
 
@@ -597,7 +524,7 @@ namespace Icarus.Util
             }
         }
 
-        private void SetMeshShapeData()
+        private static void SetMeshShapeData(this XivMdl ImportedXivMdl, MdlFile OriginalMdlFile, Dictionary<int, string> OffsetToName)
         {
             var shapeDataLists = new ShapeData
             {
@@ -664,7 +591,7 @@ namespace Icarus.Util
             ImportedXivMdl.MeshShapeData = shapeDataLists;
         }
 
-        private void AssignMeshAndLoDNumber()
+        private static void AssignMeshAndLoDNumber(this XivMdl ImportedXivMdl, MdlFile OriginalMdlFile)
         {
             // Build the list of offsets so we can match it for shape data.
             var indexOffsets = new List<List<int>>();
@@ -679,7 +606,7 @@ namespace Icarus.Util
             ImportedXivMdl.MeshShapeData.AssignMeshAndLodNumbers(indexOffsets);
         }
 
-        private void SetBoneIndices()
+        private static void SetBoneIndices(this XivMdl ImportedXivMdl, MdlFile OriginalMdlFile)
         {
             var partBoneSet = new BoneSet();
             partBoneSet.BoneIndices = new List<short>();
@@ -689,7 +616,7 @@ namespace Icarus.Util
             ImportedXivMdl.PartBoneSets = partBoneSet;
         }
 
-        private void SetBoundingBoxes()
+        private static void SetBoundingBoxes(this XivMdl ImportedXivMdl, MdlFile OriginalMdlFile)
         {
             var boundingBox = new xivModdingFramework.Models.DataContainers.BoundingBox
             {
@@ -707,7 +634,7 @@ namespace Icarus.Util
             ImportedXivMdl.BoundBox = boundingBox;
         }
 
-        private List<Vector4> GetVector(BoundingBoxStruct s)
+        private static List<Vector4> GetVector(BoundingBoxStruct s)
         {
             var ret = new List<Vector4>();
             ret.Add(new Vector4(s.Min));
@@ -716,7 +643,7 @@ namespace Icarus.Util
             return ret;
         }
 
-        private void SetBoneTransformData()
+        private static void SetBoneTransformData(this XivMdl ImportedXivMdl, MdlFile OriginalMdlFile)
         {
             ImportedXivMdl.BoneTransformDataList = new List<BoneTransformData>();
 
@@ -739,7 +666,7 @@ namespace Icarus.Util
             }
         }
 
-        private void SetVertexData(bool getShapeData)
+        private static void SetVertexData(this XivMdl ImportedXivMdl, MdlFile OriginalMdlFile)
         {
             var lodNum = 0;
             var totalMeshNum = 0;
@@ -781,7 +708,8 @@ namespace Icarus.Util
                 {
                     var meshData = meshDataList[meshIdx];
 
-                    if (ImportedXivMdl.HasShapeData && getShapeData)
+                    // GetShapeData should always be true
+                    if (ImportedXivMdl.HasShapeData)
                     {
                         if (meshData.ShapePathList == null)
                         {
@@ -815,7 +743,7 @@ namespace Icarus.Util
             }
         }
 
-        private VertexData GetVertexData(Mesh mesh)
+        private static VertexData GetVertexData(Mesh mesh)
         {
             var vertexData = new VertexData
             {
@@ -840,10 +768,9 @@ namespace Icarus.Util
             return vertexData;
         }
 
-        private Vector3Collection GetPositions(Mesh mesh)
+        private static Vector3Collection GetPositions(Mesh mesh)
         {
             Vector3Collection ret = new Vector3Collection();
-            /*
             foreach (var vector in mesh.Vertices)
             {
                 var position = vector.Position;
@@ -858,47 +785,10 @@ namespace Icarus.Util
                     ret.Add(positionVector);
                 }
             }
-            */
-            
-            VertexDataType vType;
-            if (VertexDict.TryGetValue(VertexUsageType.Position, out vType))
-            {
-                Vector3 positionVector;
-                foreach (var vector in mesh.Vertices)
-                {
-                    var position = vector.Position;
-                    if (position != null)
-                    {
-                        var value = position.Value;
-
-                        // TODO: Do we need the vertex type?
-                        if (vType == VertexDataType.Half4)
-                        {
-                            var x = new SharpDX.Half(value.X);
-                            var y = new SharpDX.Half(value.Y);
-                            var z = new SharpDX.Half(value.Z);
-                            var w = new SharpDX.Half(value.W);
-
-                            positionVector = new Vector3(x, y, z);
-                        }
-                        else
-                        {
-                            var x = value.X;
-                            var y = value.Y;
-                            var z = value.Z;
-
-                            positionVector = new Vector3(x, y, z);
-                        }
-                        ret.Add(positionVector);
-                    }
-                }
-            }
-            
-
             return ret;
         }
 
-        private List<float[]> GetBoneWeights(Mesh mesh)
+        private static List<float[]> GetBoneWeights(Mesh mesh)
         {
             var ret = new List<float[]>();
 
@@ -922,7 +812,7 @@ namespace Icarus.Util
             return ret;
         }
 
-        private List<byte[]> GetBoneIndicies(Mesh mesh)
+        private static List<byte[]> GetBoneIndicies(Mesh mesh)
         {
             var ret = new List<byte[]>();
 
@@ -938,7 +828,7 @@ namespace Icarus.Util
             return ret;
         }
 
-        private Vector3Collection GetNormals(Mesh mesh)
+        private static Vector3Collection GetNormals(Mesh mesh)
         {
             var ret = new Vector3Collection();
 
@@ -959,7 +849,7 @@ namespace Icarus.Util
             return ret;
         }
 
-        private (Vector3Collection, List<byte>) GetBiNormals(Mesh mesh)
+        private static (Vector3Collection, List<byte>) GetBiNormals(Mesh mesh)
         {
             var retVector = new Vector3Collection();
             var retByte = new List<byte>();
@@ -977,7 +867,7 @@ namespace Icarus.Util
                      * Apparently, the equivalent br.ReadByte = value.X * 255f
                      */
 
-            var x = value.X * 2 - 1f;
+                    var x = value.X * 2 - 1f;
                     var y = value.Y * 2 - 1f;
                     var z = value.Z * 2 - 1f;
                     var w = (byte)(value.W * 255f);
@@ -990,7 +880,7 @@ namespace Icarus.Util
             return (retVector, retByte);
         }
 
-        private Vector3Collection GetTangents(Mesh mesh)
+        private static Vector3Collection GetTangents(Mesh mesh)
         {
             var ret = new Vector3Collection();
             foreach (var v in mesh.Vertices)
@@ -1009,7 +899,7 @@ namespace Icarus.Util
             return ret;
         }
 
-        private (List<Color>, Color4Collection) GetColors(Mesh mesh)
+        private static (List<Color>, Color4Collection) GetColors(Mesh mesh)
         {
             var retColor = new List<Color>();
             var retCollection = new Color4Collection();
@@ -1033,13 +923,11 @@ namespace Icarus.Util
             return (retColor, retCollection);
         }
 
-        private (Vector2Collection, Vector2Collection) GetTextureCoordinates(Mesh mesh)
+        private static (Vector2Collection, Vector2Collection) GetTextureCoordinates(Mesh mesh)
         {
-            
             var ret0 = new Vector2Collection();
             var ret1 = new Vector2Collection();
 
-            /*
             foreach (var vertex in mesh.Vertices)
             {
                 var vector = vertex.UV;
@@ -1057,96 +945,36 @@ namespace Icarus.Util
 
                 }
             }
-            */
-            
-            VertexDataType vType;
-            if (VertexDict.TryGetValue(VertexUsageType.Color, out vType))
-            {
-                foreach (var vertex in mesh.Vertices)
-                {
-                    var vector = vertex.UV;
-                    if (vector != null)
-                    {
-                        var value = vector.Value;
-
-                        // TODO: Do we need to check the vertex type?
-
-                        if (vType == VertexDataType.Half4)
-                        {
-                            var x0 = new SharpDX.Half(value.X);
-                            var y0 = new SharpDX.Half(value.Y);
-                            var x1 = new SharpDX.Half(value.Z);
-                            var y1 = new SharpDX.Half(value.W);
-                            ret0.Add(new Vector2(x0, y0));
-                            ret1.Add(new Vector2(x1, y1));
-                        }
-                        else if (vType == VertexDataType.Half2)
-                        {
-                            var x = new SharpDX.Half(value.X);
-                            var y = new SharpDX.Half(value.Y);
-                            ret0.Add(new Vector2(x, y));
-                        }
-                        else if (vType == VertexDataType.Float2)
-                        {
-                            var x = value.X;
-                            var y = value.Y;
-                            ret0.Add(new Vector2(x, y));
-                        }
-                        else if (vType == VertexDataType.Float4)
-                        {
-                            var x0 = value.X;
-                            var y0 = value.Y;
-                            var x1 = value.Z;
-                            var y1 = value.W;
-                            ret0.Add(new Vector2(x0, y0));
-                            ret1.Add(new Vector2(x1, y1));
-                        }
-                        else
-                        {
-                            var x0 = value.X;
-                            var y0 = value.Y;
-                            var x1 = value.Z;
-                            var y1 = value.W;
-                            ret0.Add(new Vector2(x0, y0));
-                            ret1.Add(new Vector2(x1, y1));
-                        }
-                        
-                    }
-                }
-            }
-
             return (ret0, ret1);
         }
 
-        private static readonly Dictionary<byte, VertexDataType> VertexTypeDictionary =
-    new Dictionary<byte, VertexDataType>
-    {
-                {0x0, VertexDataType.Float1},
-                {0x1, VertexDataType.Float2},
-                {0x2, VertexDataType.Float3},
-                {0x3, VertexDataType.Float4},
-                {0x5, VertexDataType.Ubyte4},
-                {0x6, VertexDataType.Short2},
-                {0x7, VertexDataType.Short4},
-                {0x8, VertexDataType.Ubyte4n},
-                {0x9, VertexDataType.Short2n},
-                {0xA, VertexDataType.Short4n},
-                {0xD, VertexDataType.Half2},
-                {0xE, VertexDataType.Half4},
-                {0xF, VertexDataType.Compress}
-    };
+        private static readonly Dictionary<byte, VertexDataType> VertexTypeDictionary = new()
+        {
+            {0x0, VertexDataType.Float1},
+            {0x1, VertexDataType.Float2},
+            {0x2, VertexDataType.Float3},
+            {0x3, VertexDataType.Float4},
+            {0x5, VertexDataType.Ubyte4},
+            {0x6, VertexDataType.Short2},
+            {0x7, VertexDataType.Short4},
+            {0x8, VertexDataType.Ubyte4n},
+            {0x9, VertexDataType.Short2n},
+            {0xA, VertexDataType.Short4n},
+            {0xD, VertexDataType.Half2},
+            {0xE, VertexDataType.Half4},
+            {0xF, VertexDataType.Compress}
+        };
 
-        private static readonly Dictionary<byte, VertexUsageType> VertexUsageDictionary =
-            new Dictionary<byte, VertexUsageType>
-            {
-                {0x0, VertexUsageType.Position },
-                {0x1, VertexUsageType.BoneWeight },
-                {0x2, VertexUsageType.BoneIndex },
-                {0x3, VertexUsageType.Normal },
-                {0x4, VertexUsageType.TextureCoordinate },
-                {0x5, VertexUsageType.Tangent },
-                {0x6, VertexUsageType.Binormal },
-                {0x7, VertexUsageType.Color }
-            };
+        private static readonly Dictionary<byte, VertexUsageType> VertexUsageDictionary = new()
+        {
+            {0x0, VertexUsageType.Position },
+            {0x1, VertexUsageType.BoneWeight },
+            {0x2, VertexUsageType.BoneIndex },
+            {0x3, VertexUsageType.Normal },
+            {0x4, VertexUsageType.TextureCoordinate },
+            {0x5, VertexUsageType.Tangent },
+            {0x6, VertexUsageType.Binormal },
+            {0x7, VertexUsageType.Color }
+        };
     }
 }

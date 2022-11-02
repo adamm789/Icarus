@@ -22,6 +22,16 @@ namespace Icarus.ViewModels.Mods.DataContainers
             Url = userPreferencesService.DefaultWebsite;
         }
 
+        public void CopyFrom(ModPack modPack)
+        {
+            ModPack.CopyFrom(modPack);
+            OnPropertyChanged(nameof(Name));
+            OnPropertyChanged(nameof(Author));
+            OnPropertyChanged(nameof(Url));
+            OnPropertyChanged(nameof(Version));
+            OnPropertyChanged(nameof(Description));
+        }
+
         #endregion
 
         #region Bindings

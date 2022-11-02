@@ -9,6 +9,7 @@
         xmlns:viewmodels="clr-namespace:Icarus.ViewModels"
         xmlns:editorviews="clr-namespace:Icarus.Views.Editor"
         xmlns:dd="urn:gong-wpf-dragdrop"
+        xmlns:editor="clr-namespace:Icarus.ViewModels.Editor"
         d:DataContext="{d:DesignInstance Type=viewmodels:MainWindowViewModel}"
         mc:Ignorable="d"
         Title="Icarus" 
@@ -21,6 +22,14 @@
         <viewmodels:MainWindowViewModel />
     </Window.DataContext>
     <Grid Name="grid1" Focusable="True" dd:DragDrop.DropHandler="{Binding}" dd:DragDrop.IsDropTarget="True">
+        <Grid.Resources>
+            <DataTemplate DataType="{x:Type editor:SimpleEditorViewModel}">
+                <editorviews:SimpleEditorView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type editor:AdvancedEditorViewModel}">
+                <editorviews:AdvancedEditorView />
+            </DataTemplate>
+        </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -41,10 +50,11 @@
         <Grid x:Name="MainGrid" Grid.Row="1" IsEnabled="{Binding GamePathSet}" dd:DragDrop.IsDragSource="True" >
             <TabControl Grid.Row="0">
                 <TabItem Header="Importer/Simple Modpack">
-                    <editorviews:SimpleEditorView/>
+                    <ContentControl Content="{Binding SimpleEditorViewModel}" IsEnabled="{Binding CanExport}">
+                    </ContentControl>
                 </TabItem>
                 <TabItem Header="Advanced Modpack" IsEnabled="{Binding CanOpenAdvanced}">
-                    <editorviews:AdvancedEditorView/>
+                    <ContentControl Content="{Binding AdvancedEditorViewModel}" IsEnabled="{Binding CanExport}"/>
                 </TabItem>
             </TabControl>
         </Grid>

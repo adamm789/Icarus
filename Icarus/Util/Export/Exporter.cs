@@ -317,7 +317,6 @@ namespace Icarus.Util
             options.Apply(copy, ogMdl, ogMdl, _logService.LoggingFunction);
 
             ModelModifiers.FixUpSkinReferences(copy, ogPath, _logService.LoggingFunction);
-
             return copy;
         }
 
@@ -336,7 +335,8 @@ namespace Icarus.Util
             var ogMdl = mod.XivMdl;
             var mdl = new Mdl(copy, ogMdl);
             var bytes = await mdl.MakeNewMdlFileLumina(shouldCompress);
-
+            //var bytes = await Mdl.MakeNewMdlFiles(copy, ogMdl);
+            
             _logService.Verbose($"{mod.Name} ({counter}) has finished.");
             return bytes;
         }

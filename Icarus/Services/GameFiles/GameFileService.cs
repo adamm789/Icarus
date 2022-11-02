@@ -204,7 +204,7 @@ namespace Icarus.Services.GameFiles
         {
             try
             {
-                (var model, var xivMdl) = TryGetOriginalModel(path);
+                (var model, var xivMdl) = GetOriginalModel(path);
 
                 _logService.Debug($"Searching for {path} to try and get item name.");
                 var name = $"{path} (?)";
@@ -254,7 +254,7 @@ namespace Icarus.Services.GameFiles
                 category = item.Category.ToString();
             }
 
-            (var model, var xivMdl) = TryGetOriginalModel(itemPath, race);
+            (var model, var xivMdl) = GetOriginalModel(itemPath, race);
             xivMdl.MdlPath = itemPath;
 
             var ret = new ModelGameFile()
@@ -429,23 +429,62 @@ namespace Icarus.Services.GameFiles
             return null;
         }
 
-        private (TTModel, XivMdl) TryGetOriginalModel(string path, XivRace race = XivRace.Hyur_Midlander_Male)
+        private (TTModel, XivMdl) GetOriginalModel(string path, XivRace race = XivRace.Hyur_Midlander_Male)
         {
-            var mdl = TryGetOriginalWithLumina(path);
-            var retMdl = mdl.GetRawMdlDataLumina();
-            var retModel = TTModel.FromRaw(retMdl);
+            //var mdl = TryGetOriginalWithLumina(path);
+            //var xivMdl = mdl.GetRawMdlDataLumina();
+            var xivMdl = GetXivMdl(path);
+            var ttModel = TTModel.FromRaw(xivMdl);
 
-            return (retModel, retMdl);
+            return (ttModel, xivMdl);
         }
 
-        private MdlWithLumina TryGetOriginalWithLumina(string path)
+        private XivMdl GetXivMdl(string path)
+        {
+            if (_lumina.FileExists(path))
+            {
+                _logService.Verbose($"Successfully got model of {path}");
+
+                var mdlFile = _lumina.GetFile<MdlFile>(path);
+                return MdlWithFramework.GetRawMdlDataFramework(path, mdlFile.Data, mdlFile.ModelHeader.MeshCount);
+                //return mdlFile.GetXivMdl();
+            }
+
+            _logService.Verbose($"Could not resolve model path: {path}.");
+
+            if (XivPathParser.HasSkin(path))
+            {
+                var skinRacePath = XivPathParser.ChangeToSkinRace(path);
+                var midlanderPath = XivPathParser.ChangeToRace(path, XivRace.Hyur_Midlander_Male);
+
+                if (_lumina.FileExists(skinRacePath))
+                {
+                    _logService.Debug($"Using base race: {skinRacePath}.");
+                    _logService.Warning("Make sure metadata is enabled to see this mod correctly.");
+                    var mdlFile = _lumina.GetFile<MdlFile>(skinRacePath);
+                    //return MdlWithFramework.GetRawMdlDataFramework(skinRacePath, mdlFile.Data, mdlFile.ModelHeader.MeshCount);
+                    return mdlFile.GetXivMdl();
+                }
+                else if (_lumina.FileExists(midlanderPath))
+                {
+                    _logService.Warning($"Defaulting to midlander race: {midlanderPath}");
+                    var mdlFile = _lumina.GetFile<MdlFile>(midlanderPath);
+                    //return MdlWithFramework.GetRawMdlDataFramework(midlanderPath, mdlFile.Data, mdlFile.ModelHeader.MeshCount);
+
+                    return mdlFile.GetXivMdl();
+                }
+            }
+            throw new ArgumentException($"The model for {path} could not be found.");
+        }
+
+        private XivMdl TryGetOriginalWithLumina(string path)
         {
             if (_lumina.FileExists(path))
             {
                 _logService.Verbose($"Successfully got model of {path}");
 
                 var mdl = new MdlWithLumina(_lumina, path);
-                return mdl;
+                return mdl.GetRawMdlDataLumina();
             }
 
             _logService.Verbose($"Could not resolve model path: {path}.");
@@ -460,13 +499,13 @@ namespace Icarus.Services.GameFiles
                     _logService.Debug($"Using base race: {skinRacePath}.");
                     _logService.Warning("Make sure metadata is enabled to see this mod correctly.");
                     var mdl = new MdlWithLumina(_lumina, skinRacePath);
-                    return mdl;
+                    return mdl.GetRawMdlDataLumina();
                 }
                 else if (_lumina.FileExists(midlanderPath))
                 {
                     _logService.Warning($"Defaulting to midlander race: {midlanderPath}");
                     var mdl = new MdlWithLumina(_lumina, midlanderPath);
-                    return mdl;
+                    return mdl.GetRawMdlDataLumina();
                 }
             }
             throw new ArgumentException($"The model for {path} could not be found.");

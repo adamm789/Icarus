@@ -1,23 +1,36 @@
 ﻿using Icarus.Mods;
 using Icarus.Mods.DataContainers;
 using Icarus.Mods.Interfaces;
+using Icarus.Services.Files;
 using Icarus.Services.GameFiles;
 using Icarus.Services.GameFiles.Interfaces;
 using Icarus.Services.Interfaces;
+using Icarus.Services.UI;
+using Icarus.ViewModels.Export;
+using Icarus.ViewModels.Import;
+using Icarus.ViewModels.Items;
 using Icarus.ViewModels.Models;
 using Icarus.ViewModels.Mods;
 using Icarus.ViewModels.Mods.DataContainers;
+using Icarus.ViewModels.Mods.DataContainers.Interfaces;
 using xivModdingFramework.Models.DataContainers;
 
 namespace Icarus.Services
 {
     public class ViewModelService : ServiceBase<ViewModelService>
     {
+        public IModPackViewModel ModPackViewModel { get; private set; }
+
         readonly IGameFileService _gameFileService;
         readonly ISettingsService _settingsService;
         readonly IUserPreferencesService _userPreferencesService;
         readonly IWindowService _windowService;
         readonly ILogService _logService;
+
+        readonly IItemListService _itemListService;
+        readonly IMessageBoxService _messageBoxService;
+        readonly ExportService _exportService;
+        readonly ImportService _importService;
 
         public ViewModelService(IGameFileService gameFileDataService, ISettingsService settingsService,
             IUserPreferencesService userPreferencesService, IWindowService windowService, ILogService logService)
@@ -27,6 +40,20 @@ namespace Icarus.Services
             _windowService = windowService;
             _settingsService = settingsService;
             _logService = logService;
+        }
+
+        public IModPackViewModel SetModPackViewModel()
+        {
+            var modPack = new ModPack();
+            ModPackViewModel = new ModPackViewModel(modPack, this);
+            var modPackListViewModel = new ModPackListViewModel(this);
+
+            var itemListViewModel = new ItemListViewModel(_itemListService, _logService);
+            var importVanillaViewModel = new ImportVanillaViewModel(ModPackViewModel.ModsListViewModel, itemListViewModel, _gameFileService, _logService);
+            var exportViewModel = new ExportViewModel(ModPackViewModel.ModsListViewModel, _messageBoxService, _exportService);
+            var ImportViewModel = new ImportViewModel(ModPackViewModel, modPackListViewModel, _importService, _settingsService, _logService);
+
+            return ModPackViewModel;
         }
 
         public ModPackMetaViewModel GetModPackMetaViewModel(ModPack modPack)

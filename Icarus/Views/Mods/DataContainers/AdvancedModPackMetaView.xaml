@@ -6,7 +6,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:modviewmodels="clr-namespace:Icarus.ViewModels.Mods.DataContainers" 
              xmlns:views="clr-namespace:Icarus.Views"
-                              xmlns:xtk1="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:xtk1="http://schemas.xceed.com/wpf/xaml/toolkit"
 
              d:DataContext="{d:DesignInstance Type=modviewmodels:ModPackMetaViewModel}"
              mc:Ignorable="d" 

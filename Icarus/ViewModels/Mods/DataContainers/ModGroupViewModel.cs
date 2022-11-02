@@ -15,13 +15,16 @@ namespace Icarus.ViewModels.Mods.DataContainers
         protected ModGroup _modGroup;
         ViewModelService _modFileService;
 
-        public ModGroupViewModel(string name, ModPackPageViewModel parent, ViewModelService modFileService)
+        public bool IsReadOnly = false;
+
+        public ModGroupViewModel(string name, ModPackPageViewModel parent, ViewModelService modFileService, bool isReadOnly = false)
         {
             _modFileService = modFileService;
             _modGroup = new(name);
             RemoveCommand = new DelegateCommand(o => parent.RemoveGroup(this));
+            IsReadOnly = isReadOnly;
         }
-        public ModGroupViewModel(ModGroup group, ModPackPageViewModel parent, ViewModelService modFileService)
+        public ModGroupViewModel(ModGroup group, ModPackPageViewModel parent, ViewModelService modFileService, bool isReadOnly = false)
         {
             _modFileService = modFileService;
             _modGroup = new()
@@ -35,6 +38,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
                 AddOption(optionViewModel);
             }
             RemoveCommand = new DelegateCommand(o => parent.RemoveGroup(this));
+            IsReadOnly = isReadOnly;
         }
 
         ModOptionViewModel _selectedOption;

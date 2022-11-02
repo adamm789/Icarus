@@ -143,6 +143,7 @@ namespace Icarus.Services.Files
             // new Mdl(Imported, OgMdl).MakeNewMdlFile
             try
             {
+                // TODO: "Missing" "Original" shape data?
                 _logService.Information($"Trying to import {filePath} as model.");
                 var importedModel = await _converterService.FbxToTTModel(filePath);
                 var sane = TTModel.SanityCheck(importedModel, _logService.LoggingFunction);
