@@ -17,16 +17,32 @@ namespace Icarus.ViewModels.Mods.DataContainers
 
         public bool IsReadOnly = false;
 
+        public ModGroupViewModel(ModGroupViewModel other, ModPackPageViewModel parent)
+        {
+            _modGroup = new(other._modGroup);
+            _modFileService = other._modFileService;
+
+            RemoveCommand = new(o => parent.RemoveGroup(this));
+            foreach (var option in other.OptionList)
+            {
+                var newOption = new ModOptionViewModel(option, this);
+                AddOption(newOption);
+            }
+        }
+
         public ModGroupViewModel(string name, ModPackPageViewModel parent, ViewModelService modFileService, bool isReadOnly = false)
         {
             _modFileService = modFileService;
+            IsReadOnly = isReadOnly;
+
             _modGroup = new(name);
             RemoveCommand = new DelegateCommand(o => parent.RemoveGroup(this));
-            IsReadOnly = isReadOnly;
         }
         public ModGroupViewModel(ModGroup group, ModPackPageViewModel parent, ViewModelService modFileService, bool isReadOnly = false)
         {
             _modFileService = modFileService;
+            IsReadOnly = isReadOnly;
+
             _modGroup = new()
             {
                 GroupName = group.GroupName,
@@ -34,11 +50,10 @@ namespace Icarus.ViewModels.Mods.DataContainers
             };
             foreach (var option in group.OptionList)
             {
-                var optionViewModel = new ModOptionViewModel(option, this, modFileService);
+                var optionViewModel = new ModOptionViewModel(option, this, modFileService, IsReadOnly);
                 AddOption(optionViewModel);
             }
             RemoveCommand = new DelegateCommand(o => parent.RemoveGroup(this));
-            IsReadOnly = isReadOnly;
         }
 
         ModOptionViewModel _selectedOption;
@@ -151,7 +166,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
                 Name = str,
                 SelectionType = "Single"
             };
-            var optionViewModel = new ModOptionViewModel(modOption, this, _modFileService);
+            var optionViewModel = new ModOptionViewModel(modOption, this, _modFileService, IsReadOnly);
             AddOption(optionViewModel);
             return optionViewModel;
         }
@@ -251,25 +266,43 @@ namespace Icarus.ViewModels.Mods.DataContainers
                     modOption.AddMod(mod);
                 }
             }
-            else if (source is ModOptionViewModel sourceOption && target is ModOptionViewModel targetOption)
+            else if (source is ModOptionViewModel sourceOption)
             {
-                if (OptionList.Contains(sourceOption) && OptionList.Contains(targetOption))
+                if (!sourceOption.IsReadOnly && target is ModOptionViewModel targetOption)
                 {
-                    MoveTo(sourceOption, targetOption);
+                    if (OptionList.Contains(sourceOption) && OptionList.Contains(targetOption))
+                    {
+                        // Same group
+                        MoveTo(sourceOption, targetOption);
+                    }
+                    else
+                    {
+                        // Move to different group
+                        var sourceParent = sourceOption.Parent;
+                        var targetParent = targetOption.Parent;
+
+                        sourceParent.RemoveOption(sourceOption);
+                        targetParent.AddOption(sourceOption);
+                    }
                 }
                 else
                 {
-                    var sourceParent = sourceOption.Parent;
-                    var targetParent = targetOption.Parent;
-
-                    sourceParent.RemoveOption(sourceOption);
-                    targetParent.AddOption(sourceOption);
+                    CopyOption(sourceOption);
                 }
             }
             else
             {
                 dropInfo.NotHandled = true;
             }
+        }
+
+        private void CopyOption(ModOptionViewModel option)
+        {
+            var copyOption = new ModOptionViewModel(option, this);
+            AddOption(copyOption);
+
+            // Because if multiple options are set to true, I guess TexTools can't read it
+            copyOption.IsChecked = false;
         }
     }
 }

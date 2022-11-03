@@ -11,7 +11,7 @@
              d:DataContext="{d:DesignInstance Type=datacontainers:ModPackPageViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid HorizontalAlignment="Stretch">
+    <Grid>
         <Grid.Resources>
             <Style TargetType="{x:Type ListBoxItem}">
                 <Setter Property="Template">
@@ -44,12 +44,8 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        
-        <Grid Grid.Row="0" Grid.ColumnSpan="2" Margin="0,0,0,5">
+
+        <Grid Grid.Row="0" Margin="0,0,0,5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
@@ -68,7 +64,7 @@
             <Button Command="{Binding RemoveCommand}" Grid.Row="0" Grid.Column="3" Content="Remove"/>
         </Grid>
 
-        <ListView ItemsSource="{Binding ModGroups}" Grid.Row="1"  Grid.Column="0"
+        <ListView ItemsSource="{Binding ModGroups}" Grid.Row="1"
                  HorizontalContentAlignment="Stretch"
                  VerticalContentAlignment="Stretch"
                  ScrollViewer.CanContentScroll="False"
@@ -77,7 +73,8 @@
                   dd:DragDrop.IsDropTarget="True"
                   dd:DragDrop.DropHandler="{Binding}">
         </ListView>
-
+<!--
         <ContentControl Content="{Binding DisplayedOption}" Grid.Row="1" Grid.Column="1"/>
+        -->
     </Grid>
 </UserControl>

@@ -20,6 +20,12 @@ namespace Icarus.Mods.DataContainers
             SelectionType = group.SelectionType;
         }
 
+        public ModGroup(ModGroup other)
+        {
+            GroupName = other.GroupName;
+            SelectionType = other.SelectionType;
+        }
+
         public void AddOption(ModOption option)
         {
             OptionList.Add(option);

@@ -18,14 +18,37 @@ namespace Icarus.ViewModels.Mods.DataContainers
         protected ModOption _modOption = new();
         readonly ViewModelService _modFileService;
         public ModGroupViewModel Parent;
+        public bool IsReadOnly { get; }
 
         PropertyChangedEventHandler eh;
 
-        public ModOptionViewModel(ModOption option, ModGroupViewModel parent, ViewModelService modFileService)
+        
+        public ModOptionViewModel(ModOptionViewModel copy, ModGroupViewModel parent)
+        {
+            _modOption = new(copy._modOption);
+            GroupName = parent.GroupName;
+            _modFileService = copy._modFileService;
+            IsReadOnly = false;
+            Parent = parent;
+            RemoveCommand = new(o => Parent.RemoveOption(this));
+            
+            foreach (var modOption in copy.ModViewModels)
+            {
+                AddMod(modOption.ModViewModel);
+            }
+            
+            eh = new(OnSelectionTypeChanged);
+            Parent.PropertyChanged += eh;
+            UpdateHeader();
+        }
+        
+
+        public ModOptionViewModel(ModOption option, ModGroupViewModel parent, ViewModelService modFileService, bool isReadOnly = false)
         {
             _modOption = new ModOption(option);
             _modFileService = modFileService;
             Parent = parent;
+            IsReadOnly = isReadOnly;
 
             RemoveCommand = new(o => Parent.RemoveOption(this));
 

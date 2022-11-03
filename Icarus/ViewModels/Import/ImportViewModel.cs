@@ -126,7 +126,9 @@ namespace Icarus.ViewModels.Import
                 var str = Path.Combine(path);
                 if (File.Exists(str))
                 {
+                    _logService.Verbose($"Importing mod pack.");
                     var modPack = await ImportFile(str);
+                    _logService.Verbose($"Finished importing.");
 
                     if (modPack == null)
                     {
@@ -159,8 +161,9 @@ namespace Icarus.ViewModels.Import
                     {
                         //_modPackViewModel.SetModPack(modPack);
                     }
+                    _logService.Verbose($"Adding to mod list.");
                     _modPackViewModel.Add(modPack);
-                    _logService.Verbose($"Setting modpack. {modPack.SimpleModsList.Count} simple mods and {modPack.ModPackPages.Count} pack pages");
+                    _logService.Verbose($"Finished adding.");
                     //_modPackViewModel.SetModPack(modPack, flags);
                 }
             }
@@ -168,7 +171,7 @@ namespace Icarus.ViewModels.Import
 
         public async Task<ModPack?> ImportFile(string filePath)
         {
-            return await _importService.ImportFile(filePath);
+            return await Task.Run(() =>_importService.ImportFile(filePath));
         }
 
         public bool CanAcceptFiles(StringCollection collection)

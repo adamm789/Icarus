@@ -283,7 +283,7 @@ namespace Icarus.Util
                                 ImagePath = fn,
                                 GroupName = modOption.GroupName,
                                 SelectionType = modOption.SelectionType,
-                                IsChecked = modOption.IsChecked,
+                                IsChecked = false,
                                 ModsJsons = new List<ModsJson>()
                             };
 

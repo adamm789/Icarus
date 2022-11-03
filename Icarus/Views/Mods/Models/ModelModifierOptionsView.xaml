@@ -7,17 +7,14 @@
              xmlns:import="clr-namespace:Icarus.ViewModels.Import"
              xmlns:enums="clr-namespace:xivModdingFramework.General.Enums;assembly=xivModdingFramework"
              xmlns:ui="clr-namespace:Icarus.UI"
-
              d:DataContext="{d:DesignInstance Type=import:ModelModifierOptionsViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              FontSize="14">
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
         <Grid.Resources>
-            <ui:BooleanToVisibilityConverter 
-                x:Key="BooleanToVisibilityConverter"
-                True="Visible"
-                False="Hidden"/>
+            <ui:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"
+                True="Visible" False="Hidden"/>
             <Style TargetType="CheckBox">
                 <Setter Property="VerticalContentAlignment" Value="Center"/>
             </Style>
@@ -61,7 +58,6 @@
         <CheckBox Grid.Row="2" Grid.Column="0" IsChecked="{Binding AutoScale, Mode=TwoWay}">
             <TextBlock Text="{x:Static import:ModelModifierOptionsViewModel.AutoScaleName}"/>
         </CheckBox>
-
         <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding OverrideRace, Mode=TwoWay}">
             <TextBlock Text="Override Incoming Race" IsEnabled="True"/>
         </CheckBox>

@@ -9,6 +9,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Collections.Specialized;
 
 namespace Icarus.ViewModels.Mods.DataContainers
 {
@@ -22,11 +23,25 @@ namespace Icarus.ViewModels.Mods.DataContainers
             get { return DisplayedModPack?.ModPackPages; }
         }
 
+        IModsListViewModel _modsListViewModel;
+
+        // TODO: What to do if user deletes mods that are part of one of the mods in the ModPackList?
+        public ModPackListViewModel(IModsListViewModel modsList, ViewModelService viewModelService)
+        {
+            _modsListViewModel = modsList;
+            _viewModelService = viewModelService;
+        }
+
         INotifyPropertyChanged _modPackPage;
         public INotifyPropertyChanged ModPackPage
         {
             get { return _modPackPage; }
             set { _modPackPage = value; OnPropertyChanged(); }
+        }
+
+        public List<int>? AvailablePageIndices
+        {
+            get { return DisplayedModPack?.GetAvailablePageIndices(); }
         }
 
         int _selectedIndex = 0;
@@ -35,9 +50,13 @@ namespace Icarus.ViewModels.Mods.DataContainers
             get { return _selectedIndex; }
             set
             {
-                _selectedIndex = value;
-                OnPropertyChanged();
-                DisplayedModPack = ModPacks[value];
+                if( _selectedIndex != value)
+                {
+                    _selectedIndex = value;
+                    OnPropertyChanged();
+                    DisplayedModPack = ModPacks[value];
+                    SelectedPageIndex = 0;
+                }
             }
         }
 
@@ -53,16 +72,10 @@ namespace Icarus.ViewModels.Mods.DataContainers
                 OnPropertyChanged();
                 DisplayedModPack.PageIndex = value;
                 ModPackPage = DisplayedModPack.DisplayedViewModel;
-                DisplayedModPack.PageIndex = value;
-                OnPropertyChanged(nameof(ModPackPage));
             }
         }
 
         readonly ViewModelService _viewModelService;
-        public ModPackListViewModel(ViewModelService viewModelService)
-        {
-            _viewModelService = viewModelService;
-        }
 
         ModPackViewModel _displayedModPack;
         public ModPackViewModel DisplayedModPack
@@ -73,12 +86,13 @@ namespace Icarus.ViewModels.Mods.DataContainers
                 _displayedModPack = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(ModPackPages));
+                OnPropertyChanged(nameof(AvailablePageIndices));
             }
         }
 
         public void Add(ModPack modPack)
         {
-            var modPackViewModel = new ModPackViewModel(modPack, _viewModelService);
+            var modPackViewModel = new ModPackViewModel(modPack, _viewModelService, true, _modsListViewModel);
             //modPackViewModel.SetModPack(modPack);
             ModPacks.Add(modPackViewModel);
             ModPackMetas.Add(modPackViewModel.ModPackMetaViewModel);
@@ -86,6 +100,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
             if (DisplayedModPack == null)
             {
                 DisplayedModPack = modPackViewModel;
+                SelectedPageIndex = 0;
             }
         }
 
@@ -93,5 +108,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
         {
             ModPacks.Add(modPack);
         }
+
+
     }
 }

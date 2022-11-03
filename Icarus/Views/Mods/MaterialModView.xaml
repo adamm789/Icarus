@@ -33,8 +33,7 @@
             </DataTemplate>
             <ui:BooleanToVisibilityConverter 
                 x:Key="BooleanToVisibilityConverter"
-                True="Visible"
-                False="Collapsed"/>
+                True="Visible" False="Collapsed"/>
         </Grid.Resources>
         
         <local:ModView Grid.Row="0" Grid.ColumnSpan="4"/>

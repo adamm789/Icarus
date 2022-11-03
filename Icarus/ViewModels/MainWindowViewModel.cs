@@ -52,7 +52,7 @@ namespace Icarus.ViewModels
             //ModsListViewModel = ModPackViewModel.ModsListViewModel;
             //FilteredModsListViewModel = ModsListViewModel.FilteredModsList;
 
-            ModPackListViewModel = new ModPackListViewModel(viewModelService);
+            ModPackListViewModel = new ModPackListViewModel(ModPackViewModel.ModsListViewModel, viewModelService);
 
             ItemListViewModel = new(itemListService, logService);
             ImportVanillaViewModel = new(ModPackViewModel.ModsListViewModel, ItemListViewModel, gameFileDataService, logService);

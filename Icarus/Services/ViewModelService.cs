@@ -46,7 +46,7 @@ namespace Icarus.Services
         {
             var modPack = new ModPack();
             ModPackViewModel = new ModPackViewModel(modPack, this);
-            var modPackListViewModel = new ModPackListViewModel(this);
+            var modPackListViewModel = new ModPackListViewModel(ModPackViewModel.ModsListViewModel, this);
 
             var itemListViewModel = new ItemListViewModel(_itemListService, _logService);
             var importVanillaViewModel = new ImportVanillaViewModel(ModPackViewModel.ModsListViewModel, itemListViewModel, _gameFileService, _logService);

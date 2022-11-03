@@ -11,12 +11,12 @@
     <Grid>
         <Grid.Resources>
             <Style TargetType="{x:Type ListView}">
-                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                 <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                 <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
                 <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True"/>
                 <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Visible"/>
-                <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Hidden"/>
+                <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
                 <Setter Property="dd:DragDrop.IsDragSource" Value="True"/>
                 <Setter Property="dd:DragDrop.IsDropTarget" Value="True"/>
                 <Setter Property="dd:DragDrop.DropHandler" Value="{Binding}"/>

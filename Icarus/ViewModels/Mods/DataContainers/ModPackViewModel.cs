@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace Icarus.ViewModels.Mods.DataContainers
@@ -22,26 +23,45 @@ namespace Icarus.ViewModels.Mods.DataContainers
         // TODO: Allow user to drag and drop groups, options, and pages to the current pack
         public ObservableCollection<ModPackPageViewModel> ModPackPages { get; } = new();
 
+        public bool IsReadOnly { get; }
         ViewModelService _viewModelService;
 
         //IModPackMetaViewModel _modPackMetaViewModel;
 
-        public ModPackViewModel(ModPack modPack, ViewModelService viewModelService)
+        public ModPackViewModel(ModPack modPack, ViewModelService viewModelService, bool isReadOnly = false, IModsListViewModel? modsListViewModel = null)
         {
             ModPack = modPack;
             _viewModelService = viewModelService;
+            IsReadOnly = isReadOnly;
 
             ModPackMetaViewModel = _viewModelService.GetModPackMetaViewModel(modPack);
-            ModsListViewModel = new ModsListViewModel(modPack, _viewModelService);
+            ModsListViewModel = modsListViewModel ?? new ModsListViewModel(modPack, _viewModelService);
 
             DisplayedViewModel = ModPackMetaViewModel;
 
             ModsListViewModel.SimpleModsList.CollectionChanged += new NotifyCollectionChangedEventHandler(OnCollectionChanged);
             foreach (var page in ModPack.ModPackPages)
             {
-                var packPage = new ModPackPageViewModel(page, this, _viewModelService);
+                var packPage = new ModPackPageViewModel(page, this, _viewModelService, IsReadOnly);
                 ModPackPages.Add(packPage);
             }
+            IsReadOnly = isReadOnly;
+        }
+
+        public ModPackViewModel(ModPack modPack, ModsListViewModel modsListViewModel, ViewModelService viewModelService, bool isReadOnly = false)
+        {
+
+        }
+
+        public List<int> GetAvailablePageIndices()
+        {
+            var ret = new List<int>();
+            for (var i = 0; i < ModPackPages.Count + 1; i++)
+            {
+                ret.Add(i);
+            }
+
+            return ret;
         }
 
         private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -197,6 +217,11 @@ namespace Icarus.ViewModels.Mods.DataContainers
 
             ModPackPages.Move(sourceIndex, targetIndex);
             ModPack.MovePage(sourceIndex, targetIndex);
+
+            if (PageIndex == sourceIndex + 1)
+            {
+                PageIndex = targetIndex + 1;
+            }
         }
 
         private void DecreasePageIndex()

@@ -14,16 +14,10 @@
              xmlns:ui="clr-namespace:Icarus.UI"
              xmlns:dd="urn:gong-wpf-dragdrop"
              d:DataContext="{d:DesignInstance Type=modviewmodels:ModelModViewModel}"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             mc:Ignorable="d">
     <Grid dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding}">
         <Grid.Resources>
             <ui:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" True="Visible" False="Hidden"/>
-            <DataTemplate x:Key="StretchedHeaderTemplate">
-                <Border Loaded="OnStretchedHeaderTemplateLoaded" HorizontalAlignment="Stretch">
-                    <ContentPresenter Content="{TemplateBinding Content}"/>
-                </Border>
-            </DataTemplate>
             <DataTemplate DataType="{x:Type importviewmodels:ModelModifierOptionsViewModel}">
                 <modelviews:ModelModifierOptionsView/>
             </DataTemplate>
@@ -50,15 +44,16 @@
         <Button Grid.Row="1" Grid.Column="0" Content="Copy From Search"
                     Command="{Binding SetDestinationCommand}"/>
         <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding DestinationName}" Margin="5,0,5,0"/>
-
         <ComboBox Grid.Row="1" Grid.Column="2" ItemsSource="{Binding Source={x:Static enums:XivRaces.PlayableRaces}}" 
                   SelectedValue="{Binding TargetRace, Mode=TwoWay}"
                   Visibility="{Binding HasSkin, Converter={StaticResource BooleanToVisibilityConverter}}">
         </ComboBox>
 
         <ContentControl Content="{Binding OptionsViewModel}" Grid.Row="2" Grid.ColumnSpan="3"/>
-        <ListBox Grid.Row="3" Grid.ColumnSpan="3" ItemsSource="{Binding MeshGroups}" HorizontalContentAlignment="Stretch"
-                 PreviewMouseWheel="ListView_PreviewMouseWheel" ScrollViewer.CanContentScroll="False">
-        </ListBox>
+        <ListView Grid.Row="3" Grid.ColumnSpan="3" ItemsSource="{Binding MeshGroups}"
+                  PreviewMouseWheel="ListView_PreviewMouseWheel" ScrollViewer.CanContentScroll="False"
+                  HorizontalContentAlignment="Stretch"
+                  ScrollViewer.VerticalScrollBarVisibility="Hidden">
+        </ListView>
     </Grid>
 </UserControl>

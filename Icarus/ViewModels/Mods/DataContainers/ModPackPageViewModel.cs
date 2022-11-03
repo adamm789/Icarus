@@ -30,10 +30,11 @@ namespace Icarus.ViewModels.Mods.DataContainers
         {
             _modPackPage = new(page);
             _viewModelService = viewModelService;
+            IsReadOnly = isReadOnly;
             foreach (var group in page.ModGroups)
             {
                 //var groupViewModel = new ModGroupViewModel(group, gameFileDataService, windowService);
-                var groupViewModel = new ModGroupViewModel(group, this, _viewModelService);
+                var groupViewModel = new ModGroupViewModel(group, this, _viewModelService, IsReadOnly);
                 AddGroup(groupViewModel);
             }
             RemoveCommand = new(o => parent.RemovePage(this));
@@ -76,7 +77,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
 
         public ModGroupViewModel AddGroup(string groupName)
         {
-            var vm = new ModGroupViewModel(groupName, this, _viewModelService);
+            var vm = new ModGroupViewModel(groupName, this, _viewModelService, IsReadOnly);
             ModGroups.Add(vm);
             return vm;
         }
@@ -111,7 +112,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
             if (!string.IsNullOrWhiteSpace(NewGroupName))
             {
                 NewGroupName = NewGroupName.Trim();
-                var vm = new ModGroupViewModel(NewGroupName, this, _viewModelService);
+                var vm = new ModGroupViewModel(NewGroupName, this, _viewModelService, IsReadOnly);
 
                 AddGroup(vm);
                 NewGroupName = string.Empty;
@@ -185,17 +186,38 @@ namespace Icarus.ViewModels.Mods.DataContainers
         {
             var source = dropInfo.Data;
             var target = dropInfo.TargetItem;
-
-            // TODO: BEtter method for determining if MoveTo should be called
-            // i.e. from the ModPackListViewModel, groups and options shouldn't be removed
-            if (source is ModGroupViewModel sourceGroup)
+            if (target is ModGroupViewModel targetGroup)
             {
-                if (target is ModGroupViewModel targetGroup)
+                // TODO: BEtter method for determining if MoveTo should be called
+                // i.e. from the ModPackListViewModel, groups and options shouldn't be removed
+                if (source is ModGroupViewModel sourceGroup)
                 {
                     if (!sourceGroup.IsReadOnly)
                     {
                         MoveTo(sourceGroup, targetGroup);
+
                     }
+                    else
+                    {
+                        var newGroup = new ModGroupViewModel(sourceGroup, this);
+                        AddGroup(newGroup);
+                    }
+                }
+                else if (source is ModOptionViewModel sourceOption)
+                {
+                    targetGroup.AddOption(sourceOption);
+                }
+                else
+                {
+                    dropInfo.NotHandled = false;
+                }
+            }
+            else if (source is ModGroupViewModel sourceGroup && target == null)
+            {
+                if (sourceGroup.IsReadOnly)
+                {
+                    var newGroup = new ModGroupViewModel(sourceGroup, this);
+                    AddGroup(newGroup);
                 }
                 else
                 {

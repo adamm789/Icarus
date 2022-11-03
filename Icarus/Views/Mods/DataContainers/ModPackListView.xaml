@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Icarus.Views.Mods.DataContainers"
              xmlns:modviews="clr-namespace:Icarus.Views.Mods"
-
+             xmlns:dd="urn:gong-wpf-dragdrop"
              xmlns:datacontainers="clr-namespace:Icarus.ViewModels.Mods.DataContainers"
              d:DataContext="{d:DesignInstance Type=datacontainers:ModPackListViewModel}"
              mc:Ignorable="d" 
@@ -16,20 +16,27 @@
                 <modviews:AdvancedModPackMetaView/>
             </DataTemplate>
             <DataTemplate DataType="{x:Type datacontainers:ModPackPageViewModel}">
-                <ListView ItemsSource="{Binding ModGroups}"/>
+                <ListView ItemsSource="{Binding ModGroups}"                               
+                          MouseWheel="HandlePreviewMouseWheel"
+                              ScrollViewer.CanContentScroll="False"
+                              VirtualizingStackPanel.IsVirtualizing="True"
+                              HorizontalContentAlignment="Stretch"/>
             </DataTemplate>
             <DataTemplate DataType="{x:Type datacontainers:ModGroupViewModel}">
-                <Grid>
+                <Grid dd:DragDrop.IsDropTarget="False">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     <TextBlock Grid.Row="0" Text="{Binding GroupName}"/>
-                    <ListView Grid.Row="1" ItemsSource="{Binding OptionList}"/>
+
+                    <ListView Grid.Row="1" ItemsSource="{Binding OptionList}"
+                              ScrollViewer.CanContentScroll="False"
+                              VirtualizingStackPanel.IsVirtualizing="True"/>
                 </Grid>
             </DataTemplate>
             <DataTemplate DataType="{x:Type datacontainers:ModOptionViewModel}">
-                    <TextBlock Text="{Binding Name}"/>
+                <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}"/>
             </DataTemplate>
 
             <DataTemplate DataType="{x:Type datacontainers:ModPackViewModel}">
@@ -41,7 +48,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        
+
         <ComboBox Grid.Row="0" ItemsSource="{Binding ModPackMetas}" SelectedIndex="{Binding SelectedIndex}">
             <ComboBox.ItemTemplate>
                 <DataTemplate DataType="{x:Type datacontainers:ModPackMetaViewModel}">
@@ -49,16 +56,7 @@
                 </DataTemplate>
             </ComboBox.ItemTemplate>
         </ComboBox>
-        <!--
-        <ComboBox Grid.Row="1" ItemsSource="{Binding ModPackPages}" SelectedIndex="{Binding SelectedPageIndex}">
-            <ComboBox.ItemTemplate>
-                <DataTemplate DataType="{x:Type datacontainers:ModPackPageViewModel}">
-                    <TextBlock Text="{Binding PageIndex}"/>
-                </DataTemplate>
-            </ComboBox.ItemTemplate>
-        </ComboBox>
-        -->
-        <TextBox Grid.Row="1" Text="{Binding SelectedPageIndex}"/>
+        <ComboBox Grid.Row="1" ItemsSource="{Binding AvailablePageIndices}" SelectedIndex="{Binding SelectedPageIndex}"/>
         <ContentControl Grid.Row="2" Content="{Binding ModPackPage}"/>
     </Grid>
 </UserControl>

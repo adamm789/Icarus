@@ -1,6 +1,8 @@
 ﻿using Icarus.Mods.DataContainers;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Threading.Tasks;
 
 namespace Icarus.ViewModels.Mods.DataContainers.Interfaces
 {
@@ -19,5 +21,6 @@ namespace Icarus.ViewModels.Mods.DataContainers.Interfaces
         void SetModPack(ModPack pack);
         void SetModPack(ModPack pack, ModPackViewModelImportFlags flags);
         void IncreasePageIndex();
+        List<int> GetAvailablePageIndices();
     }
 }

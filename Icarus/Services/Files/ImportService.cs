@@ -19,6 +19,7 @@ using Icarus.Util.Import;
 using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Textures.FileTypes;
 using ModPack = Icarus.Mods.DataContainers.ModPack;
+using System.Collections.ObjectModel;
 
 namespace Icarus.Services.Files
 {
@@ -33,6 +34,8 @@ namespace Icarus.Services.Files
         protected Queue<string> _importFileQueue = new();
 
         public ObservableQueue<string> _stringQueue = new();
+
+        ObservableCollection<ModPack> ImportCollection;
 
         public ImportService(IGameFileService gameFileDataService, ISettingsService settingsService, ConverterService converterService, ILogService logService, LuminaService lumina) : base(lumina)
         {
