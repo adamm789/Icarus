@@ -307,16 +307,24 @@ namespace Icarus.Util
         protected TTModel ApplyModelOptions(ModelMod mm)
         {
             _logService.Information($"Applying ModelModifiers to {mm.Name}");
+
+            // TODO: Log warning when race converting between (likely) incompatible races?
+            // e.g. Male Roe to Midlander
             var ttModel = mm.ImportedModel;
             var copy = ttModel.DeepCopy();
+            //copy.Source = mm.Path;
 
             var ogMdl = mm.XivMdl;
             var options = mm.Options;
             var ogPath = ogMdl.MdlPath;
 
+            // Change the path so that ModelModifiers correctly converts the race (if necessary)
+            ogMdl.MdlPath = mm.Path;
+
             options.Apply(copy, ogMdl, ogMdl, _logService.LoggingFunction);
 
             ModelModifiers.FixUpSkinReferences(copy, ogPath, _logService.LoggingFunction);
+            ogMdl.MdlPath = ogPath;
             return copy;
         }
 

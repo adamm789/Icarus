@@ -134,6 +134,16 @@ namespace Icarus.Services.GameFiles
             return null;
             */
         }
+        public async Task<ITextureGameFile?> GetTextureFileData(IItem? itemArg = null, string variant = "a")
+        {
+            var gameFile = await GetTextureFileData(itemArg);
+            if (gameFile != null)
+            {
+                gameFile.Path = XivPathParser.ChangeTexVariant(gameFile.Path, variant);
+            }
+            return gameFile;
+        }
+
 
         public async Task<ITextureGameFile?> GetTextureFileData(IItem? itemArg = null)
         {
@@ -322,6 +332,18 @@ namespace Icarus.Services.GameFiles
                 return retVal;
             }
             return null;
+        }
+
+        public async Task<IMaterialGameFile?> GetMaterialFileData(IItem? itemArg = null, string variant="a")
+        {
+            var gameFile = await GetMaterialFileData(itemArg);
+            if (gameFile != null)
+            {
+                gameFile.Path = XivPathParser.ChangeMtrlVariant(gameFile.Path, variant);
+                gameFile.XivMtrl.MTRLPath = XivPathParser.ChangeMtrlVariant(gameFile.XivMtrl.MTRLPath, variant);
+            }
+
+            return gameFile;
         }
 
         public async Task<IMaterialGameFile?> GetMaterialFileData(IItem? itemArg = null)

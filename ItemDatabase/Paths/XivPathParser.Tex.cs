@@ -140,7 +140,7 @@ namespace ItemDatabase.Paths
                     {
                         if (r.IsMatch($"_{variant}"))
                         {
-                            return "";
+                            return "a";
                         }
                     }
                     return variant;

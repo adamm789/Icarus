@@ -8,9 +8,11 @@ using Icarus.ViewModels.Mods.Materials;
 using Icarus.ViewModels.Util;
 using Icarus.Views.Mods;
 using Icarus.Views.Mods.Materials;
+using ItemDatabase.Interfaces;
 using ItemDatabase.Paths;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using xivModdingFramework.Materials.DataContainers;
 
 namespace Icarus.ViewModels.Mods
@@ -28,6 +30,7 @@ namespace Icarus.ViewModels.Mods
             : base(mod, gameFileDataService, logService)
         {
             _material = mod;
+            _materialVariant = XivPathParser.GetMtrlVariant(_material.Path);
             _windowService = windowService;
             var stainingTemplateFile = gameFileDataService.GetStainingTemplateFile();
 
@@ -87,8 +90,14 @@ namespace Icarus.ViewModels.Mods
             set
             {
                 MaterialVariant = XivPathParser.GetMtrlVariant(value);
-                base.DestinationPath = value;
+                base.DestinationPath = XivPathParser.ChangeMtrlVariant(value, MaterialVariant);
             }
+        }
+
+        // TODO: Changing an item changes the path such that it ignores the material variant
+        public override async Task<IGameFile?> GetFileData(IItem? itemArg = null)
+        {
+            return await _gameFileService.GetMaterialFileData(itemArg, MaterialVariant);
         }
 
         public List<string> VariantList { get; } = new()

@@ -3,10 +3,12 @@ using Icarus.Mods.Interfaces;
 using Icarus.Services.GameFiles;
 using Icarus.Services.GameFiles.Interfaces;
 using Icarus.Services.Interfaces;
+using ItemDatabase.Interfaces;
 using ItemDatabase.Paths;
 using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using xivModdingFramework.Textures.Enums;
 
 namespace Icarus.ViewModels.Mods
@@ -21,6 +23,7 @@ namespace Icarus.ViewModels.Mods
             : base(mod, gameFileService, logService)
         {
             _textureMod = mod;
+            _textureVariant = XivPathParser.GetTexVariant(mod.Path);
             SetCanExport();
             TexTypeValues = new()
             {
@@ -77,6 +80,11 @@ namespace Icarus.ViewModels.Mods
                     _logService.Error($"Could not set {_textureMod.TexType} to {DestinationPath}.");
                 }
             }
+        }
+
+        public override async Task<IGameFile?> GetFileData(IItem? itemArg = null)
+        {
+            return await _gameFileService.GetTextureFileData(itemArg, TextureVariant);
         }
 
         public override bool SetModData(IGameFile gameFile)

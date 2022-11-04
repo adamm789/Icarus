@@ -65,7 +65,8 @@
                   ItemsSource="{Binding Source={x:Static enums:XivRaces.PlayableRaces}}"
                   SelectedValue="{Binding SourceRace, Mode=TwoWay}"
                   IsEnabled="{Binding OverrideRace}"
-                  Visibility="{Binding OverrideRace, Converter={StaticResource BooleanToVisibilityConverter}}">
+                  Visibility="{Binding OverrideRace, Converter={StaticResource BooleanToVisibilityConverter}}"
+                  ToolTip="{x:Static import:ModelModifierOptionsViewModel.OverrideRaceToolTip}">
         </ComboBox>
     </Grid>
 </UserControl>
