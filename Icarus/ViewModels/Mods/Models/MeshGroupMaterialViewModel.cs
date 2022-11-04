@@ -16,10 +16,6 @@ namespace Icarus.ViewModels.Models
 {
     public class MeshGroupMaterialViewModel : NotifyPropertyChanged
     {
-        // TODO: Consider when changing the race, it changes the material race as well
-        // This probably results in materials that don't actually exist
-        // TODO: implement DefaultSkinVariant
-        // TODO: 
         TTMeshGroup _importedGroup;
         ModelModViewModel _modelModViewModel;
         readonly IUserPreferencesService _userPreferencesService;
@@ -28,7 +24,7 @@ namespace Icarus.ViewModels.Models
         private string _skinName = "/mt_c0101b0001_";
         private string _initialMaterial = "";
 
-        public MeshGroupMaterialViewModel(TTMeshGroup group, ModelModViewModel model, IUserPreferencesService userPreferences, ISettingsService settingsService)
+        public MeshGroupMaterialViewModel(TTMeshGroup group, ModelModViewModel model, IUserPreferencesService userPreferences)
         {
             _importedGroup = group;
             _userPreferencesService = userPreferences;
@@ -67,7 +63,6 @@ namespace Icarus.ViewModels.Models
 
         public bool CanParsePath => XivPathParser.CanParsePath(DestinationModelPath);
         public bool CanAssignSkin { get => _modelModViewModel.HasSkin; }
-
 
         private void ParentChanged(object sender, PropertyChangedEventArgs e)
         {

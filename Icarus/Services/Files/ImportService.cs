@@ -18,8 +18,9 @@ using System.Windows.Media.Animation;
 using Icarus.Util.Import;
 using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Textures.FileTypes;
-using ModPack = Icarus.Mods.DataContainers.ModPack;
 using System.Collections.ObjectModel;
+using Icarus.ViewModels.Import;
+using Icarus.Mods.DataContainers;
 
 namespace Icarus.Services.Files
 {
@@ -70,13 +71,12 @@ namespace Icarus.Services.Files
         }
 
         /// <summary>
-        /// Returns null if import fails
+        /// Imports the file, filling a <see cref="ModPack"/> with mods and potentially <see cref="ModPack.ModPackPages"/>
         /// </summary>
         /// <param name="filePath"></param>
-        /// <returns>A ModPack with SimpleModsList and potentially ModPackPages filled</returns>
+        /// <returns>The filled <see cref="ModPack"/> if successful. An empty <see cref="ModPack"/> otherwise.</returns>
         public async Task<ModPack> ImportFile(string filePath)
         {
-            // TODO: ImportFile: return null on import fail? Or empty modPAck?
             var importingFile = "Importing: " + filePath;
             _importFileQueue.Enqueue(importingFile);
             UpdateProperties();
@@ -207,7 +207,6 @@ namespace Icarus.Services.Files
             catch (Win32Exception ex)
             {
                 _logService.Fatal(ex, "The folder /converters was not found.");
-                //Log.Show("Please copy and paste the converters folder from TexTools into the same folder as the exe.");
             }
 
             _logService.Error($"Could not import {filePath} as model.");

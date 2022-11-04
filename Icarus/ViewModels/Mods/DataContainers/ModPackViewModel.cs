@@ -48,11 +48,6 @@ namespace Icarus.ViewModels.Mods.DataContainers
             IsReadOnly = isReadOnly;
         }
 
-        public ModPackViewModel(ModPack modPack, ModsListViewModel modsListViewModel, ViewModelService viewModelService, bool isReadOnly = false)
-        {
-
-        }
-
         public List<int> GetAvailablePageIndices()
         {
             var ret = new List<int>();
@@ -79,48 +74,6 @@ namespace Icarus.ViewModels.Mods.DataContainers
         {
             ModsListViewModel.AddRange(modPack.SimpleModsList);
         }
-
-        public void SetModPack(ModPack modPack)
-        {
-            SetModPack(modPack, GetDefaultFlags());
-        }
-
-        // TODO: pages -> overwrite, insert at index, and append to end
-        public void SetModPack(ModPack modPack, ModPackViewModelImportFlags flags)
-        {
-            ModsListViewModel.AddRange(modPack.SimpleModsList);
-            if (flags.HasFlag(ModPackViewModelImportFlags.OverwriteData))
-            {
-                //ModPack.CopyFrom(modPack);
-                ModPackMetaViewModel.CopyFrom(modPack);
-            }
-            if (flags.HasFlag(ModPackViewModelImportFlags.OverwritePages))
-            {
-                ModPack.ModPackPages.Clear();
-                ModPackPages.Clear();
-            }
-            if (flags.HasFlag(ModPackViewModelImportFlags.AppendPagesToEnd))
-            {
-                foreach (var page in modPack.ModPackPages)
-                {
-                    var pageViewModel = new ModPackPageViewModel(page, this, _viewModelService);
-                    AddPage(pageViewModel);
-                }
-                UpdatePagesView();
-            }
-            // TODO: Append to start?
-
-            // TODO: How do I want to handle pre-existing mods?
-            // Probably not delete them. So just append them to the SimpleModsList
-            // The pages could be "insert at index"
-        }
-
-        public static ModPackViewModelImportFlags GetDefaultFlags()
-        {
-            return ModPackViewModelImportFlags.OverwriteData |
-                ModPackViewModelImportFlags.OverwritePages | ModPackViewModelImportFlags.AppendPagesToEnd;
-        }
-
 
         string _newOrNext = "New Page";
         public string NewOrNext
@@ -151,7 +104,6 @@ namespace Icarus.ViewModels.Mods.DataContainers
         }
 
         // ModPackPageViewModel or ModPackMetaViewModel
-
         INotifyPropertyChanged _displayedViewModel;
         public INotifyPropertyChanged DisplayedViewModel
         {
@@ -207,8 +159,6 @@ namespace Icarus.ViewModels.Mods.DataContainers
             return true;
         }
 
-        // TODO: Consider the scenario: user has page 1 open, swaps page 2 and page 1, which page should it display?
-        // Assuming moving pages are on a separate screen/control
         public void Move(ModPackPageViewModel source, ModPackPageViewModel target)
         {
             // TODO: More error checks?
@@ -218,6 +168,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
             ModPackPages.Move(sourceIndex, targetIndex);
             ModPack.MovePage(sourceIndex, targetIndex);
 
+            // Change to new page index if it has moved
             if (PageIndex == sourceIndex + 1)
             {
                 PageIndex = targetIndex + 1;
@@ -229,7 +180,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
             PageIndex--;
         }
 
-        // TODO: Inputting page index +1 to add a new page
+        // TODO: Inputting page (index + 1) to add a new page
         public void IncreasePageIndex()
         {
             if (PageIndex == ModPackPages.Count && ShouldAddPage())
@@ -300,9 +251,9 @@ namespace Icarus.ViewModels.Mods.DataContainers
         }
 
         /// <summary>
-        /// Removes a mod from the ModPackPages
+        /// Removes the <paramref name="mod"/> from the ModPackPages
         /// </summary>
-        /// <param name="mod"></param>
+        /// <param name="mod"/></param>
         /// <returns></returns>
         private int RemoveMod(ModViewModel mod)
         {

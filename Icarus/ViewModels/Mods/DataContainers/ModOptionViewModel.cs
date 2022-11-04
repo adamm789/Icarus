@@ -16,18 +16,23 @@ namespace Icarus.ViewModels.Mods.DataContainers
     public class ModOptionViewModel : NotifyPropertyChanged, IDropTarget
     {
         protected ModOption _modOption = new();
-        readonly ViewModelService _modFileService;
+        readonly ViewModelService _viewModelService;
         public ModGroupViewModel Parent;
         public bool IsReadOnly { get; }
 
         PropertyChangedEventHandler eh;
 
         
+        /// <summary>
+        /// Copy Constructor
+        /// </summary>
+        /// <param name="copy"></param>
+        /// <param name="parent"></param>
         public ModOptionViewModel(ModOptionViewModel copy, ModGroupViewModel parent)
         {
             _modOption = new(copy._modOption);
             GroupName = parent.GroupName;
-            _modFileService = copy._modFileService;
+            _viewModelService = copy._viewModelService;
             IsReadOnly = false;
             Parent = parent;
             RemoveCommand = new(o => Parent.RemoveOption(this));
@@ -43,10 +48,10 @@ namespace Icarus.ViewModels.Mods.DataContainers
         }
         
 
-        public ModOptionViewModel(ModOption option, ModGroupViewModel parent, ViewModelService modFileService, bool isReadOnly = false)
+        public ModOptionViewModel(ModOption option, ModGroupViewModel parent, ViewModelService viewModelService, bool isReadOnly = false)
         {
             _modOption = new ModOption(option);
-            _modFileService = modFileService;
+            _viewModelService = viewModelService;
             Parent = parent;
             IsReadOnly = isReadOnly;
 
@@ -54,7 +59,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
 
             foreach (var mod in option.Mods)
             {
-                var modViewModel = _modFileService.GetModViewModel(mod);
+                var modViewModel = _viewModelService.GetModViewModel(mod);
                 AddMod(modViewModel);
             }
             eh = new(OnSelectionTypeChanged);
@@ -124,7 +129,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
 
         public void AddMod(IMod mod)
         {
-            var vm = _modFileService.GetModViewModel(mod);
+            var vm = _viewModelService.GetModViewModel(mod);
             AddMod(vm);
         }
 

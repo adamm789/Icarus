@@ -16,13 +16,14 @@ namespace Icarus.ViewModels.Import
 {
     public class ImportViewModel : NotifyPropertyChanged
     {
-        readonly string _filter = "Valid Files | *.fbx; *.ttmp2; *.dds; *.png; *.bmp" + "|FBX File | *.fbx" + "|TexTools ModPack | *.ttmp2" + "| dds | *.dds" + "| png | *.png" + "| bmp | *.bmp";
+        readonly string _filter =
+            "Valid Files | *.ttmp2; *.fbx; *.dds; *.png; *.bmp" +
+            "|.ttmp2 | *.ttmp2" +
+            "|.fbx | *.fbx" +
+            "|.dds | *.dds" +
+            "|.png | *.png" +
+            "|.bmp | *.bmp";
         //var filter = "Valid Files | *.fbx; *.ttmp2; *.dds; *.png; *.bmp; *.mdl" + "|FBX File | *.fbx" + "|TexTools ModPack | *.ttmp2" + "| dds | *.dds" + "| png | *.png" + "| bmp | *.bmp";
-
-        //var filter = "Valid Files | *.fbx; *.ttmp2; *.dds; *.png; *.bmp" + "|FBX File | *.fbx" + "|TexTools ModPack | *.ttmp2" + "| dds | *.dds" + "| png | *.png" + "| bmp | *.bmp";
-        //var filter = "Valid Files | *.fbx; *.ttmp2; *.dds; *.png" + "|FBX File | *.fbx" + "|TexTools ModPack | *.ttmp2" + "| dds | *.dds" + "| png | *.png";
-        //var filter = "Valid Files | *.fbx; *.ttmp2; *.dds" + "|FBX File | *.fbx" + "|TexTools ModPack | *.ttmp2" + "| dds | *.dds";
-        //var filter = "Valid Files | *.fbx; *.ttmp2" + "|FBX File | *.fbx" + "|TexTools ModPack | *.ttmp2";
 
         readonly IModPackViewModel _modPackViewModel;
         readonly ImportService _importService;
@@ -33,6 +34,7 @@ namespace Icarus.ViewModels.Import
         private string _initialDirectory = "";
         private OpenFileDialog _dlg;
 
+        // TODO: Ability to import only some of the mods in a ttmp2 file
         public ImportViewModel(IModPackViewModel modPack, ModPackListViewModel modPackList, ImportService importService, ISettingsService settingsService, ILogService logService)
         {
             _settingsService = settingsService;
@@ -137,30 +139,12 @@ namespace Icarus.ViewModels.Import
                     }
 
                     // TODO: Seems that this may freeze the UI on particularly large mod packs
-                    // TODO: Ask for user confirmation
 
-                    // Three options:
-                    // Import only mods
-                    // Import and overwrite ModPackPages
-                    // Cancel
-
-                    // If add only mods
-                    // ModPack.AddMods(mods);
-
-                    // else if add mods and overwrite modpack
-                    ModPackViewModelImportFlags flags = ModPackViewModelImportFlags.AddMods;
                     if (modPack.ModPackPages.Count > 0)
                     {
-                        // TODO: Window to show import options
-                        flags |= ModPackViewModelImportFlags.AppendPagesToEnd;
-                        flags |= ModPackViewModelImportFlags.OverwriteData;
-
                         _modPackListViewModel.Add(modPack);
                     }
-                    else
-                    {
-                        //_modPackViewModel.SetModPack(modPack);
-                    }
+
                     _logService.Verbose($"Adding to mod list.");
                     _modPackViewModel.Add(modPack);
                     _logService.Verbose($"Finished adding.");
@@ -171,7 +155,7 @@ namespace Icarus.ViewModels.Import
 
         public async Task<ModPack?> ImportFile(string filePath)
         {
-            return await Task.Run(() =>_importService.ImportFile(filePath));
+            return await Task.Run(() => _importService.ImportFile(filePath));
         }
 
         public bool CanAcceptFiles(StringCollection collection)

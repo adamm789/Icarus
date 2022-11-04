@@ -50,8 +50,9 @@ namespace Icarus.Services
 
             var itemListViewModel = new ItemListViewModel(_itemListService, _logService);
             var importVanillaViewModel = new ImportVanillaViewModel(ModPackViewModel.ModsListViewModel, itemListViewModel, _gameFileService, _logService);
-            var exportViewModel = new ExportViewModel(ModPackViewModel.ModsListViewModel, _messageBoxService, _exportService);
             var ImportViewModel = new ImportViewModel(ModPackViewModel, modPackListViewModel, _importService, _settingsService, _logService);
+
+            var exportViewModel = new ExportViewModel(ModPackViewModel.ModsListViewModel, _messageBoxService, _exportService);
 
             return ModPackViewModel;
         }
@@ -83,26 +84,21 @@ namespace Icarus.Services
                 var vm = new MetadataModViewModel(metaMod, _gameFileService, _windowService, _logService);
                 return vm;
             }
-            else if (file is ReadOnlyMod readOnlyMod)
-            {
-                var vm = new ReadOnlyModViewModel(readOnlyMod, _gameFileService, _logService);
-                return vm;
-            }
             else
             {
-                return new ReadOnlyModViewModel((IMod)file, _gameFileService, _logService);
+                return new ReadOnlyModViewModel(file, _gameFileService, _logService);
             }
         }
 
         public MeshGroupViewModel GetMeshGroupViewModel(TTMeshGroup meshGroup, ModelModViewModel modelMod)
         {
-            var meshGroupViewModel = new MeshGroupViewModel(meshGroup, modelMod, _windowService, this);
+            var meshGroupViewModel = new MeshGroupViewModel(meshGroup, modelMod, this, _windowService);
             return meshGroupViewModel;
         }
 
         public MeshGroupMaterialViewModel GetMeshGroupMaterialViewModel(TTMeshGroup group, ModelModViewModel model)
         {
-            var meshGroupMaterialViewModel = new MeshGroupMaterialViewModel(group, model, _userPreferencesService, _settingsService);
+            var meshGroupMaterialViewModel = new MeshGroupMaterialViewModel(group, model, _userPreferencesService);
             return meshGroupMaterialViewModel;
         }
     }

@@ -27,7 +27,6 @@ namespace Icarus.ViewModels.Import
 
         public static readonly string AutoScaleName = "Auto-Scale";
 
-        // I believe that this is the case
         public static readonly string OverrideRaceToolTip = "The race the imported model is scaled to.";
 
         public bool UseOriginalShapeData

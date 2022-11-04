@@ -136,20 +136,21 @@ namespace Icarus.ViewModels.Mods.DataContainers
         }
 
         /// <summary>
-        /// Removes a mod from the mods list
+        /// Tries to remove the given <paramref name="modViewModel"/> from <see cref="SimpleModsList"/>
+        /// and the underlying <see cref="IMod"/> in <see cref="ModPack"/>
         /// </summary>
-        /// <param name="mod"></param>
+        /// <param name="modViewModel"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
-        public bool DeleteMod(ModViewModel mod)
+        public bool DeleteMod(ModViewModel modViewModel)
         {
-            var existingMod = ModExists(mod);
+            var existingMod = ModExists(modViewModel);
             if (existingMod != null)
             {
-                Log.Debug($"Deleting mod from modslist: {mod.FileName}.");
+                Log.Debug($"Deleting mod from modslist: {modViewModel.FileName}.");
 
                 var b1 = SimpleModsList.Remove(existingMod);
-                var b2 = ModPack.SimpleModsList.Remove(mod.GetMod());
+                var b2 = ModPack.SimpleModsList.Remove(modViewModel.GetMod());
 
                 //RemoveMod(mod);
 
@@ -172,26 +173,24 @@ namespace Icarus.ViewModels.Mods.DataContainers
 
             SimpleModsList.Move(sourceIndex, targetIndex);
             ModPack.MoveMod(sourceIndex, targetIndex);
-            /*
-            ModPack.SimpleModsList.RemoveAt(sourceIndex);
-            if (targetIndex > ModPack.SimpleModsList.Count)
-            {
-                targetIndex = ModPack.SimpleModsList.Count - 1;
-            }
-            ModPack.SimpleModsList.Insert(targetIndex, source.GetMod());
-            */
         }
         #endregion
 
         #region Private Functions
 
-        private ModViewModel? ModExists(ModViewModel mod)
+        /// <summary>
+        /// Tries to find the given <paramref name="modViewModel" /> in <see cref="SimpleModsList"/><para />
+        /// Comparison is based on equality of the underlying <see cref="ModViewModel.Mod"/>
+        /// </summary>
+        /// <param name="modViewModel"></param>
+        /// <returns>The matching ModViewModel if it exists. Null otherwise</returns>
+        private ModViewModel? ModExists(ModViewModel modViewModel)
         {
-            foreach (var simpleMod in SimpleModsList)
+            foreach (var m in SimpleModsList)
             {
-                if (simpleMod.GetMod() == mod.GetMod())
+                if (m.GetMod() == modViewModel.GetMod())
                 {
-                    return simpleMod;
+                    return m;
                 }
             }
             return null;
@@ -221,7 +220,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
         }
 
         /// <summary>
-        /// Checks to see if every entry in the list is complete and can be exported
+        /// Checks to see if every mod in <see cref="SimpleModsList"/> can be exported.
         /// </summary>
         /// <returns></returns>
         private bool GetCanExport()
@@ -244,9 +243,9 @@ namespace Icarus.ViewModels.Mods.DataContainers
         #region UI
         void IDropTarget.DragOver(IDropInfo dropInfo)
         {
-            var source = dropInfo.Data as ModViewModel;
-            var target = dropInfo.TargetItem as ModViewModel;
-            if (source != null && target != null)
+            var source = dropInfo.Data;
+            var target = dropInfo.TargetItem;
+            if (source is ModViewModel && target is ModViewModel)
             {
                 dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
                 dropInfo.Effects = DragDropEffects.Copy;
@@ -268,12 +267,12 @@ namespace Icarus.ViewModels.Mods.DataContainers
 
         void IDropTarget.Drop(IDropInfo dropInfo)
         {
-            var source = dropInfo.Data as ModViewModel;
-            var target = dropInfo.TargetItem as ModViewModel;
+            var source = dropInfo.Data;
+            var target = dropInfo.TargetItem;
 
-            if (source != null && target != null)
+            if (source is ModViewModel sourceMod && target is ModViewModel targetMod)
             {
-                Move(source, target);
+                Move(sourceMod, targetMod);
             }
         }
 

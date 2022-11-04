@@ -16,7 +16,7 @@ namespace Icarus.ViewModels.Models
         private TTMeshGroup _importedGroup;
         readonly IWindowService _windowService;
 
-        public MeshGroupViewModel(TTMeshGroup group, ModelModViewModel modelMod, IWindowService windowService, ViewModelService viewModelService)
+        public MeshGroupViewModel(TTMeshGroup group, ModelModViewModel modelMod, ViewModelService viewModelService, IWindowService windowService)
         {
             MaterialViewModel = viewModelService.GetMeshGroupMaterialViewModel(group, modelMod);
             _importedGroup = group;

@@ -13,13 +13,17 @@ namespace Icarus.ViewModels.Mods.DataContainers.Interfaces
         IModsListViewModel ModsListViewModel { get; }
         ObservableCollection<ModPackPageViewModel> ModPackPages { get; }
         ModPackPageViewModel AddPage();
+
+        /// <summary>
+        /// Adds the mods in <paramref name="pack"/>.SimpleModsList to <paramref name="ModsListViewModel"/>
+        /// </summary>
+        /// <param name="pack"></param>
+        void Add(ModPack pack);
         void AddPage(ModPackPageViewModel packPage);
         void RemovePage(ModPackPageViewModel packPage);
         void Move(ModPackPageViewModel source, ModPackPageViewModel target);
         bool ArePagesEmpty();
-        void Add(ModPack pack);
-        void SetModPack(ModPack pack);
-        void SetModPack(ModPack pack, ModPackViewModelImportFlags flags);
+
         void IncreasePageIndex();
         List<int> GetAvailablePageIndices();
     }

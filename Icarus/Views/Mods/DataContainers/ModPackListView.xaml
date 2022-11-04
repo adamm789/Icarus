@@ -6,12 +6,15 @@
              xmlns:local="clr-namespace:Icarus.Views.Mods.DataContainers"
              xmlns:modviews="clr-namespace:Icarus.Views.Mods"
              xmlns:dd="urn:gong-wpf-dragdrop"
+             xmlns:ui="clr-namespace:Icarus.UI"
              xmlns:datacontainers="clr-namespace:Icarus.ViewModels.Mods.DataContainers"
              d:DataContext="{d:DesignInstance Type=datacontainers:ModPackListViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <Grid.Resources>
+            <ui:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+
             <DataTemplate DataType="{x:Type datacontainers:ModPackMetaViewModel}">
                 <modviews:AdvancedModPackMetaView/>
             </DataTemplate>
@@ -49,14 +52,16 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <ComboBox Grid.Row="0" ItemsSource="{Binding ModPackMetas}" SelectedIndex="{Binding SelectedIndex}">
+        <ComboBox Grid.Row="0" ItemsSource="{Binding ModPackMetas}" SelectedIndex="{Binding SelectedIndex}"
+                  IsEnabled="{Binding IsEmpty, Converter={StaticResource InverseBooleanConverter}}">
             <ComboBox.ItemTemplate>
                 <DataTemplate DataType="{x:Type datacontainers:ModPackMetaViewModel}">
                     <TextBlock Text="{Binding Name}"/>
                 </DataTemplate>
             </ComboBox.ItemTemplate>
         </ComboBox>
-        <ComboBox Grid.Row="1" ItemsSource="{Binding AvailablePageIndices}" SelectedIndex="{Binding SelectedPageIndex}"/>
+        <ComboBox Grid.Row="1" ItemsSource="{Binding AvailablePageIndices}" SelectedIndex="{Binding SelectedPageIndex}"
+                   IsEnabled="{Binding IsEmpty, Converter={StaticResource InverseBooleanConverter}}"/>
         <ContentControl Grid.Row="2" Content="{Binding ModPackPage}"/>
     </Grid>
 </UserControl>

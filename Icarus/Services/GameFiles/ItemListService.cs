@@ -1,4 +1,5 @@
 ﻿using Icarus.Services.Interfaces;
+using Icarus.ViewModels.Items;
 using ItemDatabase;
 using ItemDatabase.Interfaces;
 using System;
@@ -11,10 +12,14 @@ namespace Icarus.Services.GameFiles
 {
     public class ItemListService : LuminaDependentServiceBase<ItemListService>, IItemListService
     {
+        // TODO: Does it make sense to have the ItemListViewModel up here in the ItemListService?
+        public ItemListViewModel ItemListViewModel {get;}
+
         ILogService _logService;
         public ItemListService(ILogService logService, LuminaService luminaService) : base(luminaService)
         {
             _logService = logService;
+            //ItemListViewModel = new(this, _logService);
         }
 
         bool _isLoaded = false;

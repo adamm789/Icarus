@@ -26,7 +26,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="4*"/>
             <ColumnDefinition Width="9*"/>
-            <ColumnDefinition Width="6*"/>
+            <ColumnDefinition Width="5*"/>
         </Grid.ColumnDefinitions>
 
         <Grid.Resources>
@@ -69,7 +69,7 @@
                 </ContentControl>
             </TabItem>
         </TabControl>
-        <ContentControl Grid.Row="2" Grid.Column="1" Content="{Binding ExportViewModel}" Margin="5"/>
+        <ContentControl Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Content="{Binding ExportViewModel}" Margin="5"/>
 
         <TabControl Grid.Row="0" Grid.Column="2">
             <TabItem Header="Option">
@@ -84,7 +84,6 @@
                                     <DataTemplate DataType="{x:Type datacontainers:ModPackPageViewModel}">
                                         <ContentControl Content="{Binding DisplayedOption}">
                                             <ContentControl.Resources>
-
                                                 <DataTemplate DataType="{x:Type datacontainers:ModOptionViewModel}">
                                                     <Grid>
                                                         <Grid.Resources>

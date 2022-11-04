@@ -18,8 +18,6 @@ namespace Icarus.ViewModels
             _messageBox = messageBox;
         }
 
-        public bool StandardSettings => !AdvancedSettings;
-
         public bool AdvancedSettings
         {
             get { return _settings.AdvancedSettings; }

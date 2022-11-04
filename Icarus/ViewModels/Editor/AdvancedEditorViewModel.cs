@@ -13,6 +13,7 @@ namespace Icarus.ViewModels.Editor
 {
     public class AdvancedEditorViewModel : NotifyPropertyChanged
     {
+        // TODO: Clean up the mess in AdvancedEditorView.xaml
         public FilteredModsListViewModel FilteredModsListViewModel { get; }
         public IModPackViewModel ModPackViewModel { get; }
         public ExportViewModel ExportViewModel { get; }

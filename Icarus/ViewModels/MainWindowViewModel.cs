@@ -34,6 +34,7 @@ namespace Icarus.ViewModels
             _luminaService = ServiceManager.GetRequiredService<LuminaService>();
             UserPreferencesService = ServiceManager.GetRequiredService<IUserPreferencesService>();
 
+            // TOOD: Clean up the mess in MainWindowViewModel...?
             var _messageBoxService = ServiceManager.GetRequiredService<IMessageBoxService>();
             var _exportService = ServiceManager.GetRequiredService<ExportService>();
             var itemListService = ServiceManager.GetRequiredService<IItemListService>();
@@ -107,9 +108,9 @@ namespace Icarus.ViewModels
         public SimpleEditorViewModel SimpleEditorViewModel { get; }
         public AdvancedEditorViewModel AdvancedEditorViewModel { get; }
 
-        public IModsListViewModel ModsListViewModel { get; set; }
+        public IModsListViewModel ModsListViewModel => ModPackViewModel.ModsListViewModel;
         public IModPackViewModel ModPackViewModel { get; set; }
-        public IModPackMetaViewModel ModPackMetaViewModel { get; set; }
+        public IModPackMetaViewModel ModPackMetaViewModel => ModPackViewModel.ModPackMetaViewModel;
         public ExportViewModel ExportViewModel { get; set; }
         public ImportViewModel ImportViewModel { get; set; }
         public ImportVanillaViewModel ImportVanillaViewModel { get; set; }
