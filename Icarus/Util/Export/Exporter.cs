@@ -81,35 +81,29 @@ namespace Icarus.Util
         /// <returns></returns>
         public async Task<byte[]> WriteToBytes(IMod mod, bool shouldCompress, int counter = 0)
         {
-            try
+            switch (mod)
             {
-                switch (mod)
-                {
-                    case ModelMod mdlMod:
-                        return await WriteModelToBytes(mdlMod, shouldCompress, counter);
-                    case MaterialMod mtrlMod:
-                        return await WriteMaterialToBytes(mtrlMod, shouldCompress);
-                    case TextureMod texMod:
-                        return await WriteTextureToBytes(texMod, shouldCompress);
-                    case MetadataMod metaMod:
-                        return await WriteMetadataToBytes(metaMod);
-                    case ReadOnlyMod readonlyMod:
-                        if (shouldCompress)
-                        {
-                            return readonlyMod.Data;
-                        }
-                        else
-                        {
-                            // Readonly mods can only be written to ttmp2 files
-                            _logService.Warning("Trying to export a \"Read Only Mod\" to Penumbra.");
-                            break;
-                        }
-                }
+                case ModelMod mdlMod:
+                    return await WriteModelToBytes(mdlMod, shouldCompress, counter);
+                case MaterialMod mtrlMod:
+                    return await WriteMaterialToBytes(mtrlMod, shouldCompress);
+                case TextureMod texMod:
+                    return await WriteTextureToBytes(texMod, shouldCompress);
+                case MetadataMod metaMod:
+                    return await WriteMetadataToBytes(metaMod);
+                case ReadOnlyMod readonlyMod:
+                    if (shouldCompress)
+                    {
+                        return readonlyMod.Data;
+                    }
+                    else
+                    {
+                        // Readonly mods can only be written to ttmp2 files
+                        _logService.Warning("Trying to export a \"Read Only Mod\" to Penumbra.");
+                        return Array.Empty<byte>();
+                    }
             }
-            catch (Exception ex)
-            {
-                _logService.Error(ex, $"Exception thrown during WriteToBytes with {mod.Name}.");
-            }
+            _logService.Error($"Failed to get bytes: {mod.ModFileName} - {mod.ModFilePath}.");
             return Array.Empty<byte>();
         }
 
@@ -159,9 +153,18 @@ namespace Icarus.Util
 
         protected async Task<byte[]> WriteMetadataToBytes(MetadataMod mod)
         {
-            var itemMetadata = mod.ItemMetadata;
-            var bytes = await ItemMetadata.Serialize(itemMetadata);
-            return await DatExtensions.CreateType2Data(bytes);
+            try
+            {
+                _logService.Verbose($"Exporting metadata: {mod.ModFileName}.");
+                var itemMetadata = mod.ItemMetadata;
+                var bytes = await ItemMetadata.Serialize(itemMetadata);
+                return await DatExtensions.CreateType2Data(bytes);
+            }
+            catch (Exception ex)
+            {
+                _logService.Error(ex, $"Exception thrown while writing metadata.");
+            }
+            return Array.Empty<byte>();
         }
 
         protected async Task<byte[]> WriteTextureToBytes(TextureMod mod, bool shouldCompress)
@@ -173,12 +176,11 @@ namespace Icarus.Util
             {
                 throw new NotImplementedException("Unknown export method for internal textures.");
             }
-            /*
+
             if (!shouldCompress)
             {
                 throw new NotImplementedException("Unknown export method for Penumbra texture (.tex)");
             }
-            */
 
             var isDds = Path.GetExtension(mod.ModFilePath).ToLower() == ".dds";
             var texFormat = mod.GetTexFormat();
@@ -249,6 +251,7 @@ namespace Icarus.Util
                         // (Ex. The Default Mat-Add textures)
                         maxMipCount = -1;
                         //}
+                        // If !(UI or Painting): maxMipCount = -1
 
                         using (var compressor = new Compressor())
                         {
@@ -270,7 +273,9 @@ namespace Icarus.Util
                 if (!isDds)
                 {
                     tempDdsFile = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".dds");
-                    ddsContainer.Write(tempDdsFile, DDSFlags.None);
+                    var success = ddsContainer.Write(tempDdsFile, DDSFlags.None);
+                    _logService.Debug($"{tempDdsFile}: {success}");
+
                     ddsFilePath = tempDdsFile;
                 }
 
@@ -288,7 +293,11 @@ namespace Icarus.Util
                 }
 
                 return bytes;
-            } // Not catching so any exception should be handled by calling function
+            }
+            catch (Exception ex)
+            {
+                _logService.Error(ex, $"Exception thrown while writing texture.");
+            }
             finally
             {
                 ddsContainer.Dispose();
@@ -297,6 +306,7 @@ namespace Icarus.Util
                     File.Delete(tempImageFile);
                 }
             }
+            return Array.Empty<byte>();
         }
 
         /// <summary>
@@ -336,17 +346,25 @@ namespace Icarus.Util
         /// <returns></returns>
         protected async Task<byte[]> WriteModelToBytes(ModelMod mod, bool shouldCompress, int counter = 0)
         {
-            _logService.Verbose($"Exporting model: {mod.ModFileName} with shouldCompress={shouldCompress}");
+            try
+            {
+                _logService.Verbose($"Exporting model: {mod.ModFileName} with shouldCompress={shouldCompress}");
 
-            var copy = ApplyModelOptions(mod);
+                var copy = ApplyModelOptions(mod);
 
-            var ogMdl = mod.XivMdl;
-            var mdl = new Mdl(copy, ogMdl);
-            var bytes = await mdl.MakeNewMdlFileLumina(shouldCompress);
-            //var bytes = await Mdl.MakeNewMdlFiles(copy, ogMdl);
-            
-            _logService.Verbose($"{mod.Name} ({counter}) has finished.");
-            return bytes;
+                var ogMdl = mod.XivMdl;
+                var mdl = new Mdl(copy, ogMdl);
+                var bytes = await mdl.MakeNewMdlFileLumina(shouldCompress);
+                //var bytes = await Mdl.MakeNewMdlFiles(copy, ogMdl);
+
+                _logService.Verbose($"{mod.Name} ({counter}) has finished.");
+                return bytes;
+            }
+            catch (Exception ex)
+            {
+                _logService.Error(ex, $"Exception thrown while writing model.");
+            }
+            return Array.Empty<byte>();
         }
 
         /// <summary>
@@ -359,19 +377,27 @@ namespace Icarus.Util
         /// <returns></returns>
         protected async Task<byte[]> WriteMaterialToBytes(MaterialMod mod, bool shouldCompress = true)
         {
-            _logService.Verbose($"Exporting material: {mod.ModFileName} with shouldCompress={shouldCompress}");
-
-            var xivMtrl = mod.GetMtrl();
-            var bytes = MtrlExtensions.CreateMtrlFile(xivMtrl);
-
-            if (!shouldCompress)
+            try
             {
-                return bytes;
-            }
+                _logService.Verbose($"Exporting material: {mod.ModFileName} with shouldCompress={shouldCompress}");
 
-            // To be read by the game, must be made into "Type 2" data
-            var datBytes = await DatExtensions.CreateType2Data(bytes);
-            return datBytes;
+                var xivMtrl = mod.GetMtrl();
+                var bytes = MtrlExtensions.CreateMtrlFile(xivMtrl);
+
+                if (!shouldCompress)
+                {
+                    return bytes;
+                }
+
+                // To be read by the game, must be made into "Type 2" data
+                var datBytes = await DatExtensions.CreateType2Data(bytes);
+                return datBytes;
+            }
+            catch (Exception ex)
+            {
+                _logService.Error(ex, $"Exception thrown while writing material.");
+            }
+            return Array.Empty<byte>();
         }
     }
 }

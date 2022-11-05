@@ -30,6 +30,7 @@ namespace ItemDatabase.Paths
                 // When I edit a material in TT, it can change it to _o, ala the other TexTypes
                 return "chara/common/texture/catchlight_1.tex";
             }
+            // TODO: type is multi and... is body? return "chara/common/texture/skin_m.tex" ?
             if (fullGearRegexMtrl.IsMatch(input))
             {
                 var fullPathMatches = fullGearRegexMtrl.Matches(input);

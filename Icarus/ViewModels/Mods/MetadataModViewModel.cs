@@ -26,22 +26,29 @@ namespace Icarus.ViewModels.Mods
             _metadataMod = mod;
             _windowService = windowService;
 
-            EqdpViewModel = new(_metadataMod.EqdpEntries);
+            if (_metadataMod.EqdpEntries.Count > 0)
+            {
+                EqdpViewModel = new(_metadataMod.EqdpEntries);
+            }
 
             if (_metadataMod.EqpEntry != null)
             {
                 EqpViewModel = new(_metadataMod.EqpEntry);
             }
 
-            EstViewModel = new(_metadataMod, EqdpViewModel);
+            if (_metadataMod.EstEntries.Count > 0)
+            {
+                EstViewModel = new(_metadataMod, EqdpViewModel);
+            }
 
             if (_metadataMod.GmpEntry != null)
             {
                 GmpViewModel = new(_metadataMod.GmpEntry);
             }
 
-            // TOOD: ImcEntries
-            ImcViewModel = new(_metadataMod.ImcEntries);
+            if (_metadataMod.ImcEntries.Count > 0) {
+                ImcViewModel = new(_metadataMod.ImcEntries);
+            }
         }
         public EqdpViewModel EqdpViewModel { get; }
         public EstViewModel EstViewModel { get; }

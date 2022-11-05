@@ -28,6 +28,11 @@ namespace Icarus.ViewModels.Mods.DataContainers
                 var newOption = new ModOptionViewModel(option, this);
                 AddOption(newOption);
             }
+
+            if (SelectionType != "Single")
+            {
+                SingleSelection = false;
+            }
         }
 
         public ModGroupViewModel(string name, ModPackPageViewModel parent, ViewModelService modFileService, bool isReadOnly = false)

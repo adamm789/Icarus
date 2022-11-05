@@ -7,7 +7,6 @@
              xmlns:modviewmodels="clr-namespace:Icarus.ViewModels.Mods.DataContainers" 
              xmlns:views="clr-namespace:Icarus.Views"
              xmlns:xtk1="http://schemas.xceed.com/wpf/xaml/toolkit"
-
              d:DataContext="{d:DesignInstance Type=modviewmodels:ModPackMetaViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
@@ -39,17 +38,17 @@
             </Grid.Resources>
             
             <TextBlock Grid.Row="0" Grid.Column="0" Text="Name"/>
-            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Name}"/>
+            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Name}" IsReadOnly="{Binding IsReadOnly}"/>
             <TextBlock Grid.Row="0" Grid.Column="2" Text="Author"/>
-            <TextBox Grid.Row="0" Grid.Column="3" Text="{Binding Author}" HorizontalAlignment="Stretch"/>
+            <TextBox Grid.Row="0" Grid.Column="3" Text="{Binding Author}" IsReadOnly="{Binding IsReadOnly}" HorizontalAlignment="Stretch"/>
 
             <TextBlock Grid.Row="1" Grid.Column="0" Text="Version"/>
-            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Version}"></TextBox>
+            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Version}" IsReadOnly="{Binding IsReadOnly}"></TextBox>
             <TextBlock Grid.Row="1" Grid.Column="2" Text="Website"/>
-            <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding Url}"></TextBox>
+            <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding Url}" IsReadOnly="{Binding IsReadOnly}"></TextBox>
         </Grid>
 
-        <xtk1:WatermarkTextBox Grid.Row="1" Watermark="Description" Text="{Binding Description}" TextWrapping="Wrap" AcceptsReturn="True"/>
+        <xtk1:WatermarkTextBox Grid.Row="1" Watermark="Description" Text="{Binding Description}" TextWrapping="Wrap" AcceptsReturn="True" IsReadOnly="{Binding IsReadOnly}"/>
 
     </Grid>
 </UserControl>

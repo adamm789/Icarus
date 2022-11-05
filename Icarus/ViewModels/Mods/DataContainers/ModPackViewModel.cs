@@ -34,7 +34,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
             _viewModelService = viewModelService;
             IsReadOnly = isReadOnly;
 
-            ModPackMetaViewModel = _viewModelService.GetModPackMetaViewModel(modPack);
+            ModPackMetaViewModel = _viewModelService.GetModPackMetaViewModel(modPack, isReadOnly);
             ModsListViewModel = modsListViewModel ?? new ModsListViewModel(modPack, _viewModelService);
 
             DisplayedViewModel = ModPackMetaViewModel;

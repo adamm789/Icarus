@@ -1,6 +1,7 @@
 ﻿using Icarus.Mods.Interfaces;
 using Icarus.Util.Import;
 using ItemDatabase.Paths;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using xivModdingFramework.Textures.DataContainers;
@@ -52,12 +53,11 @@ namespace Icarus.Mods
             if (TypeFormatDict != null)
             {
                 // Try to get the format from the parent material
-                foreach (var kvp in TypeFormatDict)
+                var found = TypeFormatDict.TryGetValue(TexType, out var format);
+                if (found)
                 {
-                    if (TexType == kvp.Key)
-                    {
-                        return kvp.Value;
-                    }
+                    Log.Debug($"{Path} found TexType: {TexType} and produced {format}");
+                    return format;
                 }
             }
 

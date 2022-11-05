@@ -10,12 +10,14 @@ namespace Icarus.ViewModels.Mods.DataContainers
     {
         readonly IUserPreferencesService _userPreferencesService;
         public ModPack ModPack { get; }
+        public bool IsReadOnly { get; }
 
         #region Constructor(s)
 
-        public ModPackMetaViewModel(ModPack modPack, IUserPreferencesService userPreferencesService)
+        public ModPackMetaViewModel(ModPack modPack, IUserPreferencesService userPreferencesService, bool isReadOnly = false)
         {
             ModPack = modPack;
+            IsReadOnly = isReadOnly;
             _userPreferencesService = userPreferencesService;
 
             Author = userPreferencesService.DefaultAuthor;

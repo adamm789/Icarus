@@ -14,6 +14,7 @@
     <Border BorderBrush="Black" BorderThickness="2">
         <Grid>
             <Grid.Resources>
+                <ui:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
                 <DataTemplate DataType="{x:Type datacontainers:ModOptionViewModel}">
                     <!--
                     <local:ModOptionView/>
@@ -74,8 +75,8 @@
                 </Grid>
                 <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10 0 10 0">
                     <RadioButton IsChecked="{Binding SingleSelection}" Content="Single"
-                                 HorizontalAlignment="Center" VerticalContentAlignment="Center" Margin="5 0 5 0" />
-                    <RadioButton Content="Multi"
+                                 HorizontalAlignment="Center" VerticalContentAlignment="Center" Margin="5 0 5 0"/>
+                    <RadioButton IsChecked="{Binding SingleSelection, Converter={StaticResource InverseBooleanConverter}}" Content="Multi"
                                  HorizontalAlignment="Center" VerticalContentAlignment="Center" Margin="5 0 5 0"/>
                 </StackPanel>
             </Grid>

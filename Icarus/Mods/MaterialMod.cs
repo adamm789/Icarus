@@ -5,6 +5,8 @@ using ItemDatabase.Paths;
 using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using xivModdingFramework.Cache;
 using xivModdingFramework.Materials.DataContainers;
 using xivModdingFramework.Materials.FileTypes;
 using xivModdingFramework.Textures.Enums;
@@ -108,6 +110,47 @@ namespace Icarus.Mods
             MultiTexPath = XivPathParser.GetTexPathFromMtrl(Path, XivTexType.Multi);
             DiffuseTexPath = XivPathParser.GetTexPathFromMtrl(Path, XivTexType.Diffuse);
             ReflectionTexPath = XivPathParser.GetTexPathFromMtrl(Path, XivTexType.Reflection);
+
+            // if we failed to parse the path, try to get it from the xivmtrl
+            foreach (var ttp in xivMtrl.TextureTypePathList)
+            {
+                switch (ttp.Type)
+                {
+                    case XivTexType.Diffuse:
+                        if (String.IsNullOrWhiteSpace(DiffuseTexPath)) DiffuseTexPath = ttp.Path;
+                        break;
+                    case XivTexType.Specular:
+                        if (String.IsNullOrWhiteSpace(SpecularTexPath)) SpecularTexPath = ttp.Path;
+                        break;
+                    case XivTexType.Normal:
+                        if (String.IsNullOrWhiteSpace(NormalTexPath)) NormalTexPath = ttp.Path;
+                        break;
+                    case XivTexType.Multi:
+                        if (String.IsNullOrWhiteSpace(MultiTexPath)) MultiTexPath = ttp.Path;
+                        break;
+                    case XivTexType.Mask:
+                        break;
+                    case XivTexType.Reflection:
+                        if (String.IsNullOrWhiteSpace(ReflectionTexPath)) ReflectionTexPath = ttp.Path;
+                        break;
+                    case XivTexType.Skin:
+                        break;
+                    case XivTexType.ColorSet:
+                        break;
+                    case XivTexType.Map:
+                        break;
+                    case XivTexType.Icon:
+                        break;
+                    case XivTexType.Vfx:
+                        break;
+                    case XivTexType.UI:
+                        break;
+                    case XivTexType.Decal:
+                        break;
+                    case XivTexType.Other:
+                        break;
+                }
+            }
         }
 
         public override bool IsComplete()
@@ -238,16 +281,16 @@ namespace Icarus.Mods
 
         private static MapInfo GetMapInfo(XivTexType type, MtrlTextureDescriptorFormat format, string path)
         {
+            if (String.IsNullOrWhiteSpace(path))
+            {
+                // ??
+            }
             var retVal = new MapInfo()
             {
                 Usage = type,
                 Format = format,
                 Path = path
             };
-            if (String.IsNullOrWhiteSpace(path))
-            {
-                Log.Error($"Trying to set {path} as {nameof(type)}.");
-            }
             return retVal;
         }
 
@@ -259,7 +302,6 @@ namespace Icarus.Mods
                 throw new ArgumentException($"ModData was not of MaterialGameFile. It was {gameFile.GetType()}.");
             }
             base.SetModData(materialGameFile);
-            //UpdatePaths(materialGameFile.XivMtrl);
             Init(materialGameFile.XivMtrl);
         }
     }

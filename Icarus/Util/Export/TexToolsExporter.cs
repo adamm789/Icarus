@@ -272,8 +272,15 @@ namespace Icarus.Util
                             {
                                 var fname = Path.GetFileName(modOption.ImagePath);
                                 imageFileName = Path.Combine(tempDir, fname);
-                                File.Copy(modOption.ImagePath, imageFileName, true);
-                                imageList.Add(imageFileName);
+                                if (File.Exists(imageFileName))
+                                {
+                                    File.Copy(modOption.ImagePath, imageFileName, true);
+                                    imageList.Add(imageFileName);
+                                }
+                                else
+                                {
+                                    _logService.Error($"Could not add {imageFileName} to imageList.");
+                                }
                             }
                             var fn = imageFileName == "" ? "" : "images/" + Path.GetFileName(imageFileName);
                             var modOptionJson = new ModOptionJson
@@ -389,8 +396,6 @@ namespace Icarus.Util
                 zf.AddFile(_tempMPL, "");
                 zf.AddFile(_tempMPD, "");
 
-                zf.Save(modPackPath);
-
                 if (imageList != null)
                 {
                     foreach (var image in imageList)
@@ -425,6 +430,11 @@ namespace Icarus.Util
 
         private ModPackJson GetModPackJson(IcarusModPack modPack)
         {
+            string? description = null;
+            if (!String.IsNullOrWhiteSpace(modPack.Description))
+            {
+                description = modPack.Description;
+            }
             return new ModPackJson()
             {
                 Name = modPack.Name,
@@ -432,7 +442,7 @@ namespace Icarus.Util
                 Version = modPack.Version,
                 MinimumFrameworkVersion = _minimumAssembly,
                 Url = modPack.Url,
-                Description = modPack.Description
+                Description = description
             };
         }
 

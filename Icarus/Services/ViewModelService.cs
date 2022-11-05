@@ -57,9 +57,9 @@ namespace Icarus.Services
             return ModPackViewModel;
         }
 
-        public ModPackMetaViewModel GetModPackMetaViewModel(ModPack modPack)
+        public ModPackMetaViewModel GetModPackMetaViewModel(ModPack modPack, bool isReadOnly = false)
         {
-            return new ModPackMetaViewModel(modPack, _userPreferencesService);
+            return new ModPackMetaViewModel(modPack, _userPreferencesService, isReadOnly);
         }
 
         public ModViewModel GetModViewModel(IMod file)

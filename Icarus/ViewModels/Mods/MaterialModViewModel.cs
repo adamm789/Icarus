@@ -35,7 +35,10 @@ namespace Icarus.ViewModels.Mods
             var stainingTemplateFile = gameFileDataService.GetStainingTemplateFile();
 
             ShaderInfoViewModel = new(_material);
-            ColorSetViewModel = new(_material, stainingTemplateFile);
+            if (_material.ColorSetData.Count > 0)
+            {
+                ColorSetViewModel = new(_material, stainingTemplateFile);
+            }
 
             SetCanExport();
         }
