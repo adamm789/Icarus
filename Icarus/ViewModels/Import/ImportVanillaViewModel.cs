@@ -21,14 +21,14 @@ namespace Icarus.ViewModels.Import
 {
     // TODO: Clean up this view model
     // Split into ImportVanillaModelViewModel and ImportVanillaMaterialViewModel?
-    public class ImportVanillaViewModel : NotifyPropertyChanged
+    public class ImportVanillaViewModel : ViewModelBase
     {
         readonly IModsListViewModel _modPackViewModel;
         readonly ItemListViewModel _itemListService;
         readonly IGameFileService _gameFileDataService;
-        readonly ILogService _logService;
 
         public ImportVanillaViewModel(IModsListViewModel modPack, ItemListViewModel itemListService, IGameFileService gameFileService, ILogService logService)
+            : base(logService)
         {
             _modPackViewModel = modPack;
             _gameFileDataService = gameFileService;

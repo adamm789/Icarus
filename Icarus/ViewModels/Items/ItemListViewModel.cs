@@ -11,14 +11,13 @@ using System.Windows.Documents;
 
 namespace Icarus.ViewModels.Items
 {
-    public class ItemListViewModel : NotifyPropertyChanged
+    public class ItemListViewModel : ViewModelBase
     {
         const int minNumBeforeExpansion = 100;
         readonly IItemListService _itemListService;
-        readonly ILogService _logService;
         readonly PropertyChangedEventHandler eh;
 
-        public ItemListViewModel(IItemListService itemListService, ILogService logService)
+        public ItemListViewModel(IItemListService itemListService, ILogService logService) : base(logService)
         {
             _itemListService = itemListService;
             _logService = logService;

@@ -10,16 +10,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Specialized;
+using Icarus.Services.Interfaces;
 
 namespace Icarus.ViewModels.Mods.DataContainers
 {
-    public class ModPackListViewModel : NotifyPropertyChanged
+    public class ModPackListViewModel : ViewModelBase
     {
         readonly IModsListViewModel _modsListViewModel;
         readonly ViewModelService _viewModelService;
 
         // TODO: What to do if user deletes mods that are part of one of the mods in the ModPackList?
-        public ModPackListViewModel(IModsListViewModel modsList, ViewModelService viewModelService)
+        public ModPackListViewModel(IModsListViewModel modsList, ViewModelService viewModelService, ILogService logService) : base(logService)
         {
             _modsListViewModel = modsList;
             _viewModelService = viewModelService;
@@ -104,7 +105,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
 
         public void Add(ModPack modPack)
         {
-            var modPackViewModel = new ModPackViewModel(modPack, _viewModelService, true, _modsListViewModel);
+            var modPackViewModel = new ModPackViewModel(modPack, _viewModelService, _logService, true, _modsListViewModel);
             //modPackViewModel.SetModPack(modPack);
             ModPacks.Add(modPackViewModel);
             ModPackMetas.Add(modPackViewModel.ModPackMetaViewModel);

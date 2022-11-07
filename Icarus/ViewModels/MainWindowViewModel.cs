@@ -48,12 +48,12 @@ namespace Icarus.ViewModels
             _appSettings = new(settingsService, _messageBoxService);
             _luminaService.TrySetLumina();
 
-            ModPackViewModel = new ModPackViewModel(modPack, viewModelService);
+            ModPackViewModel = new ModPackViewModel(modPack, viewModelService, logService);
             //ModPackMetaViewModel = ModPackViewModel.ModPackMetaViewModel;
             //ModsListViewModel = ModPackViewModel.ModsListViewModel;
             //FilteredModsListViewModel = ModsListViewModel.FilteredModsList;
 
-            ModPackListViewModel = new ModPackListViewModel(ModPackViewModel.ModsListViewModel, viewModelService);
+            ModPackListViewModel = new ModPackListViewModel(ModPackViewModel.ModsListViewModel, viewModelService, logService);
 
             ItemListViewModel = new(itemListService, logService);
             ImportVanillaViewModel = new(ModPackViewModel.ModsListViewModel, ItemListViewModel, gameFileDataService, logService);

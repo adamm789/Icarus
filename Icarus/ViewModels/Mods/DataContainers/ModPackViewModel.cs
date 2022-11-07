@@ -1,6 +1,7 @@
 ﻿using GongSolutions.Wpf.DragDrop;
 using Icarus.Mods.DataContainers;
 using Icarus.Services;
+using Icarus.Services.Interfaces;
 using Icarus.ViewModels.Mods.DataContainers.Interfaces;
 using Icarus.ViewModels.Util;
 using Serilog;
@@ -14,7 +15,7 @@ using System.Windows;
 
 namespace Icarus.ViewModels.Mods.DataContainers
 {
-    public class ModPackViewModel : NotifyPropertyChanged, IModPackViewModel, IDropTarget
+    public class ModPackViewModel : ViewModelBase, IModPackViewModel, IDropTarget
     {
         public ModPack ModPack { get; }
         public IModsListViewModel ModsListViewModel { get; }
@@ -28,14 +29,15 @@ namespace Icarus.ViewModels.Mods.DataContainers
 
         //IModPackMetaViewModel _modPackMetaViewModel;
 
-        public ModPackViewModel(ModPack modPack, ViewModelService viewModelService, bool isReadOnly = false, IModsListViewModel? modsListViewModel = null)
+        public ModPackViewModel(ModPack modPack, ViewModelService viewModelService, ILogService logService,
+            bool isReadOnly = false, IModsListViewModel? modsListViewModel = null) : base(logService)
         {
             ModPack = modPack;
             _viewModelService = viewModelService;
             IsReadOnly = isReadOnly;
 
             ModPackMetaViewModel = _viewModelService.GetModPackMetaViewModel(modPack, isReadOnly);
-            ModsListViewModel = modsListViewModel ?? new ModsListViewModel(modPack, _viewModelService);
+            ModsListViewModel = modsListViewModel ?? new ModsListViewModel(modPack, _viewModelService, logService);
 
             DisplayedViewModel = ModPackMetaViewModel;
 
@@ -322,6 +324,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
             var source = dropInfo.Data;
             var target = dropInfo.TargetItem;
 
+            _logService.Debug($"Drop onto {target} from {GetType()}");
             if (source is ModPackPageViewModel sourcePage && target is ModPackPageViewModel targetPage)
             {
                 Move(sourcePage, targetPage);

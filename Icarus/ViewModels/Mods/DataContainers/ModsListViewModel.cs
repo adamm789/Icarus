@@ -2,6 +2,7 @@
 using Icarus.Mods.DataContainers;
 using Icarus.Mods.Interfaces;
 using Icarus.Services;
+using Icarus.Services.Interfaces;
 using Icarus.ViewModels.Mods.DataContainers.Interfaces;
 using Icarus.ViewModels.Util;
 using Serilog;
@@ -16,7 +17,7 @@ using System.Windows.Data;
 
 namespace Icarus.ViewModels.Mods.DataContainers
 {
-    public class ModsListViewModel : NotifyPropertyChanged, IModsListViewModel, IDropTarget
+    public class ModsListViewModel : ViewModelBase, IModsListViewModel, IDropTarget
     {
         public ModPack ModPack { get; }
         ViewModelService _viewModelService;
@@ -36,7 +37,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
             get { return _displayedMod; }
             set { _displayedMod = value; OnPropertyChanged(); }
         }
-        public ModsListViewModel(ModPack modPack, ViewModelService viewModelService)
+        public ModsListViewModel(ModPack modPack, ViewModelService viewModelService, ILogService logService) : base(logService)
         {
             ModPack = modPack;
             _viewModelService = viewModelService;
@@ -241,6 +242,10 @@ namespace Icarus.ViewModels.Mods.DataContainers
         #endregion
 
         #region UI
+        void IDropTarget.DragEnter(GongSolutions.Wpf.DragDrop.IDropInfo dropInfo)
+        {
+            Log.Debug($"Drag enter");
+        }
         void IDropTarget.DragOver(IDropInfo dropInfo)
         {
             var source = dropInfo.Data;
@@ -267,6 +272,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
 
         void IDropTarget.Drop(IDropInfo dropInfo)
         {
+            _logService.Debug($"Drop in {GetType()}");
             var source = dropInfo.Data;
             var target = dropInfo.TargetItem;
 

@@ -17,9 +17,11 @@
                 <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True"/>
                 <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Visible"/>
                 <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
+                <!--
                 <Setter Property="dd:DragDrop.IsDragSource" Value="True"/>
                 <Setter Property="dd:DragDrop.IsDropTarget" Value="True"/>
                 <Setter Property="dd:DragDrop.DropHandler" Value="{Binding}"/>
+                -->
             </Style>
 
             <Style TargetType="{x:Type ListViewItem}">

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
+using Serilog;
 
 namespace Icarus.ViewModels.Mods.DataContainers
 {
@@ -198,6 +199,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
         {
             var source = dropInfo.Data;
             var target = dropInfo.TargetItem;
+            Log.Debug($"Drop onto {GetType()}");
             if (target is ModGroupViewModel targetGroup)
             {
                 // TODO: BEtter method for determining if MoveTo should be called

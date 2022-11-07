@@ -48,7 +48,7 @@
             <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding Url}" IsReadOnly="{Binding IsReadOnly}"/>
         </Grid>
 
-        <xtk1:WatermarkTextBox Grid.Row="1" Watermark="Description" Text="{Binding Description}" TextWrapping="Wrap" AcceptsReturn="True" IsReadOnly="{Binding IsReadOnly}"/>
-
+        <xtk1:WatermarkTextBox Grid.Row="1" Watermark="Description" Text="{Binding Description}" TextWrapping="Wrap"
+                               AcceptsReturn="True" IsReadOnly="{Binding IsReadOnly}"/>
     </Grid>
 </UserControl>

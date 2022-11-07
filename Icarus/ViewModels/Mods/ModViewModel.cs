@@ -18,12 +18,11 @@ using System.Windows;
 namespace Icarus.ViewModels.Mods
 {
     // TODO: Set MaxWidth for textboxes
-    public abstract class ModViewModel : NotifyPropertyChanged, IDropTarget
+    public abstract class ModViewModel : ViewModelBase, IDropTarget
     {
         public IMod Mod { get; }
         public IItem? SelectedItem { get; protected set; }
         protected readonly IGameFileService _gameFileService;
-        protected readonly ILogService _logService;
         public ImportSource ImportSource => Mod.ImportSource;
         public bool IsInternal => Mod.ImportSource == ImportSource.Vanilla;
         public virtual bool IsReadOnly
@@ -33,7 +32,7 @@ namespace Icarus.ViewModels.Mods
 
         public bool CanParsePath => XivPathParser.CanParsePath(DestinationPath);
 
-        public ModViewModel(IMod mod, IGameFileService gameFileService, ILogService logService)
+        public ModViewModel(IMod mod, IGameFileService gameFileService, ILogService logService) : base(logService)
         {
             Mod = mod;
             _gameFileService = gameFileService;
@@ -168,7 +167,7 @@ namespace Icarus.ViewModels.Mods
             var data = await GetFileData(itemArg);
             if (data != null)
             {
-                SelectedItem = _gameFileService.GetItem();
+                SelectedItem = _gameFileService.GetItem(itemArg);
                 SetModData(data);
                 RaiseDestinationPathChanged();
                 return true;
@@ -210,7 +209,7 @@ namespace Icarus.ViewModels.Mods
             //RaiseModPropertyChanged();
         }
 
-        public void DragOver(IDropInfo dropInfo)
+        void IDropTarget.DragOver(IDropInfo dropInfo)
         {
             var item = dropInfo.Data;
             if (item is IItemViewModel)
@@ -220,8 +219,10 @@ namespace Icarus.ViewModels.Mods
             }
         }
 
-        public async void Drop(IDropInfo dropInfo)
+        async void IDropTarget.Drop(IDropInfo dropInfo)
         {
+            _logService.Debug($"Drop in {GetType()}");
+
             var item = dropInfo.Data;
             if (item is IItemViewModel vm)
             {

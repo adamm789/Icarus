@@ -14,7 +14,7 @@ using System.Windows.Forms;
 
 namespace Icarus.ViewModels.Import
 {
-    public class ImportViewModel : NotifyPropertyChanged
+    public class ImportViewModel : ViewModelBase
     {
         readonly string _filter =
             "Valid Files | *.ttmp2; *.fbx; *.dds; *.png; *.bmp" +
@@ -27,7 +27,6 @@ namespace Icarus.ViewModels.Import
 
         readonly IModPackViewModel _modPackViewModel;
         readonly ImportService _importService;
-        readonly ILogService _logService;
         readonly ISettingsService _settingsService;
         readonly ModPackListViewModel _modPackListViewModel;
 
@@ -36,6 +35,7 @@ namespace Icarus.ViewModels.Import
 
         // TODO: Ability to import only some of the mods in a ttmp2 file
         public ImportViewModel(IModPackViewModel modPack, ModPackListViewModel modPackList, ImportService importService, ISettingsService settingsService, ILogService logService)
+            : base (logService)
         {
             _settingsService = settingsService;
             _modPackViewModel = modPack;

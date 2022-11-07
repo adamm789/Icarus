@@ -26,6 +26,7 @@ using xivModdingFramework.Mods.DataContainers;
 
 using Path = System.IO.Path;
 using ModPack = Icarus.Mods.DataContainers.ModPack;
+using System.Linq;
 
 namespace Icarus.Util
 {
@@ -347,7 +348,6 @@ namespace Icarus.Util
             // e.g. Male Roe to Midlander
             var ttModel = mm.ImportedModel;
             var copy = ttModel.DeepCopy();
-            //copy.Source = mm.Path;
 
             var ogMdl = mm.XivMdl;
             var options = mm.Options;
@@ -357,10 +357,35 @@ namespace Icarus.Util
             ogMdl.MdlPath = mm.Path;
 
             options.Apply(copy, ogMdl, ogMdl, _logService.LoggingFunction);
+            CheckRaceConversion(mm);
 
             ModelModifiers.FixUpSkinReferences(copy, ogPath, _logService.LoggingFunction);
             ogMdl.MdlPath = ogPath;
             return copy;
+        }
+
+        private void CheckRaceConversion(ModelMod mm)
+        {
+            var sourceRace = mm.Options.SourceRace;
+            var targetRace = mm.TargetRace;
+
+            // Because GetModelPriorityList throws an exception
+            if (sourceRace == XivRace.All_Races || targetRace == XivRace.All_Races) return;
+
+            var sourceModelPriority = sourceRace.GetModelPriorityList().FirstOrDefault();
+            var targetModelPriority = targetRace.GetModelPriorityList().FirstOrDefault();
+
+            if (sourceRace == XivRace.Hyur_Midlander_Male && targetRace == XivRace.Hyur_Highlander_Male && mm.Category != "Body")
+            {
+                // This conversion should be fine
+            }
+            else
+            {
+                if (sourceModelPriority != targetModelPriority)
+                {
+                    _logService.Warning($"Conversion from {sourceRace} to {targetRace} may not convert as expected.");
+                }
+            }
         }
 
         /// <summary>
