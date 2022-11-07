@@ -72,27 +72,25 @@ namespace Icarus.Util
         }
 
         /// <summary>
-        /// Writes file to byte array
-        /// If compressed, it is to be used in a .ttmp2 file
-        /// If not, it is to be used with Penumbra
+        /// Writes mod to byte array
         /// </summary>
         /// <param name="mod"></param>
-        /// <param name="shouldCompress">If true, to be used in a ttmp2 file. If false, produces the raw file.</param>
-        /// <returns></returns>
-        public async Task<byte[]> WriteToBytes(IMod mod, bool shouldCompress, int counter = 0)
+        /// <param name="forTexTools">If true, to be used in a ttmp2 file. If false, produces the raw file.</param>
+        /// <returns>The array of bytes, if successful. An empty array of bytes if not.</returns>
+        public async Task<byte[]> WriteToBytes(IMod mod, bool forTexTools, int counter = 0)
         {
             switch (mod)
             {
                 case ModelMod mdlMod:
-                    return await WriteModelToBytes(mdlMod, shouldCompress, counter);
+                    return await TryWriteModelToBytes(mdlMod, forTexTools, counter);
                 case MaterialMod mtrlMod:
-                    return await WriteMaterialToBytes(mtrlMod, shouldCompress);
+                    return await TryWriteMaterialToBytes(mtrlMod, forTexTools);
                 case TextureMod texMod:
-                    return await WriteTextureToBytes(texMod, shouldCompress);
+                    return await TryWriteTextureToBytes(texMod, forTexTools);
                 case MetadataMod metaMod:
-                    return await WriteMetadataToBytes(metaMod);
+                    return await TryWriteMetadataToBytes(metaMod);
                 case ReadOnlyMod readonlyMod:
-                    if (shouldCompress)
+                    if (forTexTools)
                     {
                         return readonlyMod.Data;
                     }
@@ -151,7 +149,7 @@ namespace Icarus.Util
             return outputDir;
         }
 
-        protected async Task<byte[]> WriteMetadataToBytes(MetadataMod mod)
+        protected async Task<byte[]> TryWriteMetadataToBytes(MetadataMod mod)
         {
             try
             {
@@ -167,19 +165,21 @@ namespace Icarus.Util
             return Array.Empty<byte>();
         }
 
-        protected async Task<byte[]> WriteTextureToBytes(TextureMod mod, bool shouldCompress)
+        protected async Task<byte[]> TryWriteTextureToBytes(TextureMod mod, bool forTexTools)
         {
             // TODO: Export texture to .pmp
 
-            _logService.Verbose($"Exporting texture: {mod.ModFileName} with shouldCompress={shouldCompress}");
+            _logService.Verbose($"Exporting texture: {mod.ModFileName} with forTexTools={forTexTools}");
             if (mod.IsInternal)
             {
-                throw new NotImplementedException("Unknown export method for internal textures.");
+                _logService.Error("Unknown export method for internal textures.");
+                return Array.Empty<byte>();
             }
 
-            if (!shouldCompress)
+            if (!forTexTools)
             {
-                throw new NotImplementedException("Unknown export method for Penumbra texture (.tex)");
+                _logService.Error("Unknown export method for Penumbra texture (.tex)");
+                return Array.Empty<byte>();
             }
 
             var isDds = Path.GetExtension(mod.ModFilePath).ToLower() == ".dds";
@@ -205,108 +205,133 @@ namespace Icarus.Util
                 throw new FileNotFoundException($"The external texture path: {externalPath} could not be found.");
             }
 
-            var ddsContainer = new DDSContainer();
-
             // MakeTexData
             // https://github.com/TexTools/xivModdingFramework/blob/81c234e7b767d56665185e07aabeeae21d895f0b/xivModdingFramework/Textures/FileTypes/Tex.cs#L905
-            try
+
+            // Check if the texture being imported has been imported before
+            CompressionFormat compressionFormat = CompressionFormat.BGRA;
+
+            switch (texFormat)
             {
-                // Check if the texture being imported has been imported before
-                CompressionFormat compressionFormat = CompressionFormat.BGRA;
-
-                switch (texFormat)
-                {
-                    case XivTexFormat.DXT1:
-                        compressionFormat = CompressionFormat.BC1a;
-                        break;
-                    case XivTexFormat.DXT5:
-                        compressionFormat = CompressionFormat.BC3;
-                        break;
-                    case XivTexFormat.A8R8G8B8:
-                        compressionFormat = CompressionFormat.BGRA;
-                        break;
-                    default:
-                        if (!isDds)
-                        {
-                            throw new Exception($"Format {texFormat} is not currently supported for BMP import\n\nPlease use the DDS import option instead.");
-                        }
-                        break;
-                }
-
-                if (!isDds)
-                {
-                    using (var surface = Surface.LoadFromFile(externalPath))
+                case XivTexFormat.DXT1:
+                    compressionFormat = CompressionFormat.BC1a;
+                    break;
+                case XivTexFormat.DXT5:
+                    compressionFormat = CompressionFormat.BC3;
+                    break;
+                case XivTexFormat.A8R8G8B8:
+                    compressionFormat = CompressionFormat.BGRA;
+                    break;
+                default:
+                    if (!isDds)
                     {
-                        if (surface == null)
-                            throw new FormatException($"Unsupported texture format");
+                        _logService.Error($"Format {texFormat} is not currently supported for BMP import\nPlease use the DDS import option instead.");
+                        return Array.Empty<byte>();
+                    }
+                    break;
+            }
 
-                        surface.FlipVertically();
+            DDSContainer? ddsContainer = null;
 
-                        var maxMipCount = 1;
-                        // TODO: root and maxMipCount?
+            if (!isDds)
+            {
+                using (var surface = Surface.LoadFromFile(externalPath))
+                {
+                    if (surface == null)
+                    {
+                        _logService.Error($"Unsupported texture format.");
+                        _logService.Debug($"Surface.LoadFromFile({externalPath}) return null.");
+                        return Array.Empty<byte>();
+                    }
 
-                        //if (root != null)
-                        //{
-                        // For things that have real roots (things that have actual models/aren't UI textures), we always want mipMaps, even if the existing texture only has one.
-                        // (Ex. The Default Mat-Add textures)
-                        maxMipCount = -1;
-                        //}
-                        // If !(UI or Painting): maxMipCount = -1
+                    surface.FlipVertically();
 
-                        using (var compressor = new Compressor())
-                        {
-                            // UI/Paintings only have a single mipmap and will crash if more are generated, for everything else generate max levels
-                            compressor.Input.SetMipmapGeneration(true, maxMipCount);
-                            compressor.Input.SetData(surface);
-                            compressor.Compression.Format = compressionFormat;
-                            compressor.Compression.SetBGRAPixelFormat();
+                    var maxMipCount = 1;
+                    // TODO: root and maxMipCount?
 
-                            compressor.Process(out ddsContainer);
-                        }
+                    //if (root != null)
+                    //{
+                    // For things that have real roots (things that have actual models/aren't UI textures), we always want mipMaps, even if the existing texture only has one.
+                    // (Ex. The Default Mat-Add textures)
+                    maxMipCount = -1;
+                    //}
+                    // If !(UI or Painting): maxMipCount = -1
+
+                    using (var compressor = new Compressor())
+                    {
+                        // UI/Paintings only have a single mipmap and will crash if more are generated, for everything else generate max levels
+                        compressor.Input.SetMipmapGeneration(true, maxMipCount);
+                        compressor.Input.SetData(surface);
+                        compressor.Compression.Format = compressionFormat;
+                        compressor.Compression.SetBGRAPixelFormat();
+
+                        compressor.Process(out ddsContainer);
                     }
                 }
-
-                // If we're not a DDS, write the DDS to file temporarily.
-                // TODO: Where to write temp file?... To Temp folder?
-                var ddsFilePath = externalPath;
-                string tempDdsFile = "";
-                if (!isDds)
-                {
-                    tempDdsFile = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".dds");
-                    var success = ddsContainer.Write(tempDdsFile, DDSFlags.None);
-                    _logService.Debug($"{tempDdsFile}: {success}");
-
-                    ddsFilePath = tempDdsFile;
-                }
-
-                var bytes = await TexExtensions.DDSToTex(ddsFilePath, internalPath, texFormat, shouldCompress);
-
-                if (File.Exists(tempImageFile))
-                {
-                    _logService.Verbose($"Deleting temp path: {tempImageFile}");
-                    File.Delete(tempImageFile);
-                }
-                if (File.Exists(tempDdsFile))
-                {
-                    _logService.Verbose($"Deleting temp dds file: {tempDdsFile}");
-                    File.Delete(tempDdsFile);
-                }
-
-                return bytes;
             }
-            catch (Exception ex)
+
+            if (ddsContainer == null)
             {
-                _logService.Error(ex, $"Exception thrown while writing texture.");
+                _logService.Error($"DDSContainer was null.");
+                return Array.Empty<byte>();
             }
-            finally
+
+            // If we're not a DDS, write the DDS to file temporarily.
+            // TODO: Where to write temp file?... To Temp folder?
+            var ddsFilePath = externalPath;
+            string tempDdsFile = "";
+            if (!isDds)
             {
-                ddsContainer.Dispose();
-                if (File.Exists(tempImageFile))
+                tempDdsFile = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".dds");
+
+                bool success = false;
+
+                try
                 {
-                    File.Delete(tempImageFile);
+                    success = ddsContainer.Write(tempDdsFile, DDSFlags.None);
+                    _logService.Debug($"ddsContainer.Write result: {success}");
                 }
+                catch (Exception ex)
+                {
+                    _logService.Error(ex, $"Exception caught during ddsContainer.Write()");
+                }
+
+                if (!success)
+                {
+
+                    if (File.Exists(tempDdsFile))
+                    {
+                        _logService.Verbose($"Deleting temp dds file: {tempDdsFile}");
+                        File.Delete(tempDdsFile);
+                    }
+                    if (File.Exists(tempImageFile))
+                    {
+                        _logService.Verbose($"Deleting temp path: {tempImageFile}");
+                        File.Delete(tempImageFile);
+                    }
+                    ddsContainer.Dispose();
+                    return Array.Empty<byte>();
+                }
+
+                _logService.Debug($"{tempDdsFile}: {success}");
+
+                ddsFilePath = tempDdsFile;
             }
-            return Array.Empty<byte>();
+
+            var bytes = await TexExtensions.DDSToTex(ddsFilePath, internalPath, texFormat, forTexTools);
+
+            if (File.Exists(tempImageFile))
+            {
+                _logService.Verbose($"Deleting temp path: {tempImageFile}");
+                File.Delete(tempImageFile);
+            }
+            if (File.Exists(tempDdsFile))
+            {
+                _logService.Verbose($"Deleting temp dds file: {tempDdsFile}");
+                File.Delete(tempDdsFile);
+            }
+            ddsContainer.Dispose();
+            return bytes;
         }
 
         /// <summary>
@@ -344,7 +369,7 @@ namespace Icarus.Util
         /// <param name="mod"></param>
         /// <param name="shouldCompress">Whether to compress the vertex information or not</param>
         /// <returns></returns>
-        protected async Task<byte[]> WriteModelToBytes(ModelMod mod, bool shouldCompress, int counter = 0)
+        protected async Task<byte[]> TryWriteModelToBytes(ModelMod mod, bool shouldCompress, int counter = 0)
         {
             try
             {
@@ -375,7 +400,7 @@ namespace Icarus.Util
         /// <param name="mod"></param>
         /// <param name="shouldCompress"></param>
         /// <returns></returns>
-        protected async Task<byte[]> WriteMaterialToBytes(MaterialMod mod, bool shouldCompress = true)
+        protected async Task<byte[]> TryWriteMaterialToBytes(MaterialMod mod, bool shouldCompress = true)
         {
             try
             {

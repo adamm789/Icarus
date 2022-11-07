@@ -1,4 +1,8 @@
-﻿using xivModdingFramework.Materials.DataContainers;
+﻿using System.Collections.Generic;
+using System.Windows.Documents;
+using xivModdingFramework.Materials.DataContainers;
+using xivModdingFramework.Textures.DataContainers;
+using xivModdingFramework.Textures.Enums;
 
 namespace Icarus.Mods.Interfaces
 {

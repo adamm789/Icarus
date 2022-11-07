@@ -15,6 +15,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using xivModdingFramework.General.Enums;
+using xivModdingFramework.Textures.Enums;
 
 namespace Icarus.ViewModels.Import
 {
@@ -48,6 +49,16 @@ namespace Icarus.ViewModels.Import
                 {
                     HasSkin = XivPathParser.HasSkin(SelectedItem.GetMdlPath());
                     AllRacesMdls = new(_gameFileDataService.GetAllRaceMdls(SelectedItem));
+                    var texTypes = _gameFileDataService.GetAvailableTexTypes(SelectedItem);
+                    if (texTypes == null || texTypes.Count == 0)
+                    {
+                        AvailableTexTypes = null;
+                    }
+                    else
+                    {
+                        AvailableTexTypes = new(texTypes);
+
+                    }
                     if (AllRacesMdls.Count > 0)
                     {
                         SelectedRace = AllRacesMdls[0];
@@ -59,6 +70,7 @@ namespace Icarus.ViewModels.Import
 
                     CanImportMdl = true;
                     CanImportMtrl = true;
+                    CanImportTex = true;
                     CanImportMeta = true;
                 }
                 else
@@ -89,17 +101,22 @@ namespace Icarus.ViewModels.Import
                     {
                         SelectedItemMtrl = _completePath;
                     }
+
+                    CanImportTex = XivPathParser.IsTex(_completePath);
+
                 }
                 else if (SelectedItem != null)
                 {
                     CanImportMdl = true;
                     CanImportMtrl = true;
+                    CanImportTex = true;
                     CanImportMeta = true;
                 }
                 else
                 {
                     CanImportMdl = false;
                     CanImportMtrl = false;
+                    CanImportTex = false;
                     CanImportMeta = false;
                 }
             }
@@ -185,6 +202,13 @@ namespace Icarus.ViewModels.Import
             set { _canImportMtrl = value; OnPropertyChanged(); }
         }
 
+        bool _canImportTex = false;
+        public bool CanImportTex
+        {
+            get { return _canImportTex; }
+            set { _canImportTex = value; OnPropertyChanged(); }
+        }
+
         bool _canImportMeta = false;
         public bool CanImportMeta
         {
@@ -204,10 +228,30 @@ namespace Icarus.ViewModels.Import
             get { return _getVanillaMaterial ??= new DelegateCommand(async _ => await GetVanillaMtrl()); }
         }
 
+        DelegateCommand _getVanillaTexture;
+        public DelegateCommand GetVanillaTexture
+        {
+            get { return _getVanillaTexture ??= new DelegateCommand(async _ => await GetVanillaTex()); }
+        }
+
         DelegateCommand _getVanillaMetadata;
         public DelegateCommand GetVanillaMetadata
         {
             get { return _getVanillaMetadata ??= new DelegateCommand(async _ => await GetVanillaMeta()); }
+        }
+
+        XivTexType _selectedTexType = XivTexType.Normal;
+        public XivTexType SelectedTexType
+        {
+            get { return _selectedTexType; }
+            set { _selectedTexType = value; OnPropertyChanged(); }
+        }
+
+        ObservableCollection<XivTexType>? _availableTexTypes;
+        public ObservableCollection<XivTexType>? AvailableTexTypes
+        {
+            get { return _availableTexTypes; }
+            set { _availableTexTypes = value; OnPropertyChanged(); }
         }
 
         // chara/human/c1301/obj/face/f0001/model/c1301f0001_fac.mdl
@@ -303,10 +347,10 @@ namespace Icarus.ViewModels.Import
             return null;
         }
 
-        private async Task GetVanillaMeta()
+        private async Task<MetadataMod?> GetVanillaMeta()
         {
             MetadataMod? mod;
-            if (SelectedItem == null) return;
+            if (SelectedItem == null) return null;
             if (_completePath != null)
             {
                 mod = await _gameFileDataService.TryGetMetadata(_completePath, SelectedItemName);
@@ -318,6 +362,30 @@ namespace Icarus.ViewModels.Import
                 mod.Path = SelectedItem.GetMetadataPath();
             }
             var modViewModel = _modPackViewModel.Add(mod);
+            return mod;
+        }
+
+        private async Task<TextureMod?> GetVanillaTex()
+        {
+            ITextureGameFile? textureGameFile;
+
+            if (_completePath != null)
+            {
+                textureGameFile = await _gameFileDataService.TryGetTextureFileData(_completePath, SelectedItemName);
+            }
+            else
+            {
+                textureGameFile = await _gameFileDataService.GetTextureFileData(SelectedItem, SelectedTexType);
+            }
+
+            if (textureGameFile != null && textureGameFile.XivTex != null)
+            {
+                var mod = new TextureMod(textureGameFile, ImportSource.Vanilla);
+                var modViewModel = _modPackViewModel.Add(mod);
+                return mod;
+            }
+
+            return null;
         }
     }
 }

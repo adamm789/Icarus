@@ -4,6 +4,7 @@ using ItemDatabase.Paths;
 using Serilog;
 using System;
 using System.Collections.Generic;
+using xivModdingFramework.Materials.DataContainers;
 using xivModdingFramework.Textures.DataContainers;
 using xivModdingFramework.Textures.Enums;
 
@@ -12,12 +13,13 @@ namespace Icarus.Mods
     public class TextureMod : Mod, ITextureGameFile
     {
         // TODO: Assignable TexType?
+        public XivMtrl? XivMtrl { get; set; }
         public XivTexType TexType { get; set; }
 
         public Dictionary<XivTexType, XivTexFormat>? TypeFormatDict { get; set; }
 
         // Only set when source is from ttmp2
-        public XivTex? XivTex { get; }
+        public XivTex? XivTex { get; set; }
 
         public TextureMod(ImportSource source) : base(source)
         {
@@ -30,9 +32,15 @@ namespace Icarus.Mods
             Path = tex.TextureTypeAndPath.Path;
         }
 
+        public TextureMod(ITextureGameFile gameFile, ImportSource source = ImportSource.Vanilla) : base(gameFile, source)
+        {
+            XivTex = gameFile.XivTex;
+        }
+
         public override bool IsComplete()
         {
-            return !String.IsNullOrWhiteSpace(Path) && !String.IsNullOrWhiteSpace(ModFilePath);
+            return !String.IsNullOrWhiteSpace(Path) &&
+                (!String.IsNullOrWhiteSpace(ModFilePath) || XivTex != null);
         }
 
         public override void SetModData(IGameFile gameFile)
@@ -41,11 +49,13 @@ namespace Icarus.Mods
             {
                 throw new ArgumentException($"ModData for texture was not of MaterialGameFile. It was {gameFile.GetType()}.");
             }
-            //base.SetModData(gameFile);
+            base.SetModData(gameFile);
+            //XivTex = texGameFile.XivTex;
+            TexType = texGameFile.TexType;
             TypeFormatDict = texGameFile.TypeFormatDict;
             Path = XivPathParser.ChangeTexType(gameFile.Path, TexType);
-            Name = gameFile.Name;
-            Category = gameFile.Category;
+            //Name = gameFile.Name;
+            //Category = gameFile.Category;
         }
 
         public XivTexFormat GetTexFormat()
@@ -56,7 +66,7 @@ namespace Icarus.Mods
                 var found = TypeFormatDict.TryGetValue(TexType, out var format);
                 if (found)
                 {
-                    Log.Debug($"{Path} found TexType: {TexType} and produced {format}");
+                    Log.Debug($"{Path} found TexType: {TexType} and format: {format}");
                     return format;
                 }
             }

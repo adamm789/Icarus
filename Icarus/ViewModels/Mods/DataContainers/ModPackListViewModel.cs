@@ -93,6 +93,13 @@ namespace Icarus.ViewModels.Mods.DataContainers
             }
         }
 
+        public DelegateCommand? CopyPageCommand { get; set; }
+
+        private void OnCopyPage()
+        {
+
+        }
+
         #endregion
 
         public void Add(ModPack modPack)

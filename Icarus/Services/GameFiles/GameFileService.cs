@@ -20,7 +20,9 @@ using xivModdingFramework.Materials.FileTypes;
 using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Mods.FileTypes;
 using xivModdingFramework.SqPack.FileTypes;
+using xivModdingFramework.Textures.DataContainers;
 using xivModdingFramework.Textures.Enums;
+using xivModdingFramework.Textures.FileTypes;
 using Path = System.IO.Path;
 
 namespace Icarus.Services.GameFiles
@@ -100,6 +102,28 @@ namespace Icarus.Services.GameFiles
             return null;
         }
 
+        public List<XivTexType>? GetAvailableTexTypes(IItem? itemArg)
+        {
+            var item = GetItem(itemArg);
+            if (item == null) return null;
+
+            var materialFileData = Task.Run(() => GetMaterialFileData(item)).Result;
+            if (materialFileData != null)
+            {
+                var ret = new List<XivTexType>();
+                var xivMtrl = materialFileData.XivMtrl;
+                var mapInfo = xivMtrl.GetAllMapInfos();
+                foreach (var info in mapInfo)
+                {
+                    ret.Add(info.Usage);
+                }
+                if (ret.Count == 0) return null;
+
+                return ret;
+            }
+            return null;
+        }
+
         // TODO: race?
         public async Task<IGameFile?> TryGetFileData(string path, Type? callingType = null, string name = "")
         {
@@ -134,18 +158,8 @@ namespace Icarus.Services.GameFiles
             return null;
             */
         }
-        public async Task<ITextureGameFile?> GetTextureFileData(IItem? itemArg = null, string variant = "a")
-        {
-            var gameFile = await GetTextureFileData(itemArg);
-            if (gameFile != null)
-            {
-                gameFile.Path = XivPathParser.ChangeTexVariant(gameFile.Path, variant);
-            }
-            return gameFile;
-        }
 
-
-        public async Task<ITextureGameFile?> GetTextureFileData(IItem? itemArg = null)
+        public async Task<ITextureGameFile?> GetTextureFileData(IItem? itemArg = null, XivTexType type = XivTexType.Normal, string variant = "a")
         {
             var item = GetItem(itemArg);
             var materialFileData = await GetMaterialFileData(item);
@@ -157,20 +171,38 @@ namespace Icarus.Services.GameFiles
             var xivMtrl = materialFileData.XivMtrl;
             var typeFormatDict = new Dictionary<XivTexType, XivTexFormat>();
 
+            XivTex? savedXivTex = null;
+
             for (var i = 0; i < xivMtrl.TexturePathList.Count; i++)
             {
                 var texturePath = xivMtrl.TexturePathList[i];
+
                 var xivTex = await dat.GetType4Data(texturePath, true);
+                if (XivPathParser.GetTexType(texturePath) == type)
+                {
+                    savedXivTex = xivTex;
+                    savedXivTex.TextureTypeAndPath = new()
+                    {
+                        Type = type,
+                        Path = texturePath,
+                        DataFile = XivDataFiles.GetXivDataFile(texturePath),
+                        Name = materialFileData.Name
+                    };
+                }
                 typeFormatDict.Add(xivMtrl.TextureTypePathList[i].Type, xivTex.TextureFormat);
             }
 
-            var path = item.GetTexPath(XivTexType.Normal);
+            var path = item.GetTexPath(type, variant);
+
             var retVal = new TextureGameFile()
             {
                 Name = materialFileData.Name,
                 Path = path,
                 Category = materialFileData.Category,
-                TypeFormatDict = typeFormatDict
+                TypeFormatDict = typeFormatDict,
+                XivMtrl = xivMtrl,
+                XivTex = savedXivTex,
+                TexType = type
             };
             return retVal;
         }
@@ -334,18 +366,6 @@ namespace Icarus.Services.GameFiles
             return null;
         }
 
-        public async Task<IMaterialGameFile?> GetMaterialFileData(IItem? itemArg = null, string variant="a")
-        {
-            var gameFile = await GetMaterialFileData(itemArg);
-            if (gameFile != null)
-            {
-                gameFile.Path = XivPathParser.ChangeMtrlVariant(gameFile.Path, variant);
-                gameFile.XivMtrl.MTRLPath = XivPathParser.ChangeMtrlVariant(gameFile.XivMtrl.MTRLPath, variant);
-            }
-
-            return gameFile;
-        }
-
         public async Task<IMaterialGameFile?> GetMaterialFileData(IItem? itemArg = null)
         {
             var item = GetItem(itemArg);
@@ -379,8 +399,19 @@ namespace Icarus.Services.GameFiles
             return retVal;
         }
 
-        #endregion
+        public async Task<IMaterialGameFile?> GetMaterialFileData(IItem? itemArg = null, string variant = "a")
+        {
+            var gameFile = await GetMaterialFileData(itemArg);
+            if (gameFile != null)
+            {
+                gameFile.Path = XivPathParser.ChangeMtrlVariant(gameFile.Path, variant);
+                gameFile.XivMtrl.MTRLPath = XivPathParser.ChangeMtrlVariant(gameFile.XivMtrl.MTRLPath, variant);
+            }
 
+            return gameFile;
+        }
+
+        #endregion
         /*
          * TODO: Return IMetadataFile from TryGetMetadata
         public async Task<IMetadataFile?> TryGetMetadata(string path, string? itemName)

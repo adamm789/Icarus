@@ -137,6 +137,29 @@ namespace Icarus.ViewModels.Mods.DataContainers
             ModPackPages.Add(packPage);
         }
 
+        public void InsertPage(ModPackPageViewModel packPage, int index)
+        {
+            ModPack.ModPackPages.Insert(index, packPage.GetModPackPage());
+            ModPackPages.Insert(index, packPage);
+        }
+
+        public void CopyPage(ModPackPageViewModel page)
+        {
+            /*
+            var index = PageIndex;
+            if (PageIndex < ModPackPages.Count && ModPackPages[PageIndex].IsEmpty())
+            {
+                var p = new ModPackPageViewModel(page, PageIndex, this);
+                InsertPage(p, PageIndex);
+            }
+            else {
+            */
+            // TODO: If last page is empty, set that page to this one
+                var p = new ModPackPageViewModel(page, ModPackPages.Count, this);
+                AddPage(p);
+            //}
+        }
+
         public void RemovePage(ModPackPageViewModel packPage)
         {
             ModPack.ModPackPages.Remove(packPage.GetModPackPage());

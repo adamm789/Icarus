@@ -95,7 +95,7 @@ namespace ItemDatabase.Paths
 
         public static string ChangeTexType(string path, XivTexType type)
         {
-            var texTypeRegex = new Regex(@"_([a-z]).tex$");
+            var texTypeRegex = new Regex(@"([a-z]).tex$");
             if (texTypeRegex.IsMatch(path))
             {
                 var matches = texTypeRegex.Matches(path);

@@ -11,9 +11,9 @@
     <Grid>
         <Grid.Resources>
             <DataTemplate DataType="{x:Type datacontainers:ModPackPageViewModel}">
-                <Border BorderBrush="Black" BorderThickness="2" Margin="5">
+                <Border BorderBrush="Black" BorderThickness="2" Margin="5" MinWidth="100">
                     <ItemsControl ItemsSource="{Binding ModGroups}" 
-                              ScrollViewer.CanContentScroll="False" VirtualizingPanel.IsVirtualizing="True"
+                                  ScrollViewer.CanContentScroll="False" VirtualizingPanel.IsVirtualizing="True"
                                   HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
                     </ItemsControl>
                 </Border>
@@ -30,7 +30,7 @@
                 </Grid>
             </DataTemplate>
             <DataTemplate DataType="{x:Type datacontainers:ModOptionViewModel}">
-                <TextBlock Text="{Binding Name}" dd:DragDrop.DragSourceIgnore="True"/>
+                <TextBlock Text="{Binding Name}" dd:DragDrop.DragSourceIgnore="True" ToolTip="{Binding Name}"/>
             </DataTemplate>
         </Grid.Resources>
 
@@ -38,7 +38,7 @@
                       dd:DragDrop.IsDragSource="True" dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <UniformGrid Columns="4"/>
+                    <WrapPanel/>
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
         </ItemsControl>

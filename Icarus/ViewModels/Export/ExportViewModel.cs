@@ -67,6 +67,10 @@ namespace Icarus.ViewModels.Export
                 try
                 {
                     outputPath = await _exportService.Export(_modPackViewModel.ModPack, type);
+                    if (String.IsNullOrWhiteSpace(outputPath))
+                    {
+                        success = false;
+                    }
                 }
                 catch (OperationCanceledException)
                 {
@@ -80,7 +84,11 @@ namespace Icarus.ViewModels.Export
                 }
                 if (success)
                 {
-                    DisplayFinished(outputPath);
+                    DisplaySuccess(outputPath);
+                }
+                else
+                {
+                    DisplayFailure();
                 }
             }
 
@@ -103,10 +111,14 @@ namespace Icarus.ViewModels.Export
 
         public bool CanExport => _modPackViewModel.CanExport && !IsBusy;
 
-        private void DisplayFinished(string path = "")
+        private void DisplaySuccess(string path = "")
         {
-            path = path.Replace('\\', '/');
-            _messageBoxService.Show("Finished exporting " + path, "Finished Export", MessageBoxButtons.OK);
+            _messageBoxService.Show($"Finished exporting {path}", "Finished Export", MessageBoxButtons.OK);
+        }
+
+        private void DisplayFailure()
+        {
+            _messageBoxService.Show($"Failed to write ttmp2.", "", MessageBoxButtons.OK);
         }
     }
 }

@@ -25,6 +25,17 @@ namespace Icarus.ViewModels.Editor
             ModPackViewModel = modPackViewModel;
             ExportViewModel = exportViewModel;
             ModPackListViewModel = modPackListViewModel;
+
+            ModPackListViewModel.CopyPageCommand = new DelegateCommand(o => OnCopy()); ;
+        }
+
+        private void OnCopy()
+        {
+            if (ModPackListViewModel.ModPackPage is ModPackPageViewModel page)
+            {
+                // TODO: When on meta, copy page... copies everything?
+                ModPackViewModel.CopyPage(page);
+            }
         }
     }
 }

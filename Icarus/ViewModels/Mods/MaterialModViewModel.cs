@@ -97,7 +97,6 @@ namespace Icarus.ViewModels.Mods
             }
         }
 
-        // TODO: Changing an item changes the path such that it ignores the material variant
         public override async Task<IGameFile?> GetFileData(IItem? itemArg = null)
         {
             return await _gameFileService.GetMaterialFileData(itemArg, MaterialVariant);

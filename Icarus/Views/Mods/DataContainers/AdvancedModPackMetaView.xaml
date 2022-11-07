@@ -18,10 +18,10 @@
         </Grid.RowDefinitions>
         <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*"/>
                 <ColumnDefinition Width="3*"/>
-                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="4*"/>
                 <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="4*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="1*"/>
@@ -29,23 +29,23 @@
             </Grid.RowDefinitions>
             <Grid.Resources>
                 <Style TargetType="{x:Type TextBlock}">
-                    <Setter Property="HorizontalAlignment" Value="Right"/>
-                    <Setter Property="Margin" Value="10,10,10,10"/>
+                    <Setter Property="HorizontalAlignment" Value="Left"/>
+                    <Setter Property="Margin" Value="3 0 3 0"/>
                 </Style>
                 <Style TargetType="{x:Type TextBox}">
-                    <Setter Property="Margin" Value="10,10,10,10"/>
+                    <Setter Property="Margin" Value="0 0 0 3"/>
                 </Style>
             </Grid.Resources>
             
             <TextBlock Grid.Row="0" Grid.Column="0" Text="Name"/>
             <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Name}" IsReadOnly="{Binding IsReadOnly}"/>
             <TextBlock Grid.Row="0" Grid.Column="2" Text="Author"/>
-            <TextBox Grid.Row="0" Grid.Column="3" Text="{Binding Author}" IsReadOnly="{Binding IsReadOnly}" HorizontalAlignment="Stretch"/>
+            <TextBox Grid.Row="0" Grid.Column="3" Text="{Binding Author}" IsReadOnly="{Binding IsReadOnly}"/>
 
             <TextBlock Grid.Row="1" Grid.Column="0" Text="Version"/>
-            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Version}" IsReadOnly="{Binding IsReadOnly}"></TextBox>
+            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Version}" IsReadOnly="{Binding IsReadOnly}"/>
             <TextBlock Grid.Row="1" Grid.Column="2" Text="Website"/>
-            <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding Url}" IsReadOnly="{Binding IsReadOnly}"></TextBox>
+            <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding Url}" IsReadOnly="{Binding IsReadOnly}"/>
         </Grid>
 
         <xtk1:WatermarkTextBox Grid.Row="1" Watermark="Description" Text="{Binding Description}" TextWrapping="Wrap" AcceptsReturn="True" IsReadOnly="{Binding IsReadOnly}"/>

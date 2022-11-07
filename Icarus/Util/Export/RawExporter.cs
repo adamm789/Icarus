@@ -88,6 +88,7 @@ namespace Icarus.Util.Export
 
             if (mod is ModelMod mdlMod)
             {
+                _logService.Verbose($"Beginning mdl to fbx export.");
                 if (mdlMod.ImportSource == Import.ImportSource.Raw)
                 {
                     // Check to see if the original file was from a .db file (which came from an .fbx file)
@@ -100,6 +101,7 @@ namespace Icarus.Util.Export
                 try
                 {
                     await _converterService.TTModelToFbx(copy, outputDirectory, outputFileName);
+                    _logService.Information($"Saved model to {outputFileName}");
                 }
                 catch (Exception ex)
                 {
@@ -122,6 +124,7 @@ namespace Icarus.Util.Export
             }
             else if (mod is MaterialMod mtrlMod)
             {
+                _logService.Verbose($"Beginning mtrl to dds export.");
                 // TODO: Only allow .dds file as raw exports for materials?
                 var xivMtrl = mtrlMod.GetMtrl();
                 var df = IOUtil.GetDataFileFromPath(xivMtrl.MTRLPath);
@@ -137,9 +140,11 @@ namespace Icarus.Util.Export
             }
             else if (mod is TextureMod texMod)
             {
-                if (mod.IsInternal)
+                // TODO: Allow export to png, dds, and bmp..?
+                _logService.Verbose($"Beginning tex to ... dds? export.");
+                if (texMod.XivTex != null)
                 {
-                    // If/when to export raw textures?
+                    TexExtensions.SaveTexAsDDS(outputPath, texMod.XivTex, outputDirectory);
                 }
             }
         }

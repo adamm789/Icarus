@@ -38,6 +38,11 @@
         <Button Command="{Binding GetVanillaMaterial}" Content="Add Vanilla Mtrl"
                 IsEnabled="{Binding CanImportMtrl}" dd:DragDrop.DragSourceIgnore="True"/>
         
+        <!-- Vanilla Texture -->
+        <Button Command="{Binding GetVanillaTexture}" Content="Add Vanilla Tex"
+                IsEnabled="{Binding CanImportTex}" dd:DragDrop.DragSourceIgnore="True"/>
+        <ComboBox ItemsSource="{Binding AvailableTexTypes}" SelectedValue="{Binding SelectedTexType}"/>
+
         <!-- Vanilla Metadata -->
         <Button Command="{Binding GetVanillaMetadata}" 
                 IsEnabled="{Binding CanImportMeta}" Content="Add Metadata"/>

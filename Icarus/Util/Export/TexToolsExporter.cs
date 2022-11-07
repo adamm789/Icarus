@@ -96,7 +96,7 @@ namespace Icarus.Util
                     var entry = entries[i];
 
                     var bytes = tasks[i].Result;
-                    if (bytes == Array.Empty<Byte>())
+                    if (bytes == Array.Empty<byte>())
                     {
                         _logService.Error($"Could not get bytes for {entry.Name}. Skipping entry {i}.");
                         continue;
@@ -368,10 +368,23 @@ namespace Icarus.Util
             }
         }
 
+        /// <summary>
+        /// Tries to save the ttmp2
+        /// </summary>
+        /// <param name="modPack"></param>
+        /// <param name="outputDir"></param>
+        /// <param name="modPackJson"></param>
+        /// <param name="imageList"></param>
+        /// <returns>The path to the file if successful. The emptry string otherwise.</returns>
         private string TrySaveFile(IcarusModPack modPack, string outputDir, ModPackJson modPackJson, HashSet<string>? imageList = null)
         {
             _logService.Information("Trying to save ttmp2 file");
             string tempDir = "";
+            var zf = new ZipFile
+            {
+                UseZip64WhenSaving = Zip64Option.AsNecessary,
+                CompressionLevel = Ionic.Zlib.CompressionLevel.None
+            };
             try
             {
                 var modPackPath = GetOutputPath(modPack, outputDir);
@@ -383,13 +396,13 @@ namespace Icarus.Util
                 var _tempMPL = GetMPLPath(tempDir);
                 var _tempMPD = GetMPDPath(tempDir);
 
-                File.WriteAllText(_tempMPL, JsonConvert.SerializeObject(modPackJson));
-
-                var zf = new ZipFile
+                var fileInfo = new FileInfo(_tempMPD);
+                if (fileInfo.Length == 0)
                 {
-                    UseZip64WhenSaving = Zip64Option.AsNecessary,
-                    CompressionLevel = Ionic.Zlib.CompressionLevel.None
-                };
+                    return "";
+                }
+
+                File.WriteAllText(_tempMPL, JsonConvert.SerializeObject(modPackJson));
 
                 _logService.Debug($"_tempMPL = {_tempMPL} - _tempMPD = {_tempMPD}");
 
@@ -424,6 +437,7 @@ namespace Icarus.Util
                 {
                     _logService.Error($"Temporary directory {tempDir} does not exist.");
                 }
+                zf.Dispose();
             }
             return "";
         }

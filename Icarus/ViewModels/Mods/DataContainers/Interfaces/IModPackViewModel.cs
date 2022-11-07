@@ -20,6 +20,8 @@ namespace Icarus.ViewModels.Mods.DataContainers.Interfaces
         /// <param name="pack"></param>
         void Add(ModPack pack);
         void AddPage(ModPackPageViewModel packPage);
+        void InsertPage(ModPackPageViewModel packPage, int index);
+        void CopyPage(ModPackPageViewModel packPage);
         void RemovePage(ModPackPageViewModel packPage);
         void Move(ModPackPageViewModel source, ModPackPageViewModel target);
         bool ArePagesEmpty();

@@ -19,6 +19,18 @@ namespace Icarus.ViewModels.Mods.DataContainers
         public DelegateCommand? RemoveCommand { get; set; }
         public bool IsReadOnly = false;
 
+        public ModPackPageViewModel(ModPackPageViewModel other, int index, ModPackViewModel parent)
+        {
+            _modPackPage = new(other._modPackPage);
+            _viewModelService = other._viewModelService;
+            RemoveCommand = new(o => parent.RemovePage(this));
+            foreach (var group in other.ModGroups)
+            {
+                var newGroup = new ModGroupViewModel(group, this);
+                AddGroup(newGroup);
+            }
+        }
+
         public ModPackPageViewModel(int index, ModPackViewModel parent, ViewModelService viewModelService)
         {
             _modPackPage = new(index + 1);
