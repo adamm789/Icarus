@@ -9,10 +9,12 @@ using System.Threading.Tasks;
 
 namespace Icarus.ViewModels.Mods
 {
-
+    /// <summary>
+    /// ModViewModel provided as a courtesy to be able to include ttmp2 files that are not models, textures, materials, or metadata
+    /// Can only be exported to ttmp2
+    /// </summary>
     public class ReadOnlyModViewModel : ModViewModel
     {
-
         public byte[] Data;
 
         public ReadOnlyModViewModel(IMod mod, IGameFileService gameFileService, ILogService logService)
@@ -23,7 +25,6 @@ namespace Icarus.ViewModels.Mods
 
         public override async Task<bool> SetDestinationItem(IItem? item = null)
         {
-            //throw new NotImplementedException();
             _logService.Information("Cannot set item on ReadOnlyMod.");
             return false;
         }

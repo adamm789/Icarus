@@ -1,4 +1,5 @@
 ﻿using Icarus.Mods;
+using Icarus.Mods.Interfaces;
 using ItemDatabase.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace Icarus.Services.GameFiles.Interfaces
 {
     public interface IMetadataFileService
     {
-        Task<MetadataMod> TryGetMetadata(string path, string? itemName = null);
-        Task<MetadataMod> GetMetadata(IItem? itemArg = null);
+        Task<IMetadataFile?> TryGetMetadata(string path, string? itemName = null);
+        Task<IMetadataFile?> GetMetadata(IItem? itemArg = null);
     }
 }

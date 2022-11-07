@@ -9,7 +9,8 @@ namespace Icarus.Services.GameFiles.Interfaces
     public interface IMaterialFileService : IServiceProvider
     {
         Task<IMaterialGameFile?> GetMaterialFileData(IItem? item);
-        Task<IMaterialGameFile?> GetMaterialFileData(IItem? item, string variant);
+        // TODO: Re-purpose this so as to not have two "GetMaterialFileData" functions
+        Task<IMaterialGameFile?> GetMaterialFileData(IItem? item, string variant = "a");
 
         Task<IMaterialGameFile?> TryGetMaterialFileData(string path, string name = "");
         StainingTemplateFile GetStainingTemplateFile();

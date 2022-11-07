@@ -75,25 +75,25 @@ namespace Icarus.Services.Files
         /// </summary>
         /// <param name="filePath"></param>
         /// <returns>The filled <see cref="ModPack"/> if successful. An empty <see cref="ModPack"/> otherwise.</returns>
-        public async Task<ModPack> ImportFile(string filePath)
+        public async Task<ModPack?> ImportFile(string filePath)
         {
             var importingFile = "Importing: " + filePath;
             _importFileQueue.Enqueue(importingFile);
             UpdateProperties();
 
             var ext = Path.GetExtension(filePath);
-            var retModPack = new ModPack();
+            ModPack? retModPack = null;
             if (ext == ".fbx")
             {
-                retModPack = await ImportModel(filePath);
+                retModPack = await TryImportModel(filePath);
             }
             else if (ext == ".ttmp2")
             {
-                retModPack = await ImportTTModPack(filePath);
+                retModPack = await TryImportTTModPack(filePath);
             }
             else if (ext == ".dds")
             {
-                retModPack = await Task.Run(() => ImportColorset(filePath));
+                retModPack = await Task.Run(() => TryImportDDS(filePath));
             }
             else if (ext == ".png" || ext == ".bmp")
             {
@@ -101,7 +101,7 @@ namespace Icarus.Services.Files
             }
             else if (ext == ".mdl")
             {
-                retModPack = ImportRawModel(filePath);
+                retModPack = TryImportRawModel(filePath);
             }
             _importFileQueue.Dequeue();
             UpdateProperties();
@@ -110,7 +110,7 @@ namespace Icarus.Services.Files
             return retModPack;
         }
 
-        public async Task<ModPack> ImportTTModPack(string filePath)
+        public async Task<ModPack?> TryImportTTModPack(string filePath)
         {
             IsImportingAdvanced = true;
             try
@@ -133,12 +133,13 @@ namespace Icarus.Services.Files
             {
                 IsImportingAdvanced = false;
             }
-            return new ModPack();
+            return null;
         }
+
         const float minAcceptableSize = 0.5f;
         const float maxAcceptableSize = 2.0f;
 
-        public async Task<ModPack> ImportModel(string filePath)
+        public async Task<ModPack?> TryImportModel(string filePath)
         {
             // Import File -> Convert to TTModel with converter.exe (TTModel Imported)
             // Choose destination item -> XivMdl OgMdl -> TTModel Original
@@ -210,10 +211,10 @@ namespace Icarus.Services.Files
             }
 
             _logService.Error($"Could not import {filePath} as model.");
-            return new ModPack();
+            return null;
         }
 
-        public ModPack ImportRawModel(string filePath)
+        public ModPack? TryImportRawModel(string filePath)
         { 
             // TODO: ImportRawModel?
             try
@@ -228,7 +229,17 @@ namespace Icarus.Services.Files
             {
                 _logService.Error(ex, "An exception has occurred.");
             }
-            return new ModPack();
+            return null;
+        }
+
+        private ModPack? TryImportDDS(string filePath)
+        {
+            var modPack = TryImportColorSet(filePath);
+            if (modPack == null)
+            {
+                modPack = ImportTexture(filePath);
+            }
+            return modPack;
         }
 
         /// <summary>
@@ -236,7 +247,7 @@ namespace Icarus.Services.Files
         /// </summary>
         /// <param name="filePath"></param>
         /// <returns>A <see cref="ModPack">ModPack</see> with a single colorset mod, if successful. An empty modpack otherwise.</returns>
-        public ModPack ImportColorset(string filePath)
+        public ModPack? TryImportColorSet(string filePath)
         {
             try
             {
@@ -259,10 +270,10 @@ namespace Icarus.Services.Files
             {
                 _logService.Error(ex, $"Could not get colorset data from {filePath}");
             }
-            return ImportTexture(filePath);
+            return null;
         }
 
-        public ModPack ImportTexture(string filePath)
+        public ModPack? ImportTexture(string filePath)
         {
             _logService.Information($"Trying to import {filePath} as texture.");
 
@@ -279,6 +290,11 @@ namespace Icarus.Services.Files
             return retPack;
         }
 
+        /// <summary>
+        /// Fills out the rest of any mod's "FileData"
+        /// Currently only changes ModelMods
+        /// </summary>
+        /// <param name="mod"></param>
         private void CompleteMod(IMod mod)
         {
             if (mod is ModelMod mdlMod)

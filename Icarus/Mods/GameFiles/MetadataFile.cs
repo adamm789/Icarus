@@ -11,6 +11,5 @@ namespace Icarus.Mods.GameFiles
     public class MetadataFile : GameFile, IMetadataFile
     {
         public ItemMetadata ItemMetadata { get; set; }
-        public string Slot { get; set; }
     }
 }

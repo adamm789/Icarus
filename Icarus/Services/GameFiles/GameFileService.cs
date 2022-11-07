@@ -29,10 +29,10 @@ namespace Icarus.Services.GameFiles
 {
     public class GameFileService : LuminaDependentServiceBase<GameFileService>, IGameFileService
     {
-        readonly IItemListService _itemListService;
-        readonly ILogService _logService;
-        readonly ISettingsService _settingsService;
-        DirectoryInfo _frameworkGameDirectory;
+        protected readonly IItemListService _itemListService;
+        protected readonly ILogService _logService;
+        protected readonly ISettingsService _settingsService;
+        protected DirectoryInfo _frameworkGameDirectory;
 
         public GameFileService(LuminaService luminaService, IItemListService itemListService, ISettingsService settingsService, ILogService logService) : base(luminaService)
         {
@@ -141,27 +141,12 @@ namespace Icarus.Services.GameFiles
             }
             _logService.Error($"Returning null from {path}");
             return null;
-            /*
-            if (XivPathParser.IsMdl(path) && callingType == typeof(ModelModViewModel))
-            {
-                return TryGetModelFileData(path, name);
-            }
-            if (XivPathParser.IsMtrl(path) && callingType == typeof(MaterialModViewModel))
-            {
-                return await TryGetMaterialFileData(path, name);
-            }
-            if (XivPathParser.IsTex(path) && callingType == typeof(TextureModViewModel))
-            {
-                return await TryGetTextureFileData(path, name);
-            }
-            _logService.Error($"Returning null from {path}");
-            return null;
-            */
         }
 
         public async Task<ITextureGameFile?> GetTextureFileData(IItem? itemArg = null, XivTexType type = XivTexType.Normal, string variant = "a")
         {
             var item = GetItem(itemArg);
+            if (item == null) return null;
             var materialFileData = await GetMaterialFileData(item);
             var dat = new Dat(_frameworkGameDirectory);
             if (materialFileData == null)
@@ -207,6 +192,7 @@ namespace Icarus.Services.GameFiles
             return retVal;
         }
 
+        // TODO: Implement with Lumina so user can search for arbitrary .tex files
         public async Task<ITextureGameFile?> TryGetTextureFileData(string path, string itemName = "")
         {
             var result = TryGetItem(path, itemName);
@@ -214,7 +200,7 @@ namespace Icarus.Services.GameFiles
             return await GetTextureFileData(result);
         }
 
-        private IItem? TryGetItem(string path, string? itemName = null)
+        protected IItem? TryGetItem(string path, string? itemName = null)
         {
             List<IItem> results = new();
             if (!String.IsNullOrWhiteSpace(itemName))
@@ -437,24 +423,40 @@ namespace Icarus.Services.GameFiles
         }
         */
 
-        public async Task<MetadataMod?> TryGetMetadata(string path, string? itemName = null)
+        public async Task<IMetadataFile?> TryGetMetadata(string path, string? itemName = null)
         {
-            var itemMetadata = await ItemMetadata.GetMetadata(path, true);
-            var metadata = new MetadataMod(itemMetadata);
+            IMetadataFile? metadataFile = null;
 
-            var name = $"{path} (?)";
-            var result = TryGetItem(path, itemName);
-
-            if (result != null)
+            try
             {
-                name = result.Name;
-            }
-            metadata.Name = name;
+                var itemMetadata = await ItemMetadata.GetMetadata(path, true);
+                var name = $"{path} (?)";
+                var item = TryGetItem(path, itemName);
 
-            return metadata;
+                if (item != null)
+                {
+                    name = item.Name;
+                }
+                var category = XivPathParser.GetCategory(path);
+                var slot = XivPathParser.GetEquipmentSlot(path);
+
+                metadataFile = new MetadataFile()
+                {
+                    ItemMetadata = itemMetadata,
+                    Path = path,
+                    Name = name,
+                    Category = category
+                };
+            }
+            catch (Exception ex)
+            {
+                _logService.Error(ex, $"Exception caught while trying to get metadata: {path}.");
+            }
+
+            return metadataFile;
         }
 
-        public async Task<MetadataMod?> GetMetadata(IItem? itemArg = null)
+        public async Task<IMetadataFile?> GetMetadata(IItem? itemArg = null)
         {
             var item = GetItem(itemArg);
             if (item == null) return null;

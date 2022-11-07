@@ -349,20 +349,23 @@ namespace Icarus.ViewModels.Import
 
         private async Task<MetadataMod?> GetVanillaMeta()
         {
-            MetadataMod? mod;
+            IMetadataFile? metadataFile;
             if (SelectedItem == null) return null;
             if (_completePath != null)
             {
-                mod = await _gameFileDataService.TryGetMetadata(_completePath, SelectedItemName);
-                mod.Path = _completePath;
+                metadataFile = await _gameFileDataService.TryGetMetadata(_completePath, SelectedItemName);
             }
             else
             {
-                mod = await _gameFileDataService.GetMetadata(SelectedItem);
-                mod.Path = SelectedItem.GetMetadataPath();
+                metadataFile = await _gameFileDataService.GetMetadata(SelectedItem);
             }
-            var modViewModel = _modPackViewModel.Add(mod);
-            return mod;
+            if (metadataFile != null)
+            {
+                var mod = new MetadataMod(metadataFile.ItemMetadata, ImportSource.Vanilla);
+                var modViewModel = _modPackViewModel.Add(mod);
+                return mod;
+            }
+            return null;
         }
 
         private async Task<TextureMod?> GetVanillaTex()

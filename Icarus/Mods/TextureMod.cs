@@ -12,13 +12,11 @@ namespace Icarus.Mods
 {
     public class TextureMod : Mod, ITextureGameFile
     {
-        // TODO: Assignable TexType?
         public XivMtrl? XivMtrl { get; set; }
         public XivTexType TexType { get; set; }
 
         public Dictionary<XivTexType, XivTexFormat>? TypeFormatDict { get; set; }
 
-        // Only set when source is from ttmp2
         public XivTex? XivTex { get; set; }
 
         public TextureMod(ImportSource source) : base(source)

@@ -22,39 +22,17 @@ namespace Icarus.Services
         public IModPackViewModel ModPackViewModel { get; private set; }
 
         readonly IGameFileService _gameFileService;
-        readonly ISettingsService _settingsService;
         readonly IUserPreferencesService _userPreferencesService;
         readonly IWindowService _windowService;
         readonly ILogService _logService;
 
-        readonly IItemListService _itemListService;
-        readonly IMessageBoxService _messageBoxService;
-        readonly ExportService _exportService;
-        readonly ImportService _importService;
-
-        public ViewModelService(IGameFileService gameFileDataService, ISettingsService settingsService,
+        public ViewModelService(IGameFileService gameFileDataService,
             IUserPreferencesService userPreferencesService, IWindowService windowService, ILogService logService)
         {
             _gameFileService = gameFileDataService;
             _userPreferencesService = userPreferencesService;
             _windowService = windowService;
-            _settingsService = settingsService;
             _logService = logService;
-        }
-
-        public IModPackViewModel SetModPackViewModel()
-        {
-            var modPack = new ModPack();
-            ModPackViewModel = new ModPackViewModel(modPack, this);
-            var modPackListViewModel = new ModPackListViewModel(ModPackViewModel.ModsListViewModel, this);
-
-            var itemListViewModel = new ItemListViewModel(_itemListService, _logService);
-            var importVanillaViewModel = new ImportVanillaViewModel(ModPackViewModel.ModsListViewModel, itemListViewModel, _gameFileService, _logService);
-            var ImportViewModel = new ImportViewModel(ModPackViewModel, modPackListViewModel, _importService, _settingsService, _logService);
-
-            var exportViewModel = new ExportViewModel(ModPackViewModel.ModsListViewModel, _messageBoxService, _exportService);
-
-            return ModPackViewModel;
         }
 
         public ModPackMetaViewModel GetModPackMetaViewModel(ModPack modPack, bool isReadOnly = false)
