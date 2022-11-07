@@ -22,6 +22,8 @@ namespace Icarus.ViewModels.Mods.Metadata
         {
             _imc = imc;
             _index = index;
+
+            PartLabel = Convert.ToChar('a' + _index);
         }
 
         bool _isEnabled;
@@ -39,6 +41,13 @@ namespace Icarus.ViewModels.Mods.Metadata
                 arr.CopyTo(u, 0);
                 _imc.Mask = (ushort)u[0];
             }
+        }
+
+        char _partLabel;
+        public char PartLabel
+        {
+            get { return _partLabel; }
+            set { _partLabel = value; OnPropertyChanged(); }
         }
     }
 }

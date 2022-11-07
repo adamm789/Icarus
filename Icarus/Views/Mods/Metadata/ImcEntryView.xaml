@@ -11,7 +11,9 @@
     <StackPanel>
         <StackPanel.Resources>
             <DataTemplate DataType="{x:Type metadata:VisibleVariantPartViewModel}">
-                <CheckBox IsChecked="{Binding IsEnabled}"/>
+                <CheckBox IsChecked="{Binding IsEnabled}" VerticalContentAlignment="Center">
+                    <Label Content="{Binding PartLabel}"/>
+                </CheckBox>
             </DataTemplate>
         </StackPanel.Resources>
         <UniformGrid Columns="2">
@@ -30,11 +32,18 @@
 
             <TextBlock Text="SFX ID"/>
             <TextBox Text="{Binding Sfx}"/>
-
+            <!--
             <TextBlock Text="Mask"/>
             <TextBox Text="{Binding Mask}"/>
+            -->
 
         </UniformGrid>
-        <ListView ItemsSource="{Binding Parts}"/>
+        <ItemsControl ItemsSource="{Binding Parts}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid Columns="5"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
     </StackPanel>
 </UserControl>
