@@ -47,7 +47,7 @@ namespace Icarus.ViewModels.Mods
             }
 
             if (_metadataMod.ImcEntries.Count > 0) {
-                ImcViewModel = new(_metadataMod.ImcEntries);
+                ImcViewModel = new(_metadataMod.ImcEntries, _metadataMod.ItemMetadata.Root);
             }
         }
         public EqdpViewModel EqdpViewModel { get; }

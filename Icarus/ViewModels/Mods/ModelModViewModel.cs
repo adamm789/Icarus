@@ -7,6 +7,7 @@ using Icarus.Services.GameFiles.Interfaces;
 using Icarus.Services.Interfaces;
 using Icarus.ViewModels.Import;
 using Icarus.ViewModels.Models;
+using Icarus.Util.Import;
 using ItemDatabase;
 using ItemDatabase.Enums;
 using ItemDatabase.Interfaces;
@@ -124,15 +125,15 @@ namespace Icarus.ViewModels.Mods
             return false;
         }
 
-        // TODO: Double check: internal models should always have their original attribute presets available
         private void UpdateAttributes(ModelGameFile modelData)
         {
+            // TODO: Include "variant" attributes
             var ttModel = modelData.TTModel;
             var slot = XivPathParser.GetEquipmentSlot(modelData.Path);
 
             var attributePresets = AttributePreset.GetAttributeTTModelPresets(ttModel);
             Dictionary<string, Dictionary<int, List<XivAttribute>>> internalPresets = new();
-            if (IsInternal)
+            if (ImportSource == ImportSource.Vanilla)
             {
                 internalPresets = AttributePreset.GetAttributeTTModelPresets(_modelMod.ImportedModel);
             }

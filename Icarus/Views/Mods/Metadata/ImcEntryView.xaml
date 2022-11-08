@@ -16,8 +16,7 @@
                 </CheckBox>
             </DataTemplate>
         </StackPanel.Resources>
-        <UniformGrid Columns="2">
-
+        <UniformGrid Columns="4">
             <TextBlock Text="Material Set"/>
             <TextBox Text="{Binding MaterialSet}"/>
 

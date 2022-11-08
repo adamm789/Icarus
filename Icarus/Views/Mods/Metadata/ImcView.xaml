@@ -20,12 +20,12 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <TextBlock Grid.Row="0" Grid.Column="0" Text="Variant"/>
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding DisplayedEntryName}"/>
         <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding AvailableEntries}" SelectedIndex="{Binding SelectedIndex}"/>
-        <ContentControl Grid.Row="1" Grid.ColumnSpan="2" Content="{Binding DisplayedEntry}"/>
+        <ContentControl Grid.Row="1" Grid.ColumnSpan="3" Content="{Binding DisplayedEntry}"/>
     </Grid>
 </UserControl>

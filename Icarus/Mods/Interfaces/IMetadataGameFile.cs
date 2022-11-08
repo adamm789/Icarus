@@ -10,5 +10,6 @@ namespace Icarus.Mods.Interfaces
     public interface IMetadataFile : IGameFile
     {
         public ItemMetadata ItemMetadata { get; set; }
+        public string Slot { get; set; }
     }
 }

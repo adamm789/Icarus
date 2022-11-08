@@ -72,7 +72,6 @@ namespace Icarus.ViewModels.Mods.Metadata
         public ImcEntryViewModel(XivImc imc)
         {
             XivImc = imc;
-
             for (var i = 0; i < 10; i++)
             {
                 var p = new VisibleVariantPartViewModel(this, i);
