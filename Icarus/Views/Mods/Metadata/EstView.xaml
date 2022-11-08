@@ -12,11 +12,16 @@
         <StackPanel>
             <StackPanel.Resources>
                 <DataTemplate DataType="{x:Type metadata:EstEntryViewModel}">
-                    <StackPanel Orientation="Horizontal" IsEnabled="{Binding IsEnabled}">
-                        <TextBlock Text="{Binding Race}" Margin="5"/>
-                        <TextBlock Text="{Binding SetId}" Margin="5"/>
-                        <TextBox Text="{Binding SkelId}" Margin="5"/>
-                    </StackPanel>
+                    <Grid IsEnabled="{Binding IsEnabled}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="{Binding Race}" Margin="5"/>
+                        <TextBlock Grid.Column="1" Text="{Binding SetId}" Margin="5"/>
+                        <ComboBox Grid.Column="2" ItemsSource="{Binding AvailableSkeletonEntries}" SelectedValue="{Binding SkelId}" Margin="5 0 0 0"/>
+                    </Grid>
                 </DataTemplate>
             </StackPanel.Resources>
             <Label Content="Extra Skeleton Settings" HorizontalAlignment="Center" FontSize="14"/>

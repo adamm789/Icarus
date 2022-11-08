@@ -12,8 +12,10 @@ using xivModdingFramework.Models.DataContainers;
 
 namespace Icarus.ViewModels.Mods.Metadata
 {
+    // "Visibility Settings"
     public class EqpViewModel : NotifyPropertyChanged
     {
+        // TODO: "Reset" (to original) option
         public EqpViewModel(EquipmentParameter eqpEntry)
         {
             _eqpEntry = eqpEntry;

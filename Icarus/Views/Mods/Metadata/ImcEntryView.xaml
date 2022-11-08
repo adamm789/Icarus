@@ -16,8 +16,8 @@
                 </CheckBox>
             </DataTemplate>
         </StackPanel.Resources>
-        <UniformGrid Columns="4">
-            <UniformGrid.Resources>
+        <Grid>
+            <Grid.Resources>
                 <Style TargetType="TextBlock">
                     <Setter Property="Margin" Value="0 3 5 0"/>
                 </Style>
@@ -25,27 +25,40 @@
                     <Setter Property="Margin" Value="0 0 5 0"/>
                     <Setter Property="VerticalAlignment" Value="Center"/>
                 </Style>
-            </UniformGrid.Resources>
-            <TextBlock Text="Material Set"/>
-            <TextBox Text="{Binding MaterialSet}"/>
+            </Grid.Resources>
 
-            <TextBlock Text="Decal ID"/>
-            <TextBox Text="{Binding Decal}"/>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="*"/> 
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Material Set"/>
+            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding MaterialSet}"/>
 
-            <TextBlock Text="Anim ID"/>
-            <TextBox Text="{Binding Animation}"/>
+            <TextBlock Grid.Row="0" Grid.Column="2" Text="Decal ID"/>
+            <TextBox Grid.Row="0" Grid.Column="3" Text="{Binding Decal}"/>
 
-            <TextBlock Text="VFX ID"/>
-            <TextBox Text="{Binding Vfx}"/>
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Anim ID"/>
+            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Animation}"/>
 
-            <TextBlock Text="SFX ID"/>
-            <TextBox Text="{Binding Sfx}"/>
+            <TextBlock Grid.Row="1" Grid.Column="2" Text="VFX ID"/>
+            <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding Vfx}"/>
+
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="SFX ID"/>
+            <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Sfx}"/>
             <!--
             <TextBlock Text="Mask"/>
             <TextBox Text="{Binding Mask}"/>
             -->
 
-        </UniformGrid>
+        </Grid>
         <ItemsControl ItemsSource="{Binding Parts}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>

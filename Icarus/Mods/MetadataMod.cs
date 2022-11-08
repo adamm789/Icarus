@@ -14,6 +14,8 @@ namespace Icarus.Mods
     public class MetadataMod : Mod, IMetadataFile
     {
         public ItemMetadata ItemMetadata { get; set; }
+
+        // No underscore
         public string Slot { get; set; }
         public Dictionary<XivRace, EquipmentDeformationParameter> EqdpEntries
         {

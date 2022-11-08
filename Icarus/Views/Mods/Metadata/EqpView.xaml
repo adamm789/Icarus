@@ -18,7 +18,7 @@
             <Grid Grid.Row="1" Margin="5">
                 <Grid.Resources>
                     <DataTemplate DataType="{x:Type metadata:EqpEntryViewModel}">
-                        <local:EqpEntryView/>
+                        <local:EqpEntryView Margin="3"/>
                     </DataTemplate>
                 </Grid.Resources>
                 <Grid.RowDefinitions>

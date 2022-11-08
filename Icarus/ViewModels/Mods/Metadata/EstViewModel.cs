@@ -9,6 +9,8 @@ using System.Text;
 using System.Threading.Tasks;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Models.DataContainers;
+using xivModdingFramework.Models.FileTypes;
+using static xivModdingFramework.Models.FileTypes.Est;
 
 namespace Icarus.ViewModels.Mods.Metadata
 {
@@ -16,7 +18,8 @@ namespace Icarus.ViewModels.Mods.Metadata
     public class EstViewModel : NotifyPropertyChanged
     {
         //public static AllSkeletonEntries;
-        Dictionary<XivRace, HashSet<int>> AllSkeletonEntries;
+
+        // TODO: ability to "set all" skeleton entries
         public EstViewModel(MetadataMod mod, EqdpViewModel eqdpViewModel)
         {
             var dict = mod.EstEntries;
