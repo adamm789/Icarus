@@ -7,9 +7,11 @@ using Icarus.Services.Interfaces;
 using Icarus.ViewModels.Mods.Metadata;
 using Icarus.ViewModels.Util;
 using Icarus.Views.Mods.Metadata;
+using ItemDatabase.Interfaces;
 using ItemDatabase.Paths;
 using System.Collections.ObjectModel;
 using System.Drawing.Imaging;
+using System.Threading.Tasks;
 using xivModdingFramework.General.Enums;
 
 namespace Icarus.ViewModels.Mods
@@ -19,12 +21,14 @@ namespace Icarus.ViewModels.Mods
     {
         IWindowService _windowService;
         MetadataMod _metadataMod;
+        IMetadataFileService _metadataFileService;
 
-        public MetadataModViewModel(MetadataMod mod, IGameFileService gameFileDataService, IWindowService windowService, ILogService logService)
-            : base(mod, gameFileDataService, logService)
+        public MetadataModViewModel(MetadataMod mod, IMetadataFileService metadataFileService, IWindowService windowService, ILogService logService)
+            : base(mod, metadataFileService, logService)
         {
             _metadataMod = mod;
             _windowService = windowService;
+            _metadataFileService = metadataFileService;
 
             if (_metadataMod.EqdpEntries.Count > 0)
             {
@@ -79,6 +83,11 @@ namespace Icarus.ViewModels.Mods
                 return ret;
             }
             return false;
+        }
+
+        public override async Task<IGameFile?> GetFileData(IItem? itemArg = null)
+        {
+            return await _metadataFileService.GetMetadata(itemArg);
         }
     }
 }

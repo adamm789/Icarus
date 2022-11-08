@@ -22,7 +22,7 @@ namespace Icarus.ViewModels.Mods
     {
         public IMod Mod { get; }
         public IItem? SelectedItem { get; protected set; }
-        protected readonly IGameFileService _gameFileService;
+        readonly IGameFileService _gameFileService;
         public ImportSource ImportSource => Mod.ImportSource;
         public bool IsInternal => Mod.ImportSource == ImportSource.Vanilla;
         public virtual bool IsReadOnly
@@ -175,10 +175,7 @@ namespace Icarus.ViewModels.Mods
             return TrySetDestinationPath(DestinationPath);
         }
 
-        public virtual async Task<IGameFile?> GetFileData(IItem? itemArg = null)
-        {
-            return await _gameFileService.GetFileData(itemArg, Mod.GetType());
-        }
+        public abstract Task<IGameFile?> GetFileData(IItem? itemArg = null);
 
         /// <summary>
         /// Tries to get data from the user-provided path
@@ -189,7 +186,8 @@ namespace Icarus.ViewModels.Mods
         protected virtual bool TrySetDestinationPath(string path, string name = "")
         {
             //if (path == DestinationPath) return false;
-            var modData = Task.Run(() => _gameFileService.TryGetFileData(path, GetType(), name)).Result;
+            //var modData = Task.Run(() => _gameFileService.TryGetFileData(path, GetType(), name)).Result;
+            var modData = Task.Run(() => GetFileData()).Result;
             if (modData == null)
             {
                 _logService.Warning($"Could not set \"{path}\" as {GetType().Name}");

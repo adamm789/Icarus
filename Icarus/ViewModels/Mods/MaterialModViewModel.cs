@@ -24,8 +24,31 @@ namespace Icarus.ViewModels.Mods
         IWindowService _windowService;
         ShaderInfoViewModel _shaderInfoViewModel;
 
+        IMaterialFileService _materialFileService;
+
         // TODO: Include a section that shows the overall edits to all items
         // e.g. Group and display the mods that affect e6111
+
+        public MaterialModViewModel(MaterialMod mod, IMaterialFileService materialFileService, IWindowService windowService, ILogService logService)
+            : base(mod, materialFileService, logService)
+        {
+            _material = mod;
+            _materialVariant = XivPathParser.GetMtrlVariant(_material.Path);
+            _windowService = windowService;
+            _materialFileService = materialFileService;
+
+            var stainingTemplateFile = materialFileService.GetStainingTemplateFile();
+
+            ShaderInfoViewModel = new(_material);
+            if (_material.ColorSetData.Count > 0)
+            {
+                ColorSetViewModel = new(_material, stainingTemplateFile);
+            }
+
+            SetCanExport();
+        }
+
+        /*
         public MaterialModViewModel(MaterialMod mod, IGameFileService gameFileDataService, IWindowService windowService, ILogService logService)
             : base(mod, gameFileDataService, logService)
         {
@@ -42,6 +65,7 @@ namespace Icarus.ViewModels.Mods
 
             SetCanExport();
         }
+        */
 
         // TODO: Update MaterialMod with color set stuff
 
@@ -99,7 +123,7 @@ namespace Icarus.ViewModels.Mods
 
         public override async Task<IGameFile?> GetFileData(IItem? itemArg = null)
         {
-            return await _gameFileService.GetMaterialFileData(itemArg, MaterialVariant);
+            return await _materialFileService.GetMaterialFileData(itemArg, MaterialVariant);
         }
 
         public List<string> VariantList { get; } = new()

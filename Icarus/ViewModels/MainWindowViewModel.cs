@@ -56,11 +56,12 @@ namespace Icarus.ViewModels
             ModPackListViewModel = new ModPackListViewModel(ModPackViewModel.ModsListViewModel, viewModelService, logService);
 
             ItemListViewModel = new(itemListService, logService);
-            ImportVanillaViewModel = new(ModPackViewModel.ModsListViewModel, ItemListViewModel, gameFileDataService, logService);
+            ImportVanillaViewModel = new(ModPackViewModel.ModsListViewModel, ItemListViewModel, ServiceManager.GetRequiredService<VanillaFileService>(), logService);
+
             ExportViewModel = new(ModPackViewModel.ModsListViewModel, _messageBoxService, _exportService);
             ImportViewModel = new(ModPackViewModel, ModPackListViewModel, _importService, settingsService, logService);
 
-            SimpleEditorViewModel = new(ModPackViewModel, ItemListViewModel, ImportVanillaViewModel, ImportViewModel, ExportViewModel);
+            SimpleEditorViewModel = new(ModPackViewModel, ItemListViewModel, ImportViewModel, ExportViewModel, ImportVanillaViewModel);
             AdvancedEditorViewModel = new(ModPackViewModel, ExportViewModel, ModPackListViewModel);
 
             var exportStatusChange = new PropertyChangedEventHandler(OnExportStatusChanged);
@@ -113,7 +114,13 @@ namespace Icarus.ViewModels
         public IModPackMetaViewModel ModPackMetaViewModel => ModPackViewModel.ModPackMetaViewModel;
         public ExportViewModel ExportViewModel { get; set; }
         public ImportViewModel ImportViewModel { get; set; }
+
         public ImportVanillaViewModel ImportVanillaViewModel { get; set; }
+        public ImportVanillaModelViewModel ImportVanillaModelViewModel { get; set; }
+        public ImportVanillaMaterialViewModel ImportVanillaMaterialViewModel { get; set; }
+        public ImportVanillaMetadataViewModel ImportVanillaMetadataViewModel { get; set; }
+        public ImportVanillaTextureViewModel ImportVanillaTextureViewModel { get; set; }
+
         public ItemListViewModel ItemListViewModel { get; set; }
         public FilteredModsListViewModel FilteredModsListViewModel { get; set; }
         public IUserPreferencesService UserPreferencesService { get; set; }

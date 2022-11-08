@@ -30,6 +30,7 @@ namespace Icarus.Services.Files
         readonly ILogService _logService;
         readonly IGameFileService _gameFileDataService;
         readonly ISettingsService _settingsService;
+        readonly IModelFileService _modelFileService;
 
         TexToolsModPackImporter _ttmpImporter;
         protected Queue<string> _importFileQueue = new();
@@ -38,12 +39,14 @@ namespace Icarus.Services.Files
 
         ObservableCollection<ModPack> ImportCollection;
 
-        public ImportService(IGameFileService gameFileDataService, ISettingsService settingsService, ConverterService converterService, ILogService logService, LuminaService lumina) : base(lumina)
+        public ImportService(IGameFileService gameFileDataService, ISettingsService settingsService, ConverterService converterService, ILogService logService, LuminaService lumina,
+            IModelFileService modelFileService) : base(lumina)
         {
             _settingsService = settingsService;
             _logService = logService;
             _converterService = converterService;
             _gameFileDataService = gameFileDataService;
+            _modelFileService = modelFileService;   
         }
 
         protected override void OnLuminaSet()
@@ -299,7 +302,7 @@ namespace Icarus.Services.Files
         {
             if (mod is ModelMod mdlMod)
             {
-                var gameFile = _gameFileDataService.TryGetModelFileData(mdlMod.Path);
+                var gameFile = _modelFileService.TryGetModelFileData(mdlMod.Path);
                 if (gameFile == null)
                 {
                     _logService.Error($"Could not get vanilla information of {mdlMod.Path}.");

@@ -29,13 +29,16 @@ namespace Icarus.ViewModels.Mods
     public class ModelModViewModel : ModViewModel
     {
         readonly ModelMod _modelMod;
+        readonly IModelFileService _modelFileService;
 
         #region Constructors
 
-        public ModelModViewModel(ModelMod modelMod, ViewModelService viewModelService, IGameFileService gameFileService, ILogService logService)
-            : base(modelMod, gameFileService, logService)
+        public ModelModViewModel(ModelMod modelMod, ViewModelService viewModelService, IModelFileService modelFileService, ILogService logService)
+            : base(modelMod, modelFileService, logService)
         {
             _modelMod = modelMod;
+            _modelFileService = modelFileService;
+
             var importedModel = modelMod.ImportedModel;
 
             if (importedModel != null)
@@ -103,7 +106,7 @@ namespace Icarus.ViewModels.Mods
 
         public async override Task<IGameFile?> GetFileData(IItem? itemArg = null)
         {
-            return await Task.Run(() => _gameFileService.GetModelFileData(itemArg, TargetRace));
+            return await Task.Run(() => _modelFileService.GetModelFileData(itemArg, TargetRace));
         }
 
         public override bool SetModData(IGameFile? gameFile)

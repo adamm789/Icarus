@@ -74,7 +74,6 @@ namespace Icarus.Services.GameFiles
             {
                 return false;
             }
-
             try
             {
                 return _lumina.FileExists(path);
@@ -94,6 +93,48 @@ namespace Icarus.Services.GameFiles
             _logService.Verbose("Creating item list.");
             Data = new(_lumina);
             IsLoaded = true;
+        }
+
+        public IItem? TryGetItem(string path, string itemName = "")
+        {
+            List<IItem> results = new();
+
+            if (!String.IsNullOrWhiteSpace(itemName))
+            {
+                results = Search(itemName, true);
+                if (results.Count == 1)
+                {
+                    return results[0];
+                }
+                else
+                {
+
+                }
+            }
+            if (results.Count == 0)
+            {
+                results = Search(path);
+                if (results.Count > 0)
+                {
+                    return results[0];
+                }
+            }
+            return null;
+        }
+
+        public string TryGetName(string path, string itemName = "")
+        {
+            if (!String.IsNullOrWhiteSpace(itemName))
+            {
+                return itemName;
+            }
+            var result = TryGetItem(path, itemName);
+            if (result != null)
+            {
+                return result.Name;
+            }
+
+            return "";
         }
 
         public Dictionary<string, SortedDictionary<string, IItem>> GetAllItems() => Data.GetAllItems();

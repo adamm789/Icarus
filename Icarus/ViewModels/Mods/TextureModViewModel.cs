@@ -19,10 +19,12 @@ namespace Icarus.ViewModels.Mods
     public class TextureModViewModel : ModViewModel
     {
         TextureMod _textureMod;
-        public TextureModViewModel(TextureMod mod, IGameFileService gameFileService, ILogService logService)
-            : base(mod, gameFileService, logService)
+        readonly ITextureFileService _textureFileService;
+        public TextureModViewModel(TextureMod mod, ITextureFileService textureFileService, ILogService logService)
+            : base(mod, textureFileService, logService)
         {
             _textureMod = mod;
+            _textureFileService = textureFileService;
             _textureVariant = XivPathParser.GetTexVariant(mod.Path);
             SetCanExport();
             TexTypeValues = new()
@@ -84,7 +86,7 @@ namespace Icarus.ViewModels.Mods
 
         public override async Task<IGameFile?> GetFileData(IItem? itemArg = null)
         {
-            return await _gameFileService.GetTextureFileData(itemArg, TexType, TextureVariant);
+            return await _textureFileService.GetTextureFileData(itemArg, TexType, TextureVariant);
         }
 
         public override bool SetModData(IGameFile gameFile)

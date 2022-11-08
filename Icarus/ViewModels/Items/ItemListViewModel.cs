@@ -53,7 +53,7 @@ namespace Icarus.ViewModels.Items
             {
                 _searchText = value;
                 OnPropertyChanged();
-                Search(_searchText);
+                FilterSearch(_searchText);
             }
         }
 
@@ -99,7 +99,9 @@ namespace Icarus.ViewModels.Items
             view.Filter = ChildSearchFilter;
         }
 
-        public void Search(string term)
+        public List<IItem> Search(string str, bool exactMatch = false) => _itemListService.Search(str, exactMatch);
+
+        private void FilterSearch(string term)
         {
             var numMatches = 0;
 
@@ -108,13 +110,20 @@ namespace Icarus.ViewModels.Items
                 var numVisible = item.Search(term);
                 numMatches += numVisible;
             }
-
+            if (numMatches == 1)
+            {
+                var results = _itemListService.Search(SearchText);
+                if (results.Count == 1)
+                {
+                    SelectedItem = results[0];
+                }
+            }
             if (numMatches == 0)
             {
                 if (_itemListService.TrySearch(SearchText))
                 {
-                    CompletePath = SearchText;
                     SelectedItem = null;
+                    CompletePath = SearchText;
                 }
                 else
                 {

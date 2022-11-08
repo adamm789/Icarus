@@ -17,15 +17,25 @@ namespace Icarus.ViewModels.Mods
     {
         public byte[] Data;
 
-        public ReadOnlyModViewModel(IMod mod, IGameFileService gameFileService, ILogService logService)
-            : base(mod, gameFileService, logService)
+        public ReadOnlyModViewModel(IMod mod, ILogService logService)
+            : base(mod, null, logService)
         {
             FileName = mod.ModFileName;
+        }
+
+        public override Task<IGameFile?> GetFileData(IItem? itemArg = null)
+        {
+            return null;
         }
 
         public override async Task<bool> SetDestinationItem(IItem? item = null)
         {
             _logService.Information("Cannot set item on ReadOnlyMod.");
+            return false;
+        }
+
+        protected override bool TrySetDestinationPath(string path, string name = "")
+        {
             return false;
         }
     }

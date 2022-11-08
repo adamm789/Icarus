@@ -6,7 +6,7 @@ using xivModdingFramework.General.Enums;
 
 namespace Icarus.Services.GameFiles.Interfaces
 {
-    public interface IModelFileService : IServiceProvider
+    public interface IModelFileService : IGameFileService
     {
         List<XivRace> GetAllRaceMdls(IItem? item = null);
         IModelGameFile? GetModelFileData(IItem? item = null, XivRace race = XivRace.Hyur_Midlander_Male);

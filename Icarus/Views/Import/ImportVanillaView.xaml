@@ -6,6 +6,8 @@
              xmlns:import="clr-namespace:Icarus.ViewModels.Import"
              xmlns:dd="urn:gong-wpf-dragdrop"
              xmlns:ui="clr-namespace:Icarus.UI"
+             xmlns:editors="clr-namespace:Icarus.ViewModels.Editor"
+             xmlns:vm="clr-namespace:Icarus.ViewModels.Import"
              d:DataContext="{d:DesignInstance Type=import:ImportVanillaViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -13,35 +15,52 @@
         <StackPanel.Resources>
             <ui:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"
                 True="Visible" False="Hidden"/>
+
         </StackPanel.Resources>
+        <ContentControl Content="{Binding ImportVanillaModelViewModel}">
+            <ContentControl.Resources>
+                <DataTemplate DataType="{x:Type vm:ImportVanillaModelViewModel}">
+                    <StackPanel>
+                        <TextBox Text="{Binding SelectedItemName}" IsReadOnly="True" Margin="0 10 0 5" HorizontalContentAlignment="Center"/>
+                        <UniformGrid Columns="2" Margin="0 0 0 5" ToolTip="{Binding SelectedItemMdl}">
+                            <ComboBox ItemsSource="{Binding AllRacesMdls}" Text="Add Vanilla Model" SelectedValue="{Binding SelectedRace}" 
+                                      Visibility="{Binding HasSkin, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                            <Button Grid.Row="0" Grid.Column="1" Command="{Binding ImportVanillaFileCommand}" Content="Add Vanilla Mdl" 
+                                    dd:DragDrop.DragSourceIgnore="True"/>
+                        </UniformGrid>
+                    </StackPanel>
+                </DataTemplate>
+            </ContentControl.Resources>
+        </ContentControl>
 
-        <TextBox Text="{Binding SelectedItemName}" IsReadOnly="True" Margin="0 10 0 5"/>
+        <ContentControl Content="{Binding ImportVanillaMaterialViewModel}">
+            <ContentControl.Resources>
+                <DataTemplate DataType="{x:Type import:ImportVanillaMaterialViewModel}">
+                    <StackPanel>
+                        <Button Command="{Binding ImportVanillaFileCommand}" Content="Add Vanilla Mtrl" dd:DragDrop.DragSourceIgnore="True"
+                                ToolTip="{Binding SelectedItemMtrl}"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ContentControl.Resources>
+        </ContentControl>
 
-        <!-- Vanilla Model -->
-        <TextBox Text="{Binding SelectedItemMdl}" IsReadOnly="True"/>
-        <UniformGrid Columns="2" Margin="0 0 0 5">
-            <ComboBox ItemsSource="{Binding AllRacesMdls}"
-                  Text="Add Vanilla Model" SelectedValue="{Binding SelectedRace}" 
-                  Visibility="{Binding HasSkin, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-            <Button Grid.Row="0" Grid.Column="1" Command="{Binding GetVanillaModel}" Content="Add Vanilla Mdl"
-                    IsEnabled="{Binding CanImportMdl}" dd:DragDrop.DragSourceIgnore="True"/>
-        </UniformGrid>
+        <ContentControl Content="{Binding ImportVanillaTextureViewModel}">
+            <ContentControl.Resources>
+                <DataTemplate DataType="{x:Type import:ImportVanillaTextureViewModel}">
+                    <UniformGrid Columns="2">
+                        <ComboBox ItemsSource="{Binding AvailableTexTypes}" SelectedValue="{Binding SelectedTexType}" IsEnabled="{Binding CanChooseTexType}"/>
+                        <Button Command="{Binding ImportVanillaFileCommand}" Content="Add Vanilla Tex" dd:DragDrop.DragSourceIgnore="True"/>
+                    </UniformGrid>
+                </DataTemplate>
+            </ContentControl.Resources>
+        </ContentControl>
 
-
-        <!-- Vanilla Material -->
-        <TextBox Text="{Binding SelectedItemMtrl}" IsReadOnly="True"/>
-        <Button Command="{Binding GetVanillaMaterial}" Content="Add Vanilla Mtrl"
-                IsEnabled="{Binding CanImportMtrl}" dd:DragDrop.DragSourceIgnore="True"/>
-
-        <!-- Vanilla Texture -->
-        <UniformGrid Columns="2">
-            <ComboBox ItemsSource="{Binding AvailableTexTypes}" SelectedValue="{Binding SelectedTexType}"/>
-            <Button Command="{Binding GetVanillaTexture}" Content="Add Vanilla Tex"
-                IsEnabled="{Binding CanImportTex}" dd:DragDrop.DragSourceIgnore="True"/>
-        </UniformGrid>
-
-        <!-- Vanilla Metadata -->
-        <Button Command="{Binding GetVanillaMetadata}" 
-                IsEnabled="{Binding CanImportMeta}" Content="Add Metadata"/>
+        <ContentControl Content="{Binding ImportVanillaMetadataViewModel}">
+            <ContentControl.Resources>
+                <DataTemplate DataType="{x:Type import:ImportVanillaMetadataViewModel}">
+                    <Button Command="{Binding ImportVanillaFileCommand}" Content="Add Metadata"/>
+                </DataTemplate>
+            </ContentControl.Resources>
+        </ContentControl>
     </StackPanel>
 </UserControl>

@@ -91,19 +91,19 @@ namespace ItemDatabase.Paths
             return "";
         }
 
-        public static bool IsMdl(string path)
+        public static bool IsMdl(string? path)
         {
             if (string.IsNullOrWhiteSpace(path)) return false;
             return Regex.IsMatch(path, @".mdl$");
         }
 
-        public static bool IsMtrl(string path)
+        public static bool IsMtrl(string? path)
         {
             if (string.IsNullOrWhiteSpace(path)) return false;
             return Regex.IsMatch(path, @".mtrl$");
         }
 
-        public static bool IsTex(string path)
+        public static bool IsTex(string? path)
         {
             if (string.IsNullOrWhiteSpace(path)) return false;
             return Regex.IsMatch(path, @".tex$");

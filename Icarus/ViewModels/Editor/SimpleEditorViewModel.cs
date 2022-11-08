@@ -21,15 +21,16 @@ namespace Icarus.ViewModels.Editor
         public ItemListViewModel ItemListViewModel { get; }
         public ImportVanillaViewModel ImportVanillaViewModel { get; }
 
-        public SimpleEditorViewModel(IModPackViewModel modPack, ItemListViewModel itemList, ImportVanillaViewModel importVanilla, ImportViewModel import, ExportViewModel export)
+        public SimpleEditorViewModel(IModPackViewModel modPack, ItemListViewModel itemList, ImportViewModel import, ExportViewModel export, ImportVanillaViewModel importVanillaViewModel)
         {
             ModPackMetaViewModel = modPack.ModPackMetaViewModel;
             ModsListViewModel = modPack.ModsListViewModel;
 
             ItemListViewModel = itemList;
             ImportViewModel = import;
-            ImportVanillaViewModel = importVanilla;
             ExportViewModel = export;
+
+            ImportVanillaViewModel = importVanillaViewModel;
         }
     }
 }

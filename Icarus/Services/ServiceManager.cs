@@ -52,6 +52,13 @@ namespace Icarus.Services
             _services.AddSingleton<ConverterService>();
 
             _services.AddSingleton<LuminaService>();
+
+            _services.AddSingleton<IModelFileService, ModelFileService>();
+            _services.AddSingleton<IMaterialFileService, MaterialFileService>();
+            _services.AddSingleton<ITextureFileService, TextureFileService>();
+            _services.AddSingleton<IMetadataFileService, MetadataFileService>();
+
+            _services.AddSingleton<VanillaFileService>();
         }
     }
 }

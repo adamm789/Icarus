@@ -25,7 +25,7 @@ namespace ItemDatabase
             throw new NotImplementedException();
         }
 
-        public override string GetMtrlPath()
+        public override string GetMtrlPath(string variant="a")
         {
             throw new NotImplementedException();
         }

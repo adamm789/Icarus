@@ -66,6 +66,7 @@
                 </ContentControl.Resources>
             </ContentControl>
         </Grid>
+
         <Grid Grid.Column="1">
             <Grid>
                 <Grid.RowDefinitions>

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Icarus.Services.GameFiles.Interfaces
 {
-    public interface IMetadataFileService
+    public interface IMetadataFileService : IGameFileService
     {
         Task<IMetadataFile?> TryGetMetadata(string path, string? itemName = null);
         Task<IMetadataFile?> GetMetadata(IItem? itemArg = null);

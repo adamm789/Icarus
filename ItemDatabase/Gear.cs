@@ -94,9 +94,10 @@ namespace ItemDatabase
             return GetMdlPath(baseRace);
         }
 
-        public override string GetMtrlPath()
+        public override string GetMtrlPath(string variant = "a")
         {
-            return GetMtrlFileName();
+            //return GetMtrlFileName();
+            return GetMtrlPath(XivRace.Hyur_Midlander_Male, variant);
         }
 
         public override string GetMtrlFileName()

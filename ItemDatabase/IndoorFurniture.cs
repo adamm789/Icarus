@@ -44,12 +44,7 @@ namespace ItemDatabase
             return "fun_b0_m" + code + "_" + variant + ".mtrl";
         }
 
-        public override string GetMtrlPath()
-        {
-            return GetMtrlPath();
-        }
-
-        public string GetMtrlPath(string variant = "0a")
+        public override string GetMtrlPath(string variant = "0a")
         {
             // bgcommon/hou/indoor/general/1142/material/fun_b0_m1142_0b.mtrl
             return "bgcommon/hou/indoor/general/" + code + "/material/fun_b0_m" + code + "_" + variant + ".mtrl";

@@ -26,13 +26,22 @@ namespace Icarus.Services
         readonly IWindowService _windowService;
         readonly ILogService _logService;
 
-        public ViewModelService(IGameFileService gameFileDataService,
-            IUserPreferencesService userPreferencesService, IWindowService windowService, ILogService logService)
+        readonly IModelFileService _modelFileService;
+        readonly IMaterialFileService _materialFileService;
+        readonly ITextureFileService _textureFileService;
+        readonly IMetadataFileService _metadataFileService;
+
+        public ViewModelService(IGameFileService gameFileDataService, IUserPreferencesService userPreferencesService, IWindowService windowService, ILogService logService, VanillaFileService vanillaFileService)
         {
             _gameFileService = gameFileDataService;
             _userPreferencesService = userPreferencesService;
             _windowService = windowService;
             _logService = logService;
+
+            _modelFileService = vanillaFileService.ModelFileService;
+            _materialFileService = vanillaFileService.MaterialFileService;
+            _textureFileService = vanillaFileService.TextureFileService;
+            _metadataFileService = vanillaFileService.MetadataFileService;
         }
 
         public ModPackMetaViewModel GetModPackMetaViewModel(ModPack modPack, bool isReadOnly = false)
@@ -44,27 +53,27 @@ namespace Icarus.Services
         {
             if (file is ModelMod modelMod)
             {
-                var vm = new ModelModViewModel(modelMod, this, _gameFileService, _logService);
+                var vm = new ModelModViewModel(modelMod, this, _modelFileService, _logService);
                 return vm;
             }
             else if (file is MaterialMod mtrlMod)
             {
-                var vm = new MaterialModViewModel(mtrlMod, _gameFileService, _windowService, _logService);
+                var vm = new MaterialModViewModel(mtrlMod, _materialFileService, _windowService, _logService);
                 return vm;
             }
             else if (file is TextureMod texMod)
             {
-                var vm = new TextureModViewModel(texMod, _gameFileService, _logService);
+                var vm = new TextureModViewModel(texMod, _textureFileService, _logService);
                 return vm;
             }
             else if (file is MetadataMod metaMod)
             {
-                var vm = new MetadataModViewModel(metaMod, _gameFileService, _windowService, _logService);
+                var vm = new MetadataModViewModel(metaMod, _metadataFileService, _windowService, _logService);
                 return vm;
             }
             else
             {
-                return new ReadOnlyModViewModel(file, _gameFileService, _logService);
+                return new ReadOnlyModViewModel(file, _logService);
             }
         }
 

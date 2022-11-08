@@ -8,7 +8,7 @@ using xivModdingFramework.Textures.Enums;
 
 namespace Icarus.Services.GameFiles.Interfaces
 {
-    public interface ITextureFileService : IServiceProvider
+    public interface ITextureFileService : IGameFileService
     {
         List<XivTexType>? GetAvailableTexTypes(IItem? itemArg = null);
         Task<ITextureGameFile?> GetTextureFileData(IItem? item = null, XivTexType type = XivTexType.Normal, string variant="a");
