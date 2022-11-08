@@ -70,7 +70,7 @@ namespace Icarus.Services.GameFiles
 
         public bool TrySearch(string path)
         {
-            if (!path.Contains(".mdl") && !path.Contains(".mtrl"))
+            if (!path.Contains(".mdl") && !path.Contains(".mtrl") && !path.EndsWith(".tex"))
             {
                 return false;
             }

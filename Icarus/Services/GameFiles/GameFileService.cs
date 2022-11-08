@@ -10,6 +10,7 @@ using ItemDatabase;
 using ItemDatabase.Interfaces;
 using ItemDatabase.Paths;
 using Lumina.Data.Files;
+using Lumina.Models.Materials;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -19,6 +20,7 @@ using xivModdingFramework.General.Enums;
 using xivModdingFramework.Materials.DataContainers;
 using xivModdingFramework.Materials.FileTypes;
 using xivModdingFramework.Models.DataContainers;
+using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.Mods.FileTypes;
 using xivModdingFramework.SqPack.FileTypes;
 using xivModdingFramework.Textures.DataContainers;
@@ -193,12 +195,65 @@ namespace Icarus.Services.GameFiles
             return retVal;
         }
 
-        // TODO: Implement with Lumina so user can search for arbitrary .tex files
         public async Task<ITextureGameFile?> TryGetTextureFileData(string path, string itemName = "")
         {
+            var xivTex = await TryGetTextureFromPath(path);
             var result = TryGetItem(path, itemName);
 
-            return await GetTextureFileData(result);
+            if (result != null)
+            {
+                return await GetTextureFileData(result);
+            }
+
+            if (xivTex != null)
+            {
+                var typeFormatDict = new Dictionary<XivTexType, XivTexFormat>() { { xivTex.TextureTypeAndPath.Type, xivTex.TextureFormat } };
+
+                var textureGameFile = new TextureGameFile()
+                {
+                    Path = path,
+                    XivTex = xivTex,
+                    TexType = xivTex.TextureTypeAndPath.Type,
+                    TexFormat = xivTex.TextureFormat,
+                    Name = "???",
+                    TypeFormatDict = typeFormatDict,
+                    Category = XivPathParser.GetCategory(path)
+                };
+                return textureGameFile;
+            }
+            return null;
+        }
+
+        private async Task<XivTex?> TryGetTextureFromPath(string path)
+        {
+            try
+            {
+                var dat = new Dat(_frameworkGameDirectory);
+                var xivTex = await dat.GetType4Data(path, true);
+                var type = XivTexType.Normal;
+
+                try
+                {
+                    type = XivPathParser.GetTexType(path);
+                }
+                catch (ArgumentException)
+                {
+                    _logService.Error("Using TexType Normal");
+                }
+                var dataFile = XivDataFiles.GetXivDataFile(path);
+
+                xivTex.TextureTypeAndPath = new()
+                {
+                    Path = path,
+                    Type = type,
+                    DataFile = dataFile
+                };
+                return xivTex;
+            } catch (Exception)
+            {
+
+            }
+            return null;
         }
 
         protected IItem? TryGetItem(string path, string? itemName = null)
