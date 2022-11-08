@@ -108,19 +108,6 @@ namespace Icarus.Util.Export
                     _logService.Error(ex, $"Could not export model to fbx. {mdlMod.Name}");
                     return;
                 }
-
-                var model = mdlMod.ImportedModel;
-
-                // TODO: Implement ShouldExportMaterials
-                if (mdlMod.ShouldExportRawMaterials && mod.IsInternal)
-                {
-                    var textureOutputPath = Path.Combine(outputPath, "textures");
-                    _logService.Information("Trying to get Materials.");
-                    _logService.Debug("Exceptions may occur. These can be safely ignored.");
-                    // TODO?: Textures for (only?) skins, seems wrong
-                    await Mdl.ExportMaterialsForModel(model, textureOutputPath, _gameDirectoryFramework);
-                    _logService.Verbose("Done with getting materials.");
-                }
             }
             else if (mod is MaterialMod mtrlMod)
             {

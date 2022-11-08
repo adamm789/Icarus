@@ -15,7 +15,6 @@ namespace Icarus.Mods
         public string ModFileName { get; set; } = "";
         public string ModFilePath { get; set; } = "";
 
-        public bool IsInternal { get; set; } = false;
         public bool IsDefault { get; set; } = false;
         public ImportSource ImportSource { get; set; }
 

@@ -171,11 +171,6 @@ namespace Icarus.Util
             // TODO: Export texture to .pmp
 
             _logService.Verbose($"Exporting texture: {mod.ModFileName} with forTexTools={forTexTools}");
-            if (mod.IsInternal)
-            {
-                _logService.Error("Unknown export method for internal textures.");
-                return Array.Empty<byte>();
-            }
 
             if (!forTexTools)
             {

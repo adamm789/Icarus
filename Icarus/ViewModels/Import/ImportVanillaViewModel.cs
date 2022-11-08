@@ -361,7 +361,7 @@ namespace Icarus.ViewModels.Import
             }
             if (metadataFile != null)
             {
-                var mod = new MetadataMod(metadataFile.ItemMetadata, ImportSource.Vanilla);
+                var mod = new MetadataMod(metadataFile, ImportSource.Vanilla);
                 var modViewModel = _modPackViewModel.Add(mod);
                 return mod;
             }

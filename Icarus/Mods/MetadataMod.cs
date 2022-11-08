@@ -50,17 +50,23 @@ namespace Icarus.Mods
         // ImcEntries
         // Root
 
-        /*
-        public MetadataMod(IMetadataFile file, bool isInternal = false) : base(file, isInternal)
+
+        public MetadataMod(IMetadataFile file, ImportSource source = ImportSource.Vanilla) : base(file, source)
         {
             ItemMetadata = file.ItemMetadata;
             Slot = file.Slot;
+            SetModData(file);
+            /*
+            Path = file.Path;
+            Name = file.Name;
+            Category = file.Category;
+            Slot = file.Slot;
+            */
         }
-        */
+
 
         public MetadataMod(ItemMetadata data, ImportSource source = ImportSource.Vanilla) : base(source)
         {
-            
             ItemMetadata = data;
 
             ModFileName = data.Root.ToRawItem().Name;
@@ -86,7 +92,7 @@ namespace Icarus.Mods
 
             ItemMetadata.Root = metaFile.ItemMetadata.Root;
             Path = metaFile.Path;
-            EstEntries = metaFile.ItemMetadata.EstEntries;
+            //EstEntries = metaFile.ItemMetadata.EstEntries;
         }
     }
 }

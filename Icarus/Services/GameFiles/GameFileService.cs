@@ -6,6 +6,7 @@ using Icarus.Services.Interfaces;
 using Icarus.Util;
 using Icarus.Util.Extensions;
 using Icarus.ViewModels.Mods;
+using ItemDatabase;
 using ItemDatabase.Interfaces;
 using ItemDatabase.Paths;
 using Lumina.Data.Files;
@@ -445,7 +446,8 @@ namespace Icarus.Services.GameFiles
                     ItemMetadata = itemMetadata,
                     Path = path,
                     Name = name,
-                    Category = category
+                    Category = category,
+                    Slot = slot.GetShortHandSlot(false)
                 };
             }
             catch (Exception ex)

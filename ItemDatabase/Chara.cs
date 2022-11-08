@@ -15,7 +15,8 @@ namespace ItemDatabase
             Name = _smallClothesDict[Slot];
             _directory = "chara/equipment/";
             _baseString = "e0000";
-            _slotName = _suffixDict[Slot];
+            //_slotName = _suffixDict[Slot];
+            _slotName = Slot.GetShortHandSlot(true);
 
             _shortVariantString = "v00";
             _longVariantString = "v0000";
@@ -29,7 +30,8 @@ namespace ItemDatabase
             Name = name;
             _directory = "chara/equipment/";
             _baseString = baseString;
-            _slotName = _suffixDict[Slot];
+            //_slotName = _suffixDict[Slot];
+            _slotName = Slot.GetShortHandSlot(true);
             _shortVariantString = "v00";
             _longVariantString = "v0000";
         }

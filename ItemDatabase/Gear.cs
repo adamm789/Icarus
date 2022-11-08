@@ -47,7 +47,8 @@ namespace ItemDatabase
             _base = (ushort)ModelMain;
             _variant = (ushort)(ModelMain >> 16);
 
-            _slotName = _suffixDict[Slot];
+            //_slotName = _suffixDict[Slot];
+            _slotName = Slot.GetShortHandSlot(true);
             _shortVariantString = "v" + _variant.ToString().PadLeft(2, '0');
             _longVariantString = "v" + _variant.ToString().PadLeft(4, '0');
 
@@ -64,6 +65,7 @@ namespace ItemDatabase
             Code = _baseString;
             VariantCode = $"{_baseString}{_slotName}_v{_variant}";
         }
+
 
         public override string GetMdlPath()
         {

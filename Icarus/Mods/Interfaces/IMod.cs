@@ -11,7 +11,6 @@ namespace Icarus.Mods.Interfaces
         /// Path to the user-provided file
         /// </summary>
         string ModFilePath { get; }
-        bool IsInternal { get; }
         bool IsDefault { get; set; }
         ImportSource ImportSource { get; }
 

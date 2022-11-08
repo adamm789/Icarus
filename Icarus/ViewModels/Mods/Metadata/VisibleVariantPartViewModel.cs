@@ -23,7 +23,7 @@ namespace Icarus.ViewModels.Mods.Metadata
             _imc = imc;
             _index = index;
 
-            PartLabel = Convert.ToChar('a' + _index);
+            PartLabel = Convert.ToChar('A' + _index);
         }
 
         bool _isEnabled;
