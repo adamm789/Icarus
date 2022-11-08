@@ -30,11 +30,11 @@
         </Grid.Resources>
         <ScrollViewer>
             <StackPanel>
-                <ContentControl Content="{Binding EqdpViewModel}" HorizontalContentAlignment="Stretch"/>
-                <ContentControl Content="{Binding EstViewModel}"/>
-                <ContentControl Content="{Binding EqpViewModel}"/>
-                <ContentControl Content="{Binding GmpViewModel}"/>
-                <ContentControl Content="{Binding ImcViewModel}"/>
+                <ContentControl Content="{Binding EqdpViewModel}" HorizontalContentAlignment="Stretch" HorizontalAlignment="Center" Margin="5"/>
+                <ContentControl Content="{Binding EstViewModel}" HorizontalAlignment="Center" Margin="5"/>
+                <ContentControl Content="{Binding EqpViewModel}" HorizontalAlignment="Center" Margin="5"/>
+                <ContentControl Content="{Binding GmpViewModel}" HorizontalAlignment="Center" Margin="5"/>
+                <ContentControl Content="{Binding ImcViewModel}" HorizontalAlignment="Center" Margin="5"/>
             </StackPanel>
         </ScrollViewer>
     </Grid>

@@ -12,6 +12,7 @@ using xivModdingFramework.Models.DataContainers;
 
 namespace Icarus.ViewModels.Mods.Metadata
 {
+    // "Racial Models"
     public class EqdpViewModel : NotifyPropertyChanged
     {
         private Dictionary<XivRace, EqdpEntryViewModel> _entries = new();

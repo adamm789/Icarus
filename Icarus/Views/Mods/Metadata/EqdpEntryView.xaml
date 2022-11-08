@@ -13,7 +13,7 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
-        <TextBlock Text="{Binding Race}" Grid.Column="0"/>
+        <TextBlock Text="{Binding Race}" Grid.Column="0" Margin="2 2 5 2"/>
         <StackPanel Orientation="Horizontal" Grid.Column="1">
             <CheckBox IsChecked="{Binding Bit1}"/>
         </StackPanel>

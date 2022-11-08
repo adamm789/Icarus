@@ -8,24 +8,23 @@
              d:DataContext="{d:DesignInstance Type=metadata:ImcViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-        <Grid.Resources>
-            <DataTemplate DataType="{x:Type metadata:ImcEntryViewModel}">
-                <local:ImcEntryView/>
-            </DataTemplate>
-        </Grid.Resources>
+    <Border BorderThickness="1" BorderBrush="Black">
+        <Grid Margin="5">
+            <Grid.Resources>
+                <DataTemplate DataType="{x:Type metadata:ImcEntryViewModel}">
+                    <local:ImcEntryView/>
+                </DataTemplate>
+            </Grid.Resources>
 
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding DisplayedEntryName}"/>
-        <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding AvailableEntries}" SelectedIndex="{Binding SelectedIndex}"/>
-        <ContentControl Grid.Row="1" Grid.ColumnSpan="3" Content="{Binding DisplayedEntry}"/>
-    </Grid>
+            <Label Content="Variant Settings" HorizontalAlignment="Center" FontSize="14"/>
+            <ComboBox Grid.Row="1" ItemsSource="{Binding AvailableEntries}" SelectedIndex="{Binding SelectedIndex}" Margin="0 0 0 5"/>
+            <ContentControl Grid.Row="2" Content="{Binding DisplayedEntry}"/>
+        </Grid>
+    </Border>
 </UserControl>

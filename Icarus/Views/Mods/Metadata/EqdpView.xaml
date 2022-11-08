@@ -9,15 +9,18 @@
              d:DataContext="{d:DesignInstance Type=modviewmodels:EqdpViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <StackPanel>
-        <StackPanel.Resources>
-            <DataTemplate DataType="{x:Type modviewmodels:EqdpEntryViewModel}">
-                <local:EqdpEntryView/>
-            </DataTemplate>
-        </StackPanel.Resources>
-        <StackPanel Orientation="Horizontal">
-            <ListBox ItemsSource="{Binding MaleEqdpEntries}" HorizontalContentAlignment="Stretch"/>
-            <ListBox ItemsSource="{Binding FemaleEqdpEntries}" HorizontalContentAlignment="Stretch"/>
+    <Border BorderThickness="1" BorderBrush="Black">
+        <StackPanel>
+            <StackPanel.Resources>
+                <DataTemplate DataType="{x:Type modviewmodels:EqdpEntryViewModel}">
+                    <local:EqdpEntryView/>
+                </DataTemplate>
+            </StackPanel.Resources>
+            <Label Content="Racial Models" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" FontSize="14" />
+            <UniformGrid Columns="2">
+                <ListView ItemsSource="{Binding MaleEqdpEntries}" HorizontalContentAlignment="Stretch" BorderBrush="Transparent"/>
+                <ListView ItemsSource="{Binding FemaleEqdpEntries}" HorizontalContentAlignment="Stretch" BorderBrush="Transparent"/>
+            </UniformGrid>
         </StackPanel>
-    </StackPanel>
+    </Border>
 </UserControl>

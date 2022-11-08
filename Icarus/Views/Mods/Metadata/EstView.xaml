@@ -8,19 +8,22 @@
              d:DataContext="{d:DesignInstance Type=metadata:EstViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-        <Grid.Resources>
-            <DataTemplate DataType="{x:Type metadata:EstEntryViewModel}">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="{Binding Race}" Margin="5"/>
-                    <TextBlock Text="{Binding SetId}" Margin="5"/>
-                    <TextBox Text="{Binding SkelId}" Margin="5"/>
-                </StackPanel>
-            </DataTemplate>
-        </Grid.Resources>
-        <StackPanel Orientation="Horizontal">
-            <ListBox ItemsSource="{Binding MaleEstEntries}" HorizontalContentAlignment="Stretch"/>
-            <ListBox ItemsSource="{Binding FemaleEstEntries}" HorizontalContentAlignment="Stretch"/>
+    <Border BorderThickness="1" BorderBrush="Black">
+        <StackPanel>
+            <StackPanel.Resources>
+                <DataTemplate DataType="{x:Type metadata:EstEntryViewModel}">
+                    <StackPanel Orientation="Horizontal" IsEnabled="{Binding IsEnabled}">
+                        <TextBlock Text="{Binding Race}" Margin="5"/>
+                        <TextBlock Text="{Binding SetId}" Margin="5"/>
+                        <TextBox Text="{Binding SkelId}" Margin="5"/>
+                    </StackPanel>
+                </DataTemplate>
+            </StackPanel.Resources>
+            <Label Content="Extra Skeleton Settings" HorizontalAlignment="Center" FontSize="14"/>
+            <UniformGrid Columns="2">
+                <ListView ItemsSource="{Binding MaleEstEntries}" HorizontalContentAlignment="Stretch" BorderBrush="Transparent"/>
+                <ListView ItemsSource="{Binding FemaleEstEntries}" HorizontalContentAlignment="Stretch" BorderBrush="Transparent"/>
+            </UniformGrid>
         </StackPanel>
-    </Grid>
+    </Border>
 </UserControl>

@@ -8,45 +8,54 @@
              d:DataContext="{d:DesignInstance Type=metadata:GmpViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        
-        <CheckBox Grid.Column="0" IsChecked="{Binding Enabled}">
-            <TextBlock Text="Enabled /visor"/>
-        </CheckBox>
+    <Border BorderThickness="1" BorderBrush="Black">
+        <Grid Margin="5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
 
-        <StackPanel Grid.Column="1">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
-                <TextBlock Text="Animation Type"/>
-                <ComboBox ItemsSource="{Binding AnimatedOptions}" SelectedIndex="{Binding AnimatedIndex}"/>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Rotation A"/>
-                <TextBox Text="{Binding RotationA}"/>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Rotation B"/>
-                <TextBox Text="{Binding RotationB}"/>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Rotation C"/>
-                <TextBox Text="{Binding RotationC}"/>
-            </StackPanel>
-        </StackPanel>
+            </Grid.RowDefinitions>
 
-        <StackPanel Grid.Column="2">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Unknown High"/>
-                <TextBox Text="{Binding UnknownHigh}"/>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Unknown Low"/>
-                <TextBox Text="{Binding UnknownLow}"/>
-            </StackPanel>
-        </StackPanel>
-    </Grid>
+            <Label Content="Visor Settings" HorizontalAlignment="Center" FontSize="14"/>
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <CheckBox Grid.Row="0" Grid.Column="0" IsChecked="{Binding Enabled}" VerticalAlignment="Center">
+                    <TextBlock Text="Enabled /visor"/>
+                </CheckBox>
+
+                <TextBlock Grid.Row="0" Grid.Column="1" Text="Animation Type" Margin="10 0 10 0"/>
+                <ComboBox Grid.Row="0" Grid.Column="2" ItemsSource="{Binding AnimatedOptions}" SelectedIndex="{Binding AnimatedIndex}"/>
+            </Grid>
+            <Grid Grid.Row="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Rotation A" Margin="0 0 5 0"/>
+                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding RotationA}"/>
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Rotation B"/>
+                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding RotationB}"/>
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Rotation C"/>
+                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding RotationC}"/>
+
+                <TextBlock Grid.Row="0" Grid.Column="2" Text="Unknown High"/>
+                <TextBox Grid.Row="0" Grid.Column="3" Text="{Binding UnknownHigh}"/>
+                <TextBlock Grid.Row="1" Grid.Column="2" Text="Unknown Low"/>
+                <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding UnknownLow}"/>
+            </Grid>
+        </Grid>
+    </Border>
 </UserControl>

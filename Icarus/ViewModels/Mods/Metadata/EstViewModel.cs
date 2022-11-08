@@ -12,16 +12,18 @@ using xivModdingFramework.Models.DataContainers;
 
 namespace Icarus.ViewModels.Mods.Metadata
 {
+    // "Extra Skeleton Settings"
     public class EstViewModel : NotifyPropertyChanged
     {
         //public static AllSkeletonEntries;
+        Dictionary<XivRace, HashSet<int>> AllSkeletonEntries;
         public EstViewModel(MetadataMod mod, EqdpViewModel eqdpViewModel)
         {
             var dict = mod.EstEntries;
             foreach (var kvp in dict)
             {
-                var eqdpEntyViewModel = eqdpViewModel.GetEntry(kvp.Key);
-                var vm = new EstEntryViewModel(kvp.Key, mod, eqdpEntyViewModel);
+                var eqdpEntryViewModel = eqdpViewModel.GetEntry(kvp.Key);
+                var vm = new EstEntryViewModel(kvp.Key, mod, eqdpEntryViewModel);
                 if (XivPathParser.IsMaleSkin(kvp.Key))
                 {
                     MaleEstEntries.Add(vm);

@@ -14,7 +14,8 @@ namespace Icarus.ViewModels.Mods.Metadata
     public class ImcViewModel : NotifyPropertyChanged
     {
         public ObservableCollection<ImcEntryViewModel> Entries { get; } = new();
-        public ObservableCollection<int> AvailableEntries { get; } = new();
+        //public ObservableCollection<int> AvailableEntries { get; } = new();
+        public List<string> AvailableEntries { get; } = new();
         private XivDependencyRoot _root;
 
         public ImcViewModel(List<XivImc> entries, XivDependencyRoot root)
@@ -24,9 +25,14 @@ namespace Icarus.ViewModels.Mods.Metadata
             {
                 var imc = new ImcEntryViewModel(entries[i]);
                 Entries.Add(imc);
-                AvailableEntries.Add(i);
+                AvailableEntries.Add(FormatEntryName(i));
             }
             SelectedIndex = 0;
+        }
+
+        private string FormatEntryName(int index)
+        {
+            return $"{index} - {GetFirstOrDefaultItemName(index)}";
         }
 
         private string GetFirstOrDefaultItemName(int index)

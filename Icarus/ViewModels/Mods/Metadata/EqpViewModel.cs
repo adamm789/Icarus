@@ -16,24 +16,16 @@ namespace Icarus.ViewModels.Mods.Metadata
     {
         public EqpViewModel(EquipmentParameter eqpEntry)
         {
-            EqpEntry = eqpEntry;
+            _eqpEntry = eqpEntry;
             UpdateEntries();
             SetPresets();
             UpdatePreset();
+            //UpdateEntries();
+            //SetPresets();
+            //UpdatePreset();
         }
 
         EquipmentParameter _eqpEntry;
-        public EquipmentParameter EqpEntry
-        {
-            get { return _eqpEntry; }
-            set
-            {
-                _eqpEntry = value;
-                OnPropertyChanged();
-                UpdateEntries();
-                SetPresets();
-            }
-        }
 
         ObservableCollection<EqpEntryViewModel> _availableFlags = new();
         public ObservableCollection<EqpEntryViewModel> AvailableFlags
@@ -53,7 +45,8 @@ namespace Icarus.ViewModels.Mods.Metadata
         public bool SimpleSelected
         {
             get { return _simpleSelected; }
-            set {
+            set
+            {
                 _simpleSelected = value;
                 OnPropertyChanged();
                 UpdatePreset();
@@ -64,13 +57,14 @@ namespace Icarus.ViewModels.Mods.Metadata
         public int Index
         {
             get { return _index; }
-            set {
+            set
+            {
                 _index = value;
                 OnPropertyChanged();
                 if (value > 0 && value < Presets.Count)
                 {
                     var str = Presets[_index];
-                    EqpEntry.SetBytes(_currDict[str]);
+                    _eqpEntry.SetBytes(_currDict[str]);
                     UpdateEntries();
                 }
             }
@@ -79,40 +73,46 @@ namespace Icarus.ViewModels.Mods.Metadata
         private void UpdateEntries()
         {
             AvailableFlags.Clear();
-            foreach (var kvp in EqpEntry.GetFlags())
+            foreach (var kvp in _eqpEntry.GetFlags())
             {
                 var flag = kvp.Key;
                 var b = kvp.Value;
 
                 var entry = new EqpEntryViewModel(flag, b);
+                entry.PropertyChanged += new(OnEntryChanged);
                 AvailableFlags.Add(entry);
+            }
+        }
+
+        private void OnEntryChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(EqpEntryViewModel.EqpBool))
+            {
+                UpdatePreset();
             }
         }
 
         private void UpdatePreset()
         {
-            if (SimpleSelected)
-            {
-                var newFlags = AvailableFlags.ToDictionary(v => v.EqpFlag, v => v.EqpBool);
-                EqpEntry.SetFlags(newFlags);
-                var bytes = EqpEntry.GetBytes();
+            var newFlags = AvailableFlags.ToDictionary(v => v.EqpFlag, v => v.EqpBool);
+            _eqpEntry.SetFlags(newFlags);
+            var bytes = _eqpEntry.GetBytes();
 
-                for (var i = 0; i < _currDict.Count; i++)
+            for (var i = 0; i < _currDict.Count; i++)
+            {
+                var kvp = _currDict.ElementAt(i);
+                if (kvp.Value.SequenceEqual(bytes))
                 {
-                    var kvp = _currDict.ElementAt(i);
-                    if (kvp.Value.SequenceEqual(bytes))
-                    {
-                        Index = i+1;
-                        return;
-                    }
+                    Index = i + 1;
+                    return;
                 }
-                Index = 0;
             }
+            Index = 0;
         }
 
         private void SetPresets()
         {
-            var slot = EqpEntry.Slot;
+            var slot = _eqpEntry.Slot;
             if (_presetDict.ContainsKey(slot))
             {
                 Presets = new(_presetDict[slot].Keys);

@@ -17,6 +17,15 @@
             </DataTemplate>
         </StackPanel.Resources>
         <UniformGrid Columns="4">
+            <UniformGrid.Resources>
+                <Style TargetType="TextBlock">
+                    <Setter Property="Margin" Value="0 3 5 0"/>
+                </Style>
+                <Style TargetType="TextBox">
+                    <Setter Property="Margin" Value="0 0 5 0"/>
+                    <Setter Property="VerticalAlignment" Value="Center"/>
+                </Style>
+            </UniformGrid.Resources>
             <TextBlock Text="Material Set"/>
             <TextBox Text="{Binding MaterialSet}"/>
 
