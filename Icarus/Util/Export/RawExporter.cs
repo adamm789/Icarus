@@ -123,7 +123,8 @@ namespace Icarus.Util.Export
                 };
 
                 var texData = MtrlExtensions.MtrlToXivTex(xivMtrl, ttp);
-                TexExtensions.SaveTexAsDDS(outputPath, texData, outputDirectory);
+                outputPath = Path.Combine(outputPath, outputFileName);
+                TexExtensions.SaveTexAsDDS(outputPath, texData);
             }
             else if (mod is TextureMod texMod)
             {

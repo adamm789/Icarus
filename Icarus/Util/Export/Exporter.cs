@@ -301,8 +301,11 @@ namespace Icarus.Util
                         _logService.Verbose($"Deleting temp path: {tempImageFile}");
                         File.Delete(tempImageFile);
                     }
-                    
-                    ddsContainer.Dispose();
+
+                    if (ddsContainer != null)
+                    {
+                        ddsContainer.Dispose();
+                    }
                     return Array.Empty<byte>();
                 }
 
@@ -323,8 +326,10 @@ namespace Icarus.Util
                 _logService.Verbose($"Deleting temp dds file: {tempDdsFile}");
                 File.Delete(tempDdsFile);
             }
-            
-            ddsContainer.Dispose();
+            if (ddsContainer != null)
+            {
+                ddsContainer.Dispose();
+            }
             return bytes;
         }
 
