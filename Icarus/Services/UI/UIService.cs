@@ -24,5 +24,7 @@ namespace Icarus.Services.UI
         public void Show<T>(object dataContext) where T : Window, new() => _windowService.Show<T>(dataContext);
         public void ShowWindow<T>(object dataContext) where T : Window, new() => _windowService.ShowWindow<T>(dataContext);
         public bool IsWindowOpen<T>(string name = "") where T : Window => _windowService.IsWindowOpen<T>(name);
+
+        public DialogResult ShowOptionWindow<T>(object dataContext) where T : Window, new() => _windowService.ShowOptionWindow<T>(dataContext);
     }
 }

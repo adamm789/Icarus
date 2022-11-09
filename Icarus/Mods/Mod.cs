@@ -17,6 +17,7 @@ namespace Icarus.Mods
 
         public bool IsDefault { get; set; } = false;
         public ImportSource ImportSource { get; set; }
+        public bool ShouldExport { get; set; } = true;
 
         public Mod(ImportSource source)
         {

@@ -120,9 +120,6 @@ namespace Icarus.ViewModels.Import
 
         public async Task ImportFiles(IList<string> filePaths)
         {
-            // TODO: Should I combine import files?
-            // But how do I handle multiple ttmp2 files simultaneously with regards to ModPackPages? (i.e. multiple advanced modpacks)
-            // TODO: Import asynchronously?
             foreach (var path in filePaths)
             {
                 var str = Path.Combine(path);

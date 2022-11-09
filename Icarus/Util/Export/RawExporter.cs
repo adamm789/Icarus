@@ -131,7 +131,9 @@ namespace Icarus.Util.Export
                 _logService.Verbose($"Beginning tex to ... dds? export.");
                 if (texMod.XivTex != null)
                 {
-                    TexExtensions.SaveTexAsDDS(outputPath, texMod.XivTex, outputDirectory);
+                    outputPath = Path.Combine(outputPath, outputFileName);
+                    //TexExtensions.SaveTexAsDDS(outputPath, texMod.XivTex, outputDirectory);
+                    TexExtensions.SaveTexAsDDS(outputPath, texMod.XivTex);
                 }
             }
         }

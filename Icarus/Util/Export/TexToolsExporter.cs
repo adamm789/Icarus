@@ -70,18 +70,21 @@ namespace Icarus.Util
             modPackJson.TTMPVersion = _currentSimpleTTMPVersion;
             modPackJson.SimpleModsList = new();
 
-            var tasks = new Task<byte[]>[entries.Count];
+            var exportEntries = entries.FindAll(m => m.ShouldExport);
+            var tasks = new Task<byte[]>[exportEntries.Count];
+            var byteList = new List<byte[]>();
 
-            for (var i = 0; i < entries.Count; i++)
+            for (var i = 0; i < exportEntries.Count; i++)
             {
                 var j = i;
+
+                _logService.Debug($"On entry {i}");
                 tasks[j] = Task.Run(() => GetBytes(entries[j], j));
+                //byteList.Add(await GetBytes(entries[i]));
             }
-            var num = 0;
 
             // TODO: Report progress
             await Task.WhenAll(tasks);
-            //await allTasks;
 
             var offset = 0;
             var numMods = 0;
@@ -94,8 +97,9 @@ namespace Icarus.Util
                 {
                     numMods++;
                     var entry = entries[i];
+                    var bytes = await tasks[i];
+                    //var bytes = byteList[i];
 
-                    var bytes = tasks[i].Result;
                     if (bytes == Array.Empty<byte>())
                     {
                         _logService.Error($"Could not get bytes for {entry.Name}. Skipping entry {i}.");
@@ -117,56 +121,6 @@ namespace Icarus.Util
             var modPackPath = TrySaveFile(modPack, outputDir, modPackJson);
             LogNumModsWritten(numMods, numModsWritten);
             return modPackPath;
-            
-            /*
-            try
-            {
-                var modPackPath = GetOutputPath(modPack, outputDir);
-
-
-                File.WriteAllText(_tempMPL, JsonConvert.SerializeObject(modPackJson));
-
-                var zf = new ZipFile
-                {
-                    UseZip64WhenSaving = Zip64Option.AsNecessary,
-                    CompressionLevel = Ionic.Zlib.CompressionLevel.None
-                };
-
-                _logService.Debug($"_tempMPL = {_tempMPL} - _tempMPD = {_tempMPD}");
-
-                zf.AddFile(_tempMPL, "");
-                zf.AddFile(_tempMPD, "");
-
-                if (File.Exists(modPackPath))
-                {
-                    File.Delete(modPackPath);
-                }
-
-
-                zf.Save(modPackPath);
-
-                _logService.Information($"Successfully wrote to {modPackPath}.");
-                return modPackPath;
-            }
-            catch (Exception ex)
-            {
-                _logService.Error(ex, "An exception has been thrown while trying to save the ttmp2 file.");
-            }
-            finally
-            {
-                if (Directory.Exists(tempDir))
-                {
-                    _logService.Verbose($"Deleting temporary directory {tempDir}.");
-                    Directory.Delete(tempDir, true);
-                }
-                else
-                {
-                    _logService.Error($"Temporary directory {tempDir} does not exist.");
-                }
-            }
-            return "";
-            */
-
         }
 
         private string GetMPLPath(string tempDir)
@@ -349,7 +303,6 @@ namespace Icarus.Util
                     }
                 }
             }
-
             var modPackPath = TrySaveFile(modPack, outputDir, modPackJson, imageList);
             LogNumModsWritten(numMods, numModsWritten);
 
@@ -428,6 +381,7 @@ namespace Icarus.Util
             }
             finally
             {
+                
                 if (Directory.Exists(tempDir))
                 {
                     _logService.Verbose($"Deleting temporary directory {tempDir}.");
@@ -437,6 +391,7 @@ namespace Icarus.Util
                 {
                     _logService.Error($"Temporary directory {tempDir} does not exist.");
                 }
+                
                 zf.Dispose();
             }
             return "";

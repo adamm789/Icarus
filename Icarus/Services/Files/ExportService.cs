@@ -98,14 +98,20 @@ namespace Icarus.Services.Files
         }
     }
 
+    [Flags]
     public enum ExportType
     {
-        TexToolsSimple,
-        TexToolsAdvanced,
-        PenumbraSimple,
-        PenumbraAdvanced,
+        TexToolsSimple = 1,
+        TexToolsAdvanced = 2,
+        PenumbraSimple = 4,
+        PenumbraAdvanced = 8,
+        RawSimple = 16,
+        RawAdvanced = 32,
 
-        RawSimple,
-        RawAdvanced
+        Simple = TexToolsSimple | PenumbraSimple | RawSimple,
+        Advanced = TexToolsAdvanced | PenumbraAdvanced | RawAdvanced,
+        TexTools = TexToolsSimple | TexToolsAdvanced,
+        Penumbra = PenumbraSimple | PenumbraAdvanced,
+        Raw = RawSimple | RawAdvanced
     }
 }

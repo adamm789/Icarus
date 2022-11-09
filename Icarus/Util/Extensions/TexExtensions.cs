@@ -178,7 +178,13 @@ namespace Icarus.Util.Extensions
             return headerData;
         }
 
-        public static void SaveTexAsDDS(string path, XivTex xivTex, DirectoryInfo saveDirectory, XivRace race = XivRace.All_Races)
+        public static void SaveTexAsDDS(string path, XivTex xivTex)
+        {
+            path = Path.ChangeExtension(path, ".dds");
+            DDS.MakeDDS(xivTex, path);
+        }
+
+        public static void SaveTexAsDDS(string path, XivTex xivTex, DirectoryInfo saveDirectory)
         {
             Directory.CreateDirectory(path);
             var savePath = Path.Combine(path, Path.GetFileNameWithoutExtension(xivTex.TextureTypeAndPath.Path) + ".dds");

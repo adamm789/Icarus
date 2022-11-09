@@ -67,6 +67,12 @@ namespace Icarus.ViewModels.Mods
             return Mod;
         }
 
+        public bool ShouldExport
+        {
+            get { return Mod.ShouldExport; }
+            set { Mod.ShouldExport = value; OnPropertyChanged(); }
+        }
+
         string _displayedHeader = "";
         public string DisplayedHeader
         {

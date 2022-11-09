@@ -49,6 +49,25 @@ namespace ItemDatabase.Paths
             return canParseRegex.IsMatch(input);
         }
 
+        public static XivDataFile GetXivDataFileFromPath(string path)
+        {
+            if (path.Contains("common")) return XivDataFile._00_Common;
+            if (path.Contains("bgcommon")) return XivDataFile._01_Bgcommon;
+            if (path.Contains("bg")) return XivDataFile._02_Bg;
+            if (path.Contains("cut")) return XivDataFile._03_Cut;
+            if (path.Contains("chara")) return XivDataFile._04_Chara;
+            if (path.Contains("shader")) return XivDataFile._05_Shader;
+            if (path.Contains("ui")) return XivDataFile._06_Ui;
+            if (path.Contains("sound")) return XivDataFile._07_Sound;
+            if (path.Contains("vfx")) return XivDataFile._08_Vfx;
+            if (path.Contains("ui_script")) return XivDataFile._09_UiScript;
+            if (path.Contains("exd")) return XivDataFile._0A_Exd;
+            if (path.Contains("game_script")) return XivDataFile._0B_GameScript;
+            if (path.Contains("music")) return XivDataFile._0C_Music;
+
+            throw new ArgumentException($"{path} had no valid data file.");
+        }
+
         public static bool IsMaleSkin(XivRace race)
         {
             if (XivRaces.PlayableRaces.Contains(race))

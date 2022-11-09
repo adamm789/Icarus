@@ -2,6 +2,7 @@
 using Icarus.Services.Interfaces;
 using Icarus.ViewModels.Mods.DataContainers.Interfaces;
 using Icarus.ViewModels.Util;
+using Icarus.Views.Export;
 using Serilog;
 using System;
 using System.ComponentModel;
@@ -15,14 +16,15 @@ namespace Icarus.ViewModels.Export
     {
         readonly IMessageBoxService _messageBoxService;
         readonly ExportService _exportService;
-
+        IWindowService _windowService;
         readonly IModsListViewModel _modPackViewModel;
 
-        public ExportViewModel(IModsListViewModel modPack, IMessageBoxService messageBoxService, ExportService exportService)
+        public ExportViewModel(IModsListViewModel modPack, IMessageBoxService messageBoxService, ExportService exportService, IWindowService windowService)
         {
             _modPackViewModel = modPack;
             _messageBoxService = messageBoxService;
             _exportService = exportService;
+            _windowService = windowService;
 
             var eh = new PropertyChangedEventHandler(OnPropertyChanged);
             _modPackViewModel.PropertyChanged += eh;
@@ -51,15 +53,30 @@ namespace Icarus.ViewModels.Export
             path = path.Replace('\\', '/');
 
             var shouldDelete = true;
-            if (File.Exists(path) || Directory.Exists(path))
+            /*
+            if (ExportType.Simple.HasFlag(type))
             {
-                var message = String.Format("The path {0} already exists. Overwrite?", path);
-                var response = _messageBoxService.ShowMessage(message, "File Exists", MessageBoxButtons.YesNo);
+                // TODO: Window that allows choosing which mods to export as well as a prompt
+                var response = _windowService.ShowOptionWindow<SimpleExportSelectionWindow>(_modPackViewModel.SimpleModsList);
                 if (response == DialogResult.No)
                 {
                     shouldDelete = false;
                 }
             }
+            else
+            {
+            */
+            // TODO: More accurate file/path existance and prompt
+                if (File.Exists(path) || Directory.Exists(path))
+                {
+                    var message = $"The path {path} already exists. Overwrite?";
+                    var response = _messageBoxService.ShowMessage(message, "File Exists", MessageBoxButtons.YesNo);
+                    if (response == DialogResult.No)
+                    {
+                        shouldDelete = false;
+                    }
+                }
+            //}
             string outputPath = "";
             var success = true;
             if (shouldDelete)
@@ -118,7 +135,7 @@ namespace Icarus.ViewModels.Export
 
         private void DisplayFailure()
         {
-            _messageBoxService.Show($"Failed to write ttmp2.", "", MessageBoxButtons.OK);
+            //_messageBoxService.Show($"Failed to write ttmp2.", "", MessageBoxButtons.OK);
         }
     }
 }

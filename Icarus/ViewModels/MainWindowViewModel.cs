@@ -43,6 +43,7 @@ namespace Icarus.ViewModels
             var settingsService = ServiceManager.GetRequiredService<ISettingsService>();
             var gameFileDataService = ServiceManager.GetRequiredService<IGameFileService>();
             var logService = ServiceManager.GetRequiredService<ILogService>();
+            
 
             _logViewModel = new LogViewModel(logService);
             _appSettings = new(settingsService, _messageBoxService);
@@ -58,7 +59,7 @@ namespace Icarus.ViewModels
             ItemListViewModel = new(itemListService, logService);
             ImportVanillaViewModel = new(ModPackViewModel.ModsListViewModel, ItemListViewModel, ServiceManager.GetRequiredService<VanillaFileService>(), logService);
 
-            ExportViewModel = new(ModPackViewModel.ModsListViewModel, _messageBoxService, _exportService);
+            ExportViewModel = new(ModPackViewModel.ModsListViewModel, _messageBoxService, _exportService, ServiceManager.GetRequiredService<IWindowService>());
             ImportViewModel = new(ModPackViewModel, ModPackListViewModel, _importService, settingsService, logService);
 
             SimpleEditorViewModel = new(ModPackViewModel, ItemListViewModel, ImportViewModel, ExportViewModel, ImportVanillaViewModel);

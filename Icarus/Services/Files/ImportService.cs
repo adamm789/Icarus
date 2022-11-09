@@ -85,7 +85,7 @@ namespace Icarus.Services.Files
             UpdateProperties();
 
             var ext = Path.GetExtension(filePath);
-            ModPack? retModPack = new ModPack();
+            var retModPack = new ModPack();
             if (ext == ".fbx")
             {
                 retModPack = await TryImportModel(filePath);

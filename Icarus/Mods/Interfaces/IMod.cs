@@ -18,5 +18,6 @@ namespace Icarus.Mods.Interfaces
 
         bool IsComplete();
         string ToVerboseString();
+        bool ShouldExport { get; set; }
     }
 }

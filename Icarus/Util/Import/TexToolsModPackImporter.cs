@@ -156,6 +156,7 @@ namespace Icarus.Services.Files
             return retModPack;
         }
 
+        // TODO: Some sort of cached byte[] such that if a file is not altered, we can just used the one we got here
         private async Task<IMod?> Extract(ModsJson mods, SqPackStream pack, string modFileName, string modFilePath)
         {
             var dat = pack.GetFileMetadata(mods.ModOffset);
@@ -211,6 +212,8 @@ namespace Icarus.Services.Files
                     var bytes = new byte[mods.ModSize];
                     pack.BaseStream.Seek(mods.ModOffset, SeekOrigin.Begin);
                     pack.BaseStream.Read(bytes, 0, mods.ModSize);
+                    //var file = pack.ReadFile<TexFile>(mods.ModOffset);
+                    //var bytes = file.ImageData;
 
                     var xivTex = await DatExtensions.GetType4Data(bytes);
                     var type = XivTexType.Normal;
@@ -224,8 +227,8 @@ namespace Icarus.Services.Files
                         Log.Error("Using TexType Normal");
                     }
 
-                    var dataFile = XivDataFiles.GetXivDataFile(mods.FullPath);
-
+                    //var dataFile = XivDataFiles.GetXivDataFile(mods.FullPath);
+                    var dataFile = XivPathParser.GetXivDataFileFromPath(mods.FullPath);
                     var texTypePath = new TexTypePath()
                     {
                         Path = mods.FullPath,

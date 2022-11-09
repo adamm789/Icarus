@@ -1,6 +1,8 @@
 ﻿using Icarus.Services.Interfaces;
 using System.Linq;
 using System.Windows;
+using System.Windows.Forms;
+using WindowsApplication = System.Windows.Application;
 
 namespace Icarus.Services.UI
 {
@@ -18,14 +20,28 @@ namespace Icarus.Services.UI
             var child = new T();
 
             child.DataContext = dataContext;
-
             child.ShowDialog();
         }
 
-        public bool IsWindowOpen<T>(string name ="") where T: Window
+        public DialogResult ShowOptionWindow<T>(object dataContext) where T : Window, new()
         {
-            var any = Application.Current.Windows.OfType<T>().Any();
-            var anyName = Application.Current.Windows.OfType<T>().Any(w => w.Name.Equals(name));
+            var child = new T();
+            child.DataContext = dataContext;
+            var ret = child.ShowDialog();
+            if (ret is bool val)
+            {
+                if (val)
+                {
+                    return DialogResult.Yes;
+                }
+            }
+            return DialogResult.No;
+        }
+
+        public bool IsWindowOpen<T>(string name = "") where T : Window
+        {
+            var any = WindowsApplication.Current.Windows.OfType<T>().Any();
+            var anyName = WindowsApplication.Current.Windows.OfType<T>().Any(w => w.Name.Equals(name));
             return string.IsNullOrEmpty(name) ? any : anyName;
         }
     }

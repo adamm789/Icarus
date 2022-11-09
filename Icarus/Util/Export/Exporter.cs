@@ -27,6 +27,7 @@ using xivModdingFramework.Mods.DataContainers;
 using Path = System.IO.Path;
 using ModPack = Icarus.Mods.DataContainers.ModPack;
 using System.Linq;
+using xivModdingFramework.Cache;
 
 namespace Icarus.Util
 {
@@ -166,6 +167,7 @@ namespace Icarus.Util
             return Array.Empty<byte>();
         }
 
+        // MakeTexData: https://github.com/TexTools/xivModdingFramework/blob/81c234e7b767d56665185e07aabeeae21d895f0b/xivModdingFramework/Textures/FileTypes/Tex.cs#L905
         protected async Task<byte[]> TryWriteTextureToBytes(TextureMod mod, bool forTexTools)
         {
             // TODO: Export texture to .pmp
@@ -184,25 +186,19 @@ namespace Icarus.Util
             var internalPath = mod.Path;
             var tempImageFile = Path.GetTempFileName();
 
-            // TODO: Pull this out into some other function?
             if (mod.XivTex != null)
             {
-                var imageData = await TexExtensions.GetImageData(_gameDirectoryFramework, mod.XivTex);
-                externalPath = tempImageFile;
-
-                using (var img = Image.LoadPixelData<Rgba32>(imageData, mod.XivTex.Width, mod.XivTex.Height))
-                {
-                    img.Save(externalPath, new PngEncoder());
-                }
+                // Utilizing mod.XivTex.TexData does not seem to work
+                externalPath = Path.ChangeExtension(tempImageFile, ".dds");
+                TexExtensions.SaveTexAsDDS(externalPath, mod.XivTex);
+                texFormat = mod.XivTex.TextureFormat;
+                isDds = true;
             }
 
             if (!File.Exists(externalPath))
             {
                 throw new FileNotFoundException($"The external texture path: {externalPath} could not be found.");
             }
-
-            // MakeTexData
-            // https://github.com/TexTools/xivModdingFramework/blob/81c234e7b767d56665185e07aabeeae21d895f0b/xivModdingFramework/Textures/FileTypes/Tex.cs#L905
 
             // Check if the texture being imported has been imported before
             CompressionFormat compressionFormat = CompressionFormat.BGRA;
@@ -243,13 +239,17 @@ namespace Icarus.Util
                     surface.FlipVertically();
 
                     var maxMipCount = 1;
-                    // TODO: root and maxMipCount?
 
+                    // TODO: Better way to handle this?
+                    var root = await XivCache.GetFirstRoot(internalPath);
+                    if (root != null)
+                    {
+                        maxMipCount = -1;
+                    }
                     //if (root != null)
                     //{
                     // For things that have real roots (things that have actual models/aren't UI textures), we always want mipMaps, even if the existing texture only has one.
                     // (Ex. The Default Mat-Add textures)
-                    maxMipCount = -1;
                     //}
                     // If !(UI or Painting): maxMipCount = -1
 
@@ -264,22 +264,19 @@ namespace Icarus.Util
                         compressor.Process(out ddsContainer);
                     }
                 }
-            }
-
-            if (ddsContainer == null)
-            {
-                _logService.Error($"DDSContainer was null.");
-                return Array.Empty<byte>();
+                if (ddsContainer == null)
+                {
+                    _logService.Error($"DDSContainer was null.");
+                    return Array.Empty<byte>();
+                }
             }
 
             // If we're not a DDS, write the DDS to file temporarily.
-            // TODO: Where to write temp file?... To Temp folder?
             var ddsFilePath = externalPath;
             string tempDdsFile = "";
             if (!isDds)
             {
                 tempDdsFile = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".dds");
-
                 bool success = false;
 
                 try
@@ -294,7 +291,6 @@ namespace Icarus.Util
 
                 if (!success)
                 {
-
                     if (File.Exists(tempDdsFile))
                     {
                         _logService.Verbose($"Deleting temp dds file: {tempDdsFile}");
@@ -305,6 +301,7 @@ namespace Icarus.Util
                         _logService.Verbose($"Deleting temp path: {tempImageFile}");
                         File.Delete(tempImageFile);
                     }
+                    
                     ddsContainer.Dispose();
                     return Array.Empty<byte>();
                 }
@@ -315,7 +312,7 @@ namespace Icarus.Util
             }
 
             var bytes = await TexExtensions.DDSToTex(ddsFilePath, internalPath, texFormat, forTexTools);
-
+            
             if (File.Exists(tempImageFile))
             {
                 _logService.Verbose($"Deleting temp path: {tempImageFile}");
@@ -326,6 +323,7 @@ namespace Icarus.Util
                 _logService.Verbose($"Deleting temp dds file: {tempDdsFile}");
                 File.Delete(tempDdsFile);
             }
+            
             ddsContainer.Dispose();
             return bytes;
         }

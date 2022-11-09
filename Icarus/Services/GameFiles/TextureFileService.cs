@@ -52,7 +52,7 @@ namespace Icarus.Services.GameFiles
                     {
                         Type = type,
                         Path = texturePath,
-                        DataFile = XivDataFiles.GetXivDataFile(texturePath),
+                        DataFile = XivPathParser.GetXivDataFileFromPath(texturePath),
                         Name = materialFileData.Name
                     };
                 }
@@ -121,7 +121,7 @@ namespace Icarus.Services.GameFiles
                 {
                     _logService.Error("Using TexType Normal");
                 }
-                var dataFile = XivDataFiles.GetXivDataFile(path);
+                var dataFile = XivPathParser.GetXivDataFileFromPath(path);
 
                 xivTex.TextureTypeAndPath = new()
                 {
