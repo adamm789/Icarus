@@ -18,6 +18,7 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Models.Helpers;
+using System.Configuration;
 
 namespace Icarus.ViewModels.Mods
 {
@@ -107,6 +108,11 @@ namespace Icarus.ViewModels.Mods
         public async override Task<IGameFile?> GetFileData(IItem? itemArg = null)
         {
             return await Task.Run(() => _modelFileService.GetModelFileData(itemArg, TargetRace));
+        }
+
+        public async override Task<IGameFile?> GetFileData(string path, string name = "")
+        {
+            return await Task.Run(() =>_modelFileService.TryGetModelFileData(path, name));
         }
 
         public override bool SetModData(IGameFile? gameFile)

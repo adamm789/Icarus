@@ -45,6 +45,11 @@ namespace Icarus.Services.GameFiles
         public async Task<IMaterialGameFile?> TryGetMaterialFileData(string path, string itemName = "")
         {
             var xivMtrl = await TryGetMaterialFromPath(path);
+            if (xivMtrl == null)
+            {
+                var tempPath = XivPathParser.ChangeMtrlVariant(path);
+                xivMtrl = await TryGetMaterialFromPath(tempPath);
+            }
             if (xivMtrl != null)
             {
                 var category = XivPathParser.GetCategory(path);

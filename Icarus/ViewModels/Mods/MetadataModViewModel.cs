@@ -89,5 +89,10 @@ namespace Icarus.ViewModels.Mods
         {
             return await _metadataFileService.GetMetadata(itemArg);
         }
+
+        public override async Task<IGameFile?> GetFileData(string path, string name ="")
+        {
+            return await _metadataFileService.TryGetMetadata(path, name);
+        }
     }
 }

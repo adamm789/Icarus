@@ -126,6 +126,11 @@ namespace Icarus.ViewModels.Mods
             return await _materialFileService.GetMaterialFileData(itemArg);
         }
 
+        public override async Task<IGameFile?> GetFileData(string path, string name= "")
+        {
+            return await _materialFileService.TryGetMaterialFileData(path, name);
+        }
+
         public List<string> VariantList { get; } = new()
         {
             "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m",

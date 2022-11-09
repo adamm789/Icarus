@@ -29,6 +29,11 @@ namespace Icarus.ViewModels.Mods
             return Task.FromResult<IGameFile?>(null);
         }
 
+        public override Task<IGameFile?> GetFileData(string path, string name = "")
+        {
+            return Task.FromResult<IGameFile?>(null);
+        }
+
         public override Task<bool> SetDestinationItem(IItem? item = null)
         {
             _logService.Information("Cannot set item on ReadOnlyMod.");

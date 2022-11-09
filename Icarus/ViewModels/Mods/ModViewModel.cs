@@ -182,6 +182,7 @@ namespace Icarus.ViewModels.Mods
         }
 
         public abstract Task<IGameFile?> GetFileData(IItem? itemArg = null);
+        public abstract Task<IGameFile?> GetFileData(string path, string name = "");
 
         /// <summary>
         /// Tries to get data from the user-provided path
@@ -196,14 +197,18 @@ namespace Icarus.ViewModels.Mods
             var modData = Task.Run(() => GetFileData()).Result;
             if (modData == null)
             {
-                _logService.Warning($"Could not set \"{path}\" as {GetType().Name}");
-                return false;
+                modData = Task.Run(() => GetFileData(path, name)).Result;
+            }
+            
+            if (modData != null)
+            {
+                SetModData(modData);
+                return true;
             }
             else
             {
-                SetModData(modData);
+                return false;
             }
-            return true;
         }
 
         public virtual bool SetModData(IGameFile gameFile)

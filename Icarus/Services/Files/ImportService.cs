@@ -136,7 +136,7 @@ namespace Icarus.Services.Files
             {
                 IsImportingAdvanced = false;
             }
-            return null;
+            return new ModPack();
         }
 
         const float minAcceptableSize = 0.5f;
@@ -232,7 +232,7 @@ namespace Icarus.Services.Files
             {
                 _logService.Error(ex, "An exception has occurred.");
             }
-            return null;
+            return new ModPack();
         }
 
         private ModPack? TryImportDDS(string filePath)
@@ -273,7 +273,7 @@ namespace Icarus.Services.Files
             {
                 _logService.Error(ex, $"Could not get colorset data from {filePath}");
             }
-            return null;
+            return new ModPack();
         }
 
         public ModPack? ImportTexture(string filePath)

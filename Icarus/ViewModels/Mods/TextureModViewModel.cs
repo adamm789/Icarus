@@ -89,6 +89,11 @@ namespace Icarus.ViewModels.Mods
             return await _textureFileService.GetTextureFileData(itemArg, TexType, TextureVariant);
         }
 
+        public override async Task<IGameFile?> GetFileData(string path, string name= "")
+        {
+            return await _textureFileService.TryGetTextureFileData(path, name);
+        }
+
         public override bool SetModData(IGameFile gameFile)
         {
             if (gameFile is not ITextureGameFile texGameFile)
