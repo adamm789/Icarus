@@ -5,6 +5,7 @@ using Icarus.Services.GameFiles.Interfaces;
 using Icarus.Services.Interfaces;
 using ItemDatabase.Interfaces;
 using Serilog;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Icarus.ViewModels.Mods
@@ -15,7 +16,7 @@ namespace Icarus.ViewModels.Mods
     /// </summary>
     public class ReadOnlyModViewModel : ModViewModel
     {
-        public byte[] Data;
+        public byte[] Data { get; set; }
 
         public ReadOnlyModViewModel(IMod mod, ILogService logService)
             : base(mod, null, logService)
@@ -25,13 +26,13 @@ namespace Icarus.ViewModels.Mods
 
         public override Task<IGameFile?> GetFileData(IItem? itemArg = null)
         {
-            return null;
+            return Task.FromResult<IGameFile?>(null);
         }
 
-        public override async Task<bool> SetDestinationItem(IItem? item = null)
+        public override Task<bool> SetDestinationItem(IItem? item = null)
         {
             _logService.Information("Cannot set item on ReadOnlyMod.");
-            return false;
+            return Task.FromResult(false);
         }
 
         protected override bool TrySetDestinationPath(string path, string name = "")

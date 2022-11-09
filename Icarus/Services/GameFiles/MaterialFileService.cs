@@ -31,12 +31,13 @@ namespace Icarus.Services.GameFiles
             return new StainingTemplateFile(bytes);
         }
 
-        public async Task<IMaterialGameFile?> GetMaterialFileData(IItem itemArg, string variant = "a")
+        public async Task<IMaterialGameFile?> GetMaterialFileData(IItem? itemArg = null)
         {
             var item = GetItem(itemArg);
             if (item == null) return null;
 
-            var path = item.GetMtrlPath(variant);
+            // We actually don't want 
+            var path = item.GetMtrlPath();
             var itemName = item.Name;
             return await TryGetMaterialFileData(path, itemName);
         }
@@ -74,6 +75,19 @@ namespace Icarus.Services.GameFiles
                 return retVal;
             }
             return null;
+        }
+
+        public async Task<IMaterialGameFile?> TryGetMaterialFromName(string name)
+        {
+            var results = _itemListService.Search(name, true);
+            if (results.Count > 0)
+            {
+                return await GetMaterialFileData(results[0]);
+            }
+            else
+            {
+                return null;
+            }
         }
 
         private async Task<XivMtrl?> TryGetMaterialFromPath(string path)

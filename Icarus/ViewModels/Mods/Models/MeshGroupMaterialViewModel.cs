@@ -103,26 +103,14 @@ namespace Icarus.ViewModels.Models
         public string DestinationModelPath
         {
             get { return _destinationModelPath; }
-            set
-            {
-                _destinationModelPath = value;
-                OnPropertyChanged();
-                /*
-                UpdateDisplayedMaterial();
-                OnPropertyChanged(nameof(CanParsePath));
-                */
-            }
+            set { _destinationModelPath = value; OnPropertyChanged(); }
         }
 
         bool _isSkinMaterial = false;
         public bool IsSkinMaterial
         {
             get { return _isSkinMaterial; }
-            set
-            {
-                _isSkinMaterial = value;
-                OnPropertyChanged();
-            }
+            set { _isSkinMaterial = value; OnPropertyChanged(); }
         }
 
         // TODO: Implement an "exists" function, which keeps track of if a material exists or not

@@ -73,6 +73,7 @@ namespace Icarus.Services
             }
             else
             {
+                _logService.Warning($"Fell through to \"ReadOnlyMod\".");
                 return new ReadOnlyModViewModel(file, _logService);
             }
         }
