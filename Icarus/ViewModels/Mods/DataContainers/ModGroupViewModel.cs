@@ -180,6 +180,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
         {
             _modGroup.OptionList.Add(option.GetModOption());
             OptionList.Add(option);
+            option.SelectionType = SelectionType;
             option.Parent = this;
             NewOptionName = string.Empty;
             option.RemoveCommand = new DelegateCommand(o => RemoveOption(option));
@@ -301,7 +302,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
             }
         }
 
-        private void CopyOption(ModOptionViewModel option)
+        public void CopyOption(ModOptionViewModel option)
         {
             var copyOption = new ModOptionViewModel(option, this);
             AddOption(copyOption);

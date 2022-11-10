@@ -340,7 +340,7 @@ namespace Icarus.Util
         /// <returns></returns>
         protected TTModel ApplyModelOptions(ModelMod mm)
         {
-            _logService.Information($"Applying ModelModifiers to {mm.Name}");
+            _logService.Verbose($"Applying ModelModifiers to {mm.Name}");
 
             // TODO: Log warning when race converting between (likely) incompatible races?
             // e.g. Male Roe to Midlander
@@ -367,7 +367,7 @@ namespace Icarus.Util
             var sourceRace = mm.Options.SourceRace;
             var targetRace = mm.TargetRace;
 
-            // Because GetModelPriorityList throws an exception
+            // Because GetModelPriorityList throws an exception if this is the case
             if (sourceRace == XivRace.All_Races || targetRace == XivRace.All_Races) return;
 
             var sourceModelPriority = sourceRace.GetModelPriorityList().FirstOrDefault();

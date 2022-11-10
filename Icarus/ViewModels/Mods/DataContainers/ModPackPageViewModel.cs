@@ -219,7 +219,14 @@ namespace Icarus.ViewModels.Mods.DataContainers
                 }
                 else if (source is ModOptionViewModel sourceOption)
                 {
-                    targetGroup.AddOption(sourceOption);
+                    if (sourceOption.IsReadOnly)
+                    {
+                        targetGroup.CopyOption(sourceOption);
+                    }
+                    else
+                    {
+                        targetGroup.AddOption(sourceOption);
+                    }
                 }
                 else
                 {

@@ -72,7 +72,7 @@
         </TabControl>
         <ContentControl Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Content="{Binding ExportViewModel}" Margin="5"/>
 
-        <TabControl Grid.Row="0" Grid.Column="2">
+        <TabControl Grid.Row="0" Grid.Column="2" SelectedIndex="{Binding SelectedTabIndex}">
             <TabItem Header="Option">
                 <ContentControl Content="{Binding ModPackViewModel}">
                     <ContentControl.Resources>
@@ -107,7 +107,14 @@
                                                             <RowDefinition Height="*"/>
                                                             <RowDefinition Height="*"/>
                                                         </Grid.RowDefinitions>
+                                                        <Grid Grid.Row="0">
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="*"/>
+                                                                <ColumnDefinition Width="Auto"/>
+                                                            </Grid.ColumnDefinitions>
                                                         <TextBox Grid.Row="0" Grid.Column="0" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"/>
+                                                            <TextBlock Grid.Column="1" Text="{Binding SelectionType}"/>
+                                                        </Grid>
                                                         <xtk1:WatermarkTextBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding Description}" Watermark="Description"
                                AcceptsReturn="True" TextWrapping="WrapWithOverflow" Margin="5"/>
 

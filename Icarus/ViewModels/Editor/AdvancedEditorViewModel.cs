@@ -5,6 +5,7 @@ using Icarus.ViewModels.Util;
 using Icarus.Views.Mods;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,6 +20,7 @@ namespace Icarus.ViewModels.Editor
         public ExportViewModel ExportViewModel { get; }
         public ModPackListViewModel ModPackListViewModel { get; }
 
+        // TODO: Change the Tab to "Option" when an Option is selected
         public AdvancedEditorViewModel(IModPackViewModel modPackViewModel, ExportViewModel exportViewModel, ModPackListViewModel modPackListViewModel)
         {
             FilteredModsListViewModel = modPackViewModel.ModsListViewModel.FilteredModsList;
@@ -26,7 +28,16 @@ namespace Icarus.ViewModels.Editor
             ExportViewModel = exportViewModel;
             ModPackListViewModel = modPackListViewModel;
 
-            ModPackListViewModel.CopyPageCommand = new DelegateCommand(o => OnCopy()); ;
+            ModPackListViewModel.CopyPageCommand = new DelegateCommand(o => OnCopy());
+            ModPackViewModel.DisplayedViewModel.PropertyChanged += new(OnDisplayedViewModelChange);
+        }
+
+        private void OnDisplayedViewModelChange(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(ModPackPageViewModel.DisplayedOption))
+            {
+                SelectedTabIndex = 0;
+            }
         }
 
         private void OnCopy()
@@ -36,6 +47,13 @@ namespace Icarus.ViewModels.Editor
                 // TODO: When on meta, copy page... copies everything?
                 ModPackViewModel.CopyPage(page);
             }
+        }
+
+        int _selectedTabIndex = 0;
+        public int SelectedTabIndex
+        {
+            get { return _selectedTabIndex; }
+            set { _selectedTabIndex = value; OnPropertyChanged(); }
         }
     }
 }

@@ -28,5 +28,6 @@ namespace Icarus.ViewModels.Mods.DataContainers.Interfaces
 
         void IncreasePageIndex();
         List<int> GetAvailablePageIndices();
+        INotifyPropertyChanged DisplayedViewModel { get; set; }
     }
 }
