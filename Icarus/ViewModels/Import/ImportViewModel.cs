@@ -1,8 +1,8 @@
 ﻿using Icarus.Mods.DataContainers;
 using Icarus.Services.Files;
 using Icarus.Services.Interfaces;
-using Icarus.ViewModels.Mods.DataContainers;
 using Icarus.ViewModels.Mods.DataContainers.Interfaces;
+using Icarus.ViewModels.Mods.DataContainers.ModPackList;
 using Icarus.ViewModels.Util;
 using System;
 using System.Collections.Generic;

@@ -1,6 +1,7 @@
 ﻿using Icarus.ViewModels.Export;
 using Icarus.ViewModels.Mods.DataContainers;
 using Icarus.ViewModels.Mods.DataContainers.Interfaces;
+using Icarus.ViewModels.Mods.DataContainers.ModPackList;
 using Icarus.ViewModels.Util;
 using Icarus.Views.Mods;
 using System;
@@ -29,15 +30,32 @@ namespace Icarus.ViewModels.Editor
             ModPackListViewModel = modPackListViewModel;
 
             ModPackListViewModel.CopyPageCommand = new DelegateCommand(o => OnCopy());
-            ModPackViewModel.DisplayedViewModel.PropertyChanged += new(OnDisplayedViewModelChange);
+            ModPackViewModel.PropertyChanged += new(OnSelectedOptionChange);
         }
 
         private void OnDisplayedViewModelChange(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(ModPackPageViewModel.DisplayedOption))
+            if (e.PropertyName == nameof(ModPackPageViewModel.DisplayedOption) && sender is ModPackPageViewModel modPackPage)
             {
+                DisplayedOption = modPackPage.DisplayedOption;
                 SelectedTabIndex = 0;
             }
+        }
+
+        private void OnSelectedOptionChange(object sender, PropertyChangedEventArgs e){
+            if (e.PropertyName == nameof(ModPackViewModel.SelectedOption) && sender is ModPackViewModel modPack)
+            {
+                DisplayedOption = modPack.SelectedOption;
+                SelectedTabIndex = 0;
+            }
+        }
+
+
+        ModOptionViewModel? _displayedOption;
+        public ModOptionViewModel? DisplayedOption
+        {
+            get { return _displayedOption; }
+            set { _displayedOption = value; OnPropertyChanged(); }
         }
 
         private void OnCopy()
@@ -46,6 +64,10 @@ namespace Icarus.ViewModels.Editor
             {
                 // TODO: When on meta, copy page... copies everything?
                 ModPackViewModel.CopyPage(page);
+            }
+            if (ModPackListViewModel.ModPackPage is ModPackMetaViewModel meta)
+            {
+                ModPackViewModel.SetMetadata(meta);
             }
         }
 

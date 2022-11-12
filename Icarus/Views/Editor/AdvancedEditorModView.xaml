@@ -5,19 +5,14 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Icarus.Views.Editor" 
              xmlns:mods="clr-namespace:Icarus.ViewModels.Mods" 
-             d:DataContext="{d:DesignInstance Type=mods:ModelModViewModel}"
+             d:DataContext="{d:DesignInstance Type=mods:ModViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              xmlns:dd="urn:gong-wpf-dragdrop">
-    <Grid Margin="2,0,2,0">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal" Grid.Row="0" ToolTip="{Binding DisplayedHeader}">
-            <TextBlock Text="{Binding Identifier}"/>
-            <TextBlock Text="{Binding DisplayedHeader}" Grid.Row="0"/>
-        </StackPanel>
+
+    <StackPanel>
+        <TextBlock Text="{Binding FileName}"/>
+        <TextBlock Text="{Binding DisplayedHeader}" Grid.Row="0"/>
         <TextBlock Text="{Binding DestinationPath}" Grid.Row="1"/>
-    </Grid>
+    </StackPanel>
 </UserControl>

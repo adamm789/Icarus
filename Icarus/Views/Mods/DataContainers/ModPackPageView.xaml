@@ -68,6 +68,7 @@
                  HorizontalContentAlignment="Stretch"
                  VerticalContentAlignment="Stretch"
                  ScrollViewer.CanContentScroll="False"
+                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                  VirtualizingStackPanel.IsVirtualizing="True"
                   dd:DragDrop.IsDragSource="True"
                   dd:DragDrop.IsDropTarget="True"

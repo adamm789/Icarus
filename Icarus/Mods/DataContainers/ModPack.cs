@@ -53,7 +53,11 @@ namespace Icarus.Mods.DataContainers
             ModPackPages.Move(sourceIndex, targetIndex);
         }
 
-
+        /// <summary>
+        /// Copies the metadata
+        /// Does not copy SimpleModsList nor ModPackPages
+        /// </summary>
+        /// <param name="other"></param>
         public void CopyFrom(ModPack other)
         {
             _modPackJson = other._modPackJson;

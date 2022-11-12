@@ -30,8 +30,9 @@ namespace Icarus.ViewModels.Mods.DataContainers
             {
                 _searchTerm = value;
                 OnPropertyChanged();
-                timer.Stop();
-                timer.Start();
+                Search();
+                //timer.Stop();
+                //timer.Start();
             }
         }
 
@@ -44,11 +45,13 @@ namespace Icarus.ViewModels.Mods.DataContainers
             modsListViewModel.PropertyChanged += new PropertyChangedEventHandler(OnPropertyChanged);
             UpdateHeaders();
 
+            /*
             var view = (CollectionView)CollectionViewSource.GetDefaultView(SimpleModsList);
             view.Filter += SearchFilter;
 
             timer.Tick += Timer_Tick;
             timer.Interval = 300;
+            */
         }
 
         private void Timer_Tick(object? sender, EventArgs e)
@@ -57,14 +60,25 @@ namespace Icarus.ViewModels.Mods.DataContainers
             items.Refresh();
            
             UpdateHeaders();
+            //OnPropertyChanged(nameof(SimpleModsList));
             OnPropertyChanged(nameof(AllMods));
             OnPropertyChanged(nameof(ModelMods));
             OnPropertyChanged(nameof(ReadOnlyMods));
             OnPropertyChanged(nameof(MaterialMods));
             OnPropertyChanged(nameof(TextureMods));
             OnPropertyChanged(nameof(MetadataMods));
-            OnPropertyChanged(nameof(SimpleModsList));
             timer.Stop();
+        }
+
+        private void Search()
+        {
+            OnPropertyChanged(nameof(AllMods));
+            OnPropertyChanged(nameof(ModelMods));
+            OnPropertyChanged(nameof(ReadOnlyMods));
+            OnPropertyChanged(nameof(MaterialMods));
+            OnPropertyChanged(nameof(TextureMods));
+            OnPropertyChanged(nameof(MetadataMods));
+            UpdateHeaders();
         }
 
         private bool SearchFilter(object o)
@@ -102,8 +116,13 @@ namespace Icarus.ViewModels.Mods.DataContainers
                 }
                 UpdateHeaders();
             }
+            if (e.OldItems != null)
+            {
+                UpdateHeaders();
+            }
         }
 
+        // TODO: Track some sort of "incompleteness"
         private void OnExportStatusChanged(object sender, PropertyChangedEventArgs e)
         {
             if (sender is ModViewModel mod && e.PropertyName == nameof(ModViewModel.CanExport))
@@ -172,29 +191,14 @@ namespace Icarus.ViewModels.Mods.DataContainers
             set { _incompleteModsHeader = value; OnPropertyChanged(); }
         }
 
-        /*
-        ICollectionView _searchedMods;
-        public ICollectionView SearchedMods
-        {
-            get
-            {
-                // TODO?: This doubles the displayed mods for some reason
-                _searchedMods ??= new CollectionViewSource { Source = SimpleModsList }.View;
-                _searchedMods.Filter = m => FilterFunction<ModViewModel>(m);
-                return _searchedMods;
-            }
-        }
-        */
-
         private bool FilterFunction<T>(object o) where T : ModViewModel
         {
             if (o is T mvm)
             {
-                if (String.IsNullOrWhiteSpace(SearchTerm))
-                {
-                    return true;
-                }
-                return mvm.DisplayedHeader.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase);
+
+                // TODO: More robust matching
+                //return mvm.DisplayedHeader.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase);
+                return mvm.HasMatch(SearchTerm);
             }
             else
             {
@@ -212,20 +216,18 @@ namespace Icarus.ViewModels.Mods.DataContainers
                 return _allMods;
             }
         }
-
+        
         ICollectionView _modelMods;
         public ICollectionView ModelMods
         {
             get
             {
                 _modelMods = new CollectionViewSource { Source = SimpleModsList }.View;
-                //_modelMods.Filter = m => FilterFunction<ModelModViewModel>(m);
-                //_modelMods.Filter = m => FilterFunction<ModelModViewModel>(m);
                 _modelMods.Filter = m => FilterFunction<ModelModViewModel>(m);
                 return _modelMods;
             }
         }
-
+        
         ICollectionView _readonlyMods;
         public ICollectionView ReadOnlyMods
         {

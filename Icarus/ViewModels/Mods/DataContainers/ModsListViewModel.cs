@@ -20,7 +20,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
     public class ModsListViewModel : ViewModelBase, IModsListViewModel, IDropTarget
     {
         public ModPack ModPack { get; }
-        ViewModelService _viewModelService;
+        readonly ViewModelService _viewModelService;
 
         // Used to determine if a mtrl or tex exists in the mod list (or is vanilla)
         // Lots of cases...
@@ -42,7 +42,6 @@ namespace Icarus.ViewModels.Mods.DataContainers
             ModPack = modPack;
             _viewModelService = viewModelService;
 
-            //FilteredModsList = new(SimpleModsList);
             FilteredModsList = new(this);
             SetCanExport();
         }
@@ -81,36 +80,17 @@ namespace Icarus.ViewModels.Mods.DataContainers
         public int AddRange(IEnumerable<IMod> mods)
         {
             var numAdded = 0;
-            var modViewModels = new List<ModViewModel>();
-
-            /*
-            await Task.Run(() =>
-            {
-                foreach (var m in mods)
-                {
-                    var mvm = _viewModelService.GetModViewModel(m);
-                    if (mvm != null)
-                    {
-                        modViewModels.Add(mvm);
-                    }
-                }
-            });
-
-            IsAdding = true;
-            foreach (var m in modViewModels)
-            {
-                Add(m);
-            }
-            IsAdding = false;
-            return numAdded;
-            */
             IsAdding = true;
             foreach (var m in mods)
             {
-                Add(m);
+                var mvm = Add(m);
+                if (mvm != null)
+                {
+                    numAdded++;
+                }
             }
             IsAdding = false;
-            return 0;
+            return numAdded;
         }
 
         public ModViewModel? Add(IMod mod)

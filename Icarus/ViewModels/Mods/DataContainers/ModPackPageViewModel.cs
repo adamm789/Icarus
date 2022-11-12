@@ -54,11 +54,14 @@ namespace Icarus.ViewModels.Mods.DataContainers
             IsReadOnly = isReadOnly;
         }
 
+        ModGroupViewModel _previousGroup;
         private void OnSelectedOption(object sender, PropertyChangedEventArgs e)
         {
-            if (sender is ModGroupViewModel vm)
+            if (sender is ModGroupViewModel vm && e.PropertyName == nameof(ModGroupViewModel.DisplayedOption) && vm.DisplayedOption != null)
             {
-                DisplayedOption = vm.SelectedOption;
+                if (_previousGroup != null && _previousGroup != vm) _previousGroup.DisplayedOption = null;
+                DisplayedOption = vm.DisplayedOption;
+                _previousGroup = vm;
             }
         }
 
@@ -68,8 +71,8 @@ namespace Icarus.ViewModels.Mods.DataContainers
             set { _modPackPage.PageIndex = value; OnPropertyChanged(); }
         }
 
-        ModOptionViewModel _displayedOption;
-        public ModOptionViewModel DisplayedOption
+        ModOptionViewModel? _displayedOption;
+        public ModOptionViewModel? DisplayedOption
         {
             get { return _displayedOption; }
             set { _displayedOption = value; OnPropertyChanged(); }
@@ -95,12 +98,16 @@ namespace Icarus.ViewModels.Mods.DataContainers
             return vm;
         }
 
+        private Dictionary<ModGroupViewModel, PropertyChangedEventHandler> handlerDict = new();
+
         public void AddGroup(ModGroupViewModel group)
         {
             ModGroups.Add(group);
             _modPackPage.AddGroup(group.GetGroup());
             group.RemoveCommand = new(o => RemoveGroup(group));
-            group.PropertyChanged += new PropertyChangedEventHandler(OnSelectedOption);
+            var eh = new PropertyChangedEventHandler(OnSelectedOption);
+            group.PropertyChanged += eh;
+            handlerDict.Add(group, eh);
         }
 
         public void RemoveGroup(ModGroupViewModel group)
@@ -108,6 +115,9 @@ namespace Icarus.ViewModels.Mods.DataContainers
             ModGroups.Remove(group);
             _modPackPage.ModGroups.Remove(group.GetGroup());
             group.OnRemove();
+            var eh = handlerDict[group];
+            group.PropertyChanged -= eh;
+            handlerDict.Remove(group);
         }
 
         public int RemoveMods(List<ModViewModel> mods)
@@ -225,6 +235,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
                     }
                     else
                     {
+                        sourceOption.RemoveCommand.Execute(sourceOption);
                         targetGroup.AddOption(sourceOption);
                     }
                 }

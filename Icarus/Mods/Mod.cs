@@ -39,7 +39,8 @@ namespace Icarus.Mods
                     fileName = gameFile.Path;
                 }
                 ModFileName = $"{fileName} ({gameFile.Name})";
-                ModFilePath = gameFile.Path;
+                ModFilePath = "Vanilla";
+                //ModFilePath = gameFile.Path;
             }
             SetModData(gameFile);
         }

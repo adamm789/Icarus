@@ -34,6 +34,7 @@ namespace Icarus.ViewModels.Models
             _isSkinMaterial = XivPathParser.IsSkinMtrl(_importedGroup.Material);
             _initialMaterial = group.Material;
             DisplayedMaterial = _initialMaterial;
+            MaterialVariant = XivPathParser.GetMtrlVariant(DisplayedMaterial);
             DestinationModelPath = model.DestinationPath;
 
             InitializeSkinVariant(model.TargetRace);

@@ -15,7 +15,8 @@
              xmlns:editors="clr-namespace:Icarus.Views.Editor"
              xmlns:dd="urn:gong-wpf-dragdrop"
              xmlns:xtk1="http://schemas.xceed.com/wpf/xaml/toolkit"
-             xmlns:mpl="clr-namespace:Icarus.Views.ModPackList"
+             xmlns:mplviews="clr-namespace:Icarus.Views.ModPackList"
+             xmlns:mplviewmodels="clr-namespace:Icarus.ViewModels.Mods.DataContainers.ModPackList"
              d:DataContext="{d:DesignInstance Type=editorviewmodels:AdvancedEditorViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -49,8 +50,8 @@
             <DataTemplate DataType="{x:Type modviewmodels:MetadataModViewModel}">
                 <local:AdvancedEditorModView/>
             </DataTemplate>
-            <DataTemplate DataType="{x:Type datacontainers:ModPackListViewModel}">
-                <mpl:ModPackListView dd:DragDrop.IsDropTarget="True"/>
+            <DataTemplate DataType="{x:Type mplviewmodels:ModPackListViewModel}">
+                <mplviews:ModPackListView dd:DragDrop.IsDropTarget="True"/>
             </DataTemplate>
         </Grid.Resources>
 
@@ -74,6 +75,50 @@
 
         <TabControl Grid.Row="0" Grid.Column="2" SelectedIndex="{Binding SelectedTabIndex}">
             <TabItem Header="Option">
+                <ContentControl Content="{Binding DisplayedOption}"/>
+                <ContentControl.Resources>
+                    <DataTemplate DataType="{x:Type datacontainers:ModOptionViewModel}">
+                        <Grid VerticalAlignment="Stretch">
+                            <Grid.Resources>
+                                <DataTemplate DataType="{x:Type datacontainers:ModOptionModViewModel}">
+                                    <modviews:ModOptionModView/>
+                                </DataTemplate>
+                                <DataTemplate DataType="{x:Type modviewmodels:ModelModViewModel}">
+                                    <modviews:ModOptionModView/>
+                                </DataTemplate>
+                                <DataTemplate DataType="{x:Type modviewmodels:MaterialModViewModel}">
+                                    <modviews:ModOptionModView/>
+                                </DataTemplate>
+                                <DataTemplate DataType="{x:Type modviewmodels:ReadOnlyModViewModel}">
+                                    <modviews:ModOptionModView/>
+                                </DataTemplate>
+
+                            </Grid.Resources>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="2*"/>
+                            </Grid.RowDefinitions>
+                            <Grid Grid.Row="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox Grid.Row="0" Grid.Column="0" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"/>
+                                <TextBlock Grid.Column="1" Text="{Binding SelectionType}"/>
+                            </Grid>
+                            <xtk1:WatermarkTextBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding Description}" Watermark="Description"
+                               AcceptsReturn="True" TextWrapping="WrapWithOverflow" Margin="5"/>
+
+                            <ListView Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" ItemsSource="{Binding ModViewModels}"
+                  HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
+                  ScrollViewer.CanContentScroll="False"
+                  VirtualizingStackPanel.IsVirtualizing="True"
+                  ScrollViewer.HorizontalScrollBarVisibility="Hidden"/>
+                        </Grid>
+                    </DataTemplate>
+                </ContentControl.Resources>
+                <!--
                 <ContentControl Content="{Binding ModPackViewModel}">
                     <ContentControl.Resources>
                         <DataTemplate DataType="{x:Type datacontainers:ModPackViewModel}">
@@ -133,6 +178,7 @@
                         </DataTemplate>
                     </ContentControl.Resources>
                 </ContentControl>
+                -->
             </TabItem>
             <TabItem Header="Loaded ModPacks">
                 <ContentControl Content="{Binding ModPackListViewModel}"/>

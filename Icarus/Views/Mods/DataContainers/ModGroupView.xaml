@@ -83,7 +83,7 @@
 
             <ListView Grid.Row="2" Grid.Column="0"
                     ItemsSource="{Binding OptionList}"
-                    SelectedItem="{Binding SelectedOption}"
+                    SelectedItem="{Binding DisplayedOption}"
                     HorizontalContentAlignment="Stretch"
                     VerticalContentAlignment="Stretch"
                     ScrollViewer.CanContentScroll="False"

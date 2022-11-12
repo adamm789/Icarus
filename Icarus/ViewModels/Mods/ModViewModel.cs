@@ -118,6 +118,17 @@ namespace Icarus.ViewModels.Mods
             }
         }
 
+        public bool HasMatch(string? str)
+        {
+            if (string.IsNullOrWhiteSpace(str)) return true;
+
+            return
+                DestinationPath.Contains(str, System.StringComparison.OrdinalIgnoreCase) ||
+                DestinationName.Contains(str, System.StringComparison.OrdinalIgnoreCase) ||
+                DisplayedHeader.Contains(str, System.StringComparison.OrdinalIgnoreCase) ||
+                FilePath.Contains(str, System.StringComparison.OrdinalIgnoreCase);
+        }
+
         /// <summary>
         /// Item name
         /// </summary>

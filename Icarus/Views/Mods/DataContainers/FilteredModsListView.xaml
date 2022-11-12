@@ -28,6 +28,7 @@
                 <Setter Property="BorderThickness" Value="2"/>
                 <Setter Property="Margin" Value="0,3,0,3"/>
             </Style>
+
         </Grid.Resources>
 
         <Grid.RowDefinitions>
@@ -44,15 +45,16 @@
             <TabItem Header="{Binding AllModsHeader}">
                 <ListView ItemsSource="{Binding AllMods}"/>
             </TabItem>
+            <TabItem Header="{Binding ModelModsHeader}">
+                <ListView ItemsSource="{Binding ModelMods}"/>
+            </TabItem>
             <TabItem Header="{Binding MaterialModsHeader}">
                 <ListView ItemsSource="{Binding MaterialMods}"/>
             </TabItem>
             <TabItem Header="{Binding TextureModsHeader}">
                 <ListView ItemsSource="{Binding TextureMods}"/>
             </TabItem>
-            <TabItem Header="{Binding ModelModsHeader}">
-                <ListView ItemsSource="{Binding ModelMods}"/>
-            </TabItem>
+
             <TabItem Header="{Binding MetadataModsHeader}">
                 <ListView ItemsSource="{Binding MetadataMods}"/>
             </TabItem>

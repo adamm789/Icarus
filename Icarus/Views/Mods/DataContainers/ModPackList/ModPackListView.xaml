@@ -8,7 +8,8 @@
              xmlns:dd="urn:gong-wpf-dragdrop"
              xmlns:ui="clr-namespace:Icarus.UI"
              xmlns:datacontainers="clr-namespace:Icarus.ViewModels.Mods.DataContainers"
-             d:DataContext="{d:DesignInstance Type=datacontainers:ModPackListViewModel}"
+             xmlns:mplviewmodels="clr-namespace:Icarus.ViewModels.Mods.DataContainers.ModPackList"
+             d:DataContext="{d:DesignInstance Type=mplviewmodels:ModPackListViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              d:MaxWidth="500">
@@ -33,10 +34,10 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     <TextBlock Grid.Row="0" Text="{Binding GroupName}"/>
-
                     <ListView Grid.Row="1" ItemsSource="{Binding OptionList}"
                               ScrollViewer.CanContentScroll="False"
-                              VirtualizingStackPanel.IsVirtualizing="True"/>
+                              VirtualizingStackPanel.IsVirtualizing="True"
+                              MouseWheel="HandlePreviewMouseWheel"/>
                 </Grid>
             </DataTemplate>
             <DataTemplate DataType="{x:Type datacontainers:ModOptionViewModel}">

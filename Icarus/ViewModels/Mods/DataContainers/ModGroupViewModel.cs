@@ -61,11 +61,13 @@ namespace Icarus.ViewModels.Mods.DataContainers
             RemoveCommand = new DelegateCommand(o => parent.RemoveGroup(this));
         }
 
-        ModOptionViewModel _selectedOption;
-        public ModOptionViewModel SelectedOption
+        // TODO: When selecting an option in a different group that was previously selected, the "option tab" does not update
+        // e.g. Select G1O1. Selected G2O1. Trying to select G1O1 again does not update the tab.
+        ModOptionViewModel? _displayedOption;
+        public ModOptionViewModel? DisplayedOption
         {
-            get { return _selectedOption; }
-            set { _selectedOption = value; OnPropertyChanged(); }
+            get { return _displayedOption; }
+            set { _displayedOption = value; OnPropertyChanged(); }
         }
 
         public void OnRemove()

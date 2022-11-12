@@ -12,8 +12,9 @@ using System.Threading.Tasks;
 using System.Collections.Specialized;
 using Icarus.Services.Interfaces;
 
-namespace Icarus.ViewModels.Mods.DataContainers
+namespace Icarus.ViewModels.Mods.DataContainers.ModPackList
 {
+    // TODO: ModPackList copy option
     public class ModPackListViewModel : ViewModelBase
     {
         readonly IModsListViewModel _modsListViewModel;

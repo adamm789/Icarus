@@ -24,6 +24,8 @@ namespace Icarus.ViewModels.Mods.DataContainers
         // TODO: Allow user to drag and drop groups, options, and pages to the current pack
         public ObservableCollection<ModPackPageViewModel> ModPackPages { get; } = new();
 
+        // public ObservableCollection<INotifyPropertyChanged> ModPackPages { get; } = new();
+
         public bool IsReadOnly { get; }
         ViewModelService _viewModelService;
 
@@ -45,9 +47,23 @@ namespace Icarus.ViewModels.Mods.DataContainers
             foreach (var page in ModPack.ModPackPages)
             {
                 var packPage = new ModPackPageViewModel(page, this, _viewModelService, IsReadOnly);
+                packPage.PropertyChanged += new(OnOptionSelected);
                 ModPackPages.Add(packPage);
             }
             IsReadOnly = isReadOnly;
+        }
+
+        public void SetMetadata(ModPackMetaViewModel meta)
+        {
+            ModPackMetaViewModel.CopyFrom(meta.ModPack);
+        }
+
+        private void OnOptionSelected(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(ModPackPageViewModel.DisplayedOption) && sender is ModPackPageViewModel modPackPage)
+            {
+                SelectedOption = modPackPage.DisplayedOption;
+            }
         }
 
         public List<int> GetAvailablePageIndices()
@@ -113,6 +129,13 @@ namespace Icarus.ViewModels.Mods.DataContainers
             set { _displayedViewModel = value; OnPropertyChanged(); }
         }
 
+        ModOptionViewModel? _selectedOption;
+        public ModOptionViewModel? SelectedOption
+        {
+            get { return _selectedOption;}
+            set { _selectedOption = value; OnPropertyChanged(); }
+        }
+
         DelegateCommand _decreaseCommand;
         public DelegateCommand DecreaseCommand
         {
@@ -137,6 +160,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
         {
             ModPack.ModPackPages.Add(packPage.GetModPackPage());
             ModPackPages.Add(packPage);
+            packPage.PropertyChanged += new PropertyChangedEventHandler(OnOptionSelected);
         }
 
         public void InsertPage(ModPackPageViewModel packPage, int index)

@@ -11,6 +11,7 @@ using Icarus.ViewModels.Import;
 using Icarus.ViewModels.Items;
 using Icarus.ViewModels.Mods.DataContainers;
 using Icarus.ViewModels.Mods.DataContainers.Interfaces;
+using Icarus.ViewModels.Mods.DataContainers.ModPackList;
 using Icarus.ViewModels.Util;
 using Icarus.Views;
 using System.ComponentModel;
