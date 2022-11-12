@@ -129,28 +129,31 @@ namespace Icarus.ViewModels.Import
                     var modPack = await ImportFile(str);
                     _logService.Verbose($"Finished importing.");
 
-                    if (modPack == null)
+                    if (modPack.SimpleModsList.Count == 0)
                     {
-                        _logService.Error("Could not get mod pack.");
+                        _logService.Error($"Could not import {str}.");
                         return;
                     }
-
-                    // TODO: Seems that this may freeze the UI on particularly large mod packs
-
                     if (modPack.ModPackPages.Count > 0)
                     {
                         _modPackListViewModel.Add(modPack);
                     }
 
                     _logService.Verbose($"Adding to mod list.");
+
+                    // TODO: Display a "waiting window" on large modpacks?
+                    if (modPack.SimpleModsList.Count > 0)
+                    {
+
+                    }
+                    // TODO: Seems that this may freeze the UI on particularly large mod packs
                     _modPackViewModel.Add(modPack);
                     _logService.Verbose($"Finished adding.");
-                    //_modPackViewModel.SetModPack(modPack, flags);
                 }
             }
         }
 
-        public async Task<ModPack?> ImportFile(string filePath)
+        public async Task<ModPack> ImportFile(string filePath)
         {
             return await Task.Run(() => _importService.ImportFile(filePath));
         }

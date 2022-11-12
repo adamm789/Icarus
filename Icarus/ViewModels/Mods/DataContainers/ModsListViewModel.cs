@@ -42,7 +42,8 @@ namespace Icarus.ViewModels.Mods.DataContainers
             ModPack = modPack;
             _viewModelService = viewModelService;
 
-            FilteredModsList = new(SimpleModsList);
+            //FilteredModsList = new(SimpleModsList);
+            FilteredModsList = new(this);
             SetCanExport();
         }
         private int identifier = 0;
@@ -68,19 +69,48 @@ namespace Icarus.ViewModels.Mods.DataContainers
             set { _filteredModsList = value; OnPropertyChanged(); }
         }
 
+        bool _isAdding = false;
+        public bool IsAdding
+        {
+            get { return _isAdding; }
+            set { _isAdding = value; OnPropertyChanged(); }
+        }
+
         #region Public Functions
 
         public int AddRange(IEnumerable<IMod> mods)
         {
             var numAdded = 0;
+            var modViewModels = new List<ModViewModel>();
+
+            /*
+            await Task.Run(() =>
+            {
+                foreach (var m in mods)
+                {
+                    var mvm = _viewModelService.GetModViewModel(m);
+                    if (mvm != null)
+                    {
+                        modViewModels.Add(mvm);
+                    }
+                }
+            });
+
+            IsAdding = true;
+            foreach (var m in modViewModels)
+            {
+                Add(m);
+            }
+            IsAdding = false;
+            return numAdded;
+            */
+            IsAdding = true;
             foreach (var m in mods)
             {
-                if (Add(m) != null)
-                {
-                    numAdded++;
-                }
+                Add(m);
             }
-            return numAdded;
+            IsAdding = false;
+            return 0;
         }
 
         public ModViewModel? Add(IMod mod)

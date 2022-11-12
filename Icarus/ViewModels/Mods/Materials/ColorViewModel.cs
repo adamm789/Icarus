@@ -95,7 +95,6 @@ namespace Icarus.ViewModels.Mods.Materials
             {
                 if (!IsValidValue(value)) return;
                 _material.ColorSetData[_offset + 2] = (Half)value;
-
                 OnPropertyChanged(); OnPropertyChanged(nameof(BrushColor));
             }
         }

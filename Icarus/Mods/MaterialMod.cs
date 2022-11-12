@@ -38,7 +38,7 @@ namespace Icarus.Mods
             if (colorSetExtraData == null)
             {
                 ColorSetDyeData = new byte[32];
-                for (var i = 0; i < 32; i ++)
+                for (var i = 0; i < 32; i++)
                 {
                     ColorSetDyeData[i] = 0;
                 }
@@ -98,20 +98,13 @@ namespace Icarus.Mods
                 ShaderInfo = xivMtrl.GetShaderInfo();
             }
 
-            UpdatePaths(xivMtrl);
+            InitializePaths(xivMtrl);
         }
 
-        private void UpdatePaths(XivMtrl xivMtrl)
+        private void InitializePaths(XivMtrl xivMtrl)
         {
+            // TODO: How do I handle custom texture paths?
             Path = xivMtrl.MTRLPath;
-
-            NormalTexPath = XivPathParser.GetTexPathFromMtrl(Path, XivTexType.Normal);
-            SpecularTexPath = XivPathParser.GetTexPathFromMtrl(Path, XivTexType.Specular);
-            MultiTexPath = XivPathParser.GetTexPathFromMtrl(Path, XivTexType.Multi);
-            DiffuseTexPath = XivPathParser.GetTexPathFromMtrl(Path, XivTexType.Diffuse);
-            ReflectionTexPath = XivPathParser.GetTexPathFromMtrl(Path, XivTexType.Reflection);
-
-            // if we failed to parse the path, try to get it from the xivmtrl
             foreach (var ttp in xivMtrl.TextureTypePathList)
             {
                 switch (ttp.Type)
@@ -151,6 +144,12 @@ namespace Icarus.Mods
                         break;
                 }
             }
+
+            NormalTexPath ??= XivPathParser.GetTexPathFromMtrl(Path, XivTexType.Normal);
+            SpecularTexPath ??= XivPathParser.GetTexPathFromMtrl(Path, XivTexType.Specular);
+            MultiTexPath ??= XivPathParser.GetTexPathFromMtrl(Path, XivTexType.Multi);
+            DiffuseTexPath ??= XivPathParser.GetTexPathFromMtrl(Path, XivTexType.Diffuse);
+            ReflectionTexPath ??= XivPathParser.GetTexPathFromMtrl(Path, XivTexType.Reflection);
         }
 
         public override bool IsComplete()
@@ -219,24 +218,27 @@ namespace Icarus.Mods
                 var diffuse = XivPathParser.GetTexPathFromMtrl(str, XivTexType.Diffuse);
                 var reflection = XivPathParser.GetTexPathFromMtrl(str, XivTexType.Reflection);
 
-                NormalTexPath = normal;
+                if (XivPathParser.CanParsePath(NormalTexPath))
+                {
+                    NormalTexPath = normal;
+                }
 
-                if (forced || !String.IsNullOrWhiteSpace(specular))
+                if ((forced || !String.IsNullOrWhiteSpace(specular)) && XivPathParser.CanParsePath(SpecularTexPath))
                 {
                     SpecularTexPath = specular;
                 }
 
-                if (forced || !String.IsNullOrWhiteSpace(multi))
+                if ((forced || !String.IsNullOrWhiteSpace(multi)) && XivPathParser.CanParsePath(MultiTexPath))
                 {
                     MultiTexPath = multi;
                 }
 
-                if (forced || !String.IsNullOrWhiteSpace(diffuse))
+                if ((forced || !String.IsNullOrWhiteSpace(diffuse)) && XivPathParser.CanParsePath(DiffuseTexPath))
                 {
                     DiffuseTexPath = diffuse;
                 }
 
-                if (forced || !String.IsNullOrWhiteSpace(reflection))
+                if ((forced || !String.IsNullOrWhiteSpace(reflection)) && XivPathParser.CanParsePath(ReflectionTexPath))
                 {
                     ReflectionTexPath = reflection;
                 }

@@ -27,6 +27,7 @@ using Mod = Icarus.Mods.Mod;
 using ModGroup = Icarus.Mods.DataContainers.ModGroup;
 using ModOption = Icarus.Mods.DataContainers.ModOption;
 using ModPack = Icarus.Mods.DataContainers.ModPack;
+using System.Collections.Concurrent;
 
 namespace Icarus.Services.Files
 {
@@ -88,6 +89,14 @@ namespace Icarus.Services.Files
             {
                 if (modPack.SimpleModsList != null)
                 {
+                    var tasks = new Task<IMod?>[modPack.SimpleModsList.Count];
+                    for (int i = 0; i < modPack.SimpleModsList.Count; i++)
+                    {
+                        var j = i;
+                        var mods = modPack.SimpleModsList[j];
+                        tasks[j] = Extract(mods, pack, mods.Name, filePath);
+                    }
+                    /*
                     foreach (ModsJson mods in modPack.SimpleModsList)
                     {
                         var file = await Extract(mods, pack, mods.Name, filePath);
@@ -98,13 +107,42 @@ namespace Icarus.Services.Files
                         else
                         {
                             retModPack.SimpleModsList.Add(file);
-                            
+                        }
+                    }
+                    */
+                    await Task.WhenAll(tasks);
+
+                    foreach (var t in tasks)
+                    {
+                        var file = t.Result;
+                        if (file != null)
+                        {
+                            retModPack.SimpleModsList.Add(file);
                         }
                     }
                 }
 
+
                 if (modPack.ModPackPages != null)
                 {
+                    var concurrentDict = new ConcurrentDictionary<ModsJson, Task<IMod?>>();
+                    foreach (var page in modPack.ModPackPages)
+                    {
+                        foreach (var group in page.ModGroups)
+                        {
+                            foreach (var option in group.OptionList)
+                            {
+                                foreach (var mods in option.ModsJsons)
+                                {
+                                    var fileName = $"Page{page.PageIndex}/{group.GroupName}/{option.Name}: ({mods.Name})";
+                                    concurrentDict.TryAdd(mods, Extract(mods, pack, fileName, filePath));
+                                }
+                            }
+                        }
+                    }
+
+                    await Task.WhenAll(concurrentDict.Values);
+
                     foreach (ModPackPageJson page in modPack.ModPackPages)
                     {
                         var copyPage = new ModPackPage(page);
@@ -122,7 +160,8 @@ namespace Icarus.Services.Files
                                     var fileName = $"Page{page.PageIndex}/{group.GroupName}/{option.Name}: ({mods.Name})";
                                     Log.Verbose($"Extracting {fileName}");
 
-                                    var mod = await Extract(mods, pack, fileName, filePath);
+                                    //var mod = await Extract(mods, pack, fileName, filePath);
+                                    var mod = await concurrentDict[mods];
 
                                     if (mod == null)
                                     {
@@ -165,7 +204,8 @@ namespace Icarus.Services.Files
             switch (dat.Type)
             {
                 case FileType.Model:
-                    result = await Task.Run(() => ExtractModel(mods, pack, modFileName, modFilePath));
+                    //result = await Task.Run(() => ExtractModel(mods, pack, modFileName, modFilePath));
+                    result = await Task.FromResult(ExtractModel(mods, pack, modFileName, modFilePath));
                     break;
                 case FileType.Texture:
                     result = await ExtractTexture(mods, pack, modFileName, modFilePath);

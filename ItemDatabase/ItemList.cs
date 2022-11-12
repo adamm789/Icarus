@@ -3,6 +3,7 @@ using ItemDatabase.Interfaces;
 using Lumina;
 using Lumina.Excel.GeneratedSheets;
 using Lumina.Text;
+using Serilog;
 using xivModdingFramework.General.Enums;
 using LuminaItem = Lumina.Excel.GeneratedSheets.Item;
 

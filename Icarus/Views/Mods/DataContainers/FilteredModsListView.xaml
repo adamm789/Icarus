@@ -13,10 +13,9 @@
             <Style TargetType="{x:Type ListView}">
                 <Setter Property="VerticalContentAlignment" Value="Stretch"/>
                 <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
-                <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True"/>
                 <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Visible"/>
                 <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
+                <Setter Property="VirtualizingPanel.ScrollUnit" Value="Pixel"/>
                 <!--
                 <Setter Property="dd:DragDrop.IsDragSource" Value="True"/>
                 <Setter Property="dd:DragDrop.IsDropTarget" Value="True"/>
@@ -39,12 +38,11 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-<!--
         <TextBox Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="False" Grid.Row="0" Grid.Column="1"/>
--->
+
         <TabControl Grid.Row="1" Grid.ColumnSpan="2">
             <TabItem Header="{Binding AllModsHeader}">
-                <ListView ItemsSource="{Binding SimpleModsList}"/>
+                <ListView ItemsSource="{Binding AllMods}"/>
             </TabItem>
             <TabItem Header="{Binding MaterialModsHeader}">
                 <ListView ItemsSource="{Binding MaterialMods}"/>
@@ -60,7 +58,7 @@
             </TabItem>
             <TabItem Header="{Binding ReadOnlyModsHeader}"
                      ToolTip="For some reason, these mods could not be imported. These entries cannot be edited.">
-                <ListView ItemsSource="{Binding ReadonlyMods}"/>
+                <ListView ItemsSource="{Binding ReadOnlyMods}"/>
             </TabItem>
             <!--
             <TabItem Header="{Binding IncompleteModsHeader}">

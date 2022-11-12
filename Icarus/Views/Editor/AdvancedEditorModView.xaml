@@ -18,6 +18,6 @@
             <TextBlock Text="{Binding Identifier}"/>
             <TextBlock Text="{Binding DisplayedHeader}" Grid.Row="0"/>
         </StackPanel>
-        <TextBlock Text="{Binding DestinationName}" Grid.Row="1"/>
+        <TextBlock Text="{Binding DestinationPath}" Grid.Row="1"/>
     </Grid>
 </UserControl>

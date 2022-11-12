@@ -30,7 +30,7 @@
                       Visibility="{Binding CanParsePath, Converter={StaticResource BooleanToVisibilityConverter}}"
                       PreviewMouseWheel="ListView_PreviewMouseWheel"/>
             <ComboBox Grid.Column="3" ItemsSource="{Binding TexTypeValues}" SelectedValue="{Binding TexType}"
-                      Visibility="{Binding CanParsePath, Converter={StaticResource BooleanToVisibilityConverter}}"
+                      Visibility="{Binding CanParseTexType, Converter={StaticResource BooleanToVisibilityConverter}}"
                       PreviewMouseWheel="ListView_PreviewMouseWheel"/>
         </Grid>
     </StackPanel>

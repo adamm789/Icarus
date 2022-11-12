@@ -62,7 +62,7 @@ namespace Icarus.ViewModels.Import
             }
         }
 
-        public ModelMod? GetVanillaMdl()
+        public async Task<ModelMod?> GetVanillaMdl()
         {
             IModelGameFile? modelGameFile;
             if (_completePath != null)
@@ -81,19 +81,19 @@ namespace Icarus.ViewModels.Import
                 if (modViewModel == null)
                 {
                     _logService.Fatal($"Failed to get ViewModel for vanilla mdl: {mod.Name}");
-                    return null;
+                    return await Task.FromResult<ModelMod?>(null);
                 }
                 modViewModel.SetModData(modelGameFile);
-                return mod;
+                return await Task.FromResult<ModelMod?>(mod);
             }
-            return null;
+            return await Task.FromResult<ModelMod?>(null);
             //return null;
         }
 
-        protected override Task DoImport()
+        protected async override Task DoImport()
         {
-            GetVanillaMdl();
-            return Task.CompletedTask;
+            await GetVanillaMdl();
+            //return Task.CompletedTask;
         }
 
         string _selectedItemMdl;
