@@ -71,6 +71,11 @@ namespace Icarus.Util
             modPackJson.SimpleModsList = new();
 
             var exportEntries = entries.FindAll(m => m.ShouldExport);
+            if (exportEntries.Count == 0)
+            {
+                _logService.Information("No entries were selected for export.");
+                return "";
+            }
             var tasks = new Task<byte[]>[exportEntries.Count];
             var byteList = new List<byte[]>();
 

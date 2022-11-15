@@ -11,5 +11,8 @@ namespace Icarus.Services.Interfaces
         string DefaultLalafellVariant { get; set; }
         string DefaultAuthor { get; set; }
         string DefaultWebsite { get; set; }
+        bool AlwaysPromptBeforeSimpleTexToolsImport { get; set; }
+        bool AlwaysPromptBeforeSimpleTexToolsExport { get; set; }
+        bool AlwaysPromptBeforeSimpleRawExport { get; set; }
     }
 }

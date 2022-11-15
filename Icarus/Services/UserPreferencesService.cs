@@ -89,22 +89,22 @@ namespace Icarus.Services
             }
         }
 
-        private bool IsMaleSkin(XivRace race)
+        public bool AlwaysPromptBeforeSimpleTexToolsImport
         {
-            if (XivRaces.PlayableRaces.Contains(race))
-            {
-                if (race.ToString().Contains("_Male"))
-                {
-                    return true;
-                }
-                else if (race.ToString().Contains("_Female"))
-                {
-                    return false;
-                }
-            }
-            var err = String.Format("Unknown gendered race: {0}", race.ToString());
-            _logService.Error(err);
-            throw new ArgumentException(err);
+            get { return _settings.AlwaysPromptBeforeSimpleTexToolsImport; }
+            set { _settings.AlwaysPromptBeforeSimpleTexToolsImport = value; OnPropertyChanged(); }
+        }
+
+        public bool AlwaysPromptBeforeSimpleTexToolsExport
+        {
+            get { return _settings.AlwaysPromptBeforeSimpleTexToolsExport; }
+            set { _settings.AlwaysPromptBeforeSimpleTexToolsExport = value; OnPropertyChanged(); }
+        }
+
+        public bool AlwaysPromptBeforeSimpleRawExport
+        {
+            get { return _settings.AlwaysPromptBeforeSimpleRawExport; }
+            set { _settings.AlwaysPromptBeforeSimpleRawExport = value; OnPropertyChanged(); }
         }
 
         protected override void OnPropertyChanged([CallerMemberName] string propertyName = null)

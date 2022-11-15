@@ -1,4 +1,5 @@
 ﻿using Icarus.Mods.DataContainers;
+using Icarus.Mods.Interfaces;
 using Icarus.Services.Files;
 using Icarus.Services.Interfaces;
 using Icarus.ViewModels.Mods.DataContainers.Interfaces;
@@ -33,15 +34,18 @@ namespace Icarus.ViewModels.Import
         private string _initialDirectory = "";
         private OpenFileDialog _dlg;
 
-        // TODO: Ability to import only some of the mods in a ttmp2 file
-        public ImportViewModel(IModPackViewModel modPack, ModPackListViewModel modPackList, ImportService importService, ISettingsService settingsService, ILogService logService)
-            : base (logService)
+        public ImportSimpleTexToolsViewModel ImportSimpleTexToolsViewModel;
+
+        public ImportViewModel(IModPackViewModel modPack, ModPackListViewModel modPackList, ImportService importService,
+            ISettingsService settingsService, ILogService logService, ImportSimpleTexToolsViewModel importSimpleTexToolsViewModel)
+            : base(logService)
         {
             _settingsService = settingsService;
             _modPackViewModel = modPack;
             _modPackListViewModel = modPackList;
             _importService = importService;
             _logService = logService;
+            ImportSimpleTexToolsViewModel = importSimpleTexToolsViewModel;
 
             var eh = new PropertyChangedEventHandler(OnPropertyChanged);
             _importService.PropertyChanged += eh;
@@ -118,6 +122,8 @@ namespace Icarus.ViewModels.Import
             await ImportFiles(dlg.FileNames);
         }
 
+        // TODO: Ability to import only some of the mods in a ttmp2 file
+
         public async Task ImportFiles(IList<string> filePaths)
         {
             foreach (var path in filePaths)
@@ -126,7 +132,8 @@ namespace Icarus.ViewModels.Import
                 if (File.Exists(str))
                 {
                     _logService.Verbose($"Importing mod pack.");
-                    var modPack = await ImportFile(str);
+                    //var modPack = await ImportFile(str);
+                    var modPack = await Task.Run(async () => await ImportFile(str));
                     _logService.Verbose($"Finished importing.");
 
                     if (modPack.SimpleModsList.Count == 0)
@@ -134,9 +141,14 @@ namespace Icarus.ViewModels.Import
                         _logService.Error($"Could not import {str}.");
                         return;
                     }
+
                     if (modPack.ModPackPages.Count > 0)
                     {
                         _modPackListViewModel.Add(modPack);
+                    }
+                    else
+                    {
+                        ImportSimpleTexToolsViewModel.Show();
                     }
 
                     _logService.Verbose($"Adding to mod list.");
@@ -155,7 +167,42 @@ namespace Icarus.ViewModels.Import
 
         public async Task<ModPack> ImportFile(string filePath)
         {
-            return await Task.Run(() => _importService.ImportFile(filePath));
+            //return await Task.Run(() => _importService.ImportFile(filePath));
+            var ext = Path.GetExtension(filePath);
+            var retModPack = new ModPack();
+            IMod? mod = null;
+            if (ext == ".fbx")
+            {
+                mod = await _importService.TryImportModel(filePath);
+            }
+            else if (ext == ".dds")
+            {
+                mod = await Task.Run(() => _importService.TryImportDDS(filePath));
+            }
+            else if (ext == ".png" || ext == ".bmp")
+            {
+                mod = _importService.ImportTexture(filePath);
+            }
+            else if (ext == ".ttmp2")
+            {
+                if (_importService.IsSimpleModPack(filePath))
+                {
+                    // TODO: Window asking which mods the user wants to import
+                }
+                else
+                {
+                    retModPack = await _importService.TryImportTTModPack(filePath);
+                }
+            }
+            if (retModPack == null)
+            {
+                return new ModPack();
+            }
+            if (mod != null)
+            {
+                retModPack.SimpleModsList.Add(mod);
+            }
+            return retModPack;
         }
 
         public bool CanAcceptFiles(StringCollection collection)
@@ -171,6 +218,11 @@ namespace Icarus.ViewModels.Import
                 }
             }
             return true;
+        }
+
+        private void SimpleTexToolsImportPrompt()
+        {
+
         }
     }
 }

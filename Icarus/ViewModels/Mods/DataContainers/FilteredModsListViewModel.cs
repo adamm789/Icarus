@@ -1,4 +1,7 @@
-﻿using Icarus.ViewModels.Util;
+﻿using Icarus.Services.Interfaces;
+using Icarus.ViewModels.Mods.DataContainers.Interfaces;
+using Icarus.ViewModels.Mods.DataContainers.ModsList;
+using Icarus.ViewModels.Util;
 using Icarus.Views.Mods;
 using ItemDatabase;
 using Serilog;
@@ -15,12 +18,11 @@ using System.Windows.Forms;
 
 namespace Icarus.ViewModels.Mods.DataContainers
 {
-    public class FilteredModsListViewModel : NotifyPropertyChanged
+    public class FilteredModsListViewModel : ViewModelBase
     {
-        // TODO: Figure out how I want to handle searching within the mods list
         public ObservableCollection<ModViewModel> SimpleModsList { get; }
 
-        Timer timer = new();
+        Timer _timer = new();
         // TODO:? Allow searching through mods list
         string _searchTerm = "";
         public string SearchTerm
@@ -29,45 +31,35 @@ namespace Icarus.ViewModels.Mods.DataContainers
             set
             {
                 _searchTerm = value;
-                OnPropertyChanged();
-                Search();
-                //timer.Stop();
-                //timer.Start();
+
+                // Delay calling Search() until user ostensibly stops typing
+                _timer.Stop();
+                _timer.Start();
             }
         }
 
         int numCalled = 0;
+        readonly ILogService _logService;
 
-        public FilteredModsListViewModel(ModsListViewModel modsListViewModel)
+        public FilteredModsListViewModel(IModsListViewModel modsListViewModel, ILogService logService) : base(logService)
         {
             SimpleModsList = modsListViewModel.SimpleModsList;
+            _logService = logService;
+
             modsListViewModel.SimpleModsList.CollectionChanged += new(OnCollectionChanged);
             modsListViewModel.PropertyChanged += new PropertyChangedEventHandler(OnPropertyChanged);
             UpdateHeaders();
 
-            /*
-            var view = (CollectionView)CollectionViewSource.GetDefaultView(SimpleModsList);
-            view.Filter += SearchFilter;
+            _timer.Tick += Timer_Tick;
+            _timer.Interval = 300;
 
-            timer.Tick += Timer_Tick;
-            timer.Interval = 300;
-            */
+            MyModelMods = new(this, logService);
         }
 
-        private void Timer_Tick(object? sender, EventArgs e)
+        private void Timer_Tick(object sender, EventArgs e)
         {
-            var items = (CollectionView)CollectionViewSource.GetDefaultView(SimpleModsList);
-            items.Refresh();
-           
-            UpdateHeaders();
-            //OnPropertyChanged(nameof(SimpleModsList));
-            OnPropertyChanged(nameof(AllMods));
-            OnPropertyChanged(nameof(ModelMods));
-            OnPropertyChanged(nameof(ReadOnlyMods));
-            OnPropertyChanged(nameof(MaterialMods));
-            OnPropertyChanged(nameof(TextureMods));
-            OnPropertyChanged(nameof(MetadataMods));
-            timer.Stop();
+            Search();
+            _timer.Stop();
         }
 
         private void Search()
@@ -78,6 +70,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
             OnPropertyChanged(nameof(MaterialMods));
             OnPropertyChanged(nameof(TextureMods));
             OnPropertyChanged(nameof(MetadataMods));
+            OnPropertyChanged(nameof(SearchTerm));
             UpdateHeaders();
         }
 
@@ -195,9 +188,6 @@ namespace Icarus.ViewModels.Mods.DataContainers
         {
             if (o is T mvm)
             {
-
-                // TODO: More robust matching
-                //return mvm.DisplayedHeader.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase);
                 return mvm.HasMatch(SearchTerm);
             }
             else
@@ -205,6 +195,20 @@ namespace Icarus.ViewModels.Mods.DataContainers
                 return false;
             }
         }
+
+        public bool SearchFilterFunction(object o)
+        {
+            if (o is ModViewModel mvm)
+            {
+                return mvm.HasMatch(SearchTerm);
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public ModelModsListViewModel MyModelMods { get; }
 
         ICollectionView _allMods;
         public ICollectionView AllMods

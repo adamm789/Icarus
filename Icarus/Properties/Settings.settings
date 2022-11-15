@@ -35,5 +35,17 @@
     <Setting Name="DefaultWebsite" Type="System.String" Scope="User">
       <Value Profile="(Default)">google.com</Value>
     </Setting>
+    <Setting Name="Setting" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="AlwaysPromptBeforeSimpleTexToolsImport" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="AlwaysPromptBeforeSimpleTexToolsExport" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="AlwaysPromptBeforeSimpleRawExport" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

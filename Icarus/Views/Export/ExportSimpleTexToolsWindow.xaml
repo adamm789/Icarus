@@ -1,14 +1,16 @@
-﻿<Window x:Class="Icarus.Views.Import.TexToolsModPackImportWindow"
+﻿<Window x:Class="Icarus.Views.Export.ExportSimpleTexToolsWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Icarus.Views.Import"
         xmlns:datacontainers="clr-namespace:Icarus.ViewModels.Mods.DataContainers"
+        xmlns:modviews="clr-namespace:Icarus.Views.Mods"
         xmlns:mods="clr-namespace:Icarus.ViewModels.Mods"
-        d:DataContext="{d:DesignInstance Type=datacontainers:ModsListViewModel}"
+        xmlns:export="clr-namespace:Icarus.ViewModels.Export"
+        d:DataContext="{d:DesignInstance Type=export:ExportSimpleTexToolsViewModel}"
+        xmlns:local="clr-namespace:Icarus.Views.Export"
         mc:Ignorable="d"
-        Title="TexToolsModPackImportWindow" Height="450" Width="800">
+        Title="SimpleExportSelectionWindow" Height="450" Width="800">
     <Grid>
         <Grid.Resources>
             <DataTemplate DataType="{x:Type mods:ModViewModel}">
@@ -17,7 +19,6 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-
                     <TextBlock Text="{Binding DisplayedHeader}" Grid.Column="0"/>
                     <CheckBox Grid.Column="1" IsChecked="{Binding ShouldExport}">
                         <TextBlock Text="Export?"/>
@@ -26,9 +27,20 @@
             </DataTemplate>
         </Grid.Resources>
         <Grid.RowDefinitions>
-            
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <ListView ItemsSource="{Binding SimpleModsList}"/>
+        <ContentControl Content="{Binding FilteredMods}" Grid.Row="0">
+            <ContentControl.Resources>
+                <DataTemplate DataType="{x:Type datacontainers:FilteredModsListViewModel}">
+                    <modviews:FilteredModsListView/>
+                </DataTemplate>
+            </ContentControl.Resources>
+        </ContentControl>
+        <StackPanel Orientation="Horizontal" Grid.Row="1">
+            <Button Command="{Binding OnCancelCommand}" Content="Cancel"/>
+            <Button Command="{Binding OnConfirmCommand}" Content="{Binding ConfirmText}"/>
+        </StackPanel>
     </Grid>
 </Window>

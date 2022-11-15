@@ -154,5 +154,53 @@ namespace Icarus.Properties {
                 this["DefaultWebsite"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool Setting {
+            get {
+                return ((bool)(this["Setting"]));
+            }
+            set {
+                this["Setting"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AlwaysPromptBeforeSimpleTexToolsImport {
+            get {
+                return ((bool)(this["AlwaysPromptBeforeSimpleTexToolsImport"]));
+            }
+            set {
+                this["AlwaysPromptBeforeSimpleTexToolsImport"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AlwaysPromptBeforeSimpleTexToolsExport {
+            get {
+                return ((bool)(this["AlwaysPromptBeforeSimpleTexToolsExport"]));
+            }
+            set {
+                this["AlwaysPromptBeforeSimpleTexToolsExport"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AlwaysPromptBeforeSimpleRawExport {
+            get {
+                return ((bool)(this["AlwaysPromptBeforeSimpleRawExport"]));
+            }
+            set {
+                this["AlwaysPromptBeforeSimpleRawExport"] = value;
+            }
+        }
     }
 }

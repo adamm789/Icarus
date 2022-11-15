@@ -12,27 +12,34 @@ using System.Windows.Forms;
 
 namespace Icarus.ViewModels.Export
 {
-    public class ExportViewModel : NotifyPropertyChanged
+    public class ExportViewModel : ViewModelBase
     {
         readonly IMessageBoxService _messageBoxService;
         readonly ExportService _exportService;
-        IWindowService _windowService;
-        readonly IModsListViewModel _modPackViewModel;
+        readonly IWindowService _windowService;
+        readonly IModsListViewModel _modsListViewModel;
+        readonly ILogService _logService;
 
-        public ExportViewModel(IModsListViewModel modPack, IMessageBoxService messageBoxService, ExportService exportService, IWindowService windowService)
+        ExportSimpleTexToolsViewModel ExportSimpleTexToolsViewModel;
+
+        public ExportViewModel(IModsListViewModel modsListViewModel, IMessageBoxService messageBoxService, ExportService exportService, IWindowService windowService, ILogService logService) 
+            : base(logService)
         {
-            _modPackViewModel = modPack;
+            _modsListViewModel = modsListViewModel;
             _messageBoxService = messageBoxService;
             _exportService = exportService;
             _windowService = windowService;
+            _logService = logService;
+
+            ExportSimpleTexToolsViewModel = new(modsListViewModel, _logService);
 
             var eh = new PropertyChangedEventHandler(OnPropertyChanged);
-            _modPackViewModel.PropertyChanged += eh;
+            _modsListViewModel.PropertyChanged += eh;
         }
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(_modPackViewModel.CanExport))
+            if (e.PropertyName == nameof(_modsListViewModel.CanExport))
             {
                 OnPropertyChanged(nameof(CanExport));
                 ExportCommand.RaiseCanExecuteChanged();
@@ -49,23 +56,20 @@ namespace Icarus.ViewModels.Export
         {
             IsBusy = true;
             ExportCommand.RaiseCanExecuteChanged();
-            var path = _exportService.GetOutputPath(_modPackViewModel.ModPack, type);
+            var path = _exportService.GetOutputPath(_modsListViewModel.ModPack, type);
             path = path.Replace('\\', '/');
 
             var shouldDelete = true;
-            /*
+            
             if (ExportType.Simple.HasFlag(type))
             {
                 // TODO: Window that allows choosing which mods to export as well as a prompt
-                var response = _windowService.ShowOptionWindow<SimpleExportSelectionWindow>(_modPackViewModel.SimpleModsList);
-                if (response == DialogResult.No)
-                {
-                    shouldDelete = false;
-                }
+                _windowService.ShowWindow<ExportSimpleTexToolsWindow>(ExportSimpleTexToolsViewModel);
+                shouldDelete = ExportSimpleTexToolsViewModel.ShouldDelete;
             }
             else
             {
-            */
+            
             // TODO: More accurate file/path existance and prompt
                 if (File.Exists(path) || Directory.Exists(path))
                 {
@@ -76,14 +80,14 @@ namespace Icarus.ViewModels.Export
                         shouldDelete = false;
                     }
                 }
-            //}
+            }
             string outputPath = "";
             var success = true;
             if (shouldDelete)
             {
                 try
                 {
-                    outputPath = await _exportService.Export(_modPackViewModel.ModPack, type);
+                    outputPath = await _exportService.Export(_modsListViewModel.ModPack, type);
                     if (String.IsNullOrWhiteSpace(outputPath))
                     {
                         success = false;
@@ -92,12 +96,12 @@ namespace Icarus.ViewModels.Export
                 catch (OperationCanceledException)
                 {
                     success = false;
-                    Log.Warning("Export was cancelled.");
+                    _logService.Warning("Export was cancelled.");
                 }
                 catch (Exception ex)
                 {
                     success = false;
-                    Log.Error(ex, "Export threw an exception.");
+                    _logService.Error(ex, "Export threw an exception.");
                 }
                 if (success)
                 {
@@ -126,7 +130,7 @@ namespace Icarus.ViewModels.Export
             set { _isBusy = value; OnPropertyChanged(); }
         }
 
-        public bool CanExport => _modPackViewModel.CanExport && !IsBusy;
+        public bool CanExport => _modsListViewModel.CanExport && !IsBusy;
 
         private void DisplaySuccess(string path = "")
         {

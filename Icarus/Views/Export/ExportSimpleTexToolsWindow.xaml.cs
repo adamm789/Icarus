@@ -12,14 +12,14 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace Icarus.Views.Import
+namespace Icarus.Views.Export
 {
     /// <summary>
-    /// Interaction logic for TexToolsModPackImportWindow.xaml
+    /// Interaction logic for ExportSimpleTexToolsWindow.xaml
     /// </summary>
-    public partial class TexToolsModPackImportWindow : Window
+    public partial class ExportSimpleTexToolsWindow : Window
     {
-        public TexToolsModPackImportWindow()
+        public ExportSimpleTexToolsWindow()
         {
             InitializeComponent();
         }

@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:datacontainers="clr-namespace:Icarus.ViewModels.Mods.DataContainers"
+             xmlns:modslist ="clr-namespace:Icarus.ViewModels.Mods.DataContainers.ModsList"
              xmlns:dd="urn:gong-wpf-dragdrop"
              d:DataContext="{d:DesignInstance Type=datacontainers:FilteredModsListViewModel}"
              mc:Ignorable="d" 
@@ -28,7 +29,11 @@
                 <Setter Property="BorderThickness" Value="2"/>
                 <Setter Property="Margin" Value="0,3,0,3"/>
             </Style>
-
+                <DataTemplate DataType="{x:Type modslist:ModelModsListViewModel}">
+                    <TabItem Header="{Binding Header}">
+                        <ListView ItemsSource="{Binding ModsList}"/>
+                    </TabItem>
+                </DataTemplate>
         </Grid.Resources>
 
         <Grid.RowDefinitions>
@@ -45,8 +50,13 @@
             <TabItem Header="{Binding AllModsHeader}">
                 <ListView ItemsSource="{Binding AllMods}"/>
             </TabItem>
+            <!--
             <TabItem Header="{Binding ModelModsHeader}">
                 <ListView ItemsSource="{Binding ModelMods}"/>
+            </TabItem>
+            -->
+            <TabItem DataContext="{Binding MyModelMods}" Header="{Binding Header}">
+                <ListView ItemsSource="{Binding ModsList}"/>
             </TabItem>
             <TabItem Header="{Binding MaterialModsHeader}">
                 <ListView ItemsSource="{Binding MaterialMods}"/>

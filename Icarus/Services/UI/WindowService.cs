@@ -1,4 +1,6 @@
 ﻿using Icarus.Services.Interfaces;
+using Icarus.ViewModels.Util;
+using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Forms;
@@ -15,12 +17,16 @@ namespace Icarus.Services.UI
             child.Show();
         }
 
-        public void ShowWindow<T>(object dataContext) where T : Window, new()
+        public bool? ShowWindow<T>(object dataContext) where T : Window, new()
         {
             var child = new T();
 
             child.DataContext = dataContext;
-            child.ShowDialog();
+            if (dataContext is UIViewModelBase ui)
+            {
+                ui.CloseAction = new Action(child.Close);
+            }
+            return child.ShowDialog();
         }
 
         public DialogResult ShowOptionWindow<T>(object dataContext) where T : Window, new()

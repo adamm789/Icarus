@@ -162,7 +162,7 @@ namespace Icarus.Mods
         /// </summary>
         private void UpdateMtrl()
         {
-            Log.Information($"Updating mtrl: {Name}");
+            Log.Debug($"Updating mtrl: {Name}");
             // Adapted from: https://github.com/TexTools/FFXIV_TexTools_UI/blob/37290b2897c79dd1e913bb4ff90285f0e620ca9d/FFXIV_TexTools/ViewModels/MaterialEditorViewModel.cs#L255
 
             XivMtrl.MTRLPath = Path;

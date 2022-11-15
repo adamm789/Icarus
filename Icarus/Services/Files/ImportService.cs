@@ -21,6 +21,12 @@ using xivModdingFramework.Textures.FileTypes;
 using System.Collections.ObjectModel;
 using Icarus.ViewModels.Import;
 using Icarus.Mods.DataContainers;
+using Ionic.Zip;
+
+using IcarusModPack = Icarus.Mods.DataContainers.ModPack;
+using xivModdingFramework.Mods.DataContainers;
+using Newtonsoft.Json;
+using System.Linq;
 
 namespace Icarus.Services.Files
 {
@@ -37,7 +43,7 @@ namespace Icarus.Services.Files
 
         public ObservableQueue<string> _stringQueue = new();
 
-        ObservableCollection<ModPack> ImportCollection;
+        ObservableCollection<IcarusModPack> ImportCollection;
 
         public ImportService(IGameFileService gameFileDataService, ISettingsService settingsService, ConverterService converterService, ILogService logService, LuminaService lumina,
             IModelFileService modelFileService) : base(lumina)
@@ -73,19 +79,49 @@ namespace Icarus.Services.Files
             set { _isImportingAdvanced = value; OnPropertyChanged(); }
         }
 
+        // TODO: enum 
+        public bool IsSimpleModPack(string filePath)
+        {
+            var ext = Path.GetExtension(filePath);
+            if (ext == ".ttmp2")
+            {
+                var fileInfo = new FileInfo(filePath);
+
+                using var zfs = fileInfo.OpenRead();
+                using var zip = ZipFile.Read(zfs);
+                var tempDir = Path.Combine(_settingsService.ProjectDirectory, "temp");
+                Directory.CreateDirectory(tempDir);
+                var dir = new DirectoryInfo(tempDir);
+                string mplPath = dir + "\\ttmpl.mpl";
+                ZipEntry mpl = zip.Entries.First(x => x.FileName.EndsWith(".mpl"));
+                mpl.Extract(tempDir, ExtractExistingFileAction.OverwriteSilently);
+
+                ModPackJson? modPack = JsonConvert.DeserializeObject<ModPackJson>(File.ReadAllText(mplPath));
+                if (modPack == null)
+                {
+                    throw new ArgumentException("Could not get ModPack.");
+                }
+                return modPack.SimpleModsList != null;
+            }
+            else
+            {
+                throw new ArgumentException($"File was not ttmp2.");
+            }
+        }
+
         /// <summary>
         /// Imports the file, filling a <see cref="ModPack"/> with mods and potentially <see cref="ModPack.ModPackPages"/>
         /// </summary>
         /// <param name="filePath"></param>
         /// <returns>The filled <see cref="ModPack"/> if successful. An empty <see cref="ModPack"/> otherwise.</returns>
-        public async Task<ModPack> ImportFile(string filePath)
+        public async Task<IcarusModPack> ImportFile(string filePath)
         {
             var importingFile = "Importing: " + filePath;
             _importFileQueue.Enqueue(importingFile);
             UpdateProperties();
 
             var ext = Path.GetExtension(filePath);
-            var retModPack = new ModPack();
+            var retModPack = new IcarusModPack();
             IMod? mod = null;
             if (ext == ".fbx")
             {
@@ -114,7 +150,7 @@ namespace Icarus.Services.Files
 
             if (retModPack == null)
             {
-                return new ModPack();
+                return new IcarusModPack();
             }
             if (mod != null)
             {
@@ -123,7 +159,7 @@ namespace Icarus.Services.Files
             return retModPack;
         }
 
-        public async Task<ModPack?> TryImportTTModPack(string filePath)
+        public async Task<IcarusModPack?> TryImportTTModPack(string filePath)
         {
             IsImportingAdvanced = true;
             try
@@ -146,7 +182,7 @@ namespace Icarus.Services.Files
             {
                 IsImportingAdvanced = false;
             }
-            return new ModPack();
+            return new IcarusModPack();
         }
 
         const float minAcceptableSize = 0.5f;
@@ -240,7 +276,7 @@ namespace Icarus.Services.Files
             return null;
         }
 
-        private IMod? TryImportDDS(string filePath)
+        public IMod? TryImportDDS(string filePath)
         {
             var materialMod = TryImportColorSet(filePath);
             if (materialMod == null)
@@ -288,7 +324,7 @@ namespace Icarus.Services.Files
 
             // TODO: Some sort of check for the file?
             // TODO: Store some actual data as opposed to just the file path?
-            var retPack = new ModPack();
+            var retPack = new IcarusModPack();
             var texMod = new TextureMod(ImportSource.Raw)
             {
                 ModFileName = filePath,

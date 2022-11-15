@@ -89,6 +89,7 @@ namespace Icarus.Services.Files
             {
                 if (modPack.SimpleModsList != null)
                 {
+                    Log.Debug("Importing simple ttmp2.");
                     var tasks = new Task<IMod?>[modPack.SimpleModsList.Count];
                     for (int i = 0; i < modPack.SimpleModsList.Count; i++)
                     {
@@ -96,20 +97,6 @@ namespace Icarus.Services.Files
                         var mods = modPack.SimpleModsList[j];
                         tasks[j] = Extract(mods, pack, mods.Name, filePath);
                     }
-                    /*
-                    foreach (ModsJson mods in modPack.SimpleModsList)
-                    {
-                        var file = await Extract(mods, pack, mods.Name, filePath);
-                        if (file == null)
-                        {
-                            Log.Error($"Could not extract mod {mods.Name}.");
-                        }
-                        else
-                        {
-                            retModPack.SimpleModsList.Add(file);
-                        }
-                    }
-                    */
                     await Task.WhenAll(tasks);
 
                     foreach (var t in tasks)
@@ -122,9 +109,9 @@ namespace Icarus.Services.Files
                     }
                 }
 
-
                 if (modPack.ModPackPages != null)
                 {
+                    Log.Debug("Importing advanced ttmp2.");
                     var concurrentDict = new ConcurrentDictionary<ModsJson, Task<IMod?>>();
                     foreach (var page in modPack.ModPackPages)
                     {
@@ -191,6 +178,10 @@ namespace Icarus.Services.Files
                         retModPack.ModPackPages.Add(copyPage);
                     }
                 }
+            }
+            if (Directory.Exists(tempDir))
+            {
+                Directory.Delete(tempDir, true);
             }
             return retModPack;
         }

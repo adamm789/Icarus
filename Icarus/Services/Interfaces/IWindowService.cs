@@ -8,7 +8,7 @@ namespace Icarus.Services.Interfaces
     {
         void Show<T>(object dataContext) where T : Window, new();
 
-        void ShowWindow<T>(object dataContext) where T : Window, new();
+        bool? ShowWindow<T>(object dataContext) where T : Window, new();
 
         DialogResult ShowOptionWindow<T>(object dataContext) where T : Window, new();
 

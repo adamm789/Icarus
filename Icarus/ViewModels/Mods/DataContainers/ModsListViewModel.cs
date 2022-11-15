@@ -42,7 +42,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
             ModPack = modPack;
             _viewModelService = viewModelService;
 
-            FilteredModsList = new(this);
+            FilteredModsList = new(this, logService);
             SetCanExport();
         }
         private int identifier = 0;
@@ -83,10 +83,13 @@ namespace Icarus.ViewModels.Mods.DataContainers
             IsAdding = true;
             foreach (var m in mods)
             {
-                var mvm = Add(m);
-                if (mvm != null)
+                if (m.ShouldImport)
                 {
-                    numAdded++;
+                    var mvm = Add(m);
+                    if (mvm != null)
+                    {
+                        numAdded++;
+                    }
                 }
             }
             IsAdding = false;

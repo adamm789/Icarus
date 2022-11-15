@@ -22,7 +22,7 @@ namespace Icarus.Services.UI
         public DialogResult ShowMessage(string message, string title, MessageBoxButtons buttons) => _messageBoxService.ShowMessage(message, title, buttons);
 
         public void Show<T>(object dataContext) where T : Window, new() => _windowService.Show<T>(dataContext);
-        public void ShowWindow<T>(object dataContext) where T : Window, new() => _windowService.ShowWindow<T>(dataContext);
+        public bool? ShowWindow<T>(object dataContext) where T : Window, new() => _windowService.ShowWindow<T>(dataContext);
         public bool IsWindowOpen<T>(string name = "") where T : Window => _windowService.IsWindowOpen<T>(name);
 
         public DialogResult ShowOptionWindow<T>(object dataContext) where T : Window, new() => _windowService.ShowOptionWindow<T>(dataContext);

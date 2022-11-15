@@ -7,7 +7,6 @@ namespace Icarus.ViewModels.Util
     {
         protected ILogService _logService;
 
-
         public ViewModelBase(ILogService logService)
         {
             _logService = logService;
