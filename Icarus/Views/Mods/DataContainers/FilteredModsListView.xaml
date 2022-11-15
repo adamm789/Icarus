@@ -6,6 +6,7 @@
              xmlns:datacontainers="clr-namespace:Icarus.ViewModels.Mods.DataContainers"
              xmlns:modslist ="clr-namespace:Icarus.ViewModels.Mods.DataContainers.ModsList"
              xmlns:dd="urn:gong-wpf-dragdrop"
+             xmlns:xtk1="http://schemas.xceed.com/wpf/xaml/toolkit"
              d:DataContext="{d:DesignInstance Type=datacontainers:FilteredModsListViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -23,17 +24,11 @@
                 <Setter Property="dd:DragDrop.DropHandler" Value="{Binding}"/>
                 -->
             </Style>
-
             <Style TargetType="{x:Type ListViewItem}">
                 <Setter Property="BorderBrush" Value="Black"/>
                 <Setter Property="BorderThickness" Value="2"/>
                 <Setter Property="Margin" Value="0,3,0,3"/>
             </Style>
-                <DataTemplate DataType="{x:Type modslist:ModelModsListViewModel}">
-                    <TabItem Header="{Binding Header}">
-                        <ListView ItemsSource="{Binding ModsList}"/>
-                    </TabItem>
-                </DataTemplate>
         </Grid.Resources>
 
         <Grid.RowDefinitions>
@@ -44,33 +39,27 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <TextBox Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="False" Grid.Row="0" Grid.Column="1"/>
+        <xtk1:WatermarkTextBox Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}" Watermark="Filter" AcceptsReturn="False" Grid.Row="0" Grid.Column="1"/>
 
-        <TabControl Grid.Row="1" Grid.ColumnSpan="2">
-            <TabItem Header="{Binding AllModsHeader}">
-                <ListView ItemsSource="{Binding AllMods}"/>
-            </TabItem>
-            <!--
-            <TabItem Header="{Binding ModelModsHeader}">
-                <ListView ItemsSource="{Binding ModelMods}"/>
-            </TabItem>
-            -->
-            <TabItem DataContext="{Binding MyModelMods}" Header="{Binding Header}">
+        <TabControl Grid.Row="1" Grid.ColumnSpan="2" SelectedIndex="{Binding SelectedIndex}">
+            <TabItem DataContext="{Binding AllMods}" Header="{Binding Header}">
                 <ListView ItemsSource="{Binding ModsList}"/>
             </TabItem>
-            <TabItem Header="{Binding MaterialModsHeader}">
-                <ListView ItemsSource="{Binding MaterialMods}"/>
+            <TabItem DataContext="{Binding ModelMods}" Header="{Binding Header}">
+                <ListView ItemsSource="{Binding ModsList}"/>
             </TabItem>
-            <TabItem Header="{Binding TextureModsHeader}">
-                <ListView ItemsSource="{Binding TextureMods}"/>
+            <TabItem DataContext="{Binding MaterialMods}" Header="{Binding Header}">
+                <ListView ItemsSource="{Binding ModsList}"/>
             </TabItem>
-
-            <TabItem Header="{Binding MetadataModsHeader}">
-                <ListView ItemsSource="{Binding MetadataMods}"/>
+            <TabItem DataContext="{Binding TextureMods}" Header="{Binding Header}">
+                <ListView ItemsSource="{Binding ModsList}"/>
             </TabItem>
-            <TabItem Header="{Binding ReadOnlyModsHeader}"
+            <TabItem DataContext="{Binding MetadataMods}" Header="{Binding Header}">
+                <ListView ItemsSource="{Binding ModsList}"/>
+            </TabItem>
+            <TabItem DataContext="{Binding ReadOnlyMods}" Header="{Binding Header}"
                      ToolTip="For some reason, these mods could not be imported. These entries cannot be edited.">
-                <ListView ItemsSource="{Binding ReadOnlyMods}"/>
+                <ListView ItemsSource="{Binding ModsList}"/>
             </TabItem>
             <!--
             <TabItem Header="{Binding IncompleteModsHeader}">

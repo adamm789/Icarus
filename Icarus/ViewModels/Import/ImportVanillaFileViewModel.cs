@@ -61,7 +61,7 @@ namespace Icarus.ViewModels.Import
         DelegateCommand _importVanillaFileCommand;
         public DelegateCommand ImportVanillaFileCommand
         {
-            get { return _importVanillaFileCommand ??= new DelegateCommand(_ => DoImport(), _ => CanImport); }
+            get { return _importVanillaFileCommand ??= new DelegateCommand(async _ => DoImport(), _ => CanImport); }
         }
 
         protected abstract Task DoImport();

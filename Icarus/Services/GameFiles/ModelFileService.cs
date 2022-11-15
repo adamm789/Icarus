@@ -36,7 +36,7 @@ namespace Icarus.Services.GameFiles
 
                 var name = TryGetName(path, itemName);
 
-                var category = XivPathParser.GetCategory(path);
+                var category = XivPathParser.GetCategoryFromPath(path);
                 var race = XivPathParser.GetRaceFromString(path);
 
                 var ret = new ModelGameFile()

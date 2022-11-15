@@ -100,7 +100,7 @@ namespace ItemDatabase.Paths
             return EquipmentSlot.None;
         }
 
-        public static string GetCategory(string path)
+        public static string GetCategoryFromPath(string path)
         {
             var equipSlot = GetEquipmentSlot(path);
             if (equipSlot != EquipmentSlot.None)
@@ -252,12 +252,15 @@ namespace ItemDatabase.Paths
 
         public static string GetMtrlVariant(string input)
         {
-            var ret = "";
+            var ret = "a";
             //var matches = gearRegexFileNameMtrl.Matches(input);
-            var matches = Regex.Matches(input, @"_([a-z]+).mtrl$");
-            if (matches.Count == 1 && matches[0].Groups.Count == 2)
+            if (!String.IsNullOrWhiteSpace(input))
             {
-                ret = matches[0].Groups[1].Value;
+                var matches = Regex.Matches(input, @"_([a-z]+).mtrl$");
+                if (matches.Count == 1 && matches[0].Groups.Count == 2)
+                {
+                    ret = matches[0].Groups[1].Value;
+                }
             }
             return ret;
         }

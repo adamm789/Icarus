@@ -10,37 +10,51 @@
         d:DataContext="{d:DesignInstance Type=export:ExportSimpleTexToolsViewModel}"
         xmlns:local="clr-namespace:Icarus.Views.Export"
         mc:Ignorable="d"
-        Title="SimpleExportSelectionWindow" Height="450" Width="800">
+        Title="SimpleExportSelectionWindow" Height="450" Width="800"
+        FontSize="14">
     <Grid>
         <Grid.Resources>
             <DataTemplate DataType="{x:Type mods:ModViewModel}">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
+
+                        <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="{Binding DisplayedHeader}" Grid.Column="0"/>
-                    <CheckBox Grid.Column="1" IsChecked="{Binding ShouldExport}">
-                        <TextBlock Text="Export?"/>
+                    <CheckBox Grid.Column="1" IsChecked="{Binding ShouldExport}" HorizontalContentAlignment="Right" Margin="5">
+                        <TextBlock Text="{Binding DisplayedHeader}"/>
                     </CheckBox>
                 </Grid>
             </DataTemplate>
         </Grid.Resources>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
 
-        <ContentControl Content="{Binding FilteredMods}" Grid.Row="0">
+        <CheckBox Content="{Binding ShouldExportAllText}" Grid.Row="0" Grid.Column="0" IsChecked="{Binding ShouldExportAll}"/>
+        <Button Content="Invert Selection" Command="{Binding InvertSelectionCommand}" Grid.Row="0" Grid.Column="1"/>
+        <ContentControl Content="{Binding FilteredMods}" Grid.Row="1" Grid.ColumnSpan="2" Margin="5">
             <ContentControl.Resources>
                 <DataTemplate DataType="{x:Type datacontainers:FilteredModsListViewModel}">
                     <modviews:FilteredModsListView/>
                 </DataTemplate>
             </ContentControl.Resources>
         </ContentControl>
-        <StackPanel Orientation="Horizontal" Grid.Row="1">
-            <Button Command="{Binding OnCancelCommand}" Content="Cancel"/>
-            <Button Command="{Binding OnConfirmCommand}" Content="{Binding ConfirmText}"/>
-        </StackPanel>
+        <Grid Grid.Row="2" Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Button Command="{Binding OnCancelCommand}" Content="Cancel" Grid.Column="0" Margin="5"/>
+            <Label Grid.Column="1"/>
+            <Button Command="{Binding OnConfirmCommand}" Content="{Binding ConfirmText}" DockPanel.Dock="Right" Grid.Column="2" Margin="5"/>
+        </Grid>
     </Grid>
 </Window>

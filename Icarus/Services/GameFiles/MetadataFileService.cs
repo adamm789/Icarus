@@ -35,7 +35,7 @@ namespace Icarus.Services.GameFiles
                 {
                     name = item.Name;
                 }
-                var category = XivPathParser.GetCategory(path);
+                var category = XivPathParser.GetCategoryFromPath(path);
                 var slot = XivPathParser.GetEquipmentSlot(path);
 
                 metadataFile = new MetadataFile()

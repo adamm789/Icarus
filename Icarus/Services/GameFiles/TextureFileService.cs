@@ -99,7 +99,7 @@ namespace Icarus.Services.GameFiles
                     TexFormat = xivTex.TextureFormat,
                     Name = name,
                     TypeFormatDict = typeFormatDict,
-                    Category = XivPathParser.GetCategory(path)
+                    Category = XivPathParser.GetCategoryFromPath(path)
                 };
                 return textureGameFile;
             }

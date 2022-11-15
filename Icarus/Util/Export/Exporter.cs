@@ -171,6 +171,7 @@ namespace Icarus.Util
         protected async Task<byte[]> TryWriteTextureToBytes(TextureMod mod, bool forTexTools)
         {
             // TODO: Export texture to .pmp
+            // TODO: Extract this into its own function or move to another class
 
             _logService.Verbose($"Exporting texture: {mod.ModFileName} with forTexTools={forTexTools}");
 
@@ -342,8 +343,6 @@ namespace Icarus.Util
         {
             _logService.Verbose($"Applying ModelModifiers to {mm.Name}");
 
-            // TODO: Log warning when race converting between (likely) incompatible races?
-            // e.g. Male Roe to Midlander
             var ttModel = mm.ImportedModel;
             var copy = ttModel.DeepCopy();
 
@@ -417,7 +416,7 @@ namespace Icarus.Util
 
         /// <summary>
         /// Writes a material to bytes
-        /// If ShouldCompress, the resulting file is with TexTools
+        /// If shouldCompress is true, the resulting file is for TexTools
         /// If not, the resulting file is used with Penumbra
         /// </summary>
         /// <param name="mod"></param>

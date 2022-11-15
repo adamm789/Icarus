@@ -7,6 +7,7 @@ using Serilog;
 using System;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -22,7 +23,7 @@ namespace Icarus.ViewModels.Export
 
         ExportSimpleTexToolsViewModel ExportSimpleTexToolsViewModel;
 
-        public ExportViewModel(IModsListViewModel modsListViewModel, IMessageBoxService messageBoxService, ExportService exportService, IWindowService windowService, ILogService logService) 
+        public ExportViewModel(IModsListViewModel modsListViewModel, IMessageBoxService messageBoxService, ExportService exportService, IWindowService windowService, ILogService logService)
             : base(logService)
         {
             _modsListViewModel = modsListViewModel;
@@ -56,65 +57,88 @@ namespace Icarus.ViewModels.Export
         {
             IsBusy = true;
             ExportCommand.RaiseCanExecuteChanged();
-            var path = _exportService.GetOutputPath(_modsListViewModel.ModPack, type);
-            path = path.Replace('\\', '/');
+            try
+            {
+                var path = _exportService.GetOutputPath(_modsListViewModel.ModPack, type);
+                path = path.Replace('\\', '/');
 
-            var shouldDelete = true;
-            
-            if (ExportType.Simple.HasFlag(type))
-            {
-                // TODO: Window that allows choosing which mods to export as well as a prompt
-                _windowService.ShowWindow<ExportSimpleTexToolsWindow>(ExportSimpleTexToolsViewModel);
-                shouldDelete = ExportSimpleTexToolsViewModel.ShouldDelete;
-            }
-            else
-            {
-            
-            // TODO: More accurate file/path existance and prompt
-                if (File.Exists(path) || Directory.Exists(path))
+                var shouldDelete = true;
+
+                // TODO: Allow key combination to bypass this and always do the opposite
+                // Will also need to export all if asking is overridden
+                if (ExportType.Simple.HasFlag(type))
                 {
-                    var message = $"The path {path} already exists. Overwrite?";
-                    var response = _messageBoxService.ShowMessage(message, "File Exists", MessageBoxButtons.YesNo);
-                    if (response == DialogResult.No)
-                    {
-                        shouldDelete = false;
-                    }
-                }
-            }
-            string outputPath = "";
-            var success = true;
-            if (shouldDelete)
-            {
-                try
-                {
-                    outputPath = await _exportService.Export(_modsListViewModel.ModPack, type);
-                    if (String.IsNullOrWhiteSpace(outputPath))
-                    {
-                        success = false;
-                    }
-                }
-                catch (OperationCanceledException)
-                {
-                    success = false;
-                    _logService.Warning("Export was cancelled.");
-                }
-                catch (Exception ex)
-                {
-                    success = false;
-                    _logService.Error(ex, "Export threw an exception.");
-                }
-                if (success)
-                {
-                    DisplaySuccess(outputPath);
+                    var result = _windowService.ShowWindow<ExportSimpleTexToolsWindow>(ExportSimpleTexToolsViewModel);
+                    shouldDelete = ExportSimpleTexToolsViewModel.ShouldDelete;
+                    ExportSimpleTexToolsViewModel.ShouldDelete = false;
                 }
                 else
                 {
-                    DisplayFailure();
+                    // TODO: More accurate file/path existance and prompt
+                    if (File.Exists(path) || Directory.Exists(path))
+                    {
+                        var message = $"The path {path} already exists. Overwrite?";
+                        var result = _messageBoxService.ShowMessage(message, "File Exists", MessageBoxButtons.YesNo);
+                        if (result == DialogResult.No)
+                        {
+                            shouldDelete = false;
+                        }
+                    }
+                }
+                string outputPath = "";
+                var success = true;
+                var numSelected = _modsListViewModel.SimpleModsList.Where(m => m.ShouldExport).Count();
+                if (shouldDelete && numSelected > 0)
+                {
+                    try
+                    {
+                        // TODO: After exporting, should I reset mods to ShouldExport = true?
+                        outputPath = await _exportService.Export(_modsListViewModel.ModPack, type);
+                        if (String.IsNullOrWhiteSpace(outputPath))
+                        {
+                            success = false;
+                        }
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        success = false;
+                        _logService.Warning("Export was cancelled.");
+                    }
+                    catch (Exception ex)
+                    {
+                        success = false;
+                        _logService.Error(ex, "Export Service threw an exception.");
+                    }
+                    if (success)
+                    {
+                        DisplaySuccess(outputPath);
+                    }
+                    else
+                    {
+                        DisplayFailure();
+                    }
+                }
+                if (numSelected == 0)
+                {
+                    _logService.Warning("Zero mods were selected for export.");
+                    _messageBoxService.Show("No file was written. Please select which mods you wish to export.", "Zero mods selected", MessageBoxButtons.OK);
+                }
+                else if (!shouldDelete)
+                {
+                    _logService.Information("File was not written.");
+                    // TODO: Message box? or no?
+                    _messageBoxService.Show("No file was written.", "", MessageBoxButtons.OK);
                 }
             }
-
-            IsBusy = false;
-            ExportCommand.RaiseCanExecuteChanged();
+            catch (Exception ex)
+            {
+                _logService.Error(ex, "Export failed");
+            }
+            finally
+            {
+                IsBusy = false;
+                ExportCommand.RaiseCanExecuteChanged();
+            }
         }
 
         DelegateCommand _exportCommand;
@@ -139,7 +163,7 @@ namespace Icarus.ViewModels.Export
 
         private void DisplayFailure()
         {
-            //_messageBoxService.Show($"Failed to write ttmp2.", "", MessageBoxButtons.OK);
+            _messageBoxService.Show($"Failed to write ttmp2.", "", MessageBoxButtons.OK);
         }
     }
 }

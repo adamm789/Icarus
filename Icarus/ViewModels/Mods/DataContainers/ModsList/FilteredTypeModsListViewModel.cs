@@ -13,11 +13,13 @@ using System.Windows.Data;
 
 namespace Icarus.ViewModels.Mods.DataContainers.ModsList
 {
-    public abstract class FilteredTypeModsListViewModel<T> : ViewModelBase where T : ModViewModel
+    public class FilteredTypeModsListViewModel<T> : ViewModelBase where T : ModViewModel
     {
         FilteredModsListViewModel? _parent;
         protected string _type = "";
         ObservableCollection<ModViewModel> SimpleModsList;
+
+        public Type ModType;
 
         public FilteredTypeModsListViewModel(FilteredModsListViewModel parent, string header, ILogService logService) : base(logService)
         {
@@ -26,27 +28,29 @@ namespace Icarus.ViewModels.Mods.DataContainers.ModsList
             _parent.PropertyChanged += new(OnParentPropertyChanged);
 
             SimpleModsList = parent.SimpleModsList;
-
-
             SimpleModsList.CollectionChanged += new(OnCollectionChanged);
+            UpdateHeader();
+            ModType = typeof(T);
         }
 
         private void OnParentPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(_parent.SearchTerm))
             {
-                UpdateHeaders();
+                UpdateHeader();
+                
             }
         }
 
         private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            UpdateHeaders();
+            UpdateHeader();
         }
 
-        private void UpdateHeaders()
+        private void UpdateHeader()
         {
             Header = $"{_type} ({ModsList.Cast<ModViewModel>().Count()})";
+            OnPropertyChanged(nameof(ModsList));
         }
 
         string _header;

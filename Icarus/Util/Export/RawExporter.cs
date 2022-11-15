@@ -4,14 +4,22 @@ using Icarus.Mods.Interfaces;
 using Icarus.Services.Files;
 using Icarus.Services.Interfaces;
 using Icarus.Util.Extensions;
+using ItemDatabase.Paths;
 using Lumina;
+using SharpDX.Direct2D1;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using System.Windows.Markup;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Models.Helpers;
 using xivModdingFramework.Textures.DataContainers;
+using xivModdingFramework.Textures.Enums;
+using SixLaborsImage = SixLabors.ImageSharp.Image;
 
 namespace Icarus.Util.Export
 {
@@ -37,7 +45,10 @@ namespace Icarus.Util.Export
             {
                 foreach (var mod in modPack.SimpleModsList)
                 {
-                    await ExportMod(outputDirectory, mod);
+                    if (mod.ShouldExport)
+                    {
+                        await ExportMod(outputDirectory, mod);
+                    }
                 }
             }
             return dir;
@@ -46,13 +57,18 @@ namespace Icarus.Util.Export
         private string GetOutputFileName(IMod mod, ModOption? option = null)
         {
             var retVal = mod.ModFileName;
-            
+
             if (option != null)
             {
                 retVal = option.GroupName + " - " + option.Name;
             }
 
             retVal = String.Join("_", retVal.Split(Path.GetInvalidFileNameChars()));
+            if (Path.HasExtension(retVal))
+            {
+                var ext = Path.GetExtension(retVal);
+                retVal = retVal.Replace(ext, "");
+            }
             return retVal;
         }
 
@@ -118,13 +134,20 @@ namespace Icarus.Util.Export
                 var ttp = new TexTypePath
                 {
                     Path = mod.Path,
-                    Type = xivModdingFramework.Textures.Enums.XivTexType.ColorSet,
+                    Type = XivTexType.ColorSet,
                     DataFile = df
                 };
 
-                var texData = MtrlExtensions.MtrlToXivTex(xivMtrl, ttp);
+                var xivTex = MtrlExtensions.MtrlToXivTex(xivMtrl, ttp);
                 outputPath = Path.Combine(outputPath, outputFileName);
-                TexExtensions.SaveTexAsDDS(outputPath, texData);
+                var ogPath = outputPath;
+                var i = 0;
+                while (File.Exists(Path.ChangeExtension(outputPath, ".dds")))
+                {
+                    outputPath = $"{ogPath} ({i})";
+                    i++;
+                }
+                TexExtensions.SaveTexAsDDS(outputPath, xivTex);
             }
             else if (mod is TextureMod texMod)
             {
@@ -133,10 +156,47 @@ namespace Icarus.Util.Export
                 if (texMod.XivTex != null)
                 {
                     outputPath = Path.Combine(outputPath, outputFileName);
-                    //TexExtensions.SaveTexAsDDS(outputPath, texMod.XivTex, outputDirectory);
+                    var i = 0;
+                    var texType = texMod.TexType;
+
+                    var texAbbreviation = "";
+                    switch (texType)
+                    {
+                        case XivTexType.Diffuse:
+                            texAbbreviation = "d";
+                            break;
+                        case XivTexType.Specular:
+                            texAbbreviation = "s";
+                            break;
+                        case XivTexType.Multi:
+                            texAbbreviation = "m";
+                            break;
+                        case XivTexType.Normal:
+                            texAbbreviation = "n";
+                            break;
+                        default:
+                            break;
+                    }
+                    var ogPath = outputPath;
+                    while (File.Exists(Path.ChangeExtension(outputPath, ".dds")))
+                    {
+                        outputPath = $"{ogPath} ({i})";
+                        i++;
+                    }
+                    // TODO: Allow export to png
+                    /*
+                    Path.ChangeExtension(outputPath, ".png");
+
+                    using (Image<Rgba32> img = SixLaborsImage.LoadPixelData<Rgba32>(texMod.XivTex.TexData, texMod.XivTex.Width, texMod.XivTex.Height))
+                    {
+                        img.Save(outputPath, new PngEncoder());
+                    }
+                    */
                     TexExtensions.SaveTexAsDDS(outputPath, texMod.XivTex);
                 }
             }
+            _logService.Debug($"Wrote to {outputPath}");
+
         }
     }
 }
