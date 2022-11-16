@@ -72,13 +72,18 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <ContentControl Grid.Row="0" Content="{Binding ImportViewModel}" Margin="5"/>
-                <ContentControl Grid.Row="1" Content="{Binding ModPackMetaViewModel}" Margin="5"/>
-                <ContentControl Grid.Row="2" Content="{Binding ModsListViewModel}" Margin="5"/>
-                <ContentControl Grid.Row="3" Content="{Binding ExportViewModel}" Margin="5"/>
+                <UniformGrid Grid.Row="0" Columns="2">
+                    <Button Command="{Binding OpenImportWindowCommand}" Content="Import Window"/>
+                    <Button Command="{Binding ImportAllCommand}" Content="{Binding ImportAllText}"/>
+                </UniformGrid>
+                <ContentControl Grid.Row="1" Content="{Binding ImportViewModel}" Margin="5"/>
+                <ContentControl Grid.Row="2" Content="{Binding ModPackMetaViewModel}" Margin="5"/>
+                <ContentControl Grid.Row="3" Content="{Binding ModsListViewModel}" Margin="5"/>
+                <ContentControl Grid.Row="4" Content="{Binding ExportViewModel}" Margin="5"/>
             </Grid>
         </Grid>
     </Grid>

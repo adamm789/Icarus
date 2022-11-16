@@ -36,7 +36,6 @@ namespace Icarus.ViewModels.Mods.DataContainers
                 _selectedIndex = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(SelectedType));
-
             }
         }
 
@@ -58,7 +57,6 @@ namespace Icarus.ViewModels.Mods.DataContainers
                         return typeof(ReadOnlyModViewModel);
                     default:
                         return typeof(ModViewModel);
-
                 }
             }
         }

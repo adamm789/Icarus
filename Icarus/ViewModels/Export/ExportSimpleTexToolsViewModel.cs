@@ -15,61 +15,17 @@ using System.Threading.Tasks;
 namespace Icarus.ViewModels.Export
 {
     // TODO: Prompt for user to delete any files if it exists, upon pressing "Confirm"
-    public class ExportSimpleTexToolsViewModel : UIViewModelBase
+    public class ExportSimpleTexToolsViewModel : ModsListSelectionViewModel
     {
-        IModsListViewModel _modsListViewModel;
-
-        FilteredModsListViewModel _filteredMods;
-        public FilteredModsListViewModel FilteredMods { get; set; }
-        public bool? DialogResult { get; set; }
-
         public bool ShouldDelete { get; set; } = false;
 
-        bool _shouldExportAll = true;
-        public bool ShouldExportAll
+        public ExportSimpleTexToolsViewModel(IModsListViewModel modsListViewModel, ILogService logService) 
+            : base(modsListViewModel, logService)
         {
-            get { return _shouldExportAll; }
-            set
-            {
-                _shouldExportAll = value;
-                OnPropertyChanged();
-                foreach (var m in _modsListViewModel.SimpleModsList)
-                {
-                    if (_selectedType.IsInstanceOfType(m))
-                    {
-                        m.ShouldExport = value;
-                    }
-                }
-            }
+            
         }
 
-        string _shouldExportAllText;
-        public string ShouldExportAllText
-        {
-            get { return _shouldExportAllText; }
-            set { _shouldExportAllText = value; OnPropertyChanged(); }
-        }
-
-        string _confirmText = "";
-        public string ConfirmText
-        {
-            get { return _confirmText; }
-            set { _confirmText = value; OnPropertyChanged(); }
-        }
-
-        public ExportSimpleTexToolsViewModel(IModsListViewModel modsListViewModel, ILogService logService) : base(logService)
-        {
-            _modsListViewModel = modsListViewModel;
-            FilteredMods = new(_modsListViewModel, logService);
-            _eh = new(OnModsListPropertyChanged);
-
-            FilteredMods.PropertyChanged += new(OnFilteredModsListPropertyChanged);
-            _modsListViewModel.SimpleModsList.CollectionChanged += new(OnCollectionChanged);
-
-            UpdateText();
-        }
-
-        private void OnModsListPropertyChanged(object sender, PropertyChangedEventArgs e)
+        protected override void OnModsListPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(ModViewModel.ShouldExport) && sender is ModViewModel mvm)
             {
@@ -77,107 +33,36 @@ namespace Icarus.ViewModels.Export
             }
         }
 
-        private void OnFilteredModsListPropertyChanged(object sender, PropertyChangedEventArgs e)
+        protected override void Apply(ModViewModel mvm, bool value)
         {
-            if (sender is FilteredModsListViewModel modsList && e.PropertyName == nameof(FilteredModsListViewModel.SelectedType))
-            {
-                _selectedType = modsList.SelectedType;
-                if (modsList.SelectedType == typeof(ModelModViewModel)) {
-                    _modType = "Models";
-                }
-                else if(modsList.SelectedType == typeof(MaterialModViewModel))
-                {
-                    _modType = "Materials";
-                }
-                else if(modsList.SelectedType == typeof(TextureModViewModel))
-                {
-                    _modType = "Textures";
-                }
-                else if(modsList.SelectedType == typeof(MetadataModViewModel))
-                {
-                    _modType = "Metadata";
-                }
-                else if(modsList.SelectedType == typeof(ReadOnlyModViewModel)) {
-                    _modType = "Metadata";
-                }
-                else
-                {
-                    _modType = "";
-                }
-                UpdateText();
-            }
+            mvm.ShouldExport = value;
         }
 
-        private Type _selectedType = typeof(ModViewModel);
-
-        PropertyChangedEventHandler _eh;
-
-        private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        protected override void InvertMod(ModViewModel mvm)
         {
-            if (e.NewItems != null)
-            {
-                var mods = e.NewItems.Cast<ModViewModel>();
-                foreach (var m in mods)
-                {
-                    m.PropertyChanged += _eh;
-                }
-                UpdateText();
-            }
-            if (e.OldItems != null)
-            {
-                UpdateText();
-            }
+            mvm.ShouldExport = !mvm.ShouldExport;
         }
 
-        string _modType = "";
+        public override void ConfirmCommand()
+        {
+            ShouldDelete = true;
+            CloseAction?.Invoke();
+        }
 
-        private void UpdateText()
+        protected override void CancelCommand()
+        {
+            ShouldDelete = false;
+            CloseAction?.Invoke();
+        }
+
+        protected override void UpdateText()
         {
             var selectedTypeList = _modsListViewModel.SimpleModsList.Where(m => _selectedType.IsInstanceOfType(m));
             var numSelected = selectedTypeList.Where(m => m.ShouldExport).Count();
 
             ConfirmText = $"Export {numSelected}/{selectedTypeList.Count()} mods";
 
-            if (numSelected != selectedTypeList.Count())
-            {
-                _shouldExportAll = false;
-                ShouldExportAllText = $"Select All {_modType}";
-            }
-            else
-            {
-                _shouldExportAll = true;
-                ShouldExportAllText = $"Unselect All {_modType}";
-            }
-            OnPropertyChanged(nameof(ShouldExportAll));
-        }
-
-        DelegateCommand _onConfirmCommand;
-        public DelegateCommand OnConfirmCommand
-        {
-            get { return _onConfirmCommand ??= new DelegateCommand(_ => { ShouldDelete = true; CloseAction?.Invoke(); }); }
-        }
-
-        DelegateCommand _onCancelCommand;
-        public DelegateCommand OnCancelCommand
-        {
-            get { return _onCancelCommand ??= new DelegateCommand(_ => { ShouldDelete = false; CloseAction?.Invoke(); }); }
-        }
-
-        DelegateCommand _invertSelectionCommand;
-        public DelegateCommand InvertSelectionCommand
-        {
-            get { return _invertSelectionCommand ??= new DelegateCommand(_ => InvertSelection()); }
-        }
-
-        private void InvertSelection()
-        {
-            foreach (var m in _modsListViewModel.SimpleModsList)
-            {
-                if (_selectedType.IsInstanceOfType(m))
-                {
-                    m.ShouldExport = !m.ShouldExport;
-                }
-            }
+            base.UpdateText(numSelected, selectedTypeList.Count());
         }
     }
 }

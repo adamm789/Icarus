@@ -19,7 +19,6 @@ namespace Icarus.ViewModels.Mods
 {
     public class MaterialModViewModel : ModViewModel
     {
-        // TODO: ComboBox for variants
         MaterialMod _material;
         IWindowService _windowService;
         ShaderInfoViewModel _shaderInfoViewModel;
@@ -48,26 +47,6 @@ namespace Icarus.ViewModels.Mods
             SetCanExport();
         }
 
-        /*
-        public MaterialModViewModel(MaterialMod mod, IGameFileService gameFileDataService, IWindowService windowService, ILogService logService)
-            : base(mod, gameFileDataService, logService)
-        {
-            _material = mod;
-            _materialVariant = XivPathParser.GetMtrlVariant(_material.Path);
-            _windowService = windowService;
-            var stainingTemplateFile = gameFileDataService.GetStainingTemplateFile();
-
-            ShaderInfoViewModel = new(_material);
-            if (_material.ColorSetData.Count > 0)
-            {
-                ColorSetViewModel = new(_material, stainingTemplateFile);
-            }
-
-            SetCanExport();
-        }
-        */
-
-        // TODO: Update MaterialMod with color set stuff
 
         ColorSetViewModel _colorSetViewModel;
         public ColorSetViewModel ColorSetViewModel
@@ -95,6 +74,7 @@ namespace Icarus.ViewModels.Mods
 
         protected override void RaiseDestinationPathChanged()
         {
+            base.DestinationPath = XivPathParser.ChangeMtrlVariant(base.DestinationPath, MaterialVariant);
             ShaderInfoViewModel.UpdatePaths(DestinationPath);
             base.RaiseDestinationPathChanged();
         }
@@ -111,6 +91,7 @@ namespace Icarus.ViewModels.Mods
             }
         }
 
+        
         public override string DestinationPath
         {
             get => base.DestinationPath;
@@ -120,7 +101,7 @@ namespace Icarus.ViewModels.Mods
                 base.DestinationPath = XivPathParser.ChangeMtrlVariant(value, MaterialVariant);
             }
         }
-
+        
         public override async Task<IGameFile?> GetFileData(IItem? itemArg = null)
         {
             return await _materialFileService.GetMaterialFileData(itemArg);
@@ -136,5 +117,7 @@ namespace Icarus.ViewModels.Mods
             "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m",
             "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"
         };
+
+
     }
 }

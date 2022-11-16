@@ -112,7 +112,10 @@ namespace Icarus.ViewModels.Mods.DataContainers
         {
             foreach (var m in mods)
             {
-                Add(m);
+                if (m.ShouldImport)
+                {
+                    Add(m);
+                }
             }
         }
 

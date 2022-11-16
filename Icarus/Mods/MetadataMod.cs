@@ -1,6 +1,7 @@
 ﻿using Icarus.Mods.Interfaces;
 using Icarus.Util.Import;
 using ItemDatabase.Enums;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using xivModdingFramework.General.Enums;
@@ -17,6 +18,7 @@ namespace Icarus.Mods
 
         // No underscore
         public string Slot { get; set; }
+
         public Dictionary<XivRace, EquipmentDeformationParameter> EqdpEntries
         {
             get { return ItemMetadata.EqdpEntries; }
@@ -43,8 +45,6 @@ namespace Icarus.Mods
             set { ItemMetadata.ImcEntries = value; }
         }
 
-        //public static 
-
         // EqdpEntries
         // EqpEntry
         // EstEntries
@@ -52,18 +52,11 @@ namespace Icarus.Mods
         // ImcEntries
         // Root
 
-
         public MetadataMod(IMetadataFile file, ImportSource source = ImportSource.Vanilla) : base(file, source)
         {
             ItemMetadata = file.ItemMetadata;
             Slot = file.Slot;
             SetModData(file);
-            /*
-            Path = file.Path;
-            Name = file.Name;
-            Category = file.Category;
-            Slot = file.Slot;
-            */
         }
 
 
@@ -87,14 +80,13 @@ namespace Icarus.Mods
 
             if (metaFile.ItemMetadata.Root.Info.Slot != Slot)
             {
-                // TODO?: Don't change it if it's not the same slot
                 return;
             }
+
             base.SetModData(gameFile);
 
             ItemMetadata.Root = metaFile.ItemMetadata.Root;
             Path = metaFile.Path;
-            //EstEntries = metaFile.ItemMetadata.EstEntries;
         }
     }
 }

@@ -61,10 +61,12 @@ namespace Icarus.ViewModels
             ImportVanillaViewModel = new(ModPackViewModel.ModsListViewModel, ItemListViewModel, ServiceManager.GetRequiredService<VanillaFileService>(), logService);
 
             ExportViewModel = new(ModPackViewModel.ModsListViewModel, _messageBoxService, _exportService, ServiceManager.GetRequiredService<IWindowService>(), logService);
-            var importSimpleTexToolsViewModel = new ImportSimpleTexToolsViewModel(UserPreferencesService, ServiceManager.GetRequiredService<IWindowService>(), logService);
-            ImportViewModel = new(ModPackViewModel, ModPackListViewModel, _importService, settingsService, logService, importSimpleTexToolsViewModel);
+            var importSimpleTexToolsViewModel = new ImportSimpleTexToolsViewModel(ModPackViewModel.ModsListViewModel, logService);
 
-            SimpleEditorViewModel = new(ModPackViewModel, ItemListViewModel, ImportViewModel, ExportViewModel, ImportVanillaViewModel);
+            var importModPackViewModel = new ImportModPackViewModel(viewModelService, ServiceManager.GetRequiredService<IWindowService>(), logService);
+            ImportViewModel = new(ModPackViewModel, ModPackListViewModel, _importService, settingsService, logService, importModPackViewModel);
+
+            SimpleEditorViewModel = new(ModPackViewModel, ItemListViewModel, ImportViewModel, ExportViewModel, ImportVanillaViewModel, importModPackViewModel);
             AdvancedEditorViewModel = new(ModPackViewModel, ExportViewModel, ModPackListViewModel);
 
             var exportStatusChange = new PropertyChangedEventHandler(OnExportStatusChanged);

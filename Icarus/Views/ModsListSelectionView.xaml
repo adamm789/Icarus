@@ -1,0 +1,42 @@
+﻿<UserControl x:Class="Icarus.Views.ModsListSelectionView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Icarus.Views"
+        xmlns:modviews="clr-namespace:Icarus.Views.Mods"
+        xmlns:viewmodels="clr-namespace:Icarus.ViewModels"
+        xmlns:datacontainers="clr-namespace:Icarus.ViewModels.Mods.DataContainers"
+        d:DataContext="{d:DesignInstance Type=viewmodels:ModsListSelectionViewModel}"
+        mc:Ignorable="d" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <CheckBox Content="{Binding ApplyToAllText}" Grid.Row="0" Grid.Column="0" IsChecked="{Binding ShouldApplyToAll}"/>
+        <Button Content="Invert Selection" Command="{Binding InvertSelectionCommand}" Grid.Row="0" Grid.Column="1"/>
+        <ContentControl Content="{Binding FilteredMods}" Grid.Row="1" Grid.ColumnSpan="2" Margin="5">
+            <ContentControl.Resources>
+                <DataTemplate DataType="{x:Type datacontainers:FilteredModsListViewModel}">
+                    <modviews:FilteredModsListView/>
+                </DataTemplate>
+            </ContentControl.Resources>
+        </ContentControl>
+        <Grid Grid.Row="2" Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Button Command="{Binding OnCancelCommand}" Content="Cancel" Grid.Column="0" Margin="5"/>
+            <Label Grid.Column="1"/>
+            <Button Command="{Binding OnConfirmCommand}" Content="{Binding ConfirmText}" DockPanel.Dock="Right" Grid.Column="2" Margin="5"/>
+        </Grid>
+    </Grid>
+</UserControl>

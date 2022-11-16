@@ -67,6 +67,12 @@ namespace Icarus.ViewModels.Mods
             return Mod;
         }
 
+        public bool ShouldImport
+        {
+            get { return Mod.ShouldImport; }
+            set { Mod.ShouldImport = value; OnPropertyChanged(); }
+        }
+
         public bool ShouldExport
         {
             get { return Mod.ShouldExport; }
@@ -118,7 +124,7 @@ namespace Icarus.ViewModels.Mods
             }
         }
 
-        public bool HasMatch(string? str)
+        public virtual bool HasMatch(string? str)
         {
             if (string.IsNullOrWhiteSpace(str)) return true;
 
@@ -226,7 +232,6 @@ namespace Icarus.ViewModels.Mods
         {
             Mod.SetModData(gameFile);
             return true;
-            //RaiseModPropertyChanged();
         }
 
         void IDropTarget.DragOver(IDropInfo dropInfo)

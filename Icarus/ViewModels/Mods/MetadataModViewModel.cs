@@ -76,6 +76,10 @@ namespace Icarus.ViewModels.Mods
         {
             if (gameFile is IMetadataFile metaFile)
             {
+                if (_metadataMod.ItemMetadata.Root.Info.Slot != metaFile.Slot)
+                {
+                    return false;
+                }
                 var ret = base.SetModData(gameFile);
 
                 // TODO: Figure out EstEntries...

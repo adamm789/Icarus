@@ -1,17 +1,18 @@
-﻿<Window x:Class="Icarus.Views.Import.ImportSimpleTexToolsWindow"
+﻿<Window x:Class="Icarus.Views.Import.ImportModPackWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Icarus.Views.Import"
         xmlns:datacontainers="clr-namespace:Icarus.ViewModels.Mods.DataContainers"
+        xmlns:modviews="clr-namespace:Icarus.Views.Mods"
         xmlns:mods="clr-namespace:Icarus.ViewModels.Mods"
-        xmlns:import="clr-namespace:Icarus.ViewModels.Import"
-        xmlns:views="clr-namespace:Icarus.Views"
-        d:DataContext="{d:DesignInstance Type=import:ImportSimpleTexToolsViewModel}"
+        xmlns:export="clr-namespace:Icarus.ViewModels.Export"
+        xmlns:views="clr-namespace:Icarus.Views" xmlns:import="clr-namespace:Icarus.ViewModels.Import"
+        d:DataContext="{d:DesignInstance Type=import:ImportModPackViewModel}"
         mc:Ignorable="d"
-        Title="TexToolsModPackImportWindow" Height="450" Width="800">
-    <Grid>
+        Title="ImportModPackWindow" Height="450" Width="800">
+    <Grid IsEnabled="{Binding CanImportModPack}">
         <Grid.Resources>
             <DataTemplate DataType="{x:Type datacontainers:ModPackViewModel}">
                 <TextBlock Text="{Binding Name}"/>
@@ -33,7 +34,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <views:ModsListSelectionView/>
-
+        <ComboBox Grid.Row="0" ItemsSource="{Binding ModPacksAwaitingImport}" SelectedItem="{Binding SelectedModPack}"/>
+        <views:ModsListSelectionView Grid.Row="1" DataContext="{Binding ImportSimpleTexTools}"/>
     </Grid>
 </Window>

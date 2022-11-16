@@ -29,6 +29,8 @@ namespace Icarus.ViewModels.Mods.DataContainers
         public bool IsReadOnly { get; }
         ViewModelService _viewModelService;
 
+        public string Name => ModPackMetaViewModel.Name;
+
         //IModPackMetaViewModel _modPackMetaViewModel;
 
         public ModPackViewModel(ModPack modPack, ViewModelService viewModelService, ILogService logService,
@@ -91,6 +93,11 @@ namespace Icarus.ViewModels.Mods.DataContainers
         public void Add(ModPack modPack)
         {
             ModsListViewModel.AddRange(modPack.SimpleModsList);
+        }
+
+        public void AddRange(IEnumerable<ModViewModel> mods)
+        {
+            ModsListViewModel.AddRange(mods);
         }
 
         string _newOrNext = "New Page";

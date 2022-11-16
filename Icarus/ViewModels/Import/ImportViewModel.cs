@@ -2,6 +2,7 @@
 using Icarus.Mods.Interfaces;
 using Icarus.Services.Files;
 using Icarus.Services.Interfaces;
+using Icarus.ViewModels.Mods;
 using Icarus.ViewModels.Mods.DataContainers.Interfaces;
 using Icarus.ViewModels.Mods.DataContainers.ModPackList;
 using Icarus.ViewModels.Util;
@@ -34,10 +35,10 @@ namespace Icarus.ViewModels.Import
         private string _initialDirectory = "";
         private OpenFileDialog _dlg;
 
-        public ImportSimpleTexToolsViewModel ImportSimpleTexToolsViewModel;
+        public ImportModPackViewModel ImportSimpleTexToolsViewModel;
 
         public ImportViewModel(IModPackViewModel modPack, ModPackListViewModel modPackList, ImportService importService,
-            ISettingsService settingsService, ILogService logService, ImportSimpleTexToolsViewModel importSimpleTexToolsViewModel)
+            ISettingsService settingsService, ILogService logService, ImportModPackViewModel importSimpleTexToolsViewModel)
             : base(logService)
         {
             _settingsService = settingsService;
@@ -45,7 +46,9 @@ namespace Icarus.ViewModels.Import
             _modPackListViewModel = modPackList;
             _importService = importService;
             _logService = logService;
+
             ImportSimpleTexToolsViewModel = importSimpleTexToolsViewModel;
+            ImportSimpleTexToolsViewModel.ImportViewModel = this;
 
             var eh = new PropertyChangedEventHandler(OnPropertyChanged);
             _importService.PropertyChanged += eh;
@@ -145,10 +148,13 @@ namespace Icarus.ViewModels.Import
                     if (modPack.ModPackPages.Count > 0)
                     {
                         _modPackListViewModel.Add(modPack);
+                        _modPackViewModel.Add(modPack);
+                        return;
                     }
                     else
                     {
-                        ImportSimpleTexToolsViewModel.Show();
+                        //ImportSimpleTexToolsViewModel.Show();
+                        ImportSimpleTexToolsViewModel.Add(modPack);
                     }
 
                     _logService.Verbose($"Adding to mod list.");
@@ -159,7 +165,6 @@ namespace Icarus.ViewModels.Import
 
                     }
                     // TODO: Seems that this may freeze the UI on particularly large mod packs
-                    _modPackViewModel.Add(modPack);
                     _logService.Verbose($"Finished adding.");
                 }
             }
@@ -185,14 +190,8 @@ namespace Icarus.ViewModels.Import
             }
             else if (ext == ".ttmp2")
             {
-                if (_importService.IsSimpleModPack(filePath))
-                {
-                    // TODO: Window asking which mods the user wants to import
-                }
-                else
-                {
-                    retModPack = await _importService.TryImportTTModPack(filePath);
-                }
+
+                retModPack = await _importService.TryImportTTModPack(filePath);
             }
             if (retModPack == null)
             {
@@ -203,6 +202,11 @@ namespace Icarus.ViewModels.Import
                 retModPack.SimpleModsList.Add(mod);
             }
             return retModPack;
+        }
+
+        public void Add(IEnumerable<ModViewModel> mods)
+        {
+            _modPackViewModel.AddRange(mods);
         }
 
         public bool CanAcceptFiles(StringCollection collection)
@@ -218,11 +222,6 @@ namespace Icarus.ViewModels.Import
                 }
             }
             return true;
-        }
-
-        private void SimpleTexToolsImportPrompt()
-        {
-
         }
     }
 }
