@@ -73,7 +73,6 @@ namespace Icarus.ViewModels
 
         protected abstract void Apply(ModViewModel mvm, bool value);
         protected abstract void InvertMod(ModViewModel mvm);
-
         protected abstract void UpdateText();
 
         protected void UpdateText(int numSelected, int totalTypeSelected)
@@ -150,11 +149,6 @@ namespace Icarus.ViewModels
         }
 
         public abstract void ConfirmCommand();
-            /*
-        {
-            get { return _onConfirmCommand ??= new DelegateCommand(_ => { ShouldDelete = true; CloseAction?.Invoke(); }); }
-        }
-            */
 
         DelegateCommand _onCancelCommand;
         public virtual DelegateCommand OnCancelCommand

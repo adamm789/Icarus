@@ -17,6 +17,7 @@ namespace Icarus.Mods
 {
     public class MaterialMod : Mod, IMaterialGameFile
     {
+        // TODO: Keep track of original paths? And allow a reset button?
         // TODO: Put related tex files "under" the parent material?
         public ShaderInfo ShaderInfo { get; set; } = new();
         public List<Half> ColorSetData { get; set; }
@@ -110,21 +111,21 @@ namespace Icarus.Mods
                 switch (ttp.Type)
                 {
                     case XivTexType.Diffuse:
-                        if (String.IsNullOrWhiteSpace(DiffuseTexPath)) DiffuseTexPath = ttp.Path;
+                        if (XivPathParser.CanParsePath(DiffuseTexPath) || String.IsNullOrWhiteSpace(DiffuseTexPath)) DiffuseTexPath = ttp.Path;
                         break;
                     case XivTexType.Specular:
-                        if (String.IsNullOrWhiteSpace(SpecularTexPath)) SpecularTexPath = ttp.Path;
+                        if (XivPathParser.CanParsePath(SpecularTexPath) || String.IsNullOrWhiteSpace(SpecularTexPath)) SpecularTexPath = ttp.Path;
                         break;
                     case XivTexType.Normal:
-                        if (String.IsNullOrWhiteSpace(NormalTexPath)) NormalTexPath = ttp.Path;
+                        if (XivPathParser.CanParsePath(NormalTexPath) || String.IsNullOrWhiteSpace(NormalTexPath)) NormalTexPath = ttp.Path;
                         break;
                     case XivTexType.Multi:
-                        if (String.IsNullOrWhiteSpace(MultiTexPath)) MultiTexPath = ttp.Path;
+                        if (XivPathParser.CanParsePath(MultiTexPath) || String.IsNullOrWhiteSpace(MultiTexPath)) MultiTexPath = ttp.Path;
                         break;
                     case XivTexType.Mask:
                         break;
                     case XivTexType.Reflection:
-                        if (String.IsNullOrWhiteSpace(ReflectionTexPath)) ReflectionTexPath = ttp.Path;
+                        if (XivPathParser.CanParsePath(ReflectionTexPath) || String.IsNullOrWhiteSpace(ReflectionTexPath)) ReflectionTexPath = ttp.Path;
                         break;
                     case XivTexType.Skin:
                         break;
@@ -212,6 +213,8 @@ namespace Icarus.Mods
         {
             try
             {
+                // TODO: Material paths variants are independent from the textures' variants
+                // v0005 for material could use v0001 for one of its textures
                 var normal = XivPathParser.GetTexPathFromMtrl(str, XivTexType.Normal);
                 var specular = XivPathParser.GetTexPathFromMtrl(str, XivTexType.Specular);
                 var multi = XivPathParser.GetTexPathFromMtrl(str, XivTexType.Multi);

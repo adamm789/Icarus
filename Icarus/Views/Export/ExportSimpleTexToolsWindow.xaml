@@ -11,22 +11,16 @@
         d:DataContext="{d:DesignInstance Type=export:ExportSimpleTexToolsViewModel}"
         xmlns:local="clr-namespace:Icarus.Views.Export"
         mc:Ignorable="d"
-        Title="SimpleExportSelectionWindow" Height="450" Width="800"
+        Title="SimpleExportSelectionWindow"
+        MinHeight="500" MinWidth="850"
+        
         FontSize="14">
-    <Grid>
-        <Grid.Resources>
-            <DataTemplate DataType="{x:Type mods:ModViewModel}">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <CheckBox Grid.Column="1" IsChecked="{Binding ShouldExport}" HorizontalContentAlignment="Right" Margin="5">
-                        <TextBlock Text="{Binding DisplayedHeader}"/>
-                    </CheckBox>
-                </Grid>
-            </DataTemplate>
-        </Grid.Resources>
-        <views:ModsListSelectionView/>
-    </Grid>
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type mods:ModViewModel}">
+            <CheckBox IsChecked="{Binding ShouldExport}"  Margin="5">
+                <TextBlock Text="{Binding DisplayedHeader}"/>
+            </CheckBox>
+        </DataTemplate>
+    </Window.Resources>
+    <views:ModsListSelectionView VerticalContentAlignment="Stretch"/>
 </Window>

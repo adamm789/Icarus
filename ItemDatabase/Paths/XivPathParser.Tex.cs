@@ -10,8 +10,6 @@ namespace ItemDatabase.Paths
 {
     public static partial class XivPathParser
     {
-        // Reminder: When variant is "a", it does not have it in any of the tex paths
-
         // TODO: Apparently there's "Shared textures" and "Unique textures"
         /// <summary>
         /// Accepts a mtrl path and returns a tex path of the given type

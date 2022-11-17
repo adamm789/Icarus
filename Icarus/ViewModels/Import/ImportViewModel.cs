@@ -25,7 +25,6 @@ namespace Icarus.ViewModels.Import
             "|.dds | *.dds" +
             "|.png | *.png" +
             "|.bmp | *.bmp";
-        //var filter = "Valid Files | *.fbx; *.ttmp2; *.dds; *.png; *.bmp; *.mdl" + "|FBX File | *.fbx" + "|TexTools ModPack | *.ttmp2" + "| dds | *.dds" + "| png | *.png" + "| bmp | *.bmp";
 
         readonly IModPackViewModel _modPackViewModel;
         readonly ImportService _importService;
@@ -125,8 +124,6 @@ namespace Icarus.ViewModels.Import
             await ImportFiles(dlg.FileNames);
         }
 
-        // TODO: Ability to import only some of the mods in a ttmp2 file
-
         public async Task ImportFiles(IList<string> filePaths)
         {
             foreach (var path in filePaths)
@@ -136,7 +133,7 @@ namespace Icarus.ViewModels.Import
                 {
                     _logService.Verbose($"Importing mod pack.");
                     //var modPack = await ImportFile(str);
-                    var modPack = await Task.Run(async () => await ImportFile(str));
+                    var modPack = await ImportFile(str);
                     _logService.Verbose($"Finished importing.");
 
                     if (modPack.SimpleModsList.Count == 0)
@@ -153,7 +150,7 @@ namespace Icarus.ViewModels.Import
                     }
                     else
                     {
-                        //ImportSimpleTexToolsViewModel.Show();
+                        // TODO: Perhaps allow partial imports of Advanced ModPacks
                         ImportSimpleTexToolsViewModel.Add(modPack);
                     }
 
@@ -172,36 +169,7 @@ namespace Icarus.ViewModels.Import
 
         public async Task<ModPack> ImportFile(string filePath)
         {
-            //return await Task.Run(() => _importService.ImportFile(filePath));
-            var ext = Path.GetExtension(filePath);
-            var retModPack = new ModPack();
-            IMod? mod = null;
-            if (ext == ".fbx")
-            {
-                mod = await _importService.TryImportModel(filePath);
-            }
-            else if (ext == ".dds")
-            {
-                mod = await Task.Run(() => _importService.TryImportDDS(filePath));
-            }
-            else if (ext == ".png" || ext == ".bmp")
-            {
-                mod = _importService.ImportTexture(filePath);
-            }
-            else if (ext == ".ttmp2")
-            {
-
-                retModPack = await _importService.TryImportTTModPack(filePath);
-            }
-            if (retModPack == null)
-            {
-                return new ModPack();
-            }
-            if (mod != null)
-            {
-                retModPack.SimpleModsList.Add(mod);
-            }
-            return retModPack;
+            return await Task.Run(() => _importService.ImportFile(filePath));
         }
 
         public void Add(IEnumerable<ModViewModel> mods)
@@ -212,7 +180,6 @@ namespace Icarus.ViewModels.Import
         public bool CanAcceptFiles(StringCollection collection)
         {
             //var filter = "Valid Files | *.fbx; *.ttmp2; *.dds; *.png; *.bmp" + "|FBX File | *.fbx" + "|TexTools ModPack | *.ttmp2" + "| dds | *.dds" + "| png | *.png" + "| bmp | *.bmp";
-
             foreach (var str in collection)
             {
                 var ext = Path.GetExtension(str);

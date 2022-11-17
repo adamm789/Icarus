@@ -5,6 +5,7 @@ using xivModdingFramework.Textures.Enums;
 
 namespace ItemDatabase.Paths
 {
+    // TODO: Textures for rings
     public static partial class XivPathParser
     {
         static readonly Regex skinRegex = new(@"c[0-9]{4}");
@@ -37,8 +38,10 @@ namespace ItemDatabase.Paths
         static readonly Regex mdlRegex = new(@".mdl$");
         static readonly Regex mtrlRegex = new(@".mtrl$");
 
-        static readonly Regex fullGearRegexMtrl = new(@"^(chara/equipment)/e[0-9]{4}\/material\/v([0-9]{4})\/mt_(c[0-9]{4})(e[0-9]{4})_([a-z]+)_{0,1}([a-z]*).mtrl$");
+        //static readonly Regex fullGearRegexMtrl = new(@"^(chara/equipment)/e[0-9]{4}\/material\/v([0-9]{4})\/mt_(c[0-9]{4})(e[0-9]{4})_([a-z]+)_{0,1}([a-z]*).mtrl$");
         static readonly Regex gearRegexFileNameMtrl = new(@"(\/){0,1}mt_c[0-9]{4}[a,e][0-9]{4}_[a-z]+_{0,1}([a-z]*).mtrl$");
+        static readonly Regex fullGearRegexMtrl = new(@"^(chara\/accessory|chara\/equipment)\/[a,e][0-9]{4}\/material\/v([0-9]{4})\/mt_(c[0-9]{4})([a,e][0-9]{4})_([a-z]+)_{0,1}([a-z]*).mtrl$");
+
 
         // Arbitary regex for supported paths
         static readonly Regex canParseRegex = new(@"c[0-9]{4}[a,b,e][0-9]{4}");

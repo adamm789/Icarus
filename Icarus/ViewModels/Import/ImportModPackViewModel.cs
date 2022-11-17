@@ -16,13 +16,14 @@ using System.Threading.Tasks;
 
 namespace Icarus.ViewModels.Import
 {
+    // TODO: Rename class because this can include non-modpacks
     public class ImportModPackViewModel : UIViewModelBase
     {
+        // TODO?: Allow removal of ModPacks from this list
         readonly IWindowService _windowService;
         readonly ViewModelService _viewModelService;
         public ImportViewModel? ImportViewModel;
 
-        // TODO: Another button that just force imports everything
         public bool CanImportModPack => ModPacksAwaitingImport.Count > 0;
         public ImportModPackViewModel(ViewModelService viewModelService, IWindowService windowService, ILogService logService) : base(logService)
         {
@@ -35,7 +36,20 @@ namespace Icarus.ViewModels.Import
         public int NumMods
         {
             get { return _numMods; }
-            set { _numMods = value; OnPropertyChanged(); ImportAllCommand.RaiseCanExecuteChanged(); }
+            set
+            {
+                _numMods = value;
+                OnPropertyChanged();
+                ImportAllCommand.RaiseCanExecuteChanged();
+                RemoveSelectedCommand.RaiseCanExecuteChanged();
+            }
+        }
+
+        int _numFiles = 0;
+        public int NumFiles
+        {
+            get { return _numFiles; }
+            set { _numFiles = value; OnPropertyChanged(); }
         }
 
         ImportSimpleTexToolsViewModel? _importSimpleTexTools;
@@ -51,6 +65,28 @@ namespace Icarus.ViewModels.Import
             get { return _importAllCommand ??= new DelegateCommand(_ => ImportAll(), _ => NumMods > 0); }
         }
 
+        DelegateCommand _removeSelectedCommand;
+        public DelegateCommand RemoveSelectedCommand
+        {
+            get { return _removeSelectedCommand ??= new DelegateCommand(_ => RemoveSelected(), _ => NumMods > 0); }
+        }
+
+        private void RemoveSelected()
+        {
+            // TODO: Prompt user confirmation for removal
+            try
+            {
+                if (_toSimpleDict.ContainsKey(SelectedModPack))
+                {
+                    var import = _toSimpleDict[SelectedModPack];
+                    import.ShouldRemove = true;
+                }
+            } catch (ArgumentNullException) {
+
+                SelectedModPack = ModPacksAwaitingImport.FirstOrDefault();
+            }
+        }
+
         private void ImportAll()
         {
             var list = ModPacksAwaitingImport.ToList();
@@ -62,8 +98,8 @@ namespace Icarus.ViewModels.Import
             SelectedModPack = null;
         }
 
-        ModPackViewModel _selectedModPack;
-        public ModPackViewModel SelectedModPack
+        ModPackViewModel? _selectedModPack;
+        public ModPackViewModel? SelectedModPack
         {
             get { return _selectedModPack; }
             set
@@ -71,7 +107,7 @@ namespace Icarus.ViewModels.Import
                 _selectedModPack = value; OnPropertyChanged();
                 if (value != null)
                 {
-                    if(_toSimpleDict.TryGetValue(value, out var _out))
+                    if (_toSimpleDict.TryGetValue(value, out var _out))
                     {
                         ImportSimpleTexTools = _out;
                     }
@@ -103,6 +139,9 @@ namespace Icarus.ViewModels.Import
 
                 _ehDict.Remove(import);
                 import.PropertyChanged -= eh;
+                NumFiles--;
+
+                // TODO: Upon removing a file, set SelectedModPack to ideally, the preceding entry
             }
         }
 
@@ -122,6 +161,7 @@ namespace Icarus.ViewModels.Import
             _toSimpleDict.Add(modPackViewModel, _importSimple);
 
             NumMods += modPackViewModel.ModsListViewModel.SimpleModsList.Count;
+            NumFiles++;
 
             if (ModPacksAwaitingImport.Count == 1)
             {

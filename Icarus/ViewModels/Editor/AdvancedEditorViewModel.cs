@@ -16,6 +16,9 @@ namespace Icarus.ViewModels.Editor
     public class AdvancedEditorViewModel : NotifyPropertyChanged
     {
         // TODO: Clean up the mess in AdvancedEditorView.xaml
+        // TODO: Double click on mod to bring to simple editor?
+        // TODO: CanExport with an incomplete mod in simple editor but not used in any mod pack page
+        // TODO: Way to edit (or at least view) mods from advanced editor screen
         public FilteredModsListViewModel FilteredModsListViewModel { get; }
         public IModPackViewModel ModPackViewModel { get; }
         public ExportViewModel ExportViewModel { get; }

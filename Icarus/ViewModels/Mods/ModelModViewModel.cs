@@ -19,6 +19,7 @@ using System.Threading.Tasks;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Models.Helpers;
 using System.Configuration;
+using xivModdingFramework.Models.DataContainers;
 
 namespace Icarus.ViewModels.Mods
 {
@@ -62,6 +63,7 @@ namespace Icarus.ViewModels.Mods
                 {
                     TargetRace = modelMod.TargetRace;
                 }
+                UpdateAttributes(modelMod.TTModel, modelMod.Path);
             }
             SetCanExport();
         }
@@ -117,7 +119,7 @@ namespace Icarus.ViewModels.Mods
 
         public override bool SetModData(IGameFile? gameFile)
         {
-            if (gameFile is ModelGameFile modelGameFile)
+            if (gameFile is IModelGameFile modelGameFile)
             {
                 UpdateAttributes(modelGameFile);
                 var ttModel = modelGameFile.TTModel;
@@ -134,7 +136,37 @@ namespace Icarus.ViewModels.Mods
             return false;
         }
 
-        private void UpdateAttributes(ModelGameFile modelData)
+        private void UpdateAttributes(TTModel ttModel, string path)
+        {
+            var slot = XivPathParser.GetEquipmentSlot(path);
+
+            var attributePresets = AttributePreset.GetAttributeTTModelPresets(ttModel);
+            Dictionary<string, Dictionary<int, List<XivAttribute>>> internalPresets = new();
+            if (ImportSource == ImportSource.Vanilla)
+            {
+                internalPresets = AttributePreset.GetAttributeTTModelPresets(_modelMod.ImportedModel);
+            }
+
+            var bodyPresets = AttributePreset.GetAttributeBodyPresets(slot);
+            foreach (var pair in internalPresets)
+            {
+                attributePresets.TryAdd(pair.Key, pair.Value);
+            }
+            foreach (var pair in bodyPresets)
+            {
+                attributePresets.TryAdd(pair.Key, pair.Value);
+            }
+
+            var slotAttributes = AttributePreset.GetAttributes(path);
+
+            foreach (var group in MeshGroups)
+            {
+                group.SetAttributePresets(attributePresets);
+                group.SetSlotAttributes(slotAttributes);
+            }
+        }
+
+        private void UpdateAttributes(IModelGameFile modelData)
         {
             // TODO: Include "variant" attributes
             var ttModel = modelData.TTModel;

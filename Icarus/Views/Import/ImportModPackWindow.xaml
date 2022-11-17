@@ -34,7 +34,14 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <ComboBox Grid.Row="0" ItemsSource="{Binding ModPacksAwaitingImport}" SelectedItem="{Binding SelectedModPack}"/>
-        <views:ModsListSelectionView Grid.Row="1" DataContext="{Binding ImportSimpleTexTools}"/>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        
+        <ComboBox Grid.Row="0" Grid.Column="0" ItemsSource="{Binding ModPacksAwaitingImport}" SelectedItem="{Binding SelectedModPack}"/>
+        <Button Grid.Row="0" Grid.Column="1" Command="{Binding RemoveSelectedCommand}" Content="Remove"/>
+
+        <views:ModsListSelectionView Grid.Row="1" Grid.ColumnSpan="2" DataContext="{Binding ImportSimpleTexTools}"/>
     </Grid>
 </Window>

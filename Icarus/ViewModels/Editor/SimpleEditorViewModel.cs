@@ -26,6 +26,7 @@ namespace Icarus.ViewModels.Editor
         public ImportVanillaViewModel ImportVanillaViewModel { get; }
         public ImportModPackViewModel ImportModPackViewModel { get; }
 
+        // TODO: Clean up SimpleEditor initialization?
         public SimpleEditorViewModel(IModPackViewModel modPack, ItemListViewModel itemList,
             ImportViewModel import, ExportViewModel export, ImportVanillaViewModel importVanillaViewModel, ImportModPackViewModel importModPackViewModel)
         {
@@ -40,20 +41,25 @@ namespace Icarus.ViewModels.Editor
             ImportModPackViewModel = importModPackViewModel;
 
             ImportModPackViewModel.PropertyChanged += new(OnNumModsChanged);
-            ImportAllText = $"Import All 0 Mod(s)";
+            UpdateImportAllText();
         }
 
         private void OnNumModsChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (sender is ImportModPackViewModel && e.PropertyName == nameof(ImportModPackViewModel.NumMods))
+            if (sender is ImportModPackViewModel && (e.PropertyName == nameof(ImportModPackViewModel.NumMods) || e.PropertyName == nameof(ImportModPackViewModel.NumFiles)))
             {
                 _numMods = ImportModPackViewModel.NumMods;
-                ImportAllText = $"Import All {_numMods} Mod(s)";
+                UpdateImportAllText();
                 OpenImportWindowCommand.RaiseCanExecuteChanged();
             }
         }
 
-        int _numMods = 0;
+        int _numMods;
+
+        private void UpdateImportAllText()
+        {
+            ImportAllText = $"Import all {ImportModPackViewModel.NumMods} mod(s) from {ImportModPackViewModel.NumFiles} file(s)";
+        }
 
         DelegateCommand _openImportWindowCommand;
         public DelegateCommand OpenImportWindowCommand

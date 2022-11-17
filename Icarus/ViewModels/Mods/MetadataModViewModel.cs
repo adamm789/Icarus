@@ -16,6 +16,7 @@ using xivModdingFramework.General.Enums;
 
 namespace Icarus.ViewModels.Mods
 {
+    // imc?
     // TODO: Double check that there are actually changing the metadata mod
     public class MetadataModViewModel : ModViewModel
     {

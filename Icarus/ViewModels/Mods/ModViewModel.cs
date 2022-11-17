@@ -17,7 +17,7 @@ using System.Windows;
 
 namespace Icarus.ViewModels.Mods
 {
-    // TODO: Set MaxWidth for textboxes
+    // TODO?: Reset button for certain attributes
     public abstract class ModViewModel : ViewModelBase, IDropTarget
     {
         public IMod Mod { get; }
