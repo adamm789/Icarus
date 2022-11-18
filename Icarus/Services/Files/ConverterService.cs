@@ -39,7 +39,7 @@ namespace Icarus.Services.Files
         protected override void OnLuminaSet()
         {
             _gameDirectory = _settings.GameDirectoryLumina;
-            _converter = new(_converterFolder, _gameDirectory);
+            _converter = new(_converterFolder, _gameDirectory, _logService);
         }
     }
 }

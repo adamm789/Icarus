@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 
 namespace Icarus.ViewModels
 {
+    // TODO: Color text?
     public class LogViewModel : NotifyPropertyChanged
     {
         LogSink _sink;

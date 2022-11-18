@@ -28,6 +28,9 @@ namespace Icarus.ViewModels.Mods
     // to indicate the part
     // e.g. bgcommon/hou/indoor/general/1142/bgparts/fun_b0_m1142a.mdl for the Steel Locker door
     // Will I have to distinguish between an "EquipmentModelModViewModel" and "FurnitureModelModViewModel"?
+
+    // TODO: "Does not have a valid skin element" i.e. no armature (?)
+    // More forceful warning if no armature? because that can cause a crash
     public class ModelModViewModel : ModViewModel
     {
         readonly ModelMod _modelMod;

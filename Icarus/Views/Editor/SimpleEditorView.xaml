@@ -77,7 +77,7 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <UniformGrid Grid.Row="0" Columns="2">
-                    <Button Command="{Binding OpenImportWindowCommand}" Content="Import Window"
+                    <Button Command="{Binding OpenImportWindowCommand}" Content="{Binding ImportCommandText}"
                             ToolTip="Select which mods to import in Simple ModPacks"/>
                     <Button Command="{Binding ImportAllCommand}" Content="{Binding ImportAllText}"/>
                 </UniformGrid>

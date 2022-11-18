@@ -19,6 +19,12 @@ namespace Icarus.ViewModels.Editor
         // TODO: Double click on mod to bring to simple editor?
         // TODO: CanExport with an incomplete mod in simple editor but not used in any mod pack page
         // TODO: Way to edit (or at least view) mods from advanced editor screen
+
+        // TODO: How to transfer mod groups to new page?
+
+        // TODO: Edit option name from within and add a "tab/"label" thing to re-order
+
+        // TODO: "Copy Page" should change to "Copy Metadata" on first (metadata) page
         public FilteredModsListViewModel FilteredModsListViewModel { get; }
         public IModPackViewModel ModPackViewModel { get; }
         public ExportViewModel ExportViewModel { get; }

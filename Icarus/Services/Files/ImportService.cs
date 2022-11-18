@@ -208,7 +208,8 @@ namespace Icarus.Services.Files
 
                 if (!sane)
                 {
-                    _logService.Error("Model was deemed insane. Model has no data.");
+                    _logService.Error("Model was deemed insane.");
+                    return null;
                 }
 
                 // TODO: Check size of model

@@ -2,6 +2,7 @@
 using Icarus.Mods.Interfaces;
 using Icarus.Services.Files;
 using Icarus.Services.Interfaces;
+using Icarus.Util.Import;
 using Icarus.ViewModels.Mods;
 using Icarus.ViewModels.Mods.DataContainers.Interfaces;
 using Icarus.ViewModels.Mods.DataContainers.ModPackList;
@@ -139,30 +140,23 @@ namespace Icarus.ViewModels.Import
                     if (modPack.SimpleModsList.Count == 0)
                     {
                         _logService.Error($"Could not import {str}.");
-                        return;
+                        continue;
                     }
 
                     if (modPack.ModPackPages.Count > 0)
                     {
                         _modPackListViewModel.Add(modPack);
                         _modPackViewModel.Add(modPack);
-                        return;
+                    }
+                    else if (modPack.SimpleModsList.Count == 1 && modPack.SimpleModsList[0].ImportSource == ImportSource.Raw)
+                    {
+                        _modPackViewModel.Add(modPack);
                     }
                     else
                     {
                         // TODO: Perhaps allow partial imports of Advanced ModPacks
                         ImportSimpleTexToolsViewModel.Add(modPack);
                     }
-
-                    _logService.Verbose($"Adding to mod list.");
-
-                    // TODO: Display a "waiting window" on large modpacks?
-                    if (modPack.SimpleModsList.Count > 0)
-                    {
-
-                    }
-                    // TODO: Seems that this may freeze the UI on particularly large mod packs
-                    _logService.Verbose($"Finished adding.");
                 }
             }
         }

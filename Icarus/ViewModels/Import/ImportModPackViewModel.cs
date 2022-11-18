@@ -16,7 +16,6 @@ using System.Threading.Tasks;
 
 namespace Icarus.ViewModels.Import
 {
-    // TODO: Rename class because this can include non-modpacks
     public class ImportModPackViewModel : UIViewModelBase
     {
         // TODO?: Allow removal of ModPacks from this list

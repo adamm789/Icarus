@@ -13,6 +13,8 @@ using xivModdingFramework.Textures.Enums;
 
 namespace Icarus.ViewModels.Mods
 {
+    // TODO: Combo box available before assignment of item
+
     // TODO: How to allow user to edit texture?
     // drop-down with tex type?
     // change destination path and hope for the best?

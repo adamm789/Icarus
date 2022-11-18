@@ -1,4 +1,5 @@
 ﻿using Icarus.Mods;
+using Icarus.Services.Interfaces;
 using Serilog;
 using System;
 using System.Diagnostics;
@@ -20,11 +21,14 @@ namespace Icarus.Util
         string _fbxFolder;
         private TaskQueue _taskQueue;
         DirectoryInfo _gameDirectoryInfo;
+        ILogService _logService;
 
-        public Converter(string converterFolder, string gameDirectory)
+        public Converter(string converterFolder, string gameDirectory, ILogService logService)
         {
             _converterFolder = converterFolder;
             _gameDirectory = gameDirectory;
+            _logService = logService;
+
             _fbxFolder = Path.Combine(_converterFolder, "fbx");
             _taskQueue = new();
 
@@ -129,7 +133,20 @@ namespace Icarus.Util
                     CreateNoWindow = true
                 }
             };
+
+            proc.OutputDataReceived += (object sender, DataReceivedEventArgs e) =>
+            {
+                _logService.Information(e.Data);
+            };
+
+            proc.ErrorDataReceived += (object sender, DataReceivedEventArgs e) =>
+            {
+                _logService.Error(e.Data);
+            };
+
             proc.Start();
+            proc.BeginOutputReadLine();
+            proc.BeginErrorReadLine();
             proc.WaitForExit();
 
             if (proc.ExitCode != 0)

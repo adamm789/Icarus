@@ -14,7 +14,7 @@ using Icarus.Services.Interfaces;
 
 namespace Icarus.ViewModels.Mods.DataContainers.ModPackList
 {
-    // TODO: ModPackList copy option
+    // TODO: Copy to current page if current page has no groups
     public class ModPackListViewModel : ViewModelBase
     {
         readonly IModsListViewModel _modsListViewModel;
