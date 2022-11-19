@@ -117,8 +117,8 @@ namespace Icarus.ViewModels.Mods
             set
             {
                 if (Mod.Path == value) return;
-                var couldSetDestinationPath = TrySetDestinationPath(value, DestinationName);
-                if (!couldSetDestinationPath) return;
+                var couldSetDestinationPath = TrySetDestinationPath(value);
+                //if (!couldSetDestinationPath) return;
                 Mod.Path = value;
                 RaiseDestinationPathChanged();
             }
@@ -211,11 +211,11 @@ namespace Icarus.ViewModels.Mods
         {
             //if (path == DestinationPath) return false;
             //var modData = Task.Run(() => _gameFileService.TryGetFileData(path, GetType(), name)).Result;
-            var modData = Task.Run(() => GetFileData()).Result;
-            if (modData == null)
-            {
-                modData = Task.Run(() => GetFileData(path, name)).Result;
-            }
+            //var modData = Task.Run(() => GetFileData()).Result;
+            //if (modData == null)
+            //{
+            var modData = Task.Run(() => GetFileData(path, name)).Result;
+            //}
             
             if (modData != null)
             {
@@ -224,6 +224,7 @@ namespace Icarus.ViewModels.Mods
             }
             else
             {
+                DestinationName = "???";
                 return false;
             }
         }

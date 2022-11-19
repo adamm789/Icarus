@@ -15,6 +15,8 @@ using Icarus.Services.Interfaces;
 namespace Icarus.ViewModels.Mods.DataContainers.ModPackList
 {
     // TODO: Copy to current page if current page has no groups
+    // TODO: When copying metadata from a modpack, it doesn't seem to be correct
+    // I think it's changing to suit the preferences or settings or current metadata of whatever was there before
     public class ModPackListViewModel : ViewModelBase
     {
         readonly IModsListViewModel _modsListViewModel;

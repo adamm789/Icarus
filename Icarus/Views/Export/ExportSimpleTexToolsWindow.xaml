@@ -12,13 +12,16 @@
         xmlns:local="clr-namespace:Icarus.Views.Export"
         mc:Ignorable="d"
         Title="SimpleExportSelectionWindow"
-        MinHeight="500" MinWidth="850"
-        
+        MinHeight="500" MinWidth="600"
+        Height="500" Width="600"
         FontSize="14">
     <Window.Resources>
         <DataTemplate DataType="{x:Type mods:ModViewModel}">
             <CheckBox IsChecked="{Binding ShouldExport}"  Margin="5">
-                <TextBlock Text="{Binding DisplayedHeader}"/>
+                <StackPanel>
+                    <TextBlock Text="{Binding DisplayedHeader}"/>
+                    <TextBlock Text="{Binding DestinationPath}"/>
+                </StackPanel>
             </CheckBox>
         </DataTemplate>
     </Window.Resources>

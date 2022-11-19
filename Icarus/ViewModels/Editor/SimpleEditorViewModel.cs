@@ -17,6 +17,7 @@ namespace Icarus.ViewModels.Editor
 {
     public class SimpleEditorViewModel : NotifyPropertyChanged
     {
+        // TODO: Ability to delete all mods
         public ImportViewModel ImportViewModel { get; }
         public IModPackMetaViewModel ModPackMetaViewModel { get; }
         public IModsListViewModel ModsListViewModel { get; }

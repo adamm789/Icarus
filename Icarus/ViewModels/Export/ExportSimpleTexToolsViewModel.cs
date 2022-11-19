@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 namespace Icarus.ViewModels.Export
 {
     // TODO: Prompt for user to delete any files if it exists, upon pressing "Confirm"
+    // TODO: Export text for button
     public class ExportSimpleTexToolsViewModel : ModsListSelectionViewModel
     {
         public bool ShouldDelete { get; set; } = false;

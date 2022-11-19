@@ -84,7 +84,7 @@ namespace Icarus.Util
                 var j = i;
 
                 _logService.Debug($"On entry {i}");
-                tasks[j] = Task.Run(() => GetBytes(entries[j], j));
+                tasks[j] = Task.Run(() => GetBytes(exportEntries[j], j));
                 //byteList.Add(await GetBytes(entries[i]));
             }
 
@@ -101,7 +101,7 @@ namespace Icarus.Util
                 for (int i = 0; i < tasks.Length; i++)
                 {
                     numMods++;
-                    var entry = entries[i];
+                    var entry = exportEntries[i];
                     var bytes = await tasks[i];
                     //var bytes = byteList[i];
 

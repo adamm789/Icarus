@@ -25,7 +25,8 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="{Binding Name}"/>
+                        <TextBox Grid.Column="0" Text="{Binding Name}"
+                                   MouseDoubleClick="TextBox_MouseDoubleClick" LostFocus="TextBox_LostFocus"/>
                         <TextBlock Grid.Column="1" Text="{Binding Header}"/>
                         <Button Grid.Column="2" Content="Remove" Command="{Binding RemoveCommand}"/>
                     </Grid>

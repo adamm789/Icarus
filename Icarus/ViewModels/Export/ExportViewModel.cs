@@ -120,14 +120,11 @@ namespace Icarus.ViewModels.Export
                 }
                 if (numSelected == 0)
                 {
-                    _logService.Warning("Zero mods were selected for export.");
-                    _messageBoxService.Show("No file was written. Please select which mods you wish to export.", "Zero mods selected", MessageBoxButtons.OK);
+                    _logService.Information("Zero mods were selected for export.");
                 }
                 else if (!shouldDelete)
                 {
                     _logService.Information("File was not written.");
-                    // TODO: Message box? or no?
-                    _messageBoxService.Show("No file was written.", "", MessageBoxButtons.OK);
                 }
             }
             catch (Exception ex)

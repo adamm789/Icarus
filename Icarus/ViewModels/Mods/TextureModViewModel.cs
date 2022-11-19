@@ -18,6 +18,8 @@ namespace Icarus.ViewModels.Mods
     // TODO: How to allow user to edit texture?
     // drop-down with tex type?
     // change destination path and hope for the best?
+
+    // TODO: Try to change texture destination path while no item is selected, doesn't work?
     public class TextureModViewModel : ModViewModel
     {
         TextureMod _textureMod;

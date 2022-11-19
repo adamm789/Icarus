@@ -227,11 +227,11 @@ namespace Icarus.Services.Files
 
                 if (size < minAcceptableSize)
                 {
-                    _logService.Warning($"Model is probably too small: {size}");
+                    _logService.Debug($"Model is probably too small: {size}");
                 }
                 if (size > maxAcceptableSize)
                 {
-                    _logService.Warning($"Model is probably too big: {size}");
+                    _logService.Debug($"Model is probably too big: {size}");
                 }
 
                 _logService.Information("Checking for common user errors.");

@@ -31,6 +31,8 @@ namespace Icarus.ViewModels.Mods
 
     // TODO: "Does not have a valid skin element" i.e. no armature (?)
     // More forceful warning if no armature? because that can cause a crash
+
+    // TODO: Changing the target race changes the destination name to the selected item
     public class ModelModViewModel : ModViewModel
     {
         readonly ModelMod _modelMod;
@@ -106,7 +108,7 @@ namespace Icarus.ViewModels.Mods
 
         public void UpdateTargetRace(XivRace race)
         {
-            DestinationPath = XivPathParser.ChangeToRace(DestinationPath, race);
+            _modelMod.Path = XivPathParser.ChangeToRace(DestinationPath, race);
             OptionsViewModel.UpdateTargetRace(race);
         }
 

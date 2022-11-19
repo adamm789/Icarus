@@ -356,7 +356,8 @@ namespace Icarus.Util
             options.Apply(copy, ogMdl, ogMdl, _logService.LoggingFunction);
             CheckRaceConversion(mm);
 
-            ModelModifiers.FixUpSkinReferences(copy, ogPath, _logService.LoggingFunction);
+            // Removed to be able to use other race's materials
+            //ModelModifiers.FixUpSkinReferences(copy, ogPath, _logService.LoggingFunction);
             ogMdl.MdlPath = ogPath;
             return copy;
         }
