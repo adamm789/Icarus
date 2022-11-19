@@ -6,6 +6,7 @@ using Icarus.Views.Mods;
 using ItemDatabase;
 using Serilog;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -43,21 +44,15 @@ namespace Icarus.ViewModels.Mods.DataContainers
         {
             get
             {
-                switch (SelectedIndex)
+                return SelectedIndex switch
                 {
-                    case 1:
-                        return typeof(ModelModViewModel);
-                    case 2:
-                        return typeof(MaterialModViewModel);
-                    case 3:
-                        return typeof(TextureModViewModel);
-                    case 4:
-                        return typeof(MetadataModViewModel);
-                    case 5:
-                        return typeof(ReadOnlyModViewModel);
-                    default:
-                        return typeof(ModViewModel);
-                }
+                    1 => typeof(ModelModViewModel),
+                    2 => typeof(MaterialModViewModel),
+                    3 => typeof(TextureModViewModel),
+                    4 => typeof(MetadataModViewModel),
+                    5 => typeof(ReadOnlyModViewModel),
+                    _ => typeof(ModViewModel),
+                };
             }
         }
 
@@ -76,7 +71,6 @@ namespace Icarus.ViewModels.Mods.DataContainers
             MetadataMods = new(this, "Metadata", logService);
             ReadOnlyMods = new(this, "ReadOnly", logService);
         }
-
 
         private void Timer_Tick(object sender, EventArgs e)
         {
@@ -118,6 +112,27 @@ namespace Icarus.ViewModels.Mods.DataContainers
                 _timer.Start();
             }
         }
+
+        public void SetHeaderPredicate(Func<ModViewModel, bool> predicate)
+        {
+            AllMods.HeaderPredicate = predicate;
+            ModelMods.HeaderPredicate = predicate;
+            MaterialMods.HeaderPredicate = predicate;
+            TextureMods.HeaderPredicate = predicate;
+            MetadataMods.HeaderPredicate = predicate;
+            ReadOnlyMods.HeaderPredicate = predicate;
+        }
+
+        public void UpdateHeaders()
+        {
+            AllMods.UpdateHeader();
+            ModelMods.UpdateHeader();
+            MaterialMods.UpdateHeader();
+            TextureMods.UpdateHeader();
+            MetadataMods.UpdateHeader();
+            ReadOnlyMods.UpdateHeader();
+        }
+
         public FilteredTypeModsListViewModel<ModViewModel> AllMods { get; }
         public FilteredTypeModsListViewModel<ModelModViewModel> ModelMods { get; }
         public FilteredTypeModsListViewModel<MaterialModViewModel> MaterialMods { get; }

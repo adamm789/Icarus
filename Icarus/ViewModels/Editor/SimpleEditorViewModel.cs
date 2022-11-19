@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 
 namespace Icarus.ViewModels.Editor
 {
+    // TODO: Very short freeze when ctrl+c
     public class SimpleEditorViewModel : NotifyPropertyChanged
     {
         // TODO: Ability to delete all mods

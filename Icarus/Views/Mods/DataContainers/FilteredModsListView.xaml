@@ -39,7 +39,7 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <xtk1:WatermarkTextBox Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}" Watermark="Filter" AcceptsReturn="False" Grid.Row="0" Grid.Column="1"/>
+        <xtk1:WatermarkTextBox Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}" Watermark="Search" AcceptsReturn="False" Grid.Row="0" Grid.Column="1"/>
 
         <TabControl Grid.Row="1" Grid.ColumnSpan="2" SelectedIndex="{Binding SelectedIndex}">
             <TabItem DataContext="{Binding AllMods}" Header="{Binding Header}">

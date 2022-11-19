@@ -47,9 +47,22 @@ namespace Icarus.ViewModels.Mods.DataContainers.ModsList
             UpdateHeader();
         }
 
-        private void UpdateHeader()
+        public Func<ModViewModel, bool>? HeaderPredicate;
+
+        public void UpdateHeader()
         {
-            Header = $"{_type} ({ModsList.Cast<ModViewModel>().Count()})";
+            if (HeaderPredicate == null)
+            {
+                Header = $"{_type} ({ModsList.Cast<ModViewModel>().Count()})";
+            }
+            else
+            {
+                if (typeof(T) == typeof(ModViewModel))
+                {
+
+                }
+                Header = $"{_type} ({ModsList.Cast<ModViewModel>().Where(HeaderPredicate).Count()} /{ModsList.Cast<ModViewModel>().Count()})";
+            }
             OnPropertyChanged(nameof(ModsList));
         }
 
@@ -76,7 +89,6 @@ namespace Icarus.ViewModels.Mods.DataContainers.ModsList
             if (_parent != null)
             {
                 return o is T && _parent.SearchFilterFunction(o);
-
             }
             else
             {

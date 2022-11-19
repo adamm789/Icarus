@@ -12,8 +12,8 @@
         xmlns:local="clr-namespace:Icarus.Views.Export"
         mc:Ignorable="d"
         Title="SimpleExportSelectionWindow"
-        MinHeight="500" MinWidth="600"
-        Height="500" Width="600"
+        MinHeight="500" MinWidth="650"
+        Height="500" Width="650"
         FontSize="14">
     <Window.Resources>
         <DataTemplate DataType="{x:Type mods:ModViewModel}">

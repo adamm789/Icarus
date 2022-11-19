@@ -11,6 +11,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Data;
 
 namespace Icarus.ViewModels.Export
 {
@@ -23,7 +24,8 @@ namespace Icarus.ViewModels.Export
         public ExportSimpleTexToolsViewModel(IModsListViewModel modsListViewModel, ILogService logService) 
             : base(modsListViewModel, logService)
         {
-            
+            var headerPredicate = new Func<ModViewModel, bool>(m => m.ShouldExport);
+            FilteredMods.SetHeaderPredicate(headerPredicate);
         }
 
         protected override void OnModsListPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -31,6 +33,7 @@ namespace Icarus.ViewModels.Export
             if (e.PropertyName == nameof(ModViewModel.ShouldExport) && sender is ModViewModel mvm)
             {
                 UpdateText();
+                FilteredMods.UpdateHeaders();
             }
         }
 
@@ -61,7 +64,7 @@ namespace Icarus.ViewModels.Export
             var selectedTypeList = _modsListViewModel.SimpleModsList.Where(m => _selectedType.IsInstanceOfType(m));
             var numSelected = selectedTypeList.Where(m => m.ShouldExport).Count();
 
-            ConfirmText = $"Export {numSelected}/{selectedTypeList.Count()} mods";
+            ConfirmText = $"Export {_modsListViewModel.SimpleModsList.Where(m => m.ShouldExport).Count()}/{_modsListViewModel.SimpleModsList.Count()} mods";
 
             base.UpdateText(numSelected, selectedTypeList.Count());
         }
