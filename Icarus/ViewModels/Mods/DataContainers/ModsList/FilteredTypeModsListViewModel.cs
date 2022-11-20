@@ -61,7 +61,7 @@ namespace Icarus.ViewModels.Mods.DataContainers.ModsList
                 {
 
                 }
-                Header = $"{_type} ({ModsList.Cast<ModViewModel>().Where(HeaderPredicate).Count()} /{ModsList.Cast<ModViewModel>().Count()})";
+                Header = $"{_type} ({ModsList.Cast<ModViewModel>().Where(HeaderPredicate).Count()}/{ModsList.Cast<ModViewModel>().Count()})";
             }
             OnPropertyChanged(nameof(ModsList));
         }

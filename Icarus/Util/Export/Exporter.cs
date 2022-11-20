@@ -171,7 +171,7 @@ namespace Icarus.Util
         protected async Task<byte[]> TryWriteTextureToBytes(TextureMod mod, bool forTexTools)
         {
             // TODO: Export texture to .pmp
-            // TODO: Extract this into its own function or move to another class
+            // TODO: Extract writing texture to bytes into its own function or move to another class
 
             _logService.Verbose($"Exporting texture: {mod.ModFileName} with forTexTools={forTexTools}");
 
@@ -241,18 +241,13 @@ namespace Icarus.Util
 
                     var maxMipCount = 1;
 
-                    // TODO: Better way to handle this?
+                    // For things that have real roots (things that have actual models/aren't UI textures), we always want mipMaps, even if the existing texture only has one.
+                    // (Ex. The Default Mat-Add textures)
                     var root = await XivCache.GetFirstRoot(internalPath);
                     if (root != null)
                     {
                         maxMipCount = -1;
                     }
-                    //if (root != null)
-                    //{
-                    // For things that have real roots (things that have actual models/aren't UI textures), we always want mipMaps, even if the existing texture only has one.
-                    // (Ex. The Default Mat-Add textures)
-                    //}
-                    // If !(UI or Painting): maxMipCount = -1
 
                     using (var compressor = new Compressor())
                     {

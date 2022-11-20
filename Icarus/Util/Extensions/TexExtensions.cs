@@ -197,7 +197,6 @@ namespace Icarus.Util.Extensions
         {
             try
             {
-                // TODO: DDSToTex compression?
                 using (var br = new BinaryReader(File.OpenRead(ddsFilePath)))
                 {
                     br.BaseStream.Seek(12, SeekOrigin.Begin);
@@ -227,7 +226,7 @@ namespace Icarus.Util.Extensions
 
                         newTex.AddRange(DatExtensions.MakeType4DatHeader(texFormat, DDSInfo.mipPartOffsets, DDSInfo.mipPartCounts, (int)uncompressedLength, newMipCount, newWidth, newHeight));
                         newTex.AddRange(TexExtensions.MakeTextureInfoHeader(texFormat, newWidth, newHeight, newMipCount));
-                        newTex.AddRange(DDSInfo.compressedDDS);
+                        newTex.AddRange(DDSInfo.dds);
 
                         return newTex.ToArray();
                     }

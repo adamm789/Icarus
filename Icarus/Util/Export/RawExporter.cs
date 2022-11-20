@@ -19,7 +19,6 @@ using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Models.Helpers;
 using xivModdingFramework.Textures.DataContainers;
 using xivModdingFramework.Textures.Enums;
-using SixLaborsImage = SixLabors.ImageSharp.Image;
 
 namespace Icarus.Util.Export
 {
@@ -128,7 +127,6 @@ namespace Icarus.Util.Export
             else if (mod is MaterialMod mtrlMod)
             {
                 _logService.Verbose($"Beginning mtrl to dds export.");
-                // TODO: Only allow .dds file as raw exports for materials?
                 var xivMtrl = mtrlMod.GetMtrl();
                 var df = IOUtil.GetDataFileFromPath(xivMtrl.MTRLPath);
                 var ttp = new TexTypePath
@@ -151,8 +149,7 @@ namespace Icarus.Util.Export
             }
             else if (mod is TextureMod texMod)
             {
-                // TODO: Allow export to png, dds, and bmp..?
-                _logService.Verbose($"Beginning tex to ... dds? export.");
+                _logService.Verbose($"Beginning tex to dds export.");
                 if (texMod.XivTex != null)
                 {
                     outputPath = Path.Combine(outputPath, outputFileName);

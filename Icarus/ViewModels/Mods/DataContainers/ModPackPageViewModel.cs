@@ -9,6 +9,8 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
 using Serilog;
+using System.Windows.Data;
+using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace Icarus.ViewModels.Mods.DataContainers
 {
@@ -177,6 +179,12 @@ namespace Icarus.ViewModels.Mods.DataContainers
                 return false;
             }
             return true;
+        }
+
+        public void UpdateDisplay()
+        {
+            // TODO: IF a user copies a modpackpage (from an imported advanced ttmp2) to the currently displayed empty page,
+            // the page is not updated until the user switches pages and then back
         }
 
         void IDropTarget.DragOver(IDropInfo dropInfo)

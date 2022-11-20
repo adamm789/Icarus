@@ -35,14 +35,12 @@ namespace Icarus.Services
             }
         }
 
-        // TODO: UI for default author
         public string DefaultAuthor
         {
             get { return _settings.DefaultAuthor; }
             set { _settings.DefaultAuthor = value; OnPropertyChanged(); }
         }
 
-        // TODO: UI for default website
         public string DefaultWebsite
         {
             get { return _settings.DefaultWebsite; }

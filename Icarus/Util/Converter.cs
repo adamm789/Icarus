@@ -113,7 +113,6 @@ namespace Icarus.Util
 
                 var outputFile = Path.Combine(_fbxFolder, "result.fbx");
 
-                // TODO: Provide "unique" names for each file that is converted
                 File.Move(outputFile, outputFilePath);
             }));
         }

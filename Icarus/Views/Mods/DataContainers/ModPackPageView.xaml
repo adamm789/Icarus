@@ -65,16 +65,16 @@
         </Grid>
 
         <ListView ItemsSource="{Binding ModGroups}" Grid.Row="1"
-                 HorizontalContentAlignment="Stretch"
-                 VerticalContentAlignment="Stretch"
-                 ScrollViewer.CanContentScroll="False"
+                  HorizontalContentAlignment="Stretch"
+                  VerticalContentAlignment="Stretch"
+                  ScrollViewer.CanContentScroll="False"
                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                 VirtualizingStackPanel.IsVirtualizing="True"
+                  VirtualizingStackPanel.IsVirtualizing="True"
                   dd:DragDrop.IsDragSource="True"
                   dd:DragDrop.IsDropTarget="True"
                   dd:DragDrop.DropHandler="{Binding}">
         </ListView>
-<!--
+        <!--
         <ContentControl Content="{Binding DisplayedOption}" Grid.Row="1" Grid.Column="1"/>
         -->
     </Grid>

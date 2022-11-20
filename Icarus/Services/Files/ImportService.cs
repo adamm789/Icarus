@@ -116,11 +116,6 @@ namespace Icarus.Services.Files
         /// <returns>The filled <see cref="ModPack"/> if successful. An empty <see cref="ModPack"/> otherwise.</returns>
         public async Task<IcarusModPack> ImportFile(string filePath)
         {
-            // TODO: ImportingFile text is only the file that was last imported
-            // e.g. Import a file that takes a long time (A)
-            // Then import a short file (B)
-            // ImportingFile will continue to say "Importing B" even after B has already been imported and A is still importing
-            //var importingFile = "Importing: " + filePath;
             var importingFile = $"Importing {_importFileQueue.Count + 1} mod(s)";
             _importFileQueue.Enqueue(importingFile);
             UpdateProperties();
@@ -330,7 +325,6 @@ namespace Icarus.Services.Files
 
             // TODO: Some sort of check for the file?
             // TODO: Store some actual data as opposed to just the file path?
-            var retPack = new IcarusModPack();
             var texMod = new TextureMod(ImportSource.Raw)
             {
                 ModFileName = filePath,

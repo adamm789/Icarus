@@ -156,7 +156,7 @@ namespace Icarus.Util
         private string GetDefaultModJson(IEnumerable<IGameFile> entries, bool isSimple)
         {
             // TODO: If Advanced Penumbra mod, seems like default_mod is essentially blank
-            // TODO: If Simple Penumbr mod, meta goes into Manipulations here
+            // TODO: If Simple Penumbra mod, meta goes into Manipulations here
             var def = new PenumbraDefaultMod();
             if (isSimple)
             {

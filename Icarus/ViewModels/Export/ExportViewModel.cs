@@ -50,7 +50,7 @@ namespace Icarus.ViewModels.Export
         // TODO: Somehow show progress
         // TODO: Implement cancellation
         // TODO: Show user feedback that export is happening
-        // Unsurprisingly, export raw does not really work with ivcs models (the model itself seems fine, but no armature and no weights)
+        // Unsurprisingly, export raw does not really work with models that have custom skeletons (the model itself seems fine, but no armature and no weights)
         // It does seem to work with (at least) TexTools export
         // TODO: For raw exporter, allow options to include or not include pngs? or even certain files?
         public async Task Export(ExportType type)
@@ -92,7 +92,6 @@ namespace Icarus.ViewModels.Export
                 {
                     try
                     {
-                        // TODO: After exporting, should I reset mods to ShouldExport = true?
                         outputPath = await _exportService.Export(_modsListViewModel.ModPack, type);
                         if (String.IsNullOrWhiteSpace(outputPath))
                         {

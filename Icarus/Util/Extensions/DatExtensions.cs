@@ -181,8 +181,6 @@ namespace Icarus.Util.Extensions
 
         public static async Task<byte[]> CreateType2Data(byte[] dataToCreate, bool shouldCompress = true)
         {
-            // TODO: CreateType2Data shouldCompress?
-
             var newData = new List<byte>();
             var headerData = new List<byte>();
             var dataBlocks = new List<byte>();

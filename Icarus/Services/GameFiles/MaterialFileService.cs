@@ -151,7 +151,10 @@ namespace Icarus.Services.GameFiles
 
                 }
             }
-            catch (ArgumentOutOfRangeException) { }
+            catch (Exception ex)
+            {
+                _logService.Debug(ex, "Exception thrown when trying to get material from model");
+            }
             return null;
         }
     }

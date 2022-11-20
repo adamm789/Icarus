@@ -174,6 +174,11 @@ namespace Icarus.ViewModels.Mods.DataContainers
         {
             ModPack.ModPackPages.Insert(index, packPage.GetModPackPage());
             ModPackPages.Insert(index, packPage);
+            packPage.PageIndex = index;
+            if (DisplayedViewModel is ModPackPageViewModel page)
+            {
+                page.UpdateDisplay();
+            }
         }
 
         public void CopyPage(ModPackPageViewModel page)
@@ -188,8 +193,13 @@ namespace Icarus.ViewModels.Mods.DataContainers
             else {
             */
             // TODO: If last page is empty, set that page to this one
-                var p = new ModPackPageViewModel(page, ModPackPages.Count, this);
-                AddPage(p);
+            var pageIndex = ModPackPages.Count;
+            if (ModPackPages.Count > 0 && ModPackPages[ModPackPages.Count - 1].IsEmpty())
+            {
+                pageIndex -= 1;
+            }
+            var p = new ModPackPageViewModel(page, pageIndex, this);
+            InsertPage(p, pageIndex);
             //}
         }
 

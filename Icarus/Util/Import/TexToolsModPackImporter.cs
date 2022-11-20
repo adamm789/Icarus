@@ -143,7 +143,6 @@ namespace Icarus.Services.Files
                                 var copyOption = new ModOption(option);
                                 foreach (ModsJson mods in option.ModsJsons)
                                 {
-                                    // TODO: Extract asynchronously?
                                     var fileName = $"Page{page.PageIndex}/{group.GroupName}/{option.Name}: ({mods.Name})";
                                     Log.Verbose($"Extracting {fileName}");
 
@@ -190,12 +189,11 @@ namespace Icarus.Services.Files
         private async Task<IMod?> Extract(ModsJson mods, SqPackStream pack, string modFileName, string modFilePath)
         {
             var dat = pack.GetFileMetadata(mods.ModOffset);
-            IMod? result = null;
+            IMod? result;
 
             switch (dat.Type)
             {
                 case FileType.Model:
-                    //result = await Task.Run(() => ExtractModel(mods, pack, modFileName, modFilePath));
                     result = await Task.FromResult(ExtractModel(mods, pack, modFileName, modFilePath));
                     break;
                 case FileType.Texture:

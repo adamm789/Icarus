@@ -11,7 +11,7 @@ namespace Icarus.Util.Extensions
 {
     public class DDSExtensions
     {
-        public static async Task<(List<byte> compressedDDS, List<short> mipPartOffsets, List<short> mipPartCounts)>
+        public static async Task<(List<byte> dds, List<short> mipPartOffsets, List<short> mipPartCounts)>
             ReadDDS(BinaryReader br, XivTexFormat format, int newWidth, int newHeight, int newMipCount, bool shouldCompress = true)
         {
             var compressedDDS = new List<byte>();

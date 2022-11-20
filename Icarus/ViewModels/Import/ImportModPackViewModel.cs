@@ -18,7 +18,6 @@ namespace Icarus.ViewModels.Import
 {
     public class ImportModPackViewModel : UIViewModelBase
     {
-        // TODO?: Allow removal of ModPacks from this list
         readonly IWindowService _windowService;
         readonly ViewModelService _viewModelService;
         public ImportViewModel? ImportViewModel;

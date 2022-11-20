@@ -871,7 +871,6 @@ namespace Icarus.Util
                     {
                         var value = position.Value;
 
-                        // TODO: Do we need the vertex type?
                         if (vType == VertexDataType.Half4)
                         {
                             var x = new SharpDX.Half(value.X);
@@ -1068,8 +1067,6 @@ namespace Icarus.Util
                     if (vector != null)
                     {
                         var value = vector.Value;
-
-                        // TODO: Do we need to check the vertex type?
 
                         if (vType == VertexDataType.Half4)
                         {

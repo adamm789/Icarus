@@ -27,8 +27,6 @@ namespace Icarus.Util
 {
     public class TexToolsExporter : Exporter
     {
-        // TODO: When importing then exporting a ttmp2 file, it seems most mods lose some bytes
-
         private const string _currentWizardTTMPVersion = "1.3w";
         private const string _currentSimpleTTMPVersion = "1.3s";
         private const string _minimumAssembly = "1.3.0.0";

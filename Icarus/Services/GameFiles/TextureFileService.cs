@@ -75,7 +75,6 @@ namespace Icarus.Services.GameFiles
             return retVal;
         }
 
-        // TODO: Implement with Lumina so user can search for arbitrary .tex files
         public async Task<ITextureGameFile?> TryGetTextureFileData(string path, string itemName = "")
         {
             var result = TryGetItem(path, itemName);
