@@ -30,8 +30,8 @@ If you wish to build your own copy, you will need the "converters" (for importin
 * Raw imports (i.e. fbx, dds, png) cannot be exported as is back to that format (is there any real reason to actually do this?)  
 
 # Comments
-I have created a Discord: https://discord.gg/YFt9Y33hPZ  
-You can provide feedback or suggestions, if want.  
+I have created a [Discord](https://discord.gg/YFt9Y33hPZ).  
+You can provide feedback or suggestions, if you want.  
 
 UI is very bare bones and honestly, quite ugly.
 
