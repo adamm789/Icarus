@@ -1,35 +1,38 @@
-# Icarus (Working Title)
+# Icarus  
 Work-In-Progress project that packs mods for Final Fantasy XIV.
 
 Currently supports:
-* Importing .fbx files and .ttmp2 files
-* Modding .fbx files onto equipment and accessories
-* Changing material assignments
-* Exporting to a Simple TexTools modpack or a basic Penumbra mod folder structure
-* Creating, editing, and exporting to an Advanced TexTools modpack
-* Exporting files as .fbx
-* Adding attributes
-* Removing shapes  
-* Importing dds to colorset and mtrl
-* Importing png and bmp to tex
+* Converting .fbx files to models; .dds to material colorset; .png,, .bmp, and .dds to textures  
+* Importing .ttmp2 files and editing advanced modpacks  
+* Editing models' item path, material assignment, and attributes  
+* Editing material's item path, texture paths, colorset, and shader information  
+* Editing textures' item path  
+* Exporting to .ttmp2 (simple or advanced), or models to .fbx, material colorset to .dds, and textures to .dds (which can then be converted to .png or .bmp with pretty much any image editing software) 
+
+Do note: **Just because Icarus allows something does not necessarily mean it will work in-game. Once you start messing with paths beyond changing variants, the risk of a game crash may increase.**  
+
+As a side note: yes, you should be able to export model, material, and texture mods in .ttmp2 files as described above.  
 
 # Usage
-Set game path  
+Set game path in settings  
 "Browse" to your file  
-"Copy" item from the search on the left  
-Export to TexTools modpack or Penumbra file structure   
+Assign item paths with "Copy" which takes the item from your search  
+Export to desired format
 
-If you wish to build your own copy, you will need the "converters" (for importing fbx), "Skeletons" (for scaling), and "Resources" (for exporting fbx) folders from TexTools in the root directory. They are included in the releases.
+If you wish to build your own copy, you will need the "converters" (for importing fbx), "Skeletons" (for scaling), and "Resources" (for exporting fbx) folders from TexTools in the root directory.
 
 # Known Issues
-* If you import a ttmp2 file, some files will be called "ReadOnly." They will be skipped if exporting to any Penumbra format. However, they should be included in any TexTools export.  
-* While you can theoretically assign any destination path, this is a courtesy. Use at your own risk.  
-* When exporting vanilla mdls with skins, the resulting png is incorrect.  
-* When importing via fbx, attributes are not automatically set. While intentional, down the line, there may be a setting to change that.  
+* If you import a .ttmp2 file, some files will be called "ReadOnly." These cannot be edited and can only be exported in a .ttmp2 file.  
+* While you can theoretically assign any destination path, this is a courtesy. **Use at your own risk.**  
+* When importing via .fbx, attributes are not automatically set. While intentional, down the line, there may be a setting to change that.  
 * Models with custom skeletons will not export to fbx correctly. They appear to work fine in-game.  
-* Materials get their colorsets edited slightly upon export  
+* Materials get their colorsets edited slightly upon export. But it shouldn't be an issue overall.  
+* Raw imports (i.e. fbx, dds, png) cannot be exported as is back to that format (is there any real reason to actually do this?)  
 
 # Comments
+I have created a [Discord](https://discord.gg/YFt9Y33hPZ).  
+You can provide feedback or suggestions, if you want.  
+
 UI is very bare bones and honestly, quite ugly.
 
 Currently uses Lumina, so a clean install is highly recommended/required. Unintended behavior may occur if this is not the case.
