@@ -31,6 +31,10 @@ namespace Icarus.Util
         private const string _currentSimpleTTMPVersion = "1.3s";
         private const string _minimumAssembly = "1.3.0.0";
 
+        private string _tempDir;
+        private string _tempMPD;
+        private string _tempMPL;
+
         public TexToolsExporter(GameData lumina, ILogService logService) : base(lumina, logService)
         {
 
@@ -42,11 +46,22 @@ namespace Icarus.Util
             return path;
         }
 
-        // TODO: Export to Standard...?
+        public async Task<string> ExportToSimple(IcarusModPack modPack, string outputDir) {
 
+            var fileInfo = new FileInfo(Path.Combine(outputDir, $"{modPack.Name}.ttmp2"));
+            return await ExportToSimple(modPack, fileInfo);
+        }
+
+        public async Task<string> ExportToAdvanced(IcarusModPack modPack, string outputDir)
+        {
+            var fileInfo = new FileInfo(Path.Combine(outputDir, $"{modPack.Name}.ttmp2"));
+            return await ExportToSimple(modPack, fileInfo);
+        }
+
+        // TODO: Export to Standard...?
         // TODO: CancellationToken for TexTools ExportToSimple
         // TODO: IProgress for TexTools ExportToSimple
-        internal async Task<string> ExportToSimple(IcarusModPack modPack, string outputDir,
+        public async Task<string> ExportToSimple(IcarusModPack modPack, FileInfo fileInfo,
             CancellationToken? cancellationToken = null, IProgress<(int, int)>? progress = null)
         {
             _logService.Information("Exporting to simple textools modpack.");
@@ -57,12 +72,16 @@ namespace Icarus.Util
                 _logService.Error(err);
                 throw new ArgumentNullException(err);
             }
+
+            if (fileInfo.Exists)
+            {
+                fileInfo.Delete();
+            }
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
-            outputDir = GetOutputDirectory(outputDir);
-            var tempDir = GetTempDirectory(outputDir);
-            var _tempMPD = GetMPDPath(tempDir);
-            var _tempMPL = GetMPLPath(tempDir);
+            _tempDir = GetTempDirectory(fileInfo.Directory.FullName);
+            _tempMPD = GetMPDPath(_tempDir);
+            _tempMPL = GetMPLPath(_tempDir);
 
             var modPackJson = GetModPackJson(modPack);
             modPackJson.TTMPVersion = _currentSimpleTTMPVersion;
@@ -121,29 +140,26 @@ namespace Icarus.Util
                 }
             }
 
-            var modPackPath = TrySaveFile(modPack, outputDir, modPackJson);
+            var modPackPath = TrySaveFile(modPack, fileInfo, modPackJson);
             LogNumModsWritten(numMods, numModsWritten);
             return modPackPath;
         }
 
-        private string GetMPLPath(string tempDir)
+        public async Task<string> ExportToAdvanced(IcarusModPack modPack, FileInfo fileInfo,
+            CancellationToken? cancellationToken = null, IProgress<(int, int)>? progress = null)
         {
-            return Path.Combine(tempDir, "TTMPL.mpl");
-        }
-
-        private string GetMPDPath(string tempDir)
-        {
-            return Path.Combine(tempDir, "TTMPD.mpd");
-        }
-
-        internal async Task<string> ExportToAdvanced(IcarusModPack modPack, string outputDir)
-        {
-            Log.Information("Exporting to advanced textools modpack.");
+            _logService.Information("Exporting to advanced textools modpack.");
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
-            outputDir = GetOutputDirectory(outputDir);
-            var tempDir = GetTempDirectory(outputDir);
-            var _tempMPD = GetMPDPath(tempDir);
+            if (fileInfo.Exists)
+            {
+                _logService.Debug($"Deleting {fileInfo.FullName} while exporting to advanced textools.");
+                fileInfo.Delete();
+            }
+
+            _tempDir = GetTempDirectory(fileInfo.Directory.FullName);
+            _tempMPD = GetMPDPath(_tempDir);
+            _tempMPL = GetMPLPath(_tempDir);
 
             // TODO: Advanced modpack image list...?
             var imageList = new HashSet<string>();
@@ -228,7 +244,7 @@ namespace Icarus.Util
                             if (!String.IsNullOrEmpty(modOption.ImagePath))
                             {
                                 var fname = Path.GetFileName(modOption.ImagePath);
-                                imageFileName = Path.Combine(tempDir, fname);
+                                imageFileName = Path.Combine(_tempDir, fname);
                                 if (File.Exists(imageFileName))
                                 {
                                     File.Copy(modOption.ImagePath, imageFileName, true);
@@ -306,10 +322,21 @@ namespace Icarus.Util
                     }
                 }
             }
-            var modPackPath = TrySaveFile(modPack, outputDir, modPackJson, imageList);
+            var modPackPath = TrySaveFile(modPack, fileInfo, modPackJson, imageList);
             LogNumModsWritten(numMods, numModsWritten);
 
             return modPackPath;
+
+        }
+
+        private string GetMPLPath(string tempDir)
+        {
+            return Path.Combine(tempDir, "TTMPL.mpl");
+        }
+
+        private string GetMPDPath(string tempDir)
+        {
+            return Path.Combine(tempDir, "TTMPD.mpd");
         }
 
         private void LogNumModsWritten(int numMods, int numModsWritten)
@@ -324,18 +351,9 @@ namespace Icarus.Util
             }
         }
 
-        /// <summary>
-        /// Tries to save the ttmp2
-        /// </summary>
-        /// <param name="modPack"></param>
-        /// <param name="outputDir"></param>
-        /// <param name="modPackJson"></param>
-        /// <param name="imageList"></param>
-        /// <returns>The path to the file if successful. The emptry string otherwise.</returns>
-        private string TrySaveFile(IcarusModPack modPack, string outputDir, ModPackJson modPackJson, HashSet<string>? imageList = null)
+        private string TrySaveFile(IcarusModPack modPack, FileInfo file, ModPackJson modPackJson, HashSet<string>? imageList = null)
         {
             _logService.Information("Trying to save ttmp2 file");
-            string tempDir = "";
             var zf = new ZipFile
             {
                 UseZip64WhenSaving = Zip64Option.AsNecessary,
@@ -343,15 +361,6 @@ namespace Icarus.Util
             };
             try
             {
-                var modPackPath = GetOutputPath(modPack, outputDir);
-                if (File.Exists(modPackPath))
-                {
-                    File.Delete(modPackPath);
-                }
-                tempDir = GetTempDirectory(outputDir);
-                var _tempMPL = GetMPLPath(tempDir);
-                var _tempMPD = GetMPDPath(tempDir);
-
                 var fileInfo = new FileInfo(_tempMPD);
                 if (fileInfo.Length == 0)
                 {
@@ -372,11 +381,11 @@ namespace Icarus.Util
                         zf.AddFile(image, "images");
                     }
                 }
-                zf.Save(modPackPath);
+                zf.Save(file.FullName);
 
                 var entries = modPack.SimpleModsList;
-                _logService.Information($"Successfully wrote to {modPackPath}.");
-                return modPackPath;
+                _logService.Information($"Successfully wrote to {file.FullName}.");
+                return file.FullName;
             }
             catch (Exception ex)
             {
@@ -384,20 +393,15 @@ namespace Icarus.Util
             }
             finally
             {
-                
-                if (Directory.Exists(tempDir))
+                if (Directory.Exists(_tempDir))
                 {
-                    _logService.Verbose($"Deleting temporary directory {tempDir}.");
-                    Directory.Delete(tempDir, true);
+                    _logService.Debug($"Deleting temporary directory: {_tempDir}");
+                    Directory.Delete(_tempDir, true);
                 }
-                else
-                {
-                    _logService.Error($"Temporary directory {tempDir} does not exist.");
-                }
-                
                 zf.Dispose();
             }
             return "";
+
         }
 
         private ModPackJson GetModPackJson(IcarusModPack modPack)

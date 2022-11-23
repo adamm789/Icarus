@@ -17,6 +17,7 @@ using System.Windows.Forms;
 
 namespace Icarus.ViewModels.Import
 {
+    // TODO: Importing raw files goes in order of selection; if fbx is chosen first, this prevents other (possibly faster) files from importing until the fbx is done
     public class ImportViewModel : ViewModelBase
     {
         readonly string _filter =
@@ -35,7 +36,7 @@ namespace Icarus.ViewModels.Import
         private string _initialDirectory = "";
         private OpenFileDialog _dlg;
 
-        public ImportModPackViewModel ImportSimpleTexToolsViewModel;
+        public ImportModPackViewModel ImportModPackViewModel;
 
         public ImportViewModel(IModPackViewModel modPack, ModPackListViewModel modPackList, ImportService importService,
             ISettingsService settingsService, ILogService logService, ImportModPackViewModel importSimpleTexToolsViewModel)
@@ -47,8 +48,8 @@ namespace Icarus.ViewModels.Import
             _importService = importService;
             _logService = logService;
 
-            ImportSimpleTexToolsViewModel = importSimpleTexToolsViewModel;
-            ImportSimpleTexToolsViewModel.ImportViewModel = this;
+            ImportModPackViewModel = importSimpleTexToolsViewModel;
+            ImportModPackViewModel.ImportViewModel = this;
 
             var eh = new PropertyChangedEventHandler(OnPropertyChanged);
             _importService.PropertyChanged += eh;
@@ -146,16 +147,18 @@ namespace Icarus.ViewModels.Import
                     if (modPack.ModPackPages.Count > 0)
                     {
                         _modPackListViewModel.Add(modPack);
-                        _modPackViewModel.Add(modPack);
                     }
-                    else if (modPack.SimpleModsList.Count == 1 && modPack.SimpleModsList[0].ImportSource == ImportSource.Raw)
+
+
+                    if (modPack.SimpleModsList.Count == 1 && modPack.SimpleModsList[0].ImportSource == ImportSource.Raw)
                     {
                         _modPackViewModel.Add(modPack);
                     }
                     else
                     {
-                        // TODO: Perhaps allow partial imports of Advanced ModPacks
-                        ImportSimpleTexToolsViewModel.Add(modPack);
+                        // TODO: How to handle partial imports of advanced mod packs?
+                        // If not all mods are imported, should the mod pack pages be skipped?
+                        ImportModPackViewModel.Add(modPack);
                     }
                 }
             }

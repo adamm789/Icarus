@@ -23,6 +23,21 @@ namespace Icarus.ViewModels.Import
             _metadataFileService = metadataFileService;
         }
 
+        bool _hasMetadata = false;
+        public bool HasMetadata
+        {
+            get { return _hasMetadata; }
+            set { _hasMetadata = value; OnPropertyChanged(); }
+        }
+
+        protected override void SelectedItemSet()
+        {
+            base.SelectedItemSet();
+
+            var metadataFile = Task.Run(() => _metadataFileService.GetMetadata(SelectedItem)).Result;
+            HasMetadata = metadataFile?.ItemMetadata != null;
+        }
+
         private async Task<MetadataMod?> GetVanillaMeta()
         {
             IMetadataFile? metadataFile;

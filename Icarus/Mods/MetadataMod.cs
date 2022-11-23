@@ -45,20 +45,12 @@ namespace Icarus.Mods
             set { ItemMetadata.ImcEntries = value; }
         }
 
-        // EqdpEntries
-        // EqpEntry
-        // EstEntries
-        // GmpEntry
-        // ImcEntries
-        // Root
-
         public MetadataMod(IMetadataFile file, ImportSource source = ImportSource.Vanilla) : base(file, source)
         {
             ItemMetadata = file.ItemMetadata;
             Slot = file.Slot;
             SetModData(file);
         }
-
 
         public MetadataMod(ItemMetadata data, ImportSource source = ImportSource.Vanilla) : base(source)
         {
@@ -76,6 +68,12 @@ namespace Icarus.Mods
             if (gameFile is not IMetadataFile metaFile)
             {
                 throw new ArgumentException($"ModData was not of MetadataGameFile. It was {gameFile.GetType()}.");
+            }
+
+            // UI or Painting (I believe)
+            if (metaFile.ItemMetadata == null)
+            {
+                return;
             }
 
             if (metaFile.ItemMetadata.Root.Info.Slot != Slot)

@@ -11,6 +11,7 @@ using ItemDatabase.Interfaces;
 using ItemDatabase.Paths;
 using System.Collections.ObjectModel;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Threading.Tasks;
 using xivModdingFramework.General.Enums;
 
@@ -98,6 +99,11 @@ namespace Icarus.ViewModels.Mods
         public override async Task<IGameFile?> GetFileData(string path, string name ="")
         {
             return await _metadataFileService.TryGetMetadata(path, name);
+        }
+
+        protected override bool HasValidPathExtension(string path)
+        {
+            return Path.GetExtension(path) == ".meta";
         }
     }
 }

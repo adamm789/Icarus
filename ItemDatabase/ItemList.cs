@@ -105,7 +105,7 @@ namespace ItemDatabase
 
                 _indoorFurniture.Add(item.Name, item);
             }
-
+            _allItems["Indoor Furniture"] = _indoorFurniture;
             AddBody();
         }
 

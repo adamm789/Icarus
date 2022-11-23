@@ -12,11 +12,13 @@ using ItemDatabase.Interfaces;
 using ItemDatabase.Paths;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Threading.Tasks;
 using xivModdingFramework.Materials.DataContainers;
 
 namespace Icarus.ViewModels.Mods
 {
+    // TOOD: Variants for materials
     public class MaterialModViewModel : ModViewModel
     {
         MaterialMod _material;
@@ -118,6 +120,9 @@ namespace Icarus.ViewModels.Mods
             "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"
         };
 
-
+        protected override bool HasValidPathExtension(string path)
+        {
+            return Path.GetExtension(path) == ".mtrl";
+        }
     }
 }

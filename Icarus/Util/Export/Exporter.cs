@@ -126,13 +126,8 @@ namespace Icarus.Util
                 return Path.Combine(outputDir, "temp");
             }
             */
-            var tempDir = Path.Combine(outputDir, "temp");
-            if (!Directory.Exists(tempDir))
-            {
-                _logService.Verbose($"Creating temporary directory.");
-                Directory.CreateDirectory(tempDir);
-            }
-
+            var tempDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            Directory.CreateDirectory(tempDir);
             return tempDir;
         }
 
@@ -155,7 +150,7 @@ namespace Icarus.Util
         {
             try
             {
-                _logService.Verbose($"Exporting metadata: {mod.ModFileName}.");
+                _logService.Debug($"Exporting metadata: {mod.ModFileName}.");
                 var itemMetadata = mod.ItemMetadata;
                 var bytes = await ItemMetadata.Serialize(itemMetadata);
                 return await DatExtensions.CreateType2Data(bytes);
@@ -173,7 +168,7 @@ namespace Icarus.Util
             // TODO: Export texture to .pmp
             // TODO: Extract writing texture to bytes into its own function or move to another class
 
-            _logService.Verbose($"Exporting texture: {mod.ModFileName} with forTexTools={forTexTools}");
+            _logService.Debug($"Exporting texture: {mod.ModFileName} with forTexTools={forTexTools}");
 
             if (!forTexTools)
             {
@@ -246,7 +241,12 @@ namespace Icarus.Util
                     var root = await XivCache.GetFirstRoot(internalPath);
                     if (root != null)
                     {
+                        _logService.Debug($"{mod.Name} has Root. Getting all mipmaps.");
                         maxMipCount = -1;
+                    }
+                    else
+                    {
+                        _logService.Debug($"{mod.Name} has no Root. Getting one mipmap.");
                     }
 
                     using (var compressor = new Compressor())
@@ -260,6 +260,7 @@ namespace Icarus.Util
                         compressor.Process(out ddsContainer);
                     }
                 }
+
                 if (ddsContainer == null)
                 {
                     _logService.Error($"DDSContainer was null.");
@@ -336,7 +337,7 @@ namespace Icarus.Util
         /// <returns></returns>
         protected TTModel ApplyModelOptions(ModelMod mm)
         {
-            _logService.Verbose($"Applying ModelModifiers to {mm.Name}");
+            _logService.Debug($"Applying ModelModifiers to {mm.Name}");
 
             var ttModel = mm.ImportedModel;
             var copy = ttModel.DeepCopy();

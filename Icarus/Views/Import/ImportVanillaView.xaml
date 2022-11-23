@@ -58,7 +58,7 @@
         <ContentControl Content="{Binding ImportVanillaMetadataViewModel}">
             <ContentControl.Resources>
                 <DataTemplate DataType="{x:Type import:ImportVanillaMetadataViewModel}">
-                    <Button Command="{Binding ImportVanillaFileCommand}" Content="Add Metadata"/>
+                    <Button Command="{Binding ImportVanillaFileCommand}" Content="Add Metadata" IsEnabled="{Binding HasMetadata}"/>
                 </DataTemplate>
             </ContentControl.Resources>
         </ContentControl>

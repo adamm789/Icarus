@@ -13,7 +13,7 @@
         <Button Command="{Binding ExportCommand}" CommandParameter="{x:Static services:ExportType.TexToolsAdvanced}" 
                 Content="Export to TexTools (Advanced)"/>
         <Button Command="{Binding ExportCommand}" CommandParameter="{x:Static services:ExportType.PenumbraAdvanced}" 
-                IsEnabled="False" Content="Export to Penumbra (Advanced)"/>
+                IsEnabled="{Binding IsDebugMode}" Content="Export to Penumbra (Advanced)"/>
         <Button Command="{Binding ExportCommand}" CommandParameter="{x:Static services:ExportType.RawAdvanced}" 
                 Content="Export Raw (Advanced)"/>
     </UniformGrid>

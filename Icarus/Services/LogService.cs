@@ -90,7 +90,7 @@ namespace Icarus.Services
             }
             else
             {
-                Log.Verbose(message);
+                Log.Debug(message);
                 //Log.Information(message);
             }
         }

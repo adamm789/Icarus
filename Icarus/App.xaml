@@ -10,6 +10,7 @@
         </Style>
         <Style TargetType="{x:Type Button}">
             <Setter Property="Margin" Value="2,2,2,2"/>
+            <Setter Property="Padding" Value="2"/>
         </Style>
     </Application.Resources>
 </Application>

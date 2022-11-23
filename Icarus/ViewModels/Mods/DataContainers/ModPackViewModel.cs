@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.IO.Packaging;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -199,6 +200,8 @@ namespace Icarus.ViewModels.Mods.DataContainers
                 pageIndex -= 1;
             }
             var p = new ModPackPageViewModel(page, pageIndex, this);
+            p.PropertyChanged += new PropertyChangedEventHandler(OnOptionSelected);
+
             InsertPage(p, pageIndex);
             //}
         }

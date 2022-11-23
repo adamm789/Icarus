@@ -126,7 +126,7 @@ namespace ItemDatabase.Paths
 
         public static string GetTexVariant(string path)
         {
-            var texVariantRegex = new Regex(@"_([a-z]+)_[n,m,s,d].tex$");
+            var texVariantRegex = new Regex(@"([a-z]+)_[n,m,s,d].tex$");
 
             if (texVariantRegex.IsMatch(path))
             {

@@ -108,6 +108,14 @@ namespace Icarus.Services.GameFiles
             var result = _itemListService.TryGetName(path, itemName);
             if (String.IsNullOrWhiteSpace(result))
             {
+                if (!String.IsNullOrWhiteSpace(path))
+                {
+                    return path;
+                }
+                if (!String.IsNullOrWhiteSpace(itemName))
+                {
+                    return itemName;
+                }
                 return "???";
             }
             else

@@ -22,6 +22,33 @@ namespace Icarus.Util
 
         }
 
+        public async Task<string> ExportToSimple(ModPack modPack, FileSystemInfo info)
+        {
+            if (info is FileInfo file)
+            {
+
+            }
+            else if (info is DirectoryInfo dir)
+            {
+
+            }
+
+            throw new NotImplementedException();
+        }
+
+        public async Task<string> ExportToAdvanced(ModPack modPack, FileSystemInfo info)
+        {
+            if (info is FileInfo file)
+            {
+
+            }
+            else if (info is DirectoryInfo dir)
+            {
+
+            }
+            throw new NotImplementedException();
+        }
+
         internal async Task<string> ExportToSimple(ModPack modPack, string outputDir, bool toPmp = true)
         {
             _logService.Information("Starting export to simple penumbra modpack.");

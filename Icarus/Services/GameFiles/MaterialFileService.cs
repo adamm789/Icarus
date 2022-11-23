@@ -138,6 +138,10 @@ namespace Icarus.Services.GameFiles
                     material.Update(_lumina);
 
                     var mtrlFile = _lumina.GetFile<MtrlFile>(material.ResolvedPath);
+                    if (mtrlFile == null)
+                    {
+                        return null;
+                    }
                     var xivMtrl = await MtrlExtensions.GetMtrlData(_frameworkGameDirectory, mtrlFile.Data, material.ResolvedPath);
 
                     var retVal = new MaterialGameFile()

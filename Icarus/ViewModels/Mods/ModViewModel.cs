@@ -14,6 +14,7 @@ using System.Configuration;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Shapes;
 
 namespace Icarus.ViewModels.Mods
 {
@@ -38,7 +39,7 @@ namespace Icarus.ViewModels.Mods
             _gameFileService = gameFileService;
             _logService = logService;
 
-            var file = Path.GetFileName(mod.ModFilePath);
+            var file = System.IO.Path.GetFileName(mod.ModFilePath);
             if (file != null)
             {
                 FileName = file;
@@ -117,12 +118,28 @@ namespace Icarus.ViewModels.Mods
             set
             {
                 if (Mod.Path == value) return;
-                var couldSetDestinationPath = TrySetDestinationPath(value);
-                //if (!couldSetDestinationPath) return;
+                if (!HasValidPathExtension(value))
+                {
+                    return;
+                }
+                // TODO: If a user selects an item, then inputs a custom path, the 
+                var couldSetDestinationPath = TrySetDestinationPath(value, DestinationName);
+
+                if (!couldSetDestinationPath)
+                {
+                    DestinationName = value;
+                }
                 Mod.Path = value;
                 RaiseDestinationPathChanged();
             }
         }
+
+        /// <summary>
+        /// Only checks to see if the extension is appropriate for the type of mod
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        protected abstract bool HasValidPathExtension(string path);
 
         public virtual bool HasMatch(string? str)
         {
@@ -209,6 +226,10 @@ namespace Icarus.ViewModels.Mods
         /// <returns>Whether or not the file data was successfully found.</returns>
         protected virtual bool TrySetDestinationPath(string path, string name = "")
         {
+            if (!HasValidPathExtension(path))
+            {
+                return false;
+            }
             //if (path == DestinationPath) return false;
             //var modData = Task.Run(() => _gameFileService.TryGetFileData(path, GetType(), name)).Result;
             //var modData = Task.Run(() => GetFileData()).Result;
@@ -224,7 +245,8 @@ namespace Icarus.ViewModels.Mods
             }
             else
             {
-                DestinationName = "???";
+                //DestinationName = "???";
+                //DestinationName = path;
                 return false;
             }
         }

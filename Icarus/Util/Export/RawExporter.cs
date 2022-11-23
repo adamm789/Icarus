@@ -25,6 +25,8 @@ namespace Icarus.Util.Export
     // Class that exports to common file extensions, i.e. .fbx, .dds
     public class RawExporter : Exporter
     {
+        // TODO: Yes, export to given directory. BUT! Delete everything in that directory?
+
         // TODO: Theoretically provide options for output files
         // Specifically, textures and png/dds
         readonly ConverterService _converterService;
@@ -33,24 +35,51 @@ namespace Icarus.Util.Export
             _converterService = converter;
         }
 
-        public async Task<string> ExportToSimple(ModPack modPack, string outputDir)
+        public async Task<string> ExportToSimple(ModPack modPack, DirectoryInfo dir)
         {
             _logService.Information("Starting export to simple.");
-            var dir = GetOutputPath(modPack, outputDir);
-            Directory.CreateDirectory(dir);
-            var outputDirectory = new DirectoryInfo(dir);
-
+            if (!dir.Exists)
+            {
+                dir.Create();
+            }
             if (modPack.SimpleModsList != null)
             {
                 foreach (var mod in modPack.SimpleModsList)
                 {
                     if (mod.ShouldExport)
                     {
-                        await ExportMod(outputDirectory, mod);
+                        await ExportMod(dir, mod);
                     }
                 }
             }
-            return dir;
+            return dir.FullName;
+        }
+
+        public async Task<string> ExportToAdvanced(ModPack modPack, DirectoryInfo dir)
+        {
+            _logService.Information("Starting export to advanced.");
+            if (!dir.Exists)
+            {
+                dir.Create();
+            }
+            if (modPack.ModPackPages != null)
+            {
+                foreach (var page in modPack.ModPackPages)
+                {
+                    foreach (var group in page.ModGroups)
+                    {
+                        foreach (var option in group.OptionList)
+                        {
+                            foreach (var mod in option.Mods)
+                            {
+                                // TODO: Create subdirectories based on mod groups and mod options?
+                                await ExportMod(dir, mod, option);
+                            }
+                        }
+                    }
+                }
+            }
+            return dir.FullName;
         }
 
         private string GetOutputFileName(IMod mod, ModOption? option = null)
@@ -69,31 +98,6 @@ namespace Icarus.Util.Export
                 retVal = retVal.Replace(ext, "");
             }
             return retVal;
-        }
-
-        public async Task<string> ExportToAdvanced(ModPack modPack, string outputDir)
-        {
-            _logService.Information("Starting export to advanced.");
-            var dir = GetOutputPath(modPack, outputDir);
-            Directory.CreateDirectory(dir);
-            var outputDirectory = new DirectoryInfo(dir);
-            if (modPack.ModPackPages != null)
-            {
-                foreach (var page in modPack.ModPackPages)
-                {
-                    foreach (var group in page.ModGroups)
-                    {
-                        foreach (var option in group.OptionList)
-                        {
-                            foreach (var mod in option.Mods)
-                            {
-                                await ExportMod(outputDirectory, mod, option);
-                            }
-                        }
-                    }
-                }
-            }
-            return dir;
         }
 
         public async Task ExportMod(DirectoryInfo outputDirectory, IMod mod, ModOption? option = null)

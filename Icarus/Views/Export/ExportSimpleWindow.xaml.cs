@@ -17,9 +17,9 @@ namespace Icarus.Views.Export
     /// <summary>
     /// Interaction logic for ExportSimpleTexToolsWindow.xaml
     /// </summary>
-    public partial class ExportSimpleTexToolsWindow : Window
+    public partial class ExportSimpleWindow : Window
     {
-        public ExportSimpleTexToolsWindow()
+        public ExportSimpleWindow()
         {
             InitializeComponent();
         }

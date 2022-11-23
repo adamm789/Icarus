@@ -12,20 +12,29 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
+using System.Windows.Forms;
+using SaveFileDialog = System.Windows.Forms.SaveFileDialog;
 
 namespace Icarus.ViewModels.Export
 {
     // TODO: Prompt for user to delete any files if it exists, upon pressing "Confirm"
     // TODO: Export text for button
-    public class ExportSimpleTexToolsViewModel : ModsListSelectionViewModel
+    public class ExportSimpleViewModel : ModsListSelectionViewModel
     {
         public bool ShouldDelete { get; set; } = false;
 
-        public ExportSimpleTexToolsViewModel(IModsListViewModel modsListViewModel, ILogService logService) 
+        private CommonDialog _dialog;
+
+        public ExportSimpleViewModel(IModsListViewModel modsListViewModel, ILogService logService) 
             : base(modsListViewModel, logService)
         {
             var headerPredicate = new Func<ModViewModel, bool>(m => m.ShouldExport);
             FilteredMods.SetHeaderPredicate(headerPredicate);
+        }
+
+        public void SetDialog(CommonDialog dialog)
+        {
+            _dialog = dialog;
         }
 
         protected override void OnModsListPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -49,8 +58,11 @@ namespace Icarus.ViewModels.Export
 
         public override void ConfirmCommand()
         {
-            ShouldDelete = true;
-            CloseAction?.Invoke();
+            if (_dialog.ShowDialog() == DialogResult.OK)
+            {
+                ShouldDelete = true;
+                CloseAction?.Invoke();
+            }
         }
 
         protected override void CancelCommand()

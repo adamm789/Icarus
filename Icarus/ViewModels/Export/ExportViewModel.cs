@@ -3,6 +3,7 @@ using Icarus.Services.Interfaces;
 using Icarus.ViewModels.Mods.DataContainers.Interfaces;
 using Icarus.ViewModels.Util;
 using Icarus.Views.Export;
+using Ionic.Zip;
 using Serilog;
 using System;
 using System.ComponentModel;
@@ -21,7 +22,19 @@ namespace Icarus.ViewModels.Export
         readonly IModsListViewModel _modsListViewModel;
         readonly ILogService _logService;
 
-        ExportSimpleTexToolsViewModel ExportSimpleTexToolsViewModel;
+        ExportSimpleViewModel ExportSimpleViewModel;
+
+        public bool IsDebugMode
+        {
+            get
+            {
+#if DEBUG
+                return true;
+#else
+return false;
+#endif
+            }
+        }
 
         public ExportViewModel(IModsListViewModel modsListViewModel, IMessageBoxService messageBoxService, ExportService exportService, IWindowService windowService, ILogService logService)
             : base(logService)
@@ -32,7 +45,7 @@ namespace Icarus.ViewModels.Export
             _windowService = windowService;
             _logService = logService;
 
-            ExportSimpleTexToolsViewModel = new(modsListViewModel, _logService);
+            ExportSimpleViewModel = new(modsListViewModel, _logService);
 
             var eh = new PropertyChangedEventHandler(OnPropertyChanged);
             _modsListViewModel.PropertyChanged += eh;
@@ -59,55 +72,90 @@ namespace Icarus.ViewModels.Export
             ExportCommand.RaiseCanExecuteChanged();
             try
             {
-                var path = _exportService.GetOutputPath(_modsListViewModel.ModPack, type);
-                path = path.Replace('\\', '/');
-
-                var shouldDelete = true;
-
                 // TODO: Allow key combination to bypass this and always do the opposite
                 // Will also need to export all if asking is overridden
-                if (ExportType.Simple.HasFlag(type))
+
+                var saveFileDialog = new SaveFileDialog();
+                saveFileDialog.RestoreDirectory = true;
+
+                var directoryDialog = new FolderBrowserDialog();
+                // TODO: directoryDialog.InitialDirectory = ...
+
+
+                CommonDialog? common = null;
+
+                var shouldDelete = false;
+
+                // TODO: Clean up save file dialog
+                if (ExportType.TexTools.HasFlag(type))
                 {
-                    var result = _windowService.ShowWindow<ExportSimpleTexToolsWindow>(ExportSimpleTexToolsViewModel);
-                    shouldDelete = ExportSimpleTexToolsViewModel.ShouldDelete;
-                    ExportSimpleTexToolsViewModel.ShouldDelete = false;
+                    saveFileDialog.Filter = "ttmp2 | .ttmp2";
+                    saveFileDialog.FileName = _modsListViewModel.ModPack.Name;
+                    common = saveFileDialog;
+                    ExportSimpleViewModel.SetDialog(saveFileDialog);
+
+                }
+                else if (ExportType.Raw.HasFlag(type))
+                {
+                    common = directoryDialog;
+                    ExportSimpleViewModel.SetDialog(directoryDialog);
                 }
                 else
                 {
-                    // TODO: More accurate file/path existance and prompt
-                    if (File.Exists(path) || Directory.Exists(path))
+                    // Penumbra... pmp? dirctory?
+                }
+                FileSystemInfo? info = null;
+
+                if (ExportType.Simple.HasFlag(type))
+                {
+                    var result = _windowService.ShowWindow<ExportSimpleWindow>(ExportSimpleViewModel);
+
+                    shouldDelete = ExportSimpleViewModel.ShouldDelete;
+                    ExportSimpleViewModel.ShouldDelete = false;
+                }
+                else
+                {
+                    // Advanced
+                    var result = common?.ShowDialog();
+                    if (result == DialogResult.OK)
                     {
-                        var message = $"The path {path} already exists. Overwrite?";
-                        var result = _messageBoxService.ShowMessage(message, "File Exists", MessageBoxButtons.YesNo);
-                        if (result == DialogResult.No)
-                        {
-                            shouldDelete = false;
-                        }
+                        shouldDelete = true;
                     }
                 }
+
+                if (!String.IsNullOrWhiteSpace(saveFileDialog.FileName))
+                {
+                    info = new FileInfo(saveFileDialog.FileName);
+                }
+                else if (!String.IsNullOrWhiteSpace(directoryDialog.SelectedPath))
+                {
+                    info = new DirectoryInfo(directoryDialog.SelectedPath);
+                }
+
                 string outputPath = "";
-                var success = true;
+                var success = false;
                 var numSelected = _modsListViewModel.SimpleModsList.Where(m => m.ShouldExport).Count();
-                if (shouldDelete && numSelected > 0)
+                if (shouldDelete && numSelected > 0 && info != null)
                 {
                     try
                     {
-                        outputPath = await _exportService.Export(_modsListViewModel.ModPack, type);
-                        if (String.IsNullOrWhiteSpace(outputPath))
+                        //outputPath = await _exportService.Export(_modsListViewModel.ModPack, type, filePath);
+                        outputPath = await _exportService.Export(_modsListViewModel.ModPack, type, info);
+
+                        if (!String.IsNullOrWhiteSpace(outputPath))
                         {
-                            success = false;
+                            success = true;
                         }
                     }
                     catch (OperationCanceledException)
                     {
-                        success = false;
                         _logService.Warning("Export was cancelled.");
                     }
                     catch (Exception ex)
                     {
-                        success = false;
                         _logService.Error(ex, "Export Service threw an exception.");
                     }
+
                     if (success)
                     {
                         DisplaySuccess(outputPath);

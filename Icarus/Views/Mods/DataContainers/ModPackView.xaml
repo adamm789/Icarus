@@ -25,10 +25,7 @@
                 <local:ModPackPageView/>
             </DataTemplate>
         </Grid.Resources>
-
-        
         <ContentControl Content="{Binding DisplayedViewModel}" HorizontalAlignment="Stretch" VerticalContentAlignment="Stretch" Grid.Row="1" Margin="5"/>
-
         <editorviews:EditorNavigatorView Grid.Row="2" Margin="5"/>
     </Grid>
 </UserControl>

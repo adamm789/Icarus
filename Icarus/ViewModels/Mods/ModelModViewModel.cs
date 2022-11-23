@@ -20,6 +20,7 @@ using xivModdingFramework.General.Enums;
 using xivModdingFramework.Models.Helpers;
 using System.Configuration;
 using xivModdingFramework.Models.DataContainers;
+using System.IO;
 
 namespace Icarus.ViewModels.Mods
 {
@@ -136,6 +137,14 @@ namespace Icarus.ViewModels.Mods
                         MeshGroups[i].MaterialViewModel.DisplayedMaterial = ttModel.MeshGroups[i].Material;
                     }
                 }
+                else if (ttModel.MeshGroups.Count == 1)
+                {
+                    foreach (var group in MeshGroups)
+                    {
+                        group.MaterialViewModel.DisplayedMaterial = ttModel.MeshGroups[0].Material;
+                    }
+                }
+                // TODO: What to do if current model has more or fewer materials and neither has only one material?
                 return base.SetModData(modelGameFile);
             }
             return false;
@@ -207,6 +216,11 @@ namespace Icarus.ViewModels.Mods
         {
             base.RaiseDestinationPathChanged();
             OnPropertyChanged(nameof(HasSkin));
+        }
+
+        protected override bool HasValidPathExtension(string path)
+        {
+            return Path.GetExtension(path) == ".mdl";
         }
     }
 }

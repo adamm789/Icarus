@@ -44,5 +44,10 @@ namespace Icarus.ViewModels.Mods
         {
             return false;
         }
+
+        protected override bool HasValidPathExtension(string path)
+        {
+            return false;
+        }
     }
 }
