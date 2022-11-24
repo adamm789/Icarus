@@ -272,6 +272,8 @@ namespace Icarus.ViewModels.Mods.DataContainers
         void IDropTarget.Drop(IDropInfo dropInfo)
         {
             var dropItem = dropInfo.Data;
+            Log.Debug($"Drop {dropItem.GetType()} onto {GetType()}");
+
             if (dropItem is ModViewModel modViewModel)
             {
                 if (CanAcceptMod(modViewModel))

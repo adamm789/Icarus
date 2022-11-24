@@ -3,6 +3,7 @@ using Icarus.Mods.DataContainers;
 using Icarus.Services;
 using Icarus.Util.Extensions;
 using Icarus.ViewModels.Util;
+using Serilog;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows;
@@ -263,6 +264,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
 
         void IDropTarget.Drop(IDropInfo dropInfo)
         {
+            Log.Debug($"Drop onto {GetType()}.");
             // TODO: Multiple drag sources?
             var source = dropInfo.Data;
             var target = dropInfo.TargetItem;

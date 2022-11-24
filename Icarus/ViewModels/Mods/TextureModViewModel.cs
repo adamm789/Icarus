@@ -42,7 +42,7 @@ namespace Icarus.ViewModels.Mods
         }
 
         // TODO: Should this just hide the TexType combo box?
-        bool _canParseTexType = true;
+        bool _canParseTexType = false;
         public bool CanParseTexType
         {
             get { return _canParseTexType; }
@@ -57,7 +57,9 @@ namespace Icarus.ViewModels.Mods
             {
                 _textureVariant = value;
                 OnPropertyChanged();
-                base.DestinationPath = XivPathParser.ChangeTexVariant(base.DestinationPath, value);
+                var path = XivPathParser.ChangeTexVariant(base.DestinationPath, value);
+                path = XivPathParser.ChangeTexType(path, TexType);
+                base.DestinationPath = path;
             }
         }
 
@@ -117,6 +119,7 @@ namespace Icarus.ViewModels.Mods
             {
                 return false;
             }
+            CanParseTexType = true;
             return base.SetModData(texGameFile);
         }
 
