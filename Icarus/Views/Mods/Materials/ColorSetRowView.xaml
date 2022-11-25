@@ -6,6 +6,9 @@
              xmlns:local="clr-namespace:Icarus.Views.Mods"
              xmlns:mods="clr-namespace:Icarus.ViewModels.Mods"
              xmlns:materials="clr-namespace:Icarus.ViewModels.Mods.Materials"
+             xmlns:colorbox="clr-namespace:ColorBox;assembly=DotNetProjects.Wpf.Extended.Toolkit"
+             xmlns:xtk="http://schemas.xceed.com/wpf/xaml/toolkit"
+
              d:DataContext="{d:DesignInstance Type=materials:ColorSetRowViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="250" d:DesignWidth="300">
@@ -13,6 +16,10 @@
         <DockPanel.Resources>
             <DataTemplate DataType="{x:Type materials:ColorViewModel}">
                 <Label Background="{Binding BrushColor}"/>
+                <!--
+                <xtk:ColorPicker SelectedColor="{Binding Color}"
+                                 UsingAlphaChannel="False" ColorMode="ColorCanvas" AvailableColorsSortingMode="HueSaturationBrightness"/>
+-->
             </DataTemplate>
             <Style TargetType="{x:Type Label}">
                 <Setter Property="BorderBrush" Value="Black"/>

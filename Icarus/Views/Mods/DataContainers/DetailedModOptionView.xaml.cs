@@ -5,9 +5,9 @@ namespace Icarus.Views.Mods.DataContainers
     /// <summary>
     /// Interaction logic for ModOptionView.xaml
     /// </summary>
-    public partial class ModOptionView : UserControl
+    public partial class DetailedModOptionView : UserControl
     {
-        public ModOptionView()
+        public DetailedModOptionView()
         {
             InitializeComponent();
         }

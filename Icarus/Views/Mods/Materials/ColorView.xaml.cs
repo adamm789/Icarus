@@ -10,16 +10,17 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Icarus.Views.Import
+namespace Icarus.Views.Mods.Materials
 {
     /// <summary>
-    /// Interaction logic for TexToolsModPackImportWindow.xaml
+    /// Interaction logic for ColorView.xaml
     /// </summary>
-    public partial class ImportSimpleTexToolsWindow : Window
+    public partial class ColorView : UserControl
     {
-        public ImportSimpleTexToolsWindow()
+        public ColorView()
         {
             InitializeComponent();
         }

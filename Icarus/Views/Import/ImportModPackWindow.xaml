@@ -11,7 +11,10 @@
         xmlns:views="clr-namespace:Icarus.Views" xmlns:import="clr-namespace:Icarus.ViewModels.Import"
         d:DataContext="{d:DesignInstance Type=import:ImportModPackViewModel}"
         mc:Ignorable="d"
-        Title="ImportModPackWindow" Height="450" Width="800">
+        Title="ImportModPackWindow"
+        MinHeight="500" MinWidth="650"
+        Height="500" Width="650"
+        FontSize="14">
     <Grid IsEnabled="{Binding CanImportModPack}">
         <Grid.Resources>
             <DataTemplate DataType="{x:Type datacontainers:ModPackViewModel}">
@@ -19,13 +22,11 @@
             </DataTemplate>
             <DataTemplate DataType="{x:Type mods:ModViewModel}">
                 <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Text="{Binding DisplayedHeader}" Grid.Column="0"/>
-                    <CheckBox Grid.Column="1" IsChecked="{Binding ShouldImport}">
-                        <TextBlock Text="Import?"/>
+                    <CheckBox IsChecked="{Binding ShouldImport}">
+                        <StackPanel>
+                            <TextBlock Text="{Binding DisplayedHeader}"/>
+                            <TextBlock Text="{Binding DestinationPath}"/>
+                        </StackPanel>
                     </CheckBox>
                 </Grid>
             </DataTemplate>
@@ -42,6 +43,6 @@
         <ComboBox Grid.Row="0" Grid.Column="0" ItemsSource="{Binding ModPacksAwaitingImport}" SelectedItem="{Binding SelectedModPack}"/>
         <Button Grid.Row="0" Grid.Column="1" Command="{Binding RemoveSelectedCommand}" Content="Remove"/>
 
-        <views:ModsListSelectionView Grid.Row="1" Grid.ColumnSpan="2" DataContext="{Binding ImportSimpleTexTools}"/>
+        <views:ModsListSelectionView Grid.Row="1" Grid.ColumnSpan="2" DataContext="{Binding ImportSimpleTexTools}" Margin="5"/>
     </Grid>
 </Window>

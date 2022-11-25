@@ -44,7 +44,6 @@ namespace Icarus.ViewModels
             var settingsService = ServiceManager.GetRequiredService<ISettingsService>();
             var gameFileDataService = ServiceManager.GetRequiredService<IGameFileService>();
             var logService = ServiceManager.GetRequiredService<ILogService>();
-            
 
             _logViewModel = new LogViewModel(logService);
             _appSettings = new(settingsService, _messageBoxService);
@@ -61,10 +60,10 @@ namespace Icarus.ViewModels
             ImportVanillaViewModel = new(ModPackViewModel.ModsListViewModel, ItemListViewModel, ServiceManager.GetRequiredService<VanillaFileService>(), logService);
 
             ExportViewModel = new(ModPackViewModel.ModsListViewModel, _messageBoxService, _exportService, ServiceManager.GetRequiredService<IWindowService>(), logService);
-            var importSimpleTexToolsViewModel = new ImportSimpleTexToolsViewModel(ModPackViewModel.ModsListViewModel, logService);
+            //var importModsListViewModel = new ImportModsListViewModel(ModPackViewModel.ModsListViewModel, logService);
 
             var importModPackViewModel = new ImportModPackViewModel(viewModelService, ServiceManager.GetRequiredService<IWindowService>(), logService);
-            ImportViewModel = new(ModPackViewModel, ModPackListViewModel, _importService, settingsService, logService, importModPackViewModel);
+            ImportViewModel = new(ModPackViewModel, ModPackListViewModel, _importService, settingsService, importModPackViewModel, logService);
 
             SimpleEditorViewModel = new(ModPackViewModel, ItemListViewModel, ImportViewModel, ExportViewModel, ImportVanillaViewModel, importModPackViewModel);
             AdvancedEditorViewModel = new(ModPackViewModel, ExportViewModel, ModPackListViewModel);
@@ -192,7 +191,7 @@ namespace Icarus.ViewModels
         }
         void IDropTarget.DragOver(IDropInfo dropInfo)
         {
-            var dataObject = dropInfo.Data as System.Windows.DataObject;
+            var dataObject = dropInfo.Data as DataObject;
             var target = dropInfo.TargetItem;
             if (dataObject != null && dataObject.GetDataPresent(DataFormats.FileDrop))
             {
@@ -200,7 +199,7 @@ namespace Icarus.ViewModels
                 if (!ExportViewModel.IsBusy && ImportViewModel.CanAcceptFiles(s))
                 {
                     dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
-                    dropInfo.Effects = System.Windows.DragDropEffects.Copy;
+                    dropInfo.Effects = DragDropEffects.Copy;
                 }
             }
             else

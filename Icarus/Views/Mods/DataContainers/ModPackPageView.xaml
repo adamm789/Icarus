@@ -36,7 +36,7 @@
                 <local:ModGroupView/>
             </DataTemplate>
             <DataTemplate DataType="{x:Type datacontainers:ModOptionViewModel}">
-                <local:ModOptionView/>
+                <local:DetailedModOptionView/>
             </DataTemplate>
         </Grid.Resources>
 

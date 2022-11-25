@@ -62,7 +62,7 @@ namespace Icarus.ViewModels.Editor
         private void UpdateImportAllText()
         {
             ImportAllText = $"Import all {ImportModPackViewModel.NumMods} mod(s)";
-            ImportCommandText = $"Inspect {ImportModPackViewModel.NumFiles} simple modpack(s)";
+            ImportCommandText = $"Inspect {ImportModPackViewModel.NumFiles} modpack(s)";
         }
 
         DelegateCommand _openImportWindowCommand;

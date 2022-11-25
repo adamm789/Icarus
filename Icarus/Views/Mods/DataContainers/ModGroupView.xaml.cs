@@ -26,22 +26,5 @@ namespace Icarus.Views.Mods.DataContainers
                 parent.RaiseEvent(eventArg);
             }
         }
-
-        private void TextBox_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            var textBox = sender as TextBox;
-            textBox.IsReadOnly = false;
-            textBox.IsReadOnlyCaretVisible = true;
-            textBox.Cursor = Cursors.IBeam;
-            textBox.SelectAll();
-        }
-
-        private void TextBox_LostFocus(object sender, System.Windows.RoutedEventArgs e)
-        {
-            var textBox = sender as TextBox;
-            textBox.IsReadOnly = true;
-            textBox.IsReadOnlyCaretVisible = false;
-            textBox.Cursor = Cursors.Arrow;
-        }
     }
 }

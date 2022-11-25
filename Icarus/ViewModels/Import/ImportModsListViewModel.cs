@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace Icarus.ViewModels.Import
 {
-    public class ImportSimpleTexToolsViewModel : ModsListSelectionViewModel
+    public class ImportModsListViewModel : ModsListSelectionViewModel
     {
         public ImportViewModel? ImportViewModel { get; set; }
         bool _shouldRemove = false;
@@ -27,7 +27,7 @@ namespace Icarus.ViewModels.Import
             set { _shouldRemove = value; OnPropertyChanged(); }
         }
 
-        public ImportSimpleTexToolsViewModel(IModsListViewModel modsListViewModel, ILogService logService)
+        public ImportModsListViewModel(IModsListViewModel modsListViewModel, ILogService logService)
             : base(modsListViewModel, logService)
         {
         }
@@ -52,6 +52,9 @@ namespace Icarus.ViewModels.Import
         public override void ConfirmCommand()
         {
             ImportViewModel?.Add(_modsListViewModel.SimpleModsList);
+
+            // TODO: Automatically remove imported modpacks?
+            // If I don't, I think I need to create a deep copy of the modpack
             ShouldRemove = true;
         }
 
@@ -65,7 +68,7 @@ namespace Icarus.ViewModels.Import
             var selectedTypeList = _modsListViewModel.SimpleModsList.Where(m => _selectedType.IsInstanceOfType(m));
             var numSelected = selectedTypeList.Where(m => m.ShouldImport).Count();
 
-            ConfirmText = $"Import {numSelected}/{selectedTypeList.Count()} mods";
+            ConfirmText = $"Import {_modsListViewModel.SimpleModsList.Where(m => m.ShouldImport).Count()}/{_modsListViewModel.SimpleModsList.Count()} mods";
 
             base.UpdateText(numSelected, selectedTypeList.Count());
         }

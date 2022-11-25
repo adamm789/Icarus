@@ -4,25 +4,20 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:material="clr-namespace:Icarus.ViewModels.Mods.Materials"
+             xmlns:materialviews="clr-namespace:Icarus.Views.Mods.Materials"
              d:DataContext="{d:DesignInstance Type=material:ColorSetRowEditorViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <StackPanel Margin="5 0 5 0">
         <StackPanel.Resources>
+            <DataTemplate DataType="{x:Type material:ColorViewModel}">
+                <materialviews:ColorView/>
+            </DataTemplate>
             <Style TargetType="TextBox">
                 <Setter Property="Margin" Value="5 0 5 0"/>
                 <Setter Property="VerticalAlignment" Value="Center"/>
                 <Setter Property="HorizontalContentAlignment" Value="Center"/>
             </Style>
-            <DataTemplate DataType="{x:Type material:ColorViewModel}">
-                <UniformGrid Columns="5">
-                    <Label Background="{Binding BrushColor}" Margin="5 0 5 0"/>
-                    <TextBox Text="{Binding R}"/>
-                    <TextBox Text="{Binding G}"/>
-                    <TextBox Text="{Binding B}"/>
-                    <Button Content="Reset" Command="{Binding ResetCommand}"/>
-                </UniformGrid>
-            </DataTemplate>
             <Style TargetType="{x:Type Label}">
                 <Setter Property="BorderBrush" Value="Black"/>
                 <Setter Property="BorderThickness" Value="1"/>
@@ -60,7 +55,7 @@
             <TextBlock Grid.Row="2" Grid.Column="0" Text="Emissive Color"/>
             <ContentControl Grid.Row="2" Grid.Column="1" Content="{Binding EmissiveColor}"/>
         </Grid>
-
+        
         <UniformGrid Columns="4">
             <TextBlock Grid.Row="0" Grid.Column="2" Text="Specular Power"/>
             <TextBox Grid.Row="0" Grid.Column="3" Text="{Binding SpecularPower}"/>

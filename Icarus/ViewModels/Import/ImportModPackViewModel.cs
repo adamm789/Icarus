@@ -22,6 +22,10 @@ namespace Icarus.ViewModels.Import
         readonly ViewModelService _viewModelService;
         public ImportViewModel? ImportViewModel;
 
+        private Dictionary<ImportModsListViewModel, ModPackViewModel> _toModPackDict = new();
+        private Dictionary<ModPackViewModel, ImportModsListViewModel> _toSimpleDict = new();
+        private Dictionary<ImportModsListViewModel, PropertyChangedEventHandler> _ehDict = new();
+
         public bool CanImportModPack => ModPacksAwaitingImport.Count > 0;
         public ImportModPackViewModel(ViewModelService viewModelService, IWindowService windowService, ILogService logService) : base(logService)
         {
@@ -50,8 +54,8 @@ namespace Icarus.ViewModels.Import
             set { _numFiles = value; OnPropertyChanged(); }
         }
 
-        ImportSimpleTexToolsViewModel? _importSimpleTexTools;
-        public ImportSimpleTexToolsViewModel? ImportSimpleTexTools
+        ImportModsListViewModel? _importSimpleTexTools;
+        public ImportModsListViewModel? ImportSimpleTexTools
         {
             get { return _importSimpleTexTools; }
             set { _importSimpleTexTools = value; OnPropertyChanged(); }
@@ -123,7 +127,7 @@ namespace Icarus.ViewModels.Import
 
         private void OnRemove(object sender, PropertyChangedEventArgs e)
         {
-            if (sender is ImportSimpleTexToolsViewModel import && import.ShouldRemove == true)
+            if (sender is ImportModsListViewModel import && import.ShouldRemove == true)
             {
                 var modPack = _toModPackDict[import];
 
@@ -149,7 +153,7 @@ namespace Icarus.ViewModels.Import
             modPackViewModel.Add(modPack);
             ModPacksAwaitingImport.Add(modPackViewModel);
 
-            var _importSimple = new ImportSimpleTexToolsViewModel(modPackViewModel.ModsListViewModel, _logService);
+            var _importSimple = new ImportModsListViewModel(modPackViewModel.ModsListViewModel, _logService);
             _importSimple.ImportViewModel = ImportViewModel;
             var eh = new PropertyChangedEventHandler(OnRemove);
             _importSimple.PropertyChanged += eh;
@@ -167,12 +171,7 @@ namespace Icarus.ViewModels.Import
             }
 
             OnPropertyChanged(nameof(CanImportModPack));
-
         }
-
-        private Dictionary<ImportSimpleTexToolsViewModel, ModPackViewModel> _toModPackDict = new();
-        private Dictionary<ModPackViewModel, ImportSimpleTexToolsViewModel> _toSimpleDict = new();
-        private Dictionary<ImportSimpleTexToolsViewModel, PropertyChangedEventHandler> _ehDict = new();
 
         public void Show()
         {

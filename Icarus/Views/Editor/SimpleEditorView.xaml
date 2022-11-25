@@ -78,7 +78,7 @@
                 </Grid.RowDefinitions>
                 <UniformGrid Grid.Row="0" Columns="2">
                     <Button Command="{Binding OpenImportWindowCommand}" Content="{Binding ImportCommandText}"
-                            ToolTip="Select which mods to import in Simple ModPacks"/>
+                            ToolTip="Select which mods to import"/>
                     <Button Command="{Binding ImportAllCommand}" Content="{Binding ImportAllText}"/>
                 </UniformGrid>
                 <ContentControl Grid.Row="1" Content="{Binding ImportViewModel}" Margin="5"/>

@@ -110,13 +110,17 @@ namespace Icarus.ViewModels.Mods.DataContainers
 
         public void AddRange(IEnumerable<ModViewModel> mods)
         {
+            var numImported = 0;
             foreach (var m in mods)
             {
                 if (m.ShouldImport)
                 {
                     Add(m);
+                    numImported++;
                 }
             }
+
+            _logService.Information($"Added {numImported} mod(s)");
         }
 
         public void Add(ModViewModel mod)

@@ -26,6 +26,8 @@ namespace Icarus.ViewModels.Mods.Materials
             OriginalR = _material.ColorSetData[offset];
             OriginalG = _material.ColorSetData[offset + 1];
             OriginalB = _material.ColorSetData[offset + 2];
+
+            ResetValues();
         }
 
         public void Copy(ColorViewModel color)
@@ -40,6 +42,7 @@ namespace Icarus.ViewModels.Mods.Materials
             R = OriginalR;
             G = OriginalG;
             B = OriginalB;
+            OnPropertyChanged(nameof(Color));
         }
 
         private bool IsValidValue(float value)
@@ -53,49 +56,61 @@ namespace Icarus.ViewModels.Mods.Materials
             get { return _resetCommand ??= new DelegateCommand(o => ResetValues()); }
         }
 
-        // TODO: Better color editor than three textboxes
         public float OriginalR { get; }
         public float OriginalG { get; }
         public float OriginalB { get; }
 
+        float _r;
         public float R
         {
-            get {
-                return _material.ColorSetData[_offset];
-                }
+            get
+            {
+                //return _material.ColorSetData[_offset];
+                return _r;
+            }
             set
             {
                 if (!IsValidValue(value)) return;
+                _r = value;
                 _material.ColorSetData[_offset] = (Half)value;
-                OnPropertyChanged(); OnPropertyChanged(nameof(BrushColor));
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(BrushColor));
             }
         }
 
+        float _g;
         public float G
         {
             get
             {
-                return _material.ColorSetData[_offset + 1];
+                //return _material.ColorSetData[_offset + 1];
+                return _g;
             }
             set
             {
                 if (!IsValidValue(value)) return;
+                _g = value;
                 _material.ColorSetData[_offset + 1] = (Half)value;
-                OnPropertyChanged(); OnPropertyChanged(nameof(BrushColor));
-
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(BrushColor));
             }
         }
+
+        float _b;
         public float B
         {
             get
             {
-                return _material.ColorSetData[_offset + 2];
+                //return _material.ColorSetData[_offset + 2];
+                return _b;
             }
             set
             {
                 if (!IsValidValue(value)) return;
+                _b = value;
                 _material.ColorSetData[_offset + 2] = (Half)value;
-                OnPropertyChanged(); OnPropertyChanged(nameof(BrushColor));
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(BrushColor));
             }
         }
 
@@ -107,6 +122,21 @@ namespace Icarus.ViewModels.Mods.Materials
                 var color = Color.FromArgb(255, (byte)(R * 255), (byte)(G * 255), (byte)(B * 255));
                 _brushColor.Color = color;
                 return _brushColor;
+            }
+        }
+
+        Color _color;
+        public Color Color
+        {
+            get
+            {
+                return Color.FromArgb(255, (byte)(R * 255), (byte)(G * 255), (byte)(B * 255));
+            }
+            set
+            {
+                R = value.R / 255f;
+                G = value.G / 255f;
+                B = value.B / 255f;
             }
         }
     }

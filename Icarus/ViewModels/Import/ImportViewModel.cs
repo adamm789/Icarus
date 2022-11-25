@@ -1,9 +1,11 @@
 ﻿using Icarus.Mods.DataContainers;
 using Icarus.Mods.Interfaces;
+using Icarus.Services;
 using Icarus.Services.Files;
 using Icarus.Services.Interfaces;
 using Icarus.Util.Import;
 using Icarus.ViewModels.Mods;
+using Icarus.ViewModels.Mods.DataContainers;
 using Icarus.ViewModels.Mods.DataContainers.Interfaces;
 using Icarus.ViewModels.Mods.DataContainers.ModPackList;
 using Icarus.ViewModels.Util;
@@ -12,6 +14,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -34,12 +37,17 @@ namespace Icarus.ViewModels.Import
         readonly ModPackListViewModel _modPackListViewModel;
 
         private string _initialDirectory = "";
-        private OpenFileDialog _dlg;
 
         public ImportModPackViewModel ImportModPackViewModel;
 
+        public ImportViewModel(IModPackViewModel modPackViewModel, ViewModelService viewModelService, ImportService importService,
+            ISettingsService settingsService, ILogService logService) : base(logService)
+        {
+
+        }
+
         public ImportViewModel(IModPackViewModel modPack, ModPackListViewModel modPackList, ImportService importService,
-            ISettingsService settingsService, ILogService logService, ImportModPackViewModel importSimpleTexToolsViewModel)
+            ISettingsService settingsService, ImportModPackViewModel importSimpleTexToolsViewModel, ILogService logService)
             : base(logService)
         {
             _settingsService = settingsService;

@@ -16,18 +16,7 @@
             <Grid.Resources>
                 <ui:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
                 <DataTemplate DataType="{x:Type datacontainers:ModOptionViewModel}">
-                    <Grid dd:DragDrop.DropHandler="{Binding}" dd:DragDrop.IsDropTarget="True" dd:DragDrop.IsDragSource="True">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <Label Grid.Column="0"/>
-                        <TextBox Grid.Column="1" Text="{Binding Name}"/>
-                        <TextBlock Grid.Column="2" Text="{Binding Header}"/>
-                        <Button Grid.Column="3" Content="Remove" Command="{Binding RemoveCommand}"/>
-                    </Grid>
+                    <local:GeneralModOptionView/>
                 </DataTemplate>
             </Grid.Resources>
 
@@ -36,7 +25,6 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-
 
             <Grid Grid.Row="0" Grid.Column="0">
                 <Grid.ColumnDefinitions>

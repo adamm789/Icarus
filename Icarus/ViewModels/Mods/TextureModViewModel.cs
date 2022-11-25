@@ -42,7 +42,7 @@ namespace Icarus.ViewModels.Mods
         }
 
         // TODO: Should this just hide the TexType combo box?
-        bool _canParseTexType = false;
+        bool _canParseTexType = true;
         public bool CanParseTexType
         {
             get { return _canParseTexType; }
