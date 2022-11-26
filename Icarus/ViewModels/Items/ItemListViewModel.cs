@@ -113,7 +113,7 @@ namespace Icarus.ViewModels.Items
             if (numMatches == 1)
             {
                 var results = _itemListService.Search(SearchText);
-                if (results.Count == 1)
+                if (results.Count == 1 && SelectedItem != results[0])
                 {
                     SelectedItem = results[0];
                 }

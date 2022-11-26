@@ -19,5 +19,6 @@ namespace ItemDatabase.Interfaces
         string GetTexPath(XivTexType t, XivRace race = XivRace.Hyur_Midlander_Male, string variant = "a");
         string Code { get; }
         string VariantCode { get; }
+        ushort Variant { get; }
     }
 }

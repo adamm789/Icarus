@@ -1,6 +1,7 @@
 ﻿using ItemDatabase.Enums;
 using ItemDatabase.Interfaces;
 using Lumina.Excel.GeneratedSheets;
+using Lumina.Models.Models;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Textures.Enums;
 using LuminaItem = Lumina.Excel.GeneratedSheets.Item;
@@ -12,6 +13,8 @@ namespace ItemDatabase
         public EquipmentSlot Slot { get; protected set; }
         public string Code { get; protected set; } = "";
         public string VariantCode { get; protected set; }
+
+        public ushort Variant { get; protected set; }
 
         protected ushort _base;
         protected ushort _variant;
@@ -46,6 +49,8 @@ namespace ItemDatabase
 
             _base = (ushort)ModelMain;
             _variant = (ushort)(ModelMain >> 16);
+
+            Variant = _variant;
 
             //_slotName = _suffixDict[Slot];
             _slotName = Slot.GetShortHandSlot(true);
@@ -128,6 +133,8 @@ namespace ItemDatabase
         }
         public virtual string GetTexPath(XivTexType t, XivRace race = XivRace.Hyur_Midlander_Male, string variant = "a")
         {
+
+
             if (t is XivTexType.ColorSet)
             {
                 return "";

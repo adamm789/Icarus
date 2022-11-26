@@ -11,10 +11,10 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <UniformGrid Columns="3">
         <Button Command="{Binding ExportCommand}" CommandParameter="{x:Static services:ExportType.TexToolsAdvanced}" 
-                Content="Export to TexTools (Advanced)"/>
+                Content="Export to TexTools (Advanced)" ToolTip="Export mods to .ttmp2"/>
         <Button Command="{Binding ExportCommand}" CommandParameter="{x:Static services:ExportType.PenumbraAdvanced}" 
-                IsEnabled="{Binding IsDebugMode}" Content="Export to Penumbra (Advanced)"/>
+                IsEnabled="{Binding IsDebugMode}" Content="Export to Penumbra (Advanced)" ToolTip="Please look forward to it"/>
         <Button Command="{Binding ExportCommand}" CommandParameter="{x:Static services:ExportType.RawAdvanced}" 
-                Content="Export Raw (Advanced)"/>
+                Content="Export Raw (Advanced)" ToolTip="Export models to .fbx, material colorsets to .dds, and textures to .dds"/>
     </UniformGrid>
 </UserControl>

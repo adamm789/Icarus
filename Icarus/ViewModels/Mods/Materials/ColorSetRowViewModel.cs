@@ -36,6 +36,7 @@ namespace Icarus.ViewModels.Mods.Materials
         }
 
         public string ToolTip { get; }
+        // TODO: Have the row itself be the editor?
         public ColorSetRowEditorViewModel EditorViewModel { get; }
         public ColorViewModel DiffuseColor { get; }
         public ColorViewModel EmissiveColor { get; }

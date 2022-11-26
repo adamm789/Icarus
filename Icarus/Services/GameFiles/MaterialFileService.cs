@@ -43,15 +43,12 @@ namespace Icarus.Services.GameFiles
             var item = GetItem(itemArg);
             if (item == null) return null;
 
-            // We actually don't want 
             var path = item.GetMtrlPath();
             var itemName = item.Name;
-
             var retVal = await TryGetMaterialFileData(path, itemName);
             if (retVal == null)
             {
                 retVal = await TryGetMaterialFromModel(item.GetMdlPath());
-
             }
             return retVal;
         }

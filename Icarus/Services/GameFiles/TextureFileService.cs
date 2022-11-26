@@ -41,6 +41,7 @@ namespace Icarus.Services.GameFiles
             var typeFormatDict = new Dictionary<XivTexType, XivTexFormat>();
 
             XivTex? savedXivTex = null;
+            string? savedPath = "";
 
             for (var i = 0; i < xivMtrl.TexturePathList.Count; i++)
             {
@@ -49,6 +50,7 @@ namespace Icarus.Services.GameFiles
                 if (XivPathParser.GetTexType(texturePath) == type)
                 {
                     savedXivTex = xivTex;
+                    savedPath = texturePath;
                     savedXivTex.TextureTypeAndPath = new()
                     {
                         Type = type,
@@ -60,12 +62,15 @@ namespace Icarus.Services.GameFiles
                 typeFormatDict.Add(xivMtrl.TextureTypePathList[i].Type, xivTex.TextureFormat);
             }
 
-            var path = item.GetTexPath(type, variant);
+            if (String.IsNullOrWhiteSpace(savedPath))
+            {
+                savedPath = item.GetTexPath(type, variant);
+            }
 
             var retVal = new TextureGameFile()
             {
                 Name = materialFileData.Name,
-                Path = path,
+                Path = savedPath,
                 Category = materialFileData.Category,
                 TypeFormatDict = typeFormatDict,
                 XivMtrl = xivMtrl,

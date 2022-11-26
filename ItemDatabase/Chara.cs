@@ -48,7 +48,7 @@ public static string GetSkinTex(XivRace race = XivRace.Hyur_Midlander_Male, stri
    return "/c" + XivRaces.GetRaceCode(race) + "b0001_" + variant + ".tex";
 }
 */
-        //chara/human/c0101/obj/body/b0001/texture/--c0101b0001_d.tex
+        //TODO: chara/human/c0101/obj/body/b0001/texture/--c0101b0001_d.tex
 
         // TODO: Mtrl and Tex for fac, etc... and whatever else
         public enum BodyPart
