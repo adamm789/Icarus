@@ -52,6 +52,33 @@ namespace Icarus.Services.GameFiles
             }
             return retVal;
         }
+        public int GetNumMaterialSets(IItem? itemArg = null)
+        {
+            var item = GetItem(itemArg);
+            return _itemListService.GetNumMaterialSets(item);
+        }
+
+        public async Task<List<IMaterialGameFile>?> GetMaterialAndVariantsFileData(IItem? itemArg = null)
+        {
+            var item = GetItem(itemArg);
+            if (item == null) return null;
+
+            var set = _itemListService.GetMaterialSet(item);
+            if (set != null)
+            {
+                var list = new List<IMaterialGameFile>();
+                foreach (var m in set)
+                {
+                    var data = await GetMaterialFileData(m);
+                    if (data != null)
+                    {
+                        list.Add(data);
+                    }
+                }
+                return list;
+            }
+            return null;
+        }
 
         public async Task<IMaterialGameFile?> TryGetMaterialFileData(string path, string itemName = "")
         {

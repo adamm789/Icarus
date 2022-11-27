@@ -18,7 +18,6 @@ using xivModdingFramework.Materials.DataContainers;
 
 namespace Icarus.ViewModels.Mods
 {
-    // TOOD: Variants for materials
     public class MaterialModViewModel : ModViewModel
     {
         MaterialMod _material;
@@ -29,7 +28,6 @@ namespace Icarus.ViewModels.Mods
 
         // TODO: Include a section that shows the overall edits to all items
         // e.g. Group and display the mods that affect e6111
-
         public MaterialModViewModel(MaterialMod mod, IMaterialFileService materialFileService, IWindowService windowService, ILogService logService)
             : base(mod, materialFileService, logService)
         {

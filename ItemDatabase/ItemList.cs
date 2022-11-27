@@ -20,6 +20,7 @@ namespace ItemDatabase
         private Dictionary<string, SortedDictionary<string, IItem>> _allItems = new();
         private SortedDictionary<string, IItem> _indoorFurniture = new();
         private SortedDictionary<MainItemCategory, SortedList<string, Item>> OtherItems = new();
+        private SortedDictionary<string, Dictionary<EquipmentSlot, List<IItem>>> _materialSets = new();
         public ItemList(GameData lumina)
         {
             _lumina = lumina;
@@ -114,20 +115,29 @@ namespace ItemDatabase
             if (item is IGear equip)
             {
                 AddEquipment(equip);
+                if (!_materialSets.ContainsKey(equip.Code))
+                {
+                    _materialSets[equip.Code] = new();
+                }
+                if (!_materialSets[equip.Code].ContainsKey(equip.Slot))
+                {
+                    _materialSets[equip.Code][equip.Slot] = new();
+                }
+                _materialSets[equip.Code][equip.Slot].Add(equip);
             }
         }
 
-        private void AddEquipment(IGear equip)
+        private void AddEquipment(IGear gear)
         {
-            var slot = equip.Slot;
+            var slot = gear.Slot;
             if (EquipmentSlot.Ring.HasFlag(slot))
             {
                 slot = EquipmentSlot.Ring;
             }
-            if (!_allItems[slot.ToString()].ContainsKey(equip.Name))
+            if (!_allItems[slot.ToString()].ContainsKey(gear.Name))
             {
                 // TODO: "An item with the same key has already been added. Key: [Valentione Emissary's Boots, ItemDatabase.Equipment]"
-                _allItems[slot.ToString()].Add(equip.Name, equip);
+                _allItems[slot.ToString()].Add(gear.Name, gear);
             }
         }
 
@@ -135,6 +145,37 @@ namespace ItemDatabase
         {
             var results = Search(str, false);
             return results.Count > 0;
+        }
+
+        public int GetNumMaterialSets(IItem item)
+        {
+            if (item is IGear gear)
+            {
+                _materialSets.TryGetValue(gear.Code, out var set);
+                if (set != null)
+                {
+                    set.TryGetValue(gear.Slot, out var list);
+                    if (list != null)
+                    {
+                        return list.Count;
+                    }
+                }
+            }
+            return 0;
+        }
+
+        public List<IItem>? GetMaterialSet(IItem item)
+        {
+            if (item is IGear gear)
+            {
+                _materialSets.TryGetValue(gear.Code, out var set);
+                if (set != null)
+                {
+                    set.TryGetValue(gear.Slot, out var list);
+                    return list;
+                }
+            }
+            return new List<IItem>();
         }
 
         // TODO: Implement "filter"?

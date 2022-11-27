@@ -110,6 +110,7 @@ namespace Icarus.ViewModels.Mods
         public void UpdateTargetRace(XivRace race)
         {
             _modelMod.Path = XivPathParser.ChangeToRace(DestinationPath, race);
+            OnPropertyChanged(nameof(DestinationPath));
             OptionsViewModel.UpdateTargetRace(race);
         }
 

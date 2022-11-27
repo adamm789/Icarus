@@ -24,6 +24,8 @@ namespace Icarus.ViewModels.Import
     : base(modPack, itemListService, logService)
         {
             _materialFileService = materialFileService;
+            MaterialSetText = $"Import 0 Material(s)";
+
         }
 
         protected override void SelectedItemSet()
@@ -32,6 +34,7 @@ namespace Icarus.ViewModels.Import
             if (SelectedItem != null)
             {
                 SelectedItemMtrl = SelectedItem.GetMtrlFileName();
+                MaterialSetText = $"Import {_materialFileService.GetNumMaterialSets(SelectedItem)} Material(s)";
             }
             else
             {
@@ -60,6 +63,25 @@ namespace Icarus.ViewModels.Import
         public DelegateCommand GetVanillaMaterial
         {
             get { return _getVanillaMaterial ??= new DelegateCommand(async _ => await GetVanillaMtrl(), _ => CanImport == true); }
+        }
+
+        DelegateCommand _importMaterialSetCommand;
+        public DelegateCommand ImportMaterialSetCommand
+        {
+            get { return _importMaterialSetCommand ??= new DelegateCommand(async _ => await GetVanillaMaterialAndVariants(), _ => CanImport == true); }
+        }
+
+        protected override void RaiseCanExecuteChanged()
+        {
+            base.RaiseCanExecuteChanged();
+            ImportMaterialSetCommand.RaiseCanExecuteChanged();
+        }
+
+        string _materialSetText = "";
+        public string MaterialSetText
+        {
+            get { return _materialSetText; }
+            set { _materialSetText = value; OnPropertyChanged(); }
         }
 
         protected override async Task DoImport()
@@ -96,6 +118,31 @@ namespace Icarus.ViewModels.Import
                 }
                 modViewModel.SetModData(materialGameFile);
                 return mod;
+            }
+            return null;
+        }
+
+        private async Task<List<MaterialMod>?> GetVanillaMaterialAndVariants(IItem? itemArg = null)
+        {
+            if(_completePath == null)
+            {
+                var materials = await _materialFileService.GetMaterialAndVariantsFileData(itemArg);
+                if (materials != null)
+                {
+                    var materialMods = new List<MaterialMod>();
+                    foreach (var mat in materials)
+                    {
+                        var mod = new MaterialMod(mat, ImportSource.Vanilla);
+                        var modViewModel = _modPackViewModel.Add(mod);
+                        if (modViewModel == null)
+                        {
+                            _logService.Fatal($"Failed to get view model for vanilla mtrl :{mod.Name}");
+                        }
+                        materialMods.Add(mod);
+                        modViewModel.SetModData(mat);
+                    }
+                    return materialMods;
+                }
             }
             return null;
         }

@@ -36,10 +36,12 @@
         <ContentControl Content="{Binding ImportVanillaMaterialViewModel}">
             <ContentControl.Resources>
                 <DataTemplate DataType="{x:Type import:ImportVanillaMaterialViewModel}">
-                    <StackPanel>
+                    <UniformGrid Columns="2">
                         <Button Command="{Binding ImportVanillaFileCommand}" Content="Add Vanilla Mtrl" dd:DragDrop.DragSourceIgnore="True"
                                 ToolTip="{Binding SelectedItemMtrl}"/>
-                    </StackPanel>
+                        <Button Command="{Binding ImportMaterialSetCommand}" Content="{Binding MaterialSetText}" dd:DragDrop.DragSourceIgnore="True"
+                                ToolTip="Includes selected item"/>
+                    </UniformGrid>
                 </DataTemplate>
             </ContentControl.Resources>
         </ContentControl>

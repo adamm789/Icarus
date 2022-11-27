@@ -55,13 +55,18 @@ namespace Icarus.ViewModels.Import
         public bool CanImport
         {
             get { return _canImport; }
-            set { _canImport = value; OnPropertyChanged(); ImportVanillaFileCommand.RaiseCanExecuteChanged(); }
+            set { _canImport = value; OnPropertyChanged(); RaiseCanExecuteChanged(); }
         }
 
         DelegateCommand _importVanillaFileCommand;
         public DelegateCommand ImportVanillaFileCommand
         {
-            get { return _importVanillaFileCommand ??= new DelegateCommand(async _ => DoImport(), _ => CanImport); }
+            get { return _importVanillaFileCommand ??= new DelegateCommand(async _ => await DoImport(), _ => CanImport); }
+        }
+
+        protected virtual void RaiseCanExecuteChanged()
+        {
+            ImportVanillaFileCommand.RaiseCanExecuteChanged();
         }
 
         protected abstract Task DoImport();

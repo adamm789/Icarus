@@ -29,7 +29,7 @@ namespace Icarus.Services.GameFiles
             set { _isLoaded = value; OnPropertyChanged();  }
         }
 
-        private ItemList? Data;
+        private ItemList? _itemList;
 
         IItem? _selectedItem;
         public IItem? SelectedItem
@@ -38,16 +38,26 @@ namespace Icarus.Services.GameFiles
             set { _selectedItem = value; OnPropertyChanged(); }
         }
 
+        public int GetNumMaterialSets(IItem item)
+        {
+            return _itemList.GetNumMaterialSets(item);
+        }
+
+        public List<IItem>? GetMaterialSet(IItem item)
+        {
+            return _itemList.GetMaterialSet(item);
+        }
+
         public List<IItem> Search(string str, bool exactMatch = false)
         {
             var ret = new List<IItem>();
-            if (Data == null)
+            if (_itemList == null)
             {
                 _logService.Error("Item list has not been built. Could not perform search.");
             }
             else
             {
-                ret = Data.Search(str, exactMatch);
+                ret = _itemList.Search(str, exactMatch);
                 _logService.Debug($"Searched for {str}. Found {ret.Count} matching entries.");
             }
             return ret;
@@ -56,13 +66,13 @@ namespace Icarus.Services.GameFiles
         public List<IItem> Search(string str, string variantCode, bool exactMatch = false)
         {
             var ret = new List<IItem>();
-            if (Data == null)
+            if (_itemList == null)
             {
                 _logService.Error("Item list has not been built. Could not perform search.");
             }
             else
             {
-                ret = Data.Search(str, variantCode, exactMatch);
+                ret = _itemList.Search(str, variantCode, exactMatch);
                 _logService.Information($"Searched for {str}. Found {ret.Count} matching entries.");
             }
             return ret;
@@ -91,7 +101,7 @@ namespace Icarus.Services.GameFiles
         protected override void OnLuminaSet()
         {
             _logService.Verbose("Creating item list.");
-            Data = new(_lumina);
+            _itemList = new(_lumina);
             IsLoaded = true;
         }
 
@@ -137,6 +147,6 @@ namespace Icarus.Services.GameFiles
             return "";
         }
 
-        public Dictionary<string, SortedDictionary<string, IItem>> GetAllItems() => Data.GetAllItems();
+        public Dictionary<string, SortedDictionary<string, IItem>> GetAllItems() => _itemList.GetAllItems();
     }
 }
