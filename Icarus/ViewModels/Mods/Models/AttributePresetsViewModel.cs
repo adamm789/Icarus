@@ -8,7 +8,7 @@ namespace Icarus.ViewModels.Models
     // TODO: Ability to create custom attribute presets?
     public class AttributePresetsViewModel : NotifyPropertyChanged
     {
-        public AttributePresetsViewModel(string header, Dictionary<int, List<XivAttribute>> dict)
+        public AttributePresetsViewModel(string header, Dictionary<int, List<string>> dict)
         {
             Header = header;
             Dictionary = dict;
@@ -21,7 +21,7 @@ namespace Icarus.ViewModels.Models
             }
         }
 
-        public Dictionary<int, List<XivAttribute>> Dictionary;
+        public Dictionary<int, List<string>> Dictionary;
 
         public string Header { get; set; }
 

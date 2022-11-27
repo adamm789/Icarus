@@ -89,8 +89,11 @@ namespace ItemDatabase
             {
                 return _standardAttributes ??= _standardAttributes = new()
                 {
-                    [EquipmentSlot.Body] = new() { XivAttribute.Wrist, XivAttribute.Neck, XivAttribute.Elbow },
-                    [EquipmentSlot.Legs] = new() { XivAttribute.Knee, XivAttribute.Waist, XivAttribute.Shin }
+                    [EquipmentSlot.Head] = new() { XivAttribute.Gorget, XivAttribute.HeadVariantParts},
+                    [EquipmentSlot.Body] = new() { XivAttribute.Wrist, XivAttribute.Neck, XivAttribute.Elbow, XivAttribute.BodyVariantParts },
+                    [EquipmentSlot.Hands] = new() { XivAttribute.Glove, XivAttribute.GloveVariantParts},
+                    [EquipmentSlot.Legs] = new() { XivAttribute.Knee, XivAttribute.Waist, XivAttribute.Shin, XivAttribute.LegVariantParts },
+                    [EquipmentSlot.Feet] = new() { XivAttribute.Boot, XivAttribute.KneePad, XivAttribute.ShoeVariantParts }
                 };
             }
         }
@@ -127,17 +130,16 @@ namespace ItemDatabase
 
         public static List<XivAttribute>? GetSlotAttributes(EquipmentSlot slot)
         {
-            var standard = AttributePreset.StandardAttributes;
-            if (standard.ContainsKey(slot))
+            if (StandardAttributes.ContainsKey(slot))
             {
-                return standard[slot];
+                return StandardAttributes[slot];
             }
             return null;
         }
 
-        public static List<XivAttribute>? GetAttributes(string path)
+        public static List<XivAttribute> GetAttributes(string path)
         {
-            if (String.IsNullOrWhiteSpace(path)) return null;
+            if (String.IsNullOrWhiteSpace(path)) return new List<XivAttribute>();
             var retVal = new List<XivAttribute>();
             path = path.ToLower();
             var slot = XivPathParser.GetEquipmentSlot(path);
@@ -176,30 +178,26 @@ namespace ItemDatabase
             }
             return dict;
         }
-        public static Dictionary<string, Dictionary<int, List<XivAttribute>>> GetAttributeTTModelPresets(TTModel ttModel)
+        public static Dictionary<string, Dictionary<int, List<string>>> GetAttributeTTModelPresets(TTModel ttModel)
         {
-            var dict = new Dictionary<string, Dictionary<int, List<XivAttribute>>>();
+            var dict = new Dictionary<string, Dictionary<int, List<string>>>();
 
             // Get the attributes from the given TTModel
 
             for (var i = 0; i < ttModel.MeshGroups.Count; i++)
             {
                 var group = ttModel.MeshGroups[i];
-                var partDict = new Dictionary<int, List<XivAttribute>>();
+                var partDict = new Dictionary<int, List<string>>();
                 for (var j = 0; j < group.Parts.Count; j++)
                 {
                     var part = group.Parts[j];
                     foreach (var attr in part.Attributes)
                     {
-                        var xivAttribute = XivAttributes.GetAttributeFromString(attr);
-                        if (xivAttribute != XivAttribute.Null)
+                        if (!partDict.ContainsKey(j))
                         {
-                            if (!partDict.ContainsKey(j))
-                            {
-                                partDict[j] = new();
-                            }
-                            partDict[j].Add(xivAttribute);
+                            partDict[j] = new();
                         }
+                        partDict[j].Add(attr);
                     }
                 }
                 if (partDict.Keys.Count > 0)

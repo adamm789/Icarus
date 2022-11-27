@@ -128,9 +128,8 @@ namespace Icarus.ViewModels.Mods
         {
             if (gameFile is IModelGameFile modelGameFile)
             {
-                UpdateAttributes(modelGameFile);
                 var ttModel = modelGameFile.TTModel;
-
+                UpdateAttributes(ttModel, modelGameFile.Path);
                 if (ttModel.MeshGroups.Count == MeshGroups.Count)
                 {
                     for (var i = 0; i < ttModel.MeshGroups.Count; i++)
@@ -156,7 +155,7 @@ namespace Icarus.ViewModels.Mods
             var slot = XivPathParser.GetEquipmentSlot(path);
 
             var attributePresets = AttributePreset.GetAttributeTTModelPresets(ttModel);
-            Dictionary<string, Dictionary<int, List<XivAttribute>>> internalPresets = new();
+            Dictionary<string, Dictionary<int, List<string>>> internalPresets = new();
             if (ImportSource == ImportSource.Vanilla)
             {
                 internalPresets = AttributePreset.GetAttributeTTModelPresets(_modelMod.ImportedModel);
@@ -169,42 +168,28 @@ namespace Icarus.ViewModels.Mods
             }
             foreach (var pair in bodyPresets)
             {
-                attributePresets.TryAdd(pair.Key, pair.Value);
+                var stringDict = new Dictionary<int, List<string>>();
+                foreach (var partPresets in pair.Value)
+                {
+                    stringDict.Add(partPresets.Key, partPresets.Value.ConvertAll<string>(attr => XivAttributes.GetStringFromAttribute(attr)));
+                }
+                attributePresets.TryAdd(pair.Key, stringDict);
             }
 
-            var slotAttributes = AttributePreset.GetAttributes(path);
+            var attributeList = AttributePreset.GetAttributes(path);
 
-            foreach (var group in MeshGroups)
+            var slotAttributes = new ObservableCollection<AttributeViewModel>();
+            foreach (var attr in attributeList)
             {
-                group.SetAttributePresets(attributePresets);
-                group.SetSlotAttributes(slotAttributes);
+                if (attr.IsVariantAttribute())
+                {
+                    slotAttributes.Add(new VariantAttributeViewModel(attr));
+                }
+                else
+                {
+                    slotAttributes.Add(new AttributeViewModel(attr));
+                }
             }
-        }
-
-        private void UpdateAttributes(IModelGameFile modelData)
-        {
-            // TODO: Include "variant" attributes
-            var ttModel = modelData.TTModel;
-            var slot = XivPathParser.GetEquipmentSlot(modelData.Path);
-
-            var attributePresets = AttributePreset.GetAttributeTTModelPresets(ttModel);
-            Dictionary<string, Dictionary<int, List<XivAttribute>>> internalPresets = new();
-            if (ImportSource == ImportSource.Vanilla)
-            {
-                internalPresets = AttributePreset.GetAttributeTTModelPresets(_modelMod.ImportedModel);
-            }
-
-            var bodyPresets = AttributePreset.GetAttributeBodyPresets(slot);
-            foreach (var pair in internalPresets)
-            {
-                attributePresets.TryAdd(pair.Key, pair.Value);
-            }
-            foreach (var pair in bodyPresets)
-            {
-                attributePresets.TryAdd(pair.Key, pair.Value);
-            }
-
-            var slotAttributes = AttributePreset.GetAttributes(modelData.Path);
 
             foreach (var group in MeshGroups)
             {

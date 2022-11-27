@@ -6,8 +6,8 @@ using System.Collections.ObjectModel;
 namespace Icarus.ViewModels.Models
 {
     public class PartAttributesViewModel : NotifyPropertyChanged
-    {
-        public PartAttributesViewModel(string header, List<XivAttribute> attributes)
+    { 
+        public PartAttributesViewModel(string header, List<string> attributes)
         {
             PartHeader = header;
             Attributes = new();

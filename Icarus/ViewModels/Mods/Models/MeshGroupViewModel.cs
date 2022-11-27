@@ -6,6 +6,7 @@ using Icarus.Views.Models;
 using ItemDatabase.Enums;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using xivModdingFramework.Models.DataContainers;
 
@@ -13,6 +14,7 @@ namespace Icarus.ViewModels.Models
 {
     public class MeshGroupViewModel : NotifyPropertyChanged
     {
+        public string Name { get; set; }
         private TTMeshGroup _importedGroup;
         readonly IWindowService _windowService;
 
@@ -25,7 +27,9 @@ namespace Icarus.ViewModels.Models
 
             foreach (var meshPart in _importedGroup.Parts)
             {
-                MeshParts.Add(new MeshPartViewModel(meshPart));
+                var meshPartViewModel = new MeshPartViewModel(meshPart);
+                meshPartViewModel.Attributes.CollectionChanged += new(OnAttributesCollectionChanged);
+                MeshParts.Add(meshPartViewModel);
                 foreach (var key in meshPart.ShapeParts.Keys)
                 {
                     if (!ShapesContains(key))
@@ -38,6 +42,29 @@ namespace Icarus.ViewModels.Models
                 }
             }
         }
+
+        public int NumShapes => Shapes.Count;
+
+        private void OnAttributesCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (sender is MeshPartViewModel)
+            {
+                var numAttributes = 0;
+                foreach (var mp in MeshParts)
+                {
+                    numAttributes += mp.NumAttributes;
+                }
+                NumAttributes = numAttributes;
+            }
+        }
+
+        int _numAttributes;
+        public int NumAttributes
+        {
+            get { return _numAttributes; }
+            set { _numAttributes = value; OnPropertyChanged(); }
+        }
+
 
         ObservableCollection<AttributePresetsViewModel> _attributePresets = new();
         public ObservableCollection<AttributePresetsViewModel> AttributePresets
@@ -53,7 +80,7 @@ namespace Icarus.ViewModels.Models
             set { _slotAttributes = value; OnPropertyChanged(); }
         }
 
-        public void SetAttributePresets(Dictionary<string, Dictionary<int, List<XivAttribute>>>? bodyPresets)
+        public void SetAttributePresets(Dictionary<string, Dictionary<int, List<string>>>? bodyPresets)
         {
             AttributePresets.Clear();
 
@@ -70,6 +97,13 @@ namespace Icarus.ViewModels.Models
             }
         }
 
+        public void SetSlotAttributes(ObservableCollection<AttributeViewModel> slotAttributes)
+        {
+            SlotAttributes.Clear();
+            SlotAttributes = slotAttributes;
+        }
+
+        // TODO: Handle "variant" attributes (e.g. atr_tv_a, atr_tv_b, etc...)
         public void SetSlotAttributes(List<XivAttribute>? slotAttributes)
         {
             SlotAttributes.Clear();
@@ -98,15 +132,14 @@ namespace Icarus.ViewModels.Models
 
         private void OnRemoveShape(object sender, PropertyChangedEventArgs e)
         {
-            var shape = sender as ShapeViewModel;
-
-            if (e.PropertyName == nameof(ShapeViewModel.ShouldRemove))
+            if (e.PropertyName == nameof(ShapeViewModel.ShouldRemove) && sender is ShapeViewModel shape)
             {
                 Shapes.Remove(shape);
                 foreach (var meshPart in _importedGroup.Parts)
                 {
                     meshPart.ShapeParts.Remove(shape.Name);
                 }
+                OnPropertyChanged(nameof(NumShapes));
             }
         }
 
@@ -142,8 +175,6 @@ namespace Icarus.ViewModels.Models
             get { return _materialViewModel; }
             set { _materialViewModel = value; OnPropertyChanged(); }
         }
-
-        public string Name { get; set; }
 
         DelegateCommand _editShapeAndAttributesCommand;
         public DelegateCommand EditShapeAndAttributesCommand

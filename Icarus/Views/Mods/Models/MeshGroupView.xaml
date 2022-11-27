@@ -28,9 +28,19 @@
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Name}"/>
-        <Button Grid.Row="0" Grid.Column="1" Content="Edit Shapes/Attributes"
+        <Button Grid.Row="0" Grid.Column="1"
                 VerticalContentAlignment="Stretch"
-                Command="{Binding EditShapeAndAttributesCommand}"/>
+                Command="{Binding EditShapeAndAttributesCommand}">
+            <Button.Content>
+                <TextBlock>
+                    <Run Text="Edit"/>
+                    <Run Text="{Binding NumShapes, Mode=OneTime}"/>
+                    <Run Text="Shapes/"/>
+                    <Run Text="{Binding NumAttributes}"/>
+                    <Run Text="Attributes"/>
+                </TextBlock>
+            </Button.Content>
+        </Button>
 
         <ContentControl Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Content="{Binding MaterialViewModel}"/>
     </Grid>

@@ -73,8 +73,9 @@ namespace Icarus.ViewModels.Models
             }
         }
 
-        public void AddAttribute(AttributeViewModel attribute)
+        public void AddAttribute(AttributeViewModel attr)
         {
+            var attribute = attr.Copy();
             var eh = new PropertyChangedEventHandler(OnRemoveAttribute);
             attribute.PropertyChanged += eh;
             Attributes.Add(attribute);

@@ -7,11 +7,14 @@ namespace ItemDatabase.Enums
     {
         Null,
 
+        [Description("atr_mv_{variant}")]
+        HeadVariantParts,
         [Description("atr_inr")]
         Gorget,
 
         // Body
-        //BodyVariantParts,
+        [Description("atr_tv_{variant}")]
+        BodyVariantParts,
         [Description("atr_hij")]
         Wrist,
         [Description("atr_nek")]
@@ -20,12 +23,14 @@ namespace ItemDatabase.Enums
         Elbow,
 
         // Gloves
-        //GloveVariantParts,
+        [Description("atr_gv_{variant}")]
+        GloveVariantParts,
         [Description("atr_arm")]
         Glove,
 
         // Legs
-        //LegVariantParts,
+        [Description("atr_dv_{variant}")]
+        LegVariantParts,
         [Description("atr_hiz")]
         Knee,
         [Description("atr_kod")]
@@ -34,19 +39,24 @@ namespace ItemDatabase.Enums
         Shin,
 
         // Shoes
-        //ShoeVariantParts,
+        [Description("atr_sv_{variant}")]
+        ShoeVariantParts,
         [Description("atr_leg")]
         Boot,
         [Description("atr_lpd")]
         KneePad,
 
         // Accessories
-        /*
+
+        [Description("atr_ev_{variant}")]
         EarringVariantParts,
+        [Description("atr_nv_{variant}")]
         NecklaceVariantParts,
+        [Description("atr_wv_{variant}")]
         BraceletVariantParts,
+        [Description("atr_rv_{variant}")]
         RingVariantParts,
-        */
+        
 
         // Weapons
         /*
@@ -74,7 +84,7 @@ namespace ItemDatabase.Enums
         MiqoteHair,
 
         // Face
-        [Description("atr_fv_x")]
+        [Description("atr_fv_{variant}")]
         FaceVariantParts,
         [Description("atr_hig")]
         FacialHair,
