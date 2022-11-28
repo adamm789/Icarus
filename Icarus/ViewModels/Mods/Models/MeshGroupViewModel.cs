@@ -25,11 +25,13 @@ namespace Icarus.ViewModels.Models
             Name = group.Name;
             _windowService = windowService;
 
+            var numAttributes = 0;
             foreach (var meshPart in _importedGroup.Parts)
             {
                 var meshPartViewModel = new MeshPartViewModel(meshPart);
                 meshPartViewModel.Attributes.CollectionChanged += new(OnAttributesCollectionChanged);
                 MeshParts.Add(meshPartViewModel);
+                numAttributes += meshPartViewModel.NumAttributes;
                 foreach (var key in meshPart.ShapeParts.Keys)
                 {
                     if (!ShapesContains(key))
@@ -41,21 +43,19 @@ namespace Icarus.ViewModels.Models
                     }
                 }
             }
+            NumAttributes = numAttributes;
         }
 
         public int NumShapes => Shapes.Count;
 
         private void OnAttributesCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            if (sender is MeshPartViewModel)
+            var numAttributes = 0;
+            foreach (var mp in MeshParts)
             {
-                var numAttributes = 0;
-                foreach (var mp in MeshParts)
-                {
-                    numAttributes += mp.NumAttributes;
-                }
-                NumAttributes = numAttributes;
+                numAttributes += mp.NumAttributes;
             }
+            NumAttributes = numAttributes;
         }
 
         int _numAttributes;
@@ -64,7 +64,6 @@ namespace Icarus.ViewModels.Models
             get { return _numAttributes; }
             set { _numAttributes = value; OnPropertyChanged(); }
         }
-
 
         ObservableCollection<AttributePresetsViewModel> _attributePresets = new();
         public ObservableCollection<AttributePresetsViewModel> AttributePresets

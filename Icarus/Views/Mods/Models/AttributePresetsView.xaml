@@ -19,7 +19,7 @@
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
                         <TextBlock Grid.Row="0" Text="{Binding PartHeader}"/>
-                        <ListBox Grid.Row="1" ItemsSource="{Binding Attributes}">
+                        <ListBox Grid.Row="1" ItemsSource="{Binding Attributes}" dd:DragDrop.IsDragSource="True">
                             <ListBox.ItemTemplate>
                                 <DataTemplate DataType="{x:Type models:AttributeViewModel}">
                                     <Grid>
@@ -43,7 +43,8 @@
                 <TextBlock Grid.Column="0" Text="{Binding Header}" Margin="5,0,0,0"/>
                 <Button Grid.Column="1" Command="{Binding CopyPresetCommand}" Content="Copy"/>
             </Grid>
-            <ListBox Grid.Row="1" ItemsSource="{Binding Presets}" HorizontalContentAlignment="Stretch" PreviewMouseWheel="ListView_PreviewMouseWheel"/>
+            <ListBox Grid.Row="1" ItemsSource="{Binding Presets}" HorizontalContentAlignment="Stretch" PreviewMouseWheel="ListView_PreviewMouseWheel"
+                     dd:DragDrop.IsDragSource="True"/>
         </Grid>
     </Border>
 </UserControl>

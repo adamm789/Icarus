@@ -2,6 +2,7 @@
 using Icarus.ViewModels.Util;
 using ItemDatabase;
 using ItemDatabase.Enums;
+using Serilog;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -75,6 +76,10 @@ namespace Icarus.ViewModels.Models
 
         public void AddAttribute(AttributeViewModel attr)
         {
+            if (IndexOfAttribute(attr.GetAttributeString()) != -1)
+            {
+                return;
+            }
             var attribute = attr.Copy();
             var eh = new PropertyChangedEventHandler(OnRemoveAttribute);
             attribute.PropertyChanged += eh;
@@ -159,6 +164,19 @@ namespace Icarus.ViewModels.Models
             {
                 return true;
             }
+            else if (o is PartAttributesViewModel part)
+            {
+                foreach (var partAttribute in part.Attributes)
+                {
+                    if (IndexOfAttribute(partAttribute.GetAttributeString()) == -1)
+                    {
+                        return true;
+                    }
+                }
+                return false;
+                // TODO: Allow "partial addition"?
+                // i.e. when a part already has one of the attributes, this would just add the missing attributes
+            }
             return false;
         }
 
@@ -174,14 +192,22 @@ namespace Icarus.ViewModels.Models
 
         public void Drop(IDropInfo dropInfo)
         {
+            Log.Debug($"Drop onto {GetType()}");
             var dropItem = dropInfo.Data;
             if (dropItem is AttributeViewModel attr)
             {
                 AddAttribute(attr);
             }
+            else if (dropItem is PartAttributesViewModel part)
+            {
+                foreach (var partAttribute in part.Attributes)
+                {
+                    AddAttribute(partAttribute);
+                }
+            }
             else if (dropItem is AttributePresetsViewModel preset)
             {
-                preset.CopyPresetCommand.Execute(preset);
+                preset.CopyPresetCommand?.Execute(preset);
             }
         }
     }

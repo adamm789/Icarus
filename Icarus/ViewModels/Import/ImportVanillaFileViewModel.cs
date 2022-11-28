@@ -90,6 +90,7 @@ namespace Icarus.ViewModels.Import
             else if (SelectedItem != null)
             {
                 SelectedItemName = SelectedItem.Name;
+                _logService.Debug($"Selected item is set: {SelectedItemName}");
                 CanImport = true;
             }
         }
@@ -99,8 +100,11 @@ namespace Icarus.ViewModels.Import
             var itemList = sender as ItemListViewModel;
             if (e.PropertyName == nameof(ItemListViewModel.SelectedItem) && itemList != null)
             {
-                SelectedItem = itemList.SelectedItem;
-                SelectedItemSet();
+                if (SelectedItem != itemList.SelectedItem)
+                {
+                    SelectedItem = itemList.SelectedItem;
+                    SelectedItemSet();
+                }
             }
             if (e.PropertyName == nameof(ItemListViewModel.CompletePath) && itemList != null)
             {
@@ -112,7 +116,7 @@ namespace Icarus.ViewModels.Import
                 }
                 else
                 {
-                    SelectedItemSet();
+                    //SelectedItemSet();
                 }
             }
         }

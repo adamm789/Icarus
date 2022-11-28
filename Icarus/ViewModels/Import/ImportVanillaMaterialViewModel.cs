@@ -24,8 +24,7 @@ namespace Icarus.ViewModels.Import
     : base(modPack, itemListService, logService)
         {
             _materialFileService = materialFileService;
-            MaterialSetText = $"Import 0 Material(s)";
-
+            MaterialSetText = $"Add all 0 variant(s)";
         }
 
         protected override void SelectedItemSet()
@@ -34,7 +33,7 @@ namespace Icarus.ViewModels.Import
             if (SelectedItem != null)
             {
                 SelectedItemMtrl = SelectedItem.GetMtrlFileName();
-                MaterialSetText = $"Import {_materialFileService.GetNumMaterialSets(SelectedItem)} Material(s)";
+                MaterialSetText = $"Add all {_materialFileService.GetNumMaterialSets(SelectedItem)} variant(s)";
             }
             else
             {

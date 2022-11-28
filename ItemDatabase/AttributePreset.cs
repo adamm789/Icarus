@@ -93,7 +93,8 @@ namespace ItemDatabase
                     [EquipmentSlot.Body] = new() { XivAttribute.Wrist, XivAttribute.Neck, XivAttribute.Elbow, XivAttribute.BodyVariantParts },
                     [EquipmentSlot.Hands] = new() { XivAttribute.Glove, XivAttribute.GloveVariantParts},
                     [EquipmentSlot.Legs] = new() { XivAttribute.Knee, XivAttribute.Waist, XivAttribute.Shin, XivAttribute.LegVariantParts },
-                    [EquipmentSlot.Feet] = new() { XivAttribute.Boot, XivAttribute.KneePad, XivAttribute.ShoeVariantParts }
+                    [EquipmentSlot.Feet] = new() { XivAttribute.Boot, XivAttribute.KneePad, XivAttribute.ShoeVariantParts },
+                    [EquipmentSlot.Ears] = new() { XivAttribute.EarringVariantParts}
                 };
             }
         }

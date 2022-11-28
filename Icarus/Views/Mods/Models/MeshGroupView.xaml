@@ -34,10 +34,10 @@
             <Button.Content>
                 <TextBlock>
                     <Run Text="Edit"/>
-                    <Run Text="{Binding NumShapes, Mode=OneTime}"/>
-                    <Run Text="Shapes/"/>
+                    <Run Text="{Binding NumShapes, Mode=OneWay}"/>
+                    <Run Text="Shape(s)/"/>
                     <Run Text="{Binding NumAttributes}"/>
-                    <Run Text="Attributes"/>
+                    <Run Text="Attribute(s)"/>
                 </TextBlock>
             </Button.Content>
         </Button>
