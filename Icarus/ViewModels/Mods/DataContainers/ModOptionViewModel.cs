@@ -39,7 +39,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
             
             foreach (var modOption in copy.ModViewModels)
             {
-                AddMod(modOption.ModViewModel);
+                AddMod(modOption.Mod);
             }
             
             eh = new(OnSelectionTypeChanged);
@@ -136,7 +136,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
         public void AddMod(ModOptionModViewModel mod)
         {
             ModViewModels.Add(mod);
-            _modOption.Mods.Add(mod.ModViewModel.GetMod());
+            _modOption.Mods.Add(mod.Mod.GetMod());
             UpdateHeader();
         }
 
@@ -157,7 +157,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
 
         public void RemoveMod(IMod mod)
         {
-            var m = ModViewModels.FirstOrDefault(o => o.ModViewModel.GetMod() == mod);
+            var m = ModViewModels.FirstOrDefault(o => o.Mod.GetMod() == mod);
             if (m != null)
             {
                 RemoveMod(m);
@@ -166,7 +166,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
 
         public bool RemoveMod(ModViewModel mod)
         {
-            var m = ModViewModels.FirstOrDefault(p => p.ModViewModel.GetMod() == mod.GetMod());
+            var m = ModViewModels.FirstOrDefault(p => p.Mod.GetMod() == mod.GetMod());
             if (m != null)
             {
                 return RemoveMod(m);
@@ -206,7 +206,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
 
         public int RemoveMods(IEnumerable<ModOptionModViewModel> mods)
         {
-            return RemoveMods(mods.Select(m => m.ModViewModel));
+            return RemoveMods(mods.Select(m => m.Mod));
         }
 
         public bool CanAcceptMod(ModViewModel mod)
@@ -218,7 +218,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
         {
             foreach (var mm in ModViewModels)
             {
-                if (mm.ModViewModel.GetMod() == mod.GetMod())
+                if (mm.Mod.GetMod() == mod.GetMod())
                 {
                     return true;
                 }
@@ -251,6 +251,14 @@ namespace Icarus.ViewModels.Mods.DataContainers
             if (dragItem is ModViewModel modViewModel)
             {
                 if (CanAcceptMod(modViewModel))
+                {
+                    dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
+                    dropInfo.Effects = DragDropEffects.Copy;
+                }
+            }
+            else if (dragItem is ModOptionModViewModel modOptionMod)
+            {
+                if (CanAcceptMod(modOptionMod.Mod))
                 {
                     dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
                     dropInfo.Effects = DragDropEffects.Copy;
@@ -291,6 +299,13 @@ namespace Icarus.ViewModels.Mods.DataContainers
                 {
                     modOption.Parent.RemoveOption(modOption);
                     Parent.AddOption(modOption);
+                }
+            }
+            else if (dropItem is ModOptionModViewModel mod)
+            {
+                if (CanAcceptMod(mod.Mod))
+                {
+                    AddMod(mod.Mod);
                 }
             }
             else

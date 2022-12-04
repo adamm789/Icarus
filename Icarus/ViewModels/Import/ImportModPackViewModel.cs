@@ -149,11 +149,12 @@ namespace Icarus.ViewModels.Import
 
         public void Add(ModPack modPack)
         {
+            // TODO: This does not copy the mod pack pages
             var modPackViewModel = new ModPackViewModel(new ModPack(modPack), _viewModelService, _logService);
             modPackViewModel.Add(modPack);
             ModPacksAwaitingImport.Add(modPackViewModel);
 
-            var _importSimple = new ImportModsListViewModel(modPackViewModel.ModsListViewModel, _logService);
+            var _importSimple = new ImportModsListViewModel(modPackViewModel, _logService);
             _importSimple.ImportViewModel = ImportViewModel;
             var eh = new PropertyChangedEventHandler(OnRemove);
             _importSimple.PropertyChanged += eh;

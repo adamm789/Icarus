@@ -27,6 +27,13 @@ namespace Icarus.ViewModels.Import
             set { _shouldRemove = value; OnPropertyChanged(); }
         }
 
+        protected IModPackViewModel? _modPackViewModel;
+
+        public ImportModsListViewModel(IModPackViewModel modPack, ILogService logService)
+           : base(modPack.ModsListViewModel, logService) {
+            _modPackViewModel = modPack;
+        }
+
         public ImportModsListViewModel(IModsListViewModel modsListViewModel, ILogService logService)
             : base(modsListViewModel, logService)
         {
@@ -51,11 +58,23 @@ namespace Icarus.ViewModels.Import
 
         public override void ConfirmCommand()
         {
-            ImportViewModel?.Add(_modsListViewModel.SimpleModsList);
+            if (ImportViewModel != null)
+            {
+                /*
+                if (_modPackViewModel != null)
+                {
+                    ImportViewModel.Add(_modPackViewModel);
+                }
+                else
+                {
+                */
+                    ImportViewModel.Add(_modsListViewModel.SimpleModsList);
+                //}
 
-            // TODO: Automatically remove imported modpacks?
-            // If I don't, I think I need to create a deep copy of the modpack
-            ShouldRemove = true;
+                // TODO: Automatically remove imported modpacks?
+                // If I don't, I need to create a deep copy of the modpack so that re-importing isn't affected
+                ShouldRemove = true;
+            }
         }
 
         protected override void CancelCommand()

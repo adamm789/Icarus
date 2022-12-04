@@ -18,6 +18,7 @@ namespace Icarus.Mods.DataContainers
         {
             PageIndex = page.PageIndex;
         }
+
         public void AddGroup(ModGroup group)
         {
             ModGroups.Add(group);

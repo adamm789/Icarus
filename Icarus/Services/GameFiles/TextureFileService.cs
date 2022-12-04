@@ -59,7 +59,13 @@ namespace Icarus.Services.GameFiles
                         Name = materialFileData.Name
                     };
                 }
-                typeFormatDict.Add(xivMtrl.TextureTypePathList[i].Type, xivTex.TextureFormat);
+                if (i < xivMtrl.TextureTypePathList.Count) {
+                    typeFormatDict.TryAdd(xivMtrl.TextureTypePathList[0].Type, xivTex.TextureFormat);
+                }
+                else
+                {
+                    typeFormatDict.TryAdd(XivTexType.Other, xivTex.TextureFormat);
+                }
             }
 
             if (String.IsNullOrWhiteSpace(savedPath))

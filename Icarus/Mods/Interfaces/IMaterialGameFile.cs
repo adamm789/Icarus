@@ -9,5 +9,6 @@ namespace Icarus.Mods.Interfaces
     public interface IMaterialGameFile : IGameFile
     {
         XivMtrl XivMtrl { get; set; }
+        int MaterialSet { get; set; }
     }
 }

@@ -6,5 +6,6 @@ namespace Icarus.Mods.GameFiles
     public class MaterialGameFile : GameFile, IMaterialGameFile
     {
         public XivMtrl XivMtrl { get; set; }
+        public int MaterialSet { get; set; }
     }
 }

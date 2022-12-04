@@ -27,6 +27,7 @@ namespace Icarus.Mods
         public string SpecularTexPath { get; set; }
         public string DiffuseTexPath { get; set; }
         public string ReflectionTexPath { get; set; }
+        public int MaterialSet { get; set; }
 
         public bool IsFurniture => ShaderInfo.Shader == MtrlShader.Furniture;
         public bool IsDyeableFurniture => ShaderInfo.Shader == MtrlShader.DyeableFurniture;

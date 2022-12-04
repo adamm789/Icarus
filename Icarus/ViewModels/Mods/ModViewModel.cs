@@ -269,9 +269,10 @@ namespace Icarus.ViewModels.Mods
 
         async void IDropTarget.Drop(IDropInfo dropInfo)
         {
-            _logService.Debug($"Drop in {GetType()}");
-
             var item = dropInfo.Data;
+
+            _logService.Debug($"Drop {item.GetType()} onto {GetType()}");
+
             if (item is IItemViewModel vm)
             {
                 await SetDestinationItem(vm.Item);

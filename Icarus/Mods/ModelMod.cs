@@ -1,5 +1,6 @@
 ﻿using Icarus.Mods.GameFiles;
 using Icarus.Mods.Interfaces;
+using Icarus.Util.Extensions;
 using Icarus.Util.Import;
 using ItemDatabase.Paths;
 using System;
@@ -54,6 +55,20 @@ namespace Icarus.Mods
                 SetModData(modelGameFile);
             }
         }
+
+        /*
+        public override IMod DeepCopy(IMod other)
+        {
+            var otherModelMod = other as ModelMod;
+            var otherImportedModel = ImportedModel.DeepCopy();
+            var otherModelModifierOptions = new ModelModifierOptions()
+            {
+
+            };
+            var otherTTModel = TTModel?.DeepCopy();
+            throw new NotImplementedException();
+        }
+        */
 
         public override bool IsComplete()
         {

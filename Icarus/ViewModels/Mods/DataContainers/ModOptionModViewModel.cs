@@ -1,26 +1,36 @@
 ﻿using Icarus.Mods.Interfaces;
 using Icarus.ViewModels.Util;
+using System.ComponentModel;
 
 namespace Icarus.ViewModels.Mods.DataContainers
 {
     public class ModOptionModViewModel : NotifyPropertyChanged
     {
-        public ModViewModel ModViewModel;
+        public ModViewModel Mod;
         ModOptionViewModel _parent;
 
         public ModOptionModViewModel(ModOptionViewModel parent, ModViewModel mod)
         {
-            ModViewModel = mod;
+            Mod = mod;
             _parent = parent;
+
             RemoveCommand = new DelegateCommand(o => _parent.RemoveMod(this));
+            mod.PropertyChanged += new(OnModPropertyChanged);
         }
 
-        public IMod GetMod() => ModViewModel.GetMod();
-        public string Identifier => ModViewModel.Identifier;
-        public string FileName => ModViewModel.FileName;
-        public string DestinationName => ModViewModel.DestinationName;
-        public string DestinationPath => ModViewModel.DestinationPath;
-        public string DisplayedHeader => ModViewModel.DisplayedHeader;
+        // TODO: If an option is selected and being displayed on the advanced modpack part then edited, the information is not updated in the modoptionmod
+        private void OnModPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(ModViewModel.DestinationName)) OnPropertyChanged(nameof(DestinationName));
+            if (e.PropertyName == nameof(ModViewModel.DestinationPath)) OnPropertyChanged(nameof(DestinationPath));
+        }
+
+        public IMod GetMod() => Mod.GetMod();
+        public string Identifier => Mod.Identifier;
+        public string FileName => Mod.FileName;
+        public string DestinationName => Mod.DestinationName;
+        public string DestinationPath => Mod.DestinationPath;
+        public string DisplayedHeader => Mod.DisplayedHeader;
         public DelegateCommand RemoveCommand { get; }
     }
 }

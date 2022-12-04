@@ -79,6 +79,20 @@ namespace Icarus.ViewModels.Mods
             base.RaiseDestinationPathChanged();
         }
 
+        int _selectedMaterialSet = 1;
+        public int SelectedMaterialSet
+        {
+            get { return _selectedMaterialSet; }
+            set { _selectedMaterialSet = value; OnPropertyChanged(); }
+        }
+
+        List<int> _materialSetList = new();
+        public List<int> MaterialSetList
+        {
+            get { return _materialSetList; }
+            set { _materialSetList = value; OnPropertyChanged(); }
+        }
+
         string _materialVariant = "a";
         public string MaterialVariant
         {

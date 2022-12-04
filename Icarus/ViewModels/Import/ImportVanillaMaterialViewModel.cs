@@ -33,12 +33,22 @@ namespace Icarus.ViewModels.Import
             if (SelectedItem != null)
             {
                 SelectedItemMtrl = SelectedItem.GetMtrlFileName();
-                MaterialSetText = $"Add all {_materialFileService.GetNumMaterialSets(SelectedItem)} variant(s)";
+                var numVariants = Task.Run(async () => await _materialFileService.GetNumMaterialSets(SelectedItem)).Result;
+                MaterialSetText = $"Add all {numVariants} variant(s)";
+
+                var materialFiles = Task.Run(() => _materialFileService.GetMaterialSet(SelectedItem)).Result;
             }
             else
             {
                 SelectedItemMtrl = "";
             }
+        }
+
+        List<IMaterialGameFile>? _materialFiles;
+        public List<IMaterialGameFile>? MaterialFiles
+        {
+            get { return _materialFiles; }
+            set { _materialFiles = value; OnPropertyChanged(); }
         }
 
         protected override void CompletePathSet()
@@ -74,6 +84,20 @@ namespace Icarus.ViewModels.Import
         {
             base.RaiseCanExecuteChanged();
             ImportMaterialSetCommand.RaiseCanExecuteChanged();
+        }
+
+        int _selectedMaterialSet = 1;
+        public int SelectedMaterialSet
+        {
+            get { return _selectedMaterialSet; }
+            set { _selectedMaterialSet = value; OnPropertyChanged(); }
+        }
+
+        List<int> _materialSetList = new();
+        public List<int> MaterialSetList
+        {
+            get { return _materialSetList; }
+            set { _materialSetList = value; OnPropertyChanged(); }
         }
 
         string _materialSetText = "";
@@ -125,7 +149,8 @@ namespace Icarus.ViewModels.Import
         {
             if(_completePath == null)
             {
-                var materials = await _materialFileService.GetMaterialAndVariantsFileData(itemArg);
+                //var materials = await _materialFileService.GetMaterialAndVariantsFileData(itemArg);
+                var materials = await _materialFileService.GetMaterialSet(itemArg);
                 if (materials != null)
                 {
                     var materialMods = new List<MaterialMod>();

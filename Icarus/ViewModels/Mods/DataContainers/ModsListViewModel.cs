@@ -153,7 +153,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
 
         public bool DeleteMod(ModOptionModViewModel mod)
         {
-            return DeleteMod(mod.ModViewModel);
+            return DeleteMod(mod.Mod);
         }
 
         /// <summary>

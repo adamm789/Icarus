@@ -48,10 +48,9 @@
         </Menu>
 
         <Grid x:Name="MainGrid" Grid.Row="1" IsEnabled="{Binding GamePathSet}" dd:DragDrop.IsDragSource="True" >
-            <TabControl Grid.Row="0">
+            <TabControl Grid.Row="0" dd:DragDrop.IsDropTarget="False">
                 <TabItem Header="Importer/Simple Modpack">
-                    <ContentControl Content="{Binding SimpleEditorViewModel}" IsEnabled="{Binding CanExport}">
-                    </ContentControl>
+                    <ContentControl Content="{Binding SimpleEditorViewModel}" IsEnabled="{Binding CanExport}"/>
                 </TabItem>
                 <TabItem Header="Advanced Modpack" IsEnabled="{Binding CanOpenAdvanced}">
                     <ContentControl Content="{Binding AdvancedEditorViewModel}" IsEnabled="{Binding CanExport}"/>

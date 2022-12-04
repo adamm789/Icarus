@@ -157,8 +157,7 @@ namespace Icarus.ViewModels.Import
                         _modPackListViewModel.Add(modPack);
                     }
 
-
-                    if (modPack.SimpleModsList.Count == 1 && modPack.SimpleModsList[0].ImportSource == ImportSource.Raw)
+                    if (modPack.SimpleModsList.Count == 1 && modPack.SimpleModsList[0].ImportSource == ImportSource.Raw || modPack.ModPackPages.Count > 0)
                     {
                         _modPackViewModel.Add(modPack);
                     }
@@ -180,6 +179,27 @@ namespace Icarus.ViewModels.Import
         public void Add(IEnumerable<ModViewModel> mods)
         {
             _modPackViewModel.AddRange(mods);
+        }
+        public void Add(IModPackViewModel modPackViewModel)
+        {
+            var modsList = modPackViewModel.ModsListViewModel;
+            var shouldImportPages = true;
+            foreach (var mod in modsList.SimpleModsList)
+            {
+                if (!mod.ShouldImport)
+                {
+                    _logService.Information("Not all mods were imported. Skipping mod pack pages.");
+                    shouldImportPages = false;
+                    break;
+                }
+            }
+            if (shouldImportPages)
+            {
+                _logService.Information($"Importing mod pack pages.");
+                // TODO: modPackViewModel.ModPack here does not have the mod pack pages
+                _modPackListViewModel.Add(modPackViewModel.ModPack);
+            }
+            _modPackViewModel.AddRange(modsList.SimpleModsList);
         }
 
         public bool CanAcceptFiles(StringCollection collection)

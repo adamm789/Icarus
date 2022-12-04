@@ -183,7 +183,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
 
         public void UpdateDisplay()
         {
-            // TODO: IF a user copies a modpackpage (from an imported advanced ttmp2) to the currently displayed empty page,
+            // TODO: If a user copies a modpackpage (from an imported advanced ttmp2) to the currently displayed empty page,
             // the page is not updated until the user switches pages and then back
         }
 
@@ -209,7 +209,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
             }
             else
             {
-                dropInfo.NotHandled = true;
+                dropInfo.NotHandled = false;
             }
         }
 
@@ -217,7 +217,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
         {
             var source = dropInfo.Data;
             var target = dropInfo.TargetItem;
-            Log.Debug($"Drop onto {GetType()}");
+            Log.Debug($"Drop {source.GetType()} onto {GetType()}");
             if (target is ModGroupViewModel targetGroup)
             {
                 // TODO: BEtter method for determining if MoveTo should be called
@@ -227,7 +227,6 @@ namespace Icarus.ViewModels.Mods.DataContainers
                     if (!sourceGroup.IsReadOnly)
                     {
                         MoveTo(sourceGroup, targetGroup);
-
                     }
                     else
                     {

@@ -46,6 +46,11 @@ namespace Icarus.Mods
             SetModData(gameFile);
         }
 
+        public virtual IMod DeepCopy(IMod other)
+        {
+            throw new NotImplementedException();
+        }
+
         public virtual bool IsComplete()
         {
             return true;

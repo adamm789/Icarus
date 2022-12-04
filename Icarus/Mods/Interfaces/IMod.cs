@@ -20,5 +20,6 @@ namespace Icarus.Mods.Interfaces
         string ToVerboseString();
         bool ShouldImport { get; set; }
         bool ShouldExport { get; set; }
+        IMod DeepCopy(IMod other);
     }
 }

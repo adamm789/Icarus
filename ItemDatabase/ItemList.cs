@@ -98,7 +98,7 @@ namespace ItemDatabase
                 }
             }
 
-
+#if DEBUG
             foreach (var f in furnishings)
             {
                 var item = new IndoorFurniture(f);
@@ -107,6 +107,7 @@ namespace ItemDatabase
                 _indoorFurniture.Add(item.Name, item);
             }
             _allItems["Indoor Furniture"] = _indoorFurniture;
+#endif
             AddBody();
         }
 
