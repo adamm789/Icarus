@@ -105,7 +105,6 @@ namespace Icarus.ViewModels.Mods
             }
         }
 
-        
         public override string DestinationPath
         {
             get => base.DestinationPath;
@@ -115,13 +114,13 @@ namespace Icarus.ViewModels.Mods
                 base.DestinationPath = XivPathParser.ChangeMtrlVariant(value, MaterialVariant);
             }
         }
-        
+
         public override async Task<IGameFile?> GetFileData(IItem? itemArg = null)
         {
             return await _materialFileService.GetMaterialFileData(itemArg);
         }
 
-        public override async Task<IGameFile?> GetFileData(string path, string name= "")
+        public override async Task<IGameFile?> GetFileData(string path, string name = "")
         {
             return await _materialFileService.TryGetMaterialFileData(path, name);
         }

@@ -10,5 +10,6 @@ namespace Icarus.Mods.Interfaces
     {
         XivMtrl XivMtrl { get; set; }
         int MaterialSet { get; set; }
+        string Variant { get; set; }
     }
 }

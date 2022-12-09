@@ -4,6 +4,7 @@ using Icarus.Services.GameFiles.Interfaces;
 using Icarus.Services.Interfaces;
 using ItemDatabase.Interfaces;
 using ItemDatabase.Paths;
+using SharpDX.Win32;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,6 +28,54 @@ namespace Icarus.Services.GameFiles
             _materialFileService = materialFileService;
         }
 
+        public async Task<ITextureGameFile?> GetTextureFileData(IMaterialGameFile materialFileData, XivTexType type = XivTexType.Normal, string variant = "a")
+        {
+            var dat = new Dat(_frameworkGameDirectory);
+            var xivMtrl = materialFileData.XivMtrl;
+            var typeFormatDict = new Dictionary<XivTexType, XivTexFormat>();
+
+            XivTex? savedXivTex = null;
+            string? savedPath = "";
+            foreach (var texTypePath in xivMtrl.TextureTypePathList)
+            {
+                if (texTypePath.Type == XivTexType.ColorSet) continue;
+                else
+                {
+                    var xivTex = await dat.GetType4Data(texTypePath.Path, true);
+                    if (texTypePath.Type == type)
+                    {
+                        savedXivTex = xivTex;
+                        savedPath = texTypePath.Path;
+                        savedXivTex.TextureTypeAndPath = texTypePath;
+                    }
+                    typeFormatDict.TryAdd(texTypePath.Type, xivTex.TextureFormat);
+                }
+            }
+
+            if (savedXivTex == null)
+            {
+                _logService.Error($"Could not get texsture for {materialFileData.Path}");
+                return null;
+            }
+
+            if (String.IsNullOrWhiteSpace(savedPath))
+            {
+                savedPath = XivPathParser.ChangeTexVariant(savedPath, variant);
+            }
+
+            var retVal = new TextureGameFile()
+            {
+                Name = materialFileData.Name,
+                Path = savedPath,
+                Category = materialFileData.Category,
+                TypeFormatDict = typeFormatDict,
+                XivMtrl = xivMtrl,
+                XivTex = savedXivTex,
+                TexType = type
+            };
+            return retVal;
+        }
+
         public async Task<ITextureGameFile?> GetTextureFileData(IItem? itemArg = null, XivTexType type = XivTexType.Normal, string variant = "a")
         {
             var item = GetItem(itemArg);
@@ -37,6 +86,8 @@ namespace Icarus.Services.GameFiles
             {
                 return null;
             }
+            return await GetTextureFileData(materialFileData, type, variant);
+            /*
             var xivMtrl = materialFileData.XivMtrl;
             var typeFormatDict = new Dictionary<XivTexType, XivTexFormat>();
 
@@ -84,6 +135,7 @@ namespace Icarus.Services.GameFiles
                 TexType = type
             };
             return retVal;
+            */
         }
 
         public async Task<ITextureGameFile?> TryGetTextureFileData(string path, string itemName = "")
@@ -149,12 +201,12 @@ namespace Icarus.Services.GameFiles
             return null;
         }
 
-        public List<XivTexType>? GetAvailableTexTypes(IItem? itemArg)
+        public async Task<List<XivTexType>?> GetAvailableTexTypes(IItem? itemArg)
         {
             var item = GetItem(itemArg);
             if (item == null) return null;
 
-            var materialFileData = Task.Run(() => _materialFileService.GetMaterialFileData(item)).Result;
+            var materialFileData = await _materialFileService.GetMaterialFileData(item);
             if (materialFileData != null)
             {
                 var ret = new List<XivTexType>();
@@ -168,6 +220,18 @@ namespace Icarus.Services.GameFiles
 
                 return ret;
             }
+            return null;
+        }
+
+        public async Task<List<XivTexType>?> GetAvailableTexTypes(IMaterialGameFile? material)
+        {
+            if (material == null) return null;
+            else
+            {
+                var ret = new List<XivTexType>();
+                var xivMtrl = material.XivMtrl;
+            }
+
             return null;
         }
     }

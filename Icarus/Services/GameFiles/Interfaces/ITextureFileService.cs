@@ -10,7 +10,9 @@ namespace Icarus.Services.GameFiles.Interfaces
 {
     public interface ITextureFileService : IGameFileService
     {
-        List<XivTexType>? GetAvailableTexTypes(IItem? itemArg = null);
+        Task<List<XivTexType>?> GetAvailableTexTypes(IItem? itemArg = null);
+        Task<ITextureGameFile?> GetTextureFileData(IMaterialGameFile materialFileData, XivTexType type = XivTexType.Normal, string variant = "a");
+
         Task<ITextureGameFile?> GetTextureFileData(IItem? item = null, XivTexType type = XivTexType.Normal, string variant="a");
         Task<ITextureGameFile?> TryGetTextureFileData(string path, string name = "");
     }

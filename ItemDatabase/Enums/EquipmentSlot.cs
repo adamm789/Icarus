@@ -3,6 +3,7 @@
     [Flags]
     public enum EquipmentSlot
     {
+        /*
         None = 0,
         MainHand = 0x1,
         OffHand = 0x2,
@@ -19,6 +20,30 @@
         Wrists = 0x400,
         RightRing = 0x1000,
         LeftRing = 0x2000,
+
+        SoulCrystal,
+
+        Equipment = Head | Body | Hands | Legs | Feet,
+        Accessory = Ears | Neck | Wrists | RightRing | LeftRing,
+        Weapon = MainHand | OffHand,
+        Ring = RightRing | LeftRing
+        */
+        None = 0,
+        MainHand = 1,
+        OffHand = 2,
+
+        Head = 4,
+        Body = 8,
+        Hands = 16,
+        Waist = 32,
+        Legs = 64,
+        Feet = 128,
+
+        Ears = 256,
+        Neck = 512,
+        Wrists = 1024,
+        RightRing = 2048,
+        LeftRing = 4096,
 
         SoulCrystal,
 

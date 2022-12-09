@@ -27,31 +27,60 @@ namespace Icarus.ViewModels.Import
             MaterialSetText = $"Add all 0 variant(s)";
         }
 
-        protected override void SelectedItemSet()
+        /*public override async Task SelectedItemSetAsync()
         {
-            base.SelectedItemSet();
+            await base.SelectedItemSetAsync();
             if (SelectedItem != null)
             {
                 SelectedItemMtrl = SelectedItem.GetMtrlFileName();
-                var numVariants = Task.Run(async () => await _materialFileService.GetNumMaterialSets(SelectedItem)).Result;
-                MaterialSetText = $"Add all {numVariants} variant(s)";
 
-                var materialFiles = Task.Run(() => _materialFileService.GetMaterialSet(SelectedItem)).Result;
+                var materialFiles = await _materialFileService.GetMaterialSet(SelectedItem);
+                MaterialFiles = materialFiles;
+
+                if (materialFiles != null)
+                {
+                    var numVariants = materialFiles.Count;
+                    MaterialSetText = $"Add all {numVariants} variant(s)";
+                }
             }
             else
             {
                 SelectedItemMtrl = "";
             }
         }
+        */
+
+        public bool HasOneMaterial
+        {
+            get { return MaterialFiles != null && MaterialFiles.Count == 1; }
+        }
+
+        public bool HasMoreThanOneMaterial
+        {
+            get { return MaterialFiles != null && MaterialFiles.Count > 1; }
+        }
 
         List<IMaterialGameFile>? _materialFiles;
         public List<IMaterialGameFile>? MaterialFiles
         {
             get { return _materialFiles; }
-            set { _materialFiles = value; OnPropertyChanged(); }
+            set
+            {
+                _materialFiles = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(HasOneMaterial));
+                OnPropertyChanged(nameof(HasMoreThanOneMaterial));
+            }
         }
 
-        protected override void CompletePathSet()
+        IMaterialGameFile? _selectedMaterialFile;
+        public IMaterialGameFile? SelectedMaterialFile
+        {
+            get { return _selectedMaterialFile; }
+            set { _selectedMaterialFile = value; OnPropertyChanged(); }
+        }
+
+        public override void CompletePathSet()
         {
             base.CompletePathSet();
             CanImport = XivPathParser.IsMtrl(_completePath);
@@ -112,19 +141,39 @@ namespace Icarus.ViewModels.Import
             await GetVanillaMtrl(SelectedItem);
         }
 
+        public async Task<List<IMaterialGameFile>?> SetItem(IItem? item)
+        {
+            MaterialFiles = await _materialFileService.GetMaterialSet(item);
+            if (MaterialFiles != null)
+            {
+                if (item is IGear gear)
+                {
+                    SelectedMaterialFile = MaterialFiles.FirstOrDefault(m => m.MaterialSet == gear.MaterialId);
+                }
+                else
+                {
+                    SelectedMaterialFile = MaterialFiles[0];
+                }
+            }
+
+            CanImport = MaterialFiles != null;
+            return MaterialFiles;
+        }
+
         private async Task<MaterialMod?> GetVanillaMtrl(IItem? item = null)
         {
             // TODO: How to handle SmallClothes, Emperor's series, and skin materials
             // TODO: Most of SmallClothes don't seem to have a material
-            IMaterialGameFile? materialGameFile;
+            var materialGameFile = SelectedMaterialFile;
             if (_completePath != null)
             {
                 materialGameFile = await _materialFileService.TryGetMaterialFileData(_completePath, SelectedItemName);
             }
-            else
+            else if (materialGameFile == null)
             {
                 materialGameFile = await _materialFileService.GetMaterialFileData(item);
             }
+
             if (materialGameFile != null)
             {
                 if (materialGameFile.XivMtrl == null)
@@ -147,7 +196,7 @@ namespace Icarus.ViewModels.Import
 
         private async Task<List<MaterialMod>?> GetVanillaMaterialAndVariants(IItem? itemArg = null)
         {
-            if(_completePath == null)
+            if (_completePath == null)
             {
                 //var materials = await _materialFileService.GetMaterialAndVariantsFileData(itemArg);
                 var materials = await _materialFileService.GetMaterialSet(itemArg);

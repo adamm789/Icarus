@@ -13,7 +13,7 @@
         d:DataContext="{d:DesignInstance Type=viewmodels:MainWindowViewModel}"
         mc:Ignorable="d"
         Title="Icarus" 
-        MinWidth="1200" Width="1200" 
+        MinWidth="1400" Width="1400" 
         MinHeight="700" Height="700" 
         FontSize="16"
         MouseDown="window1_MouseDown"

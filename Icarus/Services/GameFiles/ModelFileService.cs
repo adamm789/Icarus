@@ -25,6 +25,11 @@ namespace Icarus.Services.GameFiles
 
         }
 
+        public List<IGear>? GetSharedModels(IGear gear)
+        {
+            return _itemListService.GetSharedModels(gear);
+        }
+
         public IModelGameFile? TryGetModelFileData(string path, string itemName = "")
         {
             try

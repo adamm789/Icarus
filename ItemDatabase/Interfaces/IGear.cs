@@ -20,5 +20,7 @@ namespace ItemDatabase.Interfaces
         string Code { get; }
         string VariantCode { get; }
         ushort Variant { get; }
+        string GetImcPath();
+        int MaterialId { get; set; }
     }
 }

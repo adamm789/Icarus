@@ -7,5 +7,6 @@ namespace Icarus.Mods.GameFiles
     {
         public XivMtrl XivMtrl { get; set; }
         public int MaterialSet { get; set; }
+        public string Variant { get; set; }
     }
 }

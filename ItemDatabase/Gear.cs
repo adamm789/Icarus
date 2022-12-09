@@ -16,6 +16,8 @@ namespace ItemDatabase
 
         public ushort Variant { get; protected set; }
 
+        public int MaterialId { get; set; }
+
         protected ushort _base;
         protected ushort _variant;
 
@@ -86,6 +88,11 @@ namespace ItemDatabase
         public override string GetMdlFileName()
         {
             return GetMdlFileName(XivRace.Hyur_Midlander_Male);
+        }
+
+        public string GetImcPath()
+        {
+            return $"{_directory}{_baseString}/{_baseString}.imc";
         }
 
         public virtual string GetMdlFileName(XivRace race = XivRace.Hyur_Midlander_Male)

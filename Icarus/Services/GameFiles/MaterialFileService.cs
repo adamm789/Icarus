@@ -9,6 +9,7 @@ using Lumina.Data.Files;
 using Lumina.Data.Parsing;
 using Lumina.Models.Models;
 using SharpDX;
+using SharpDX.DirectWrite;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -49,6 +50,7 @@ namespace Icarus.Services.GameFiles
             return new StainingTemplateFile(bytes);
         }
 
+        // TODO: When itemList.Lenght == 1, we get the file data, but it isn't saved so when Add Mtrl is requested, it does this whole thing again
         public async Task<IMaterialGameFile?> GetMaterialFileData(IItem? itemArg = null, int materialSet = 1)
         {
             var item = GetItem(itemArg);
@@ -57,20 +59,66 @@ namespace Icarus.Services.GameFiles
             try
             {
                 var mtrl = new Mtrl(_frameworkGameDirectory);
-                var mdlFileMetadata = _lumina.GetFileMetadata(item.GetMdlPath());
-                var mdlFile = _lumina.GetFile<MdlFile>(item.GetMdlPath());
-                var model = new Model(mdlFile);
-                var materials = model.Materials;
-                var mtrlPath = mtrl.GetMtrlPath(item.GetMdlPath(), materials[0].MaterialPath, materialSet);
-                var xivMtrl = await mtrl.GetMtrlData(mtrlPath, materialSet);
+                var mdlPath = item.GetMdlPath();
+                var mdl = new Mdl(_frameworkGameDirectory, XivPathParser.GetXivDataFileFromPath(mdlPath));
+                var ttModel = await mdl.GetModel(mdlPath);
+                var mats = await mdl.GetReferencedMaterialNames(mdlPath);
 
-                return new MaterialGameFile()
+                if (item is IGear gear)
                 {
-                    Name = item.Name,
-                    Path = mtrlPath,
-                    Category = XivPathParser.GetCategoryFromPath(mtrlPath),
-                    XivMtrl = xivMtrl
-                };
+                    var mtrlPath = mtrl.GetMtrlPath(gear.GetMdlPath(), gear.GetMtrlFileName(), gear.MaterialId);
+                    var xivMtrl = await mtrl.GetMtrlData(mtrlPath, gear.MaterialId);
+                    return new MaterialGameFile()
+                    {
+                        Name = item.Name,
+                        Path = mtrlPath,
+                        Category = XivPathParser.GetCategoryFromPath(mtrlPath),
+                        XivMtrl = xivMtrl
+                    };
+                    /*
+                    var imcPath = gear.GetImcPath();
+                    var imcFile = _lumina.GetFile<ImcFile>(imcPath);
+
+                    var variant = gear.Variant;
+
+                    if (gear.Slot == ItemDatabase.Enums.EquipmentSlot.Body)
+                    {
+                        var x = gear.MaterialId;
+                        var matId = imcFile.GetPart(1).Variants[variant - 1].MaterialId;
+                        var mtrlPath = mtrl.GetMtrlPath(item.GetMdlPath(), item.GetMtrlFileName(), matId);
+                        var xivMtrl = await mtrl.GetMtrlData(mtrlPath, matId);
+                        return new MaterialGameFile()
+                        {
+                            Name = item.Name,
+                            Path = mtrlPath,
+                            Category = XivPathParser.GetCategoryFromPath(mtrlPath),
+                            XivMtrl = xivMtrl
+                        };
+                    }
+                    */
+                }
+                else
+                {
+
+                    var mdlFile = _lumina.GetFile<MdlFile>(item.GetMdlPath());
+                    var model = new Model(mdlFile);
+                    var materials = model.Materials;
+
+                    // TODO: Seems like I may have to look at the IMC to see what material a particular model uses
+
+                    var mtrlPath = mtrl.GetMtrlPath(item.GetMdlPath(), materials[0].MaterialPath, materialSet);
+                    var xivMtrl = await mtrl.GetMtrlData(mtrlPath, materialSet);
+
+                    var materialPaths = await mdl.GetReferencedMaterialPaths(mdlPath, includeSkin: false);
+
+                    return new MaterialGameFile()
+                    {
+                        Name = item.Name,
+                        Path = mtrlPath,
+                        Category = XivPathParser.GetCategoryFromPath(mtrlPath),
+                        XivMtrl = xivMtrl
+                    };
+                }
             }
             catch (Exception ex)
             {
@@ -130,9 +178,17 @@ namespace Icarus.Services.GameFiles
             else
             {
                 var mdl = new Mdl(_frameworkGameDirectory, XivPathParser.GetXivDataFileFromPath(mdlPath));
-                var materialPaths = await mdl.GetReferencedMaterialPaths(mdlPath, includeSkin: false);
-                _materialCache.Add(mdlPath, materialPaths);
-                return materialPaths.Count;
+                try
+                {
+                    var materialPaths = await mdl.GetReferencedMaterialPaths(mdlPath, includeSkin: false);
+                    _materialCache.Add(mdlPath, materialPaths);
+                    return materialPaths.Count;
+                }
+                catch (Exception ex)
+                {
+                    _logService.Debug(ex, "Caught exception during GetNumMaterialSets");
+                    return -1;
+                }
             }
         }
 
@@ -203,41 +259,84 @@ namespace Icarus.Services.GameFiles
 
         public async Task<List<IMaterialGameFile>?> GetMaterialSet(IItem? itemArg = null)
         {
-            var item = GetItem(itemArg);
-            if (item == null) return null;
-
-            var mdlPath = item.GetMdlPath();
-            var mdl = new Mdl(_frameworkGameDirectory, XivPathParser.GetXivDataFileFromPath(mdlPath));
-            var materialPaths = await mdl.GetReferencedMaterialPaths(mdlPath, includeSkin: false);
-            var retVal = new List<IMaterialGameFile>();
-            var category = XivPathParser.GetCategoryFromPath(mdlPath);
-            foreach (var path in materialPaths)
+            try
             {
-                try
+                var item = GetItem(itemArg);
+                if (item == null) return null;
+
+                var mdlPath = item.GetMdlPath();
+                var mdl = new Mdl(_frameworkGameDirectory, XivPathParser.GetXivDataFileFromPath(mdlPath));
+
+                var retVal = new List<IMaterialGameFile>();
+                var category = XivPathParser.GetCategoryFromPath(mdlPath);
+
+                List<string> materialPaths;
+
+                if (item is IGear gear)
+                {
+                    var sharedModels = _itemListService.GetSharedModels(gear);
+                    if (sharedModels == null) return null;
+
+                    materialPaths = new();
+                    var ret = new List<IMaterialGameFile>();
+                    var seenPaths = new List<string>();
+                    foreach (var m in sharedModels)
+                    {
+                        var paths = await mdl.GetReferencedMaterialPaths(m.GetMdlPath(), m.MaterialId, includeSkin: false);
+                        foreach (var path in paths)
+                        {
+                            if (XivPathParser.IsSkinMtrl(path)) continue;
+                            if (seenPaths.Contains(path)) continue;
+                            var xivMtrl = await _mtrl.GetMtrlData(path);
+
+                            if (xivMtrl == null) continue;
+                            var mat = new MaterialGameFile()
+                            {
+                                Name = m.Name,
+                                Path = path,
+                                XivMtrl = xivMtrl,
+                                Category = category,
+                                MaterialSet = m.MaterialId,
+                                Variant = XivPathParser.GetMtrlVariant(path)
+                            };
+                            ret.Add(mat);
+                            seenPaths.Add(path);
+                        }
+                    }
+                    return ret;
+                }
+
+                var model = await mdl.GetModel(mdlPath, true);
+                materialPaths = model.Materials;
+
+                foreach (var path in materialPaths)
                 {
                     var xivMtrl = await _mtrl.GetMtrlData(path);
                     if (xivMtrl == null) continue;
-                    // TODO: Get material set #
+                    var materialSet = XivPathParser.GetMtrlSetVariant(path);
+
                     var mat = new MaterialGameFile()
                     {
                         Name = item.Name,
                         Path = path,
                         XivMtrl = xivMtrl,
-                        Category = category
+                        Category = category,
+                        MaterialSet = materialSet,
+                        Variant = XivPathParser.GetMtrlVariant(path)
                     };
                     if (mat != null)
                     {
                         retVal.Add(mat);
                     }
                 }
-                catch (Exception)
-                {
-
-                }
+                return retVal;
             }
-
-            return retVal;
+            catch (Exception)
+            {
+                return null;
+            }
         }
+
 
         public async Task<IMaterialGameFile?> TryGetMaterialFileData(string path, string itemName = "")
         {

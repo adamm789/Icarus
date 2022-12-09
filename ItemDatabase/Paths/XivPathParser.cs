@@ -268,6 +268,20 @@ namespace ItemDatabase.Paths
             return ret;
         }
 
+        public static int GetMtrlSetVariant(string input)
+        {
+            var ret = -1;
+            if (!String.IsNullOrWhiteSpace(input))
+            {
+                var matches = Regex.Matches(input, @"v([0-9]{4})");
+                if (matches.Count == 1 && matches[0].Groups.Count == 2)
+                {
+                    ret = int.Parse(matches[0].Groups[1].Value);
+                }
+            }
+            return ret;
+        }
+
         public static string PathCorrectMtrl(string input)
         {
             var retVal = input;

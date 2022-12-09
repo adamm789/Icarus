@@ -22,6 +22,11 @@ namespace Icarus.Services.GameFiles
             //ItemListViewModel = new(this, _logService);
         }
 
+        public List<IGear>? GetSharedModels(IGear gear)
+        {
+            return _itemList.GetSharedModels(gear);
+        }
+
         bool _isLoaded = false;
         public bool IsLoaded
         {

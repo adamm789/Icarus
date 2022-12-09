@@ -21,5 +21,7 @@ namespace Icarus.Services.Interfaces
         IItem? SelectedItem { get; set; }
         IItem? TryGetItem(string path, string itemName = "");
         string TryGetName(string path, string itemName = "");
+
+        List<IGear>? GetSharedModels(IGear gear);
     }
 }

@@ -7,6 +7,7 @@ using Icarus.Services.GameFiles.Interfaces;
 using Icarus.Services.Interfaces;
 using Icarus.Util.Import;
 using Icarus.ViewModels.Items;
+using Icarus.ViewModels.Mods;
 using Icarus.ViewModels.Mods.DataContainers.Interfaces;
 using Icarus.ViewModels.Util;
 using ItemDatabase.Interfaces;
@@ -23,16 +24,18 @@ namespace Icarus.ViewModels.Import
     {
         protected readonly IModsListViewModel _modPackViewModel;
         protected readonly ItemListViewModel _itemListService;
+        protected readonly ViewModelService _viewModelService;
+
+        public ImportVanillaFileViewModel(IModsListViewModel modPackViewmodel, ILogService logService)
+            : base(logService)
+        {
+            _modPackViewModel = modPackViewmodel;
+        }
 
         public ImportVanillaFileViewModel(IModsListViewModel modPack, ItemListViewModel itemListViewModel, ILogService logService)
             : base(logService)
         {
             _modPackViewModel = modPack;
-            _logService = logService;
-
-            _itemListService = itemListViewModel;
-            var eh = new PropertyChangedEventHandler(SelectedItemChanged);
-            _itemListService.PropertyChanged += eh;
         }
 
         IItem? _selectedItem;
@@ -42,13 +45,14 @@ namespace Icarus.ViewModels.Import
             set { _selectedItem = value; OnPropertyChanged(); }
         }
 
-        string _selectedItemName;
-        public string SelectedItemName
+        string? _selectedItemName;
+        public string? SelectedItemName
         {
             get { return _selectedItemName; }
             set { _selectedItemName = value; OnPropertyChanged(); }
         }
 
+        // TODO: Setting complete path
         protected string? _completePath;
 
         bool _canImport = false;
@@ -71,19 +75,27 @@ namespace Icarus.ViewModels.Import
 
         protected abstract Task DoImport();
 
-        protected virtual void CompletePathSet()
+        public virtual void SetCompletePath(string? path)
         {
             SelectedItem = null;
             SelectedItemName = "";
         }
 
-        protected virtual void SelectedItemSet()
+        public virtual void CompletePathSet()
         {
+            SelectedItem = null;
+            SelectedItemName = "";
+        }
+
+        /*
+        public virtual Task SelectedItemSetAsync()
+        {
+            SelectedItem = _itemListService.SelectedItem;
             if (_completePath != null)
             {
-                return;
+
             }
-            if (SelectedItem == null)
+            else if (SelectedItem == null)
             {
                 CanImport = false;
             }
@@ -93,22 +105,20 @@ namespace Icarus.ViewModels.Import
                 _logService.Debug($"Selected item is set: {SelectedItemName}");
                 CanImport = true;
             }
+            return Task.CompletedTask;
         }
-
-        private void SelectedItemChanged(object sender, PropertyChangedEventArgs e)
+        */
+        /*
+        private async void SelectedItemChanged(object sender, PropertyChangedEventArgs e)
         {
             var itemList = sender as ItemListViewModel;
             if (e.PropertyName == nameof(ItemListViewModel.SelectedItem) && itemList != null)
             {
-                if (SelectedItem != itemList.SelectedItem)
-                {
-                    SelectedItem = itemList.SelectedItem;
-                    SelectedItemSet();
-                }
+                await SelectedItemSetAsync();
             }
-            if (e.PropertyName == nameof(ItemListViewModel.CompletePath) && itemList != null)
+            else if (e.PropertyName == nameof(ItemListViewModel.CompletePath) && itemList != null)
             {
-                _completePath = itemList.CompletePath;
+                var _completePath = itemList.CompletePath;
                 if (_completePath != null)
                 {
                     var results = itemList.Search(_completePath);
@@ -120,5 +130,6 @@ namespace Icarus.ViewModels.Import
                 }
             }
         }
+        */
     }
 }

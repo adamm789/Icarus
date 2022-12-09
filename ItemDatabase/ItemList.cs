@@ -1,6 +1,7 @@
 ﻿using ItemDatabase.Enums;
 using ItemDatabase.Interfaces;
 using Lumina;
+using Lumina.Data.Files;
 using Lumina.Excel.GeneratedSheets;
 using Lumina.Text;
 using Serilog;
@@ -21,6 +22,8 @@ namespace ItemDatabase
         private SortedDictionary<string, IItem> _indoorFurniture = new();
         private SortedDictionary<MainItemCategory, SortedList<string, Item>> OtherItems = new();
         private SortedDictionary<string, Dictionary<EquipmentSlot, List<IItem>>> _materialSets = new();
+
+        private SortedDictionary<string, GearModelSet> _gearModelSets = new();
         public ItemList(GameData lumina)
         {
             _lumina = lumina;
@@ -111,20 +114,70 @@ namespace ItemDatabase
             AddBody();
         }
 
+        public List<IGear>? GetSharedModels(IGear gear)
+        {
+            if (_gearModelSets.ContainsKey(gear.Code))
+            {
+                return _gearModelSets[gear.Code].GetSlot(gear.Slot);
+            }
+            return null;
+        }
+
         private void AddItem(IItem item)
         {
-            if (item is IGear equip)
+            if (item is IGear gear)
             {
-                AddEquipment(equip);
-                if (!_materialSets.ContainsKey(equip.Code))
+                var imcPath = gear.GetImcPath();
+                var part = GetPart(gear.Slot);
+
+                if (gear.Code.StartsWith("a"))
                 {
-                    _materialSets[equip.Code] = new();
+
                 }
-                if (!_materialSets[equip.Code].ContainsKey(equip.Slot))
+
+                if (part != -1)
                 {
-                    _materialSets[equip.Code][equip.Slot] = new();
+                    try
+                    {
+                        var imcFile = _lumina.GetFile<ImcFile>(imcPath);
+                        var materialId = imcFile.GetVariant(part, gear.Variant - 1).MaterialId;
+                        gear.MaterialId = materialId;
+                    }
+                    catch(Exception)
+                    {
+                        Log.Error($"Could not get imc file for {gear.Name}");
+                    }
                 }
-                _materialSets[equip.Code][equip.Slot].Add(equip);
+                AddEquipment(gear);
+                if (!_gearModelSets.ContainsKey(gear.Code)) {
+                    _gearModelSets.Add(gear.Code, new GearModelSet(gear.Variant));
+                }
+                _gearModelSets[gear.Code].Add(gear);
+
+
+                if (!_materialSets.ContainsKey(gear.Code))
+                {
+                    _materialSets[gear.Code] = new();
+                }
+                if (!_materialSets[gear.Code].ContainsKey(gear.Slot))
+                {
+                    _materialSets[gear.Code][gear.Slot] = new();
+                }
+                _materialSets[gear.Code][gear.Slot].Add(gear);
+            }
+        }
+
+        private int GetPart(EquipmentSlot slot)
+        {
+            switch (slot)
+            {
+                case EquipmentSlot.Head: return 0;
+                case EquipmentSlot.Body: return 1;
+                case EquipmentSlot.Hands: return 2;
+                case EquipmentSlot.Legs: return 3;
+                case EquipmentSlot.Feet: return 4;
+
+                default: return 0;
             }
         }
 

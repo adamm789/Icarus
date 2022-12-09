@@ -11,5 +11,6 @@ namespace Icarus.Services.GameFiles.Interfaces
         List<XivRace> GetAllRaceMdls(IItem? item = null);
         IModelGameFile? GetModelFileData(IItem? item = null, XivRace race = XivRace.Hyur_Midlander_Male);
         IModelGameFile? TryGetModelFileData(string path, string name = "");
+        List<IGear>? GetSharedModels(IGear gear);
     }
 }

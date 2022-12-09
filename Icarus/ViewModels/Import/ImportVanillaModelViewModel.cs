@@ -17,6 +17,8 @@ using ItemDatabase.Interfaces;
 using System.Collections.ObjectModel;
 using xivModdingFramework.General.Enums;
 using Icarus.ViewModels.Util;
+using Lumina.Models.Models;
+using Icarus.Mods.GameFiles;
 
 namespace Icarus.ViewModels.Import
 {
@@ -24,41 +26,106 @@ namespace Icarus.ViewModels.Import
     {
         // chara/human/c1301/obj/face/f0001/model/c1301f0001_fac.mdl
         IModelFileService _modelFileService;
-        public ImportVanillaModelViewModel(IModsListViewModel modPack, ItemListViewModel itemListService, IModelFileService modelFileService, ILogService logService) :
-            base(modPack, itemListService, logService)
+        IModelGameFile? _selectedModel;
+
+        public ImportVanillaModelViewModel(IModsListViewModel modPackViewModel, IModelFileService modelFileService, ILogService logService) :
+            base(modPackViewModel, logService)
+        {
+
+        }
+
+        public ImportVanillaModelViewModel(IModsListViewModel modPackViewModel, ItemListViewModel itemListService, IModelFileService modelFileService, ILogService logService) :
+    base(modPackViewModel, itemListService, logService)
         {
             _modelFileService = modelFileService;
         }
 
-        protected override void CompletePathSet()
+        public IModelGameFile? SetCompletePath(string? path)
         {
-            base.CompletePathSet();
-            CanImport = XivPathParser.IsMdl(_completePath);
-            if (CanImport)
+            CanImport = XivPathParser.IsMdl(path);
+
+            if (String.IsNullOrWhiteSpace(path))
             {
-                SelectedItemMdl = _completePath;
+                HasSkin = false;
+                SelectedItemMdl = "";
+                return null;
+            }
+            else
+            {
+                SelectedItemMdl = path;
+                _selectedModel = _modelFileService.TryGetModelFileData(path, SelectedItemName);
+                return _selectedModel;
             }
         }
 
-        protected override void SelectedItemSet()
+        public List<IModelGameFile>? SetItem(IItem? item)
         {
-            base.SelectedItemSet();
-            if (SelectedItem != null)
+            List<IModelGameFile>? ret = null;
+            var modelGameFile = _modelFileService.GetModelFileData(item);
+            if (modelGameFile != null)
             {
-                HasSkin = XivPathParser.HasSkin(SelectedItem.GetMdlPath());
-                AllRacesMdls = new(_modelFileService.GetAllRaceMdls(SelectedItem));
+                ret = new List<IModelGameFile>() { modelGameFile };
+            }
+            _selectedModel = modelGameFile;
+            SelectedItemName = _selectedModel?.Name;
+
+            if (_selectedModel != null)
+            {
+                HasSkin = XivPathParser.HasSkin(_selectedModel.Path);
+                AllRacesMdls = new(_modelFileService.GetAllRaceMdls(item));
 
                 if (AllRacesMdls.Count > 0)
                 {
                     SelectedRace = AllRacesMdls[0];
                 }
-                SelectedItemMdl = SelectedItem.GetMdlFileName();
+                SelectedItemMdl = _selectedModel.Name;
             }
             else
             {
                 HasSkin = false;
                 AllRacesMdls = new();
                 SelectedItemMdl = "";
+            }
+            CanImport = ret != null;
+
+            return ret;
+            /*
+            if (item is IGear gear)
+            {
+                var sharedModels = _modelFileService.GetSharedModels(gear);
+                if (sharedModels != null)
+                {
+                    ret = new List<IModelGameFile>();
+                    foreach(var model in sharedModels)
+                    {
+                        var modelGameFile = _modelFileService.GetModelFileData(model);
+                        if (modelGameFile != null)
+                        {
+                            ret.Add(modelGameFile);
+                        }
+                    }
+                }
+            }
+            else if (item != null)
+            {
+            
+                var modelGameFile = _modelFileService.GetModelFileData(item);
+                if (modelGameFile != null)
+                {
+                    _selectedModel = modelGameFile;
+                    ret = new List<IModelGameFile>() { modelGameFile };
+                }
+            }
+            */
+        }
+
+        public override void CompletePathSet()
+        {
+            base.CompletePathSet();
+            CanImport = XivPathParser.IsMdl(_completePath);
+            if (CanImport)
+            {
+                SelectedItemMdl = _completePath;
             }
         }
 
@@ -73,7 +140,6 @@ namespace Icarus.ViewModels.Import
             {
                 modelGameFile = _modelFileService.GetModelFileData(SelectedItem, SelectedRace);
             }
-
             if (modelGameFile != null)
             {
                 var mod = new ModelMod(modelGameFile, ImportSource.Vanilla);
