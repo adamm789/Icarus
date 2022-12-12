@@ -13,9 +13,6 @@ namespace Icarus.Services.GameFiles.Interfaces
         Task<IMaterialGameFile?> GetMaterialFileData(IItem? item, int materialSet = 1);
         Task<List<IMaterialGameFile>?> GetMaterialSet(IItem? itemArg = null);
 
-        Task<int> GetNumMaterialSets(IItem? item);
-        Task< List<IMaterialGameFile>? > GetMaterialAndVariantsFileData(IItem? item);
-
         Task<IMaterialGameFile?> TryGetMaterialFileData(string path, string name = "");
         Task<IMaterialGameFile?> TryGetMaterialFromName(string name);
         StainingTemplateFile GetStainingTemplateFile();
