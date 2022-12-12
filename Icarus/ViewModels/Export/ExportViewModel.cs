@@ -23,12 +23,14 @@ namespace Icarus.ViewModels.Export
         readonly ILogService _logService;
 
         ExportSimpleViewModel ExportSimpleViewModel;
+        ExportSimplePenumbraViewModel ExportSimplePenumbraViewModel;
 
         public bool IsDebugMode
         {
             get
             {
 #if DEBUG
+                _logService.Debug("Debug mode is on: ExportViewModel");
                 return true;
 #else
 return false;
@@ -46,6 +48,7 @@ return false;
             _logService = logService;
 
             ExportSimpleViewModel = new(modsListViewModel, _logService);
+            ExportSimplePenumbraViewModel = new(_modsListViewModel, _logService);
 
             var eh = new PropertyChangedEventHandler(OnPropertyChanged);
             _modsListViewModel.PropertyChanged += eh;
@@ -75,12 +78,12 @@ return false;
                 // TODO: Allow key combination to bypass this and always do the opposite
                 // Will also need to export all if asking is overridden
 
+                // TODO: Way to do this in ExportViewModel constructor
                 var saveFileDialog = new SaveFileDialog();
                 saveFileDialog.RestoreDirectory = true;
 
                 var directoryDialog = new FolderBrowserDialog();
                 // TODO: directoryDialog.InitialDirectory = ...
-
 
                 CommonDialog? common = null;
 
@@ -104,15 +107,34 @@ return false;
                 {
                     // TODO: Implement Penumbra export; include options for .pmp or file structure
                     // Penumbra... pmp? dirctory?
+                    saveFileDialog.Filter = "pmp | .pmp";
+                    saveFileDialog.FileName = _modsListViewModel.ModPack.Name;
+                    ExportSimplePenumbraViewModel.SaveFileDialog = saveFileDialog;
+                    ExportSimplePenumbraViewModel.FolderBrowserDialog = directoryDialog;
                 }
                 FileSystemInfo? info = null;
 
                 if (ExportType.Simple.HasFlag(type))
                 {
-                    var result = _windowService.ShowWindow<ExportSimpleWindow>(ExportSimpleViewModel);
+                    if (ExportType.Penumbra.HasFlag(type))
+                    {
+                        // TODO: Window for exporting simple penumbra modpacks
+                        // pmp, "file structure"
+                        // pmp => write to .pmp
+                        // "file structure" => write with the many folders or not
 
-                    shouldDelete = ExportSimpleViewModel.ShouldDelete;
-                    ExportSimpleViewModel.ShouldDelete = false;
+                        _windowService.ShowWindow<ExportSimplePenumbraWindow>(ExportSimplePenumbraViewModel);
+
+                        shouldDelete = ExportSimplePenumbraViewModel.ShouldDelete;
+                        ExportSimplePenumbraViewModel.ShouldDelete = false;
+                    }
+                    else
+                    {
+                        var result = _windowService.ShowWindow<ExportSimpleWindow>(ExportSimpleViewModel);
+
+                        shouldDelete = ExportSimpleViewModel.ShouldDelete;
+                        ExportSimpleViewModel.ShouldDelete = false;
+                    }
                 }
                 else
                 {
@@ -141,7 +163,7 @@ return false;
                     try
                     {
                         //outputPath = await _exportService.Export(_modsListViewModel.ModPack, type, filePath);
-                        outputPath = await _exportService.Export(_modsListViewModel.ModPack, type, info);
+                        outputPath = await _exportService.Export(_modsListViewModel.ModPack, type, info, ExportSimplePenumbraViewModel.ToFileStructure);
 
                         if (!String.IsNullOrWhiteSpace(outputPath))
                         {

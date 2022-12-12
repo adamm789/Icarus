@@ -17,13 +17,11 @@ using SaveFileDialog = System.Windows.Forms.SaveFileDialog;
 
 namespace Icarus.ViewModels.Export
 {
-    // TODO: Prompt for user to delete any files if it exists, upon pressing "Confirm"
-    // TODO: Export text for button
     public class ExportSimpleViewModel : ModsListSelectionViewModel
     {
         public bool ShouldDelete { get; set; } = false;
 
-        private CommonDialog _dialog;
+        protected CommonDialog _dialog;
 
         public ExportSimpleViewModel(IModsListViewModel modsListViewModel, ILogService logService) 
             : base(modsListViewModel, logService)

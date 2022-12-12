@@ -5,6 +5,7 @@ using Icarus.Services.GameFiles;
 using Icarus.Services.Interfaces;
 using Ionic.Zip;
 using Lumina;
+using Microsoft.VisualBasic.FileIO;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -22,15 +23,18 @@ namespace Icarus.Util
 
         }
 
-        public async Task<string> ExportToSimple(ModPack modPack, FileSystemInfo info)
+        public async Task<string> ExportToSimple(ModPack modPack, FileSystemInfo info, bool toFileStructure = true)
         {
             if (info is FileInfo file)
             {
+                var x = file.Directory.FullName;
+
+                return await ExportToSimple(modPack, file.Directory.FullName, true);
 
             }
             else if (info is DirectoryInfo dir)
             {
-
+                return await ExportToSimple(modPack, dir.FullName, false, toFileStructure);
             }
 
             throw new NotImplementedException();
@@ -40,7 +44,6 @@ namespace Icarus.Util
         {
             if (info is FileInfo file)
             {
-
             }
             else if (info is DirectoryInfo dir)
             {
@@ -49,7 +52,7 @@ namespace Icarus.Util
             throw new NotImplementedException();
         }
 
-        internal async Task<string> ExportToSimple(ModPack modPack, string outputDir, bool toPmp = true)
+        internal async Task<string> ExportToSimple(ModPack modPack, string outputDir, bool toPmp = true, bool toFileStructure = true)
         {
             _logService.Information("Starting export to simple penumbra modpack.");
             var tempDir = GetTempDirectory(outputDir);
@@ -74,13 +77,13 @@ namespace Icarus.Util
             File.WriteAllText(Path.Combine(tempDir, "default_mod.json"), defaultJson);
 
             var outputPath = GetOutputPath(modPack, outputDir);
-            var finalOutputPath = WriteFiles(tempDir, outputPath, toPmp);
+            var finalOutputPath = WriteFiles(tempDir, outputPath, toPmp, toFileStructure);
 
             return finalOutputPath;
         }
 
         // TODO: Implement Advanced Penumbra mods
-        internal async Task<string> ExportToAdvanced(ModPack modPack, string outputDir, bool toPmp = true)
+        internal async Task<string> ExportToAdvanced(ModPack modPack, string outputDir, bool toPmp = true, bool toFileStructure = true)
         {
             var tempDir = Path.Combine(outputDir, "temp");
 
@@ -92,12 +95,12 @@ namespace Icarus.Util
 
             WriteGroups(modPack, tempDir);
             var outputPath = GetOutputPath(modPack, outputDir);
-            var finalOutputPath = WriteFiles(tempDir, outputPath, toPmp);
+            var finalOutputPath = WriteFiles(tempDir, outputPath, toPmp, toFileStructure);
             
             return await Task.Run(() => finalOutputPath);
         }
 
-        private string WriteFiles(string tempDir, string outputPath, bool toPmp = true)
+        private string WriteFiles(string tempDir, string outputPath, bool toPmp = true, bool toFileStructure = true)
         {
             _logService.Verbose($"Writing from {tempDir} to {outputPath}.");
             var ret = outputPath;
@@ -119,7 +122,8 @@ namespace Icarus.Util
                 {
                     Directory.Delete(outputPath, true);
                 }
-                Directory.Move(tempDir, outputPath);
+                //Directory.Copy(tempDir, outputPath);
+                FileSystem.MoveDirectory(tempDir, outputPath);
             }
 
             if (Directory.Exists(tempDir))

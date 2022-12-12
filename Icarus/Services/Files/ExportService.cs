@@ -49,7 +49,7 @@ namespace Icarus.Services.Files
             _logService.Information($"{pair.a} - {pair.b}");
         }
 
-        public async Task<string> Export(ModPack modPack, ExportType exportType, FileSystemInfo info, bool toPmp = true)
+        public async Task<string> Export(ModPack modPack, ExportType exportType, FileSystemInfo info, bool toFileStructure = true)
         {
             IsBusy = true;
             var progress = new Progress<(int, int)>(ReportProgress);
@@ -66,6 +66,8 @@ namespace Icarus.Services.Files
                         return await _rawExporter.ExportToSimple(modPack, (DirectoryInfo)info);
                     case ExportType.RawAdvanced:
                         return await _rawExporter.ExportToAdvanced(modPack, (DirectoryInfo)info);
+                    case ExportType.PenumbraSimple:
+                        return await _penumbraExporter.ExportToSimple(modPack, info, toFileStructure);
                 }
                 throw new NotImplementedException();
             }
