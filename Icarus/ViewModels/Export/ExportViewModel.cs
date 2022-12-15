@@ -92,7 +92,7 @@ return false;
                 // TODO: Clean up save file dialog
                 if (ExportType.TexTools.HasFlag(type))
                 {
-                    saveFileDialog.Filter = "ttmp2 | .ttmp2";
+                    saveFileDialog.Filter = "ttmp2 | *.ttmp2";
                     saveFileDialog.FileName = _modsListViewModel.ModPack.Name;
                     common = saveFileDialog;
                     ExportSimpleViewModel.SetDialog(saveFileDialog);
@@ -107,7 +107,7 @@ return false;
                 {
                     // TODO: Implement Penumbra export; include options for .pmp or file structure
                     // Penumbra... pmp? dirctory?
-                    saveFileDialog.Filter = "pmp | .pmp";
+                    saveFileDialog.Filter = "pmp | *.pmp";
                     saveFileDialog.FileName = _modsListViewModel.ModPack.Name;
                     ExportSimplePenumbraViewModel.SaveFileDialog = saveFileDialog;
                     ExportSimplePenumbraViewModel.FolderBrowserDialog = directoryDialog;
@@ -146,12 +146,14 @@ return false;
                     }
                 }
 
-                if (!String.IsNullOrWhiteSpace(saveFileDialog.FileName))
+                if (ExportType.TexTools.HasFlag(type) || ExportSimplePenumbraViewModel.ToPmp)
                 {
+                    _logService.Debug($"ExportViewModel is exporting as file.");
                     info = new FileInfo(saveFileDialog.FileName);
                 }
-                else if (!String.IsNullOrWhiteSpace(directoryDialog.SelectedPath))
+                else
                 {
+                    _logService.Debug($"ExportViewModel is exporting as directory.");
                     info = new DirectoryInfo(directoryDialog.SelectedPath);
                 }
 

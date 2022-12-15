@@ -27,13 +27,13 @@ namespace Icarus.Util
         {
             if (info is FileInfo file)
             {
-                var x = file.Directory.FullName;
-
+                _logService.Debug($"Exporting file.");
                 return await ExportToSimple(modPack, file.Directory.FullName, true);
 
             }
             else if (info is DirectoryInfo dir)
             {
+                _logService.Debug($"Exporting directory with toFileStructure = {toFileStructure}");
                 return await ExportToSimple(modPack, dir.FullName, false, toFileStructure);
             }
 
@@ -57,27 +57,63 @@ namespace Icarus.Util
             _logService.Information("Starting export to simple penumbra modpack.");
             var tempDir = GetTempDirectory(outputDir);
 
-            var metaJson = GetMetaJson(modPack);
-            var defaultJson = GetDefaultModJson(modPack.SimpleModsList, true);
+            if (toFileStructure)
+            {
+                var metaJson = GetMetaJson(modPack);
+                var defaultJson = GetDefaultModJson(modPack.SimpleModsList, true);
 
+                File.WriteAllText(Path.Combine(tempDir, "meta.json"), metaJson);
+                File.WriteAllText(Path.Combine(tempDir, "default_mod.json"), defaultJson);
+            }
+
+            var numFiles = 0;
+            var numWritten = 0;
             foreach (var entry in modPack.SimpleModsList)
             {
                 // Maybe unecessary? But just to be safe, i guess
                 if (ForbiddenModTypes.Contains(entry.Path)) continue;
-                var bytes = await WriteToBytes(entry, false);
+                if (!entry.ShouldExport) continue;
 
-                if (bytes.Length == 0) continue;
+                try
+                {
+                    var bytes = await WriteToBytes(entry, false);
+                    numFiles++;
+                    if (bytes.Length == 0) continue;
 
-                var path = Path.Combine(tempDir, entry.Path);
-                var file = new FileInfo(path);
-                file.Directory.Create();
-                File.WriteAllBytes(path, bytes);
+                    var path = Path.Combine(tempDir, entry.Path);
+                    var file = new FileInfo(path);
+                    if (toPmp || toFileStructure)
+                    {
+                        file.Directory.Create();
+                        if (File.Exists(path))
+                        {
+                            _logService.Warning($"{file.Name} already exists and is being overwritten by a newer version.");
+                        }
+                    }
+                    else
+                    {
+                        var fileName = Path.GetFileNameWithoutExtension(file.Name);
+                        var ext = file.Extension;
+
+                        var num = 0;
+                        path = Path.Combine(tempDir, file.Name);
+                        while (File.Exists(path))
+                        {
+                            path = Path.Combine(tempDir, $"{fileName} ({num}){ext}");
+                            num++;
+                        }
+                    }
+                    File.WriteAllBytes(path, bytes);
+                    numWritten++;
+                } catch (Exception ex)
+                {
+                    _logService.Error(ex, "An exception has occurred");
+                }
             }
-            File.WriteAllText(Path.Combine(tempDir, "meta.json"), metaJson);
-            File.WriteAllText(Path.Combine(tempDir, "default_mod.json"), defaultJson);
 
+            _logService.Information($"Wrote {numWritten} out of {numFiles} mods.");
             var outputPath = GetOutputPath(modPack, outputDir);
-            var finalOutputPath = WriteFiles(tempDir, outputPath, toPmp, toFileStructure);
+            var finalOutputPath = WriteFiles(tempDir, outputPath, toPmp);
 
             return finalOutputPath;
         }
@@ -95,12 +131,12 @@ namespace Icarus.Util
 
             WriteGroups(modPack, tempDir);
             var outputPath = GetOutputPath(modPack, outputDir);
-            var finalOutputPath = WriteFiles(tempDir, outputPath, toPmp, toFileStructure);
-            
+            var finalOutputPath = WriteFiles(tempDir, outputPath, toPmp);
+
             return await Task.Run(() => finalOutputPath);
         }
 
-        private string WriteFiles(string tempDir, string outputPath, bool toPmp = true, bool toFileStructure = true)
+        private string WriteFiles(string tempDir, string outputPath, bool toPmp = true)
         {
             _logService.Verbose($"Writing from {tempDir} to {outputPath}.");
             var ret = outputPath;
@@ -120,6 +156,7 @@ namespace Icarus.Util
             {
                 if (Directory.Exists(outputPath))
                 {
+                    _logService.Debug($"Deleting {outputPath}.");
                     Directory.Delete(outputPath, true);
                 }
                 //Directory.Copy(tempDir, outputPath);
