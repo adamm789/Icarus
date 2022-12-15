@@ -146,7 +146,7 @@ return false;
                     }
                 }
 
-                if (ExportType.TexTools.HasFlag(type) || ExportSimplePenumbraViewModel.ToPmp)
+                if (ExportType.TexTools.HasFlag(type) || (ExportType.Penumbra.HasFlag(type) && ExportSimplePenumbraViewModel.ToPmp))
                 {
                     _logService.Debug($"ExportViewModel is exporting as file.");
                     info = new FileInfo(saveFileDialog.FileName);

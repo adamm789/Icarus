@@ -84,7 +84,8 @@ namespace Icarus.Util.Export
 
         private string GetOutputFileName(IMod mod, ModOption? option = null)
         {
-            var retVal = mod.ModFileName;
+            var retVal = Path.GetFileNameWithoutExtension(mod.Path);
+            
 
             if (option != null)
             {

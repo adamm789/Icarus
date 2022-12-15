@@ -97,7 +97,7 @@ namespace Icarus.Util
                 else
                 {
                     var num = 0;
-                    outputFilePath = Path.Combine(outputPath, outputFileName + " (" + num + ").fbx");
+                    outputFilePath = Path.Combine(outputPath, $"{outputFileName}.fbx");
                     while (File.Exists(outputFilePath))
                     {
                         outputFilePath = Path.Combine(outputPath, outputFileName + " (" + num + ").fbx");
