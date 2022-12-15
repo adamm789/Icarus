@@ -31,41 +31,37 @@ namespace Icarus.ViewModels.Import
         public ImportVanillaModelViewModel(IModsListViewModel modPackViewModel, IModelFileService modelFileService, ILogService logService) :
             base(modPackViewModel, logService)
         {
-
-        }
-
-        public ImportVanillaModelViewModel(IModsListViewModel modPackViewModel, ItemListViewModel itemListService, IModelFileService modelFileService, ILogService logService) :
-    base(modPackViewModel, itemListService, logService)
-        {
             _modelFileService = modelFileService;
+
         }
 
-        public IModelGameFile? SetCompletePath(string? path)
+        public override Task SetCompletePath(string? path)
         {
-            CanImport = XivPathParser.IsMdl(path);
+            base.SetCompletePath(path);
 
-            if (String.IsNullOrWhiteSpace(path))
+            if (String.IsNullOrWhiteSpace(path) || !XivPathParser.IsMdl(path))
             {
                 HasSkin = false;
                 SelectedItemMdl = "";
-                return null;
+                _completePath = null;
+                CanImport = false;
             }
             else
             {
                 SelectedItemMdl = path;
-                _selectedModel = _modelFileService.TryGetModelFileData(path, SelectedItemName);
-                return _selectedModel;
+                _selectedModel = _modelFileService.TryGetModelFileData(path);
+                CanImport = _selectedModel != null;
+                _completePath = path;
             }
+            return Task.CompletedTask;
         }
 
-        public List<IModelGameFile>? SetItem(IItem? item)
+        public override Task SetItem(IItem? item)
         {
-            List<IModelGameFile>? ret = null;
+            //List<IModelGameFile>? ret = null;
+            base.SetItem(item);
             var modelGameFile = _modelFileService.GetModelFileData(item);
-            if (modelGameFile != null)
-            {
-                ret = new List<IModelGameFile>() { modelGameFile };
-            }
+
             _selectedModel = modelGameFile;
             SelectedItemName = _selectedModel?.Name;
 
@@ -86,60 +82,14 @@ namespace Icarus.ViewModels.Import
                 AllRacesMdls = new();
                 SelectedItemMdl = "";
             }
-            CanImport = ret != null;
-
-            return ret;
-            /*
-            if (item is IGear gear)
-            {
-                var sharedModels = _modelFileService.GetSharedModels(gear);
-                if (sharedModels != null)
-                {
-                    ret = new List<IModelGameFile>();
-                    foreach(var model in sharedModels)
-                    {
-                        var modelGameFile = _modelFileService.GetModelFileData(model);
-                        if (modelGameFile != null)
-                        {
-                            ret.Add(modelGameFile);
-                        }
-                    }
-                }
-            }
-            else if (item != null)
-            {
-            
-                var modelGameFile = _modelFileService.GetModelFileData(item);
-                if (modelGameFile != null)
-                {
-                    _selectedModel = modelGameFile;
-                    ret = new List<IModelGameFile>() { modelGameFile };
-                }
-            }
-            */
-        }
-
-        public override void CompletePathSet()
-        {
-            base.CompletePathSet();
-            CanImport = XivPathParser.IsMdl(_completePath);
-            if (CanImport)
-            {
-                SelectedItemMdl = _completePath;
-            }
+            CanImport = modelGameFile != null;
+            return Task.CompletedTask;
         }
 
         public async Task<ModelMod?> GetVanillaMdl()
         {
-            IModelGameFile? modelGameFile;
-            if (_completePath != null)
-            {
-                modelGameFile = _modelFileService.TryGetModelFileData(_completePath, SelectedItemName);
-            }
-            else
-            {
-                modelGameFile = _modelFileService.GetModelFileData(SelectedItem, SelectedRace);
-            }
+            IModelGameFile? modelGameFile = _selectedModel;
+
             if (modelGameFile != null)
             {
                 var mod = new ModelMod(modelGameFile, ImportSource.Vanilla);
@@ -180,15 +130,7 @@ namespace Icarus.ViewModels.Import
         public XivRace SelectedRace
         {
             get { return _selectedRace; }
-            set
-            {
-                _selectedRace = value;
-                OnPropertyChanged();
-                if (SelectedItem is IGear gear)
-                {
-                    SelectedItemMdl = gear.GetMdlFileName(_selectedRace);
-                }
-            }
+            set { _selectedRace = value; OnPropertyChanged(); }
         }
 
         bool _hasSkin = false;

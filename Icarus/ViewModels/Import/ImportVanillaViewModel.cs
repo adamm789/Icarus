@@ -25,10 +25,10 @@ namespace Icarus.ViewModels.Import
         public ImportVanillaViewModel(IModsListViewModel modPack, ItemListViewModel itemListViewModel, VanillaFileService vanillaFileService, ILogService logService)
             : base(logService)
         {
-            ImportVanillaModelViewModel = new(modPack, itemListViewModel, vanillaFileService.ModelFileService, logService);
-            ImportVanillaMaterialViewModel = new(modPack, itemListViewModel, vanillaFileService.MaterialFileService, logService);
-            ImportVanillaMetadataViewModel = new(modPack, itemListViewModel, vanillaFileService.MetadataFileService, logService);
-            ImportVanillaTextureViewModel = new(modPack, itemListViewModel, vanillaFileService.TextureFileService, logService);
+            ImportVanillaModelViewModel = new(modPack, vanillaFileService.ModelFileService, logService);
+            ImportVanillaMaterialViewModel = new(modPack, vanillaFileService.MaterialFileService, logService);
+            ImportVanillaMetadataViewModel = new(modPack, vanillaFileService.MetadataFileService, logService);
+            ImportVanillaTextureViewModel = new(modPack, vanillaFileService.TextureFileService, logService);
 
             _itemListViewModel = itemListViewModel;
             _itemListViewModel.PropertyChanged += new(OnItemListPropertyChanged);
@@ -41,13 +41,21 @@ namespace Icarus.ViewModels.Import
             if (e.PropertyName == nameof(ItemListViewModel.SelectedItem))
             {
                 var item = _itemListViewModel.SelectedItem;
-                var modelFiles = ImportVanillaModelViewModel.SetItem(item);
-                var materials = await ImportVanillaMaterialViewModel.SetItem(item);
+                await ImportVanillaModelViewModel.SetItem(item);
+                await ImportVanillaMaterialViewModel.SetItem(item);
                 await ImportVanillaMetadataViewModel.SetItem(item);
             }
             else if (e.PropertyName == nameof(ItemListViewModel.CompletePath))
             {
-                var completePath = _itemListViewModel.CompletePath;
+                if (_itemListViewModel.SelectedItem == null)
+                {
+                    var completePath = _itemListViewModel.CompletePath;
+
+                    await ImportVanillaModelViewModel.SetCompletePath(completePath);
+                    await ImportVanillaMaterialViewModel.SetCompletePath(completePath);
+                    await ImportVanillaTextureViewModel.SetCompletePath(completePath);
+                    await ImportVanillaMetadataViewModel.SetCompletePath(completePath);
+                }
             }
         }
 

@@ -12,6 +12,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ItemDatabase.Interfaces;
+using ItemDatabase.Paths;
+using System.Text.RegularExpressions;
 
 namespace Icarus.ViewModels.Import
 {
@@ -19,8 +21,8 @@ namespace Icarus.ViewModels.Import
     {
         readonly IMetadataFileService _metadataFileService;
         private IMetadataFile? _metadataFile;
-        public ImportVanillaMetadataViewModel(IModsListViewModel modPack, ItemListViewModel itemListService, IMetadataFileService metadataFileService, ILogService logService) 
-            : base(modPack, itemListService, logService)
+        public ImportVanillaMetadataViewModel(IModsListViewModel modPack, IMetadataFileService metadataFileService, ILogService logService) 
+            : base(modPack, logService)
         {
             _metadataFileService = metadataFileService;
         }
@@ -32,32 +34,33 @@ namespace Icarus.ViewModels.Import
             set { _hasMetadata = value; OnPropertyChanged(); }
         }
 
-        public async Task<IMetadataFile?> SetItem(IItem item)
+        public async override Task<IMetadataFile?> SetItem(IItem? item)
         {
-            SelectedItem = item;
-            _metadataFile = await _metadataFileService.GetMetadata(SelectedItem);
+            _metadataFile = await _metadataFileService.GetMetadata(item);
             HasMetadata = _metadataFile?.ItemMetadata != null;
             CanImport = HasMetadata;
             return _metadataFile;
         }
 
-        /*
-        public override async Task SelectedItemSetAsync()
+        public async override Task SetCompletePath(string? path)
         {
-            await base.SelectedItemSetAsync();
+            await base.SetCompletePath(path);
+            HasMetadata = false;
 
-            var metadataFile = await _metadataFileService.GetMetadata(SelectedItem);
-            HasMetadata = metadataFile?.ItemMetadata != null;
+            if (String.IsNullOrWhiteSpace(path) || !Regex.IsMatch(path, @".meta$"))
+            {
+                CanImport = false;
+            }
+            else
+            {
+                _metadataFile = await _metadataFileService.TryGetMetadata(path);
+                CanImport = _metadataFile != null;
+            }
         }
-        */
 
+        
         private async Task<MetadataMod?> GetVanillaMeta()
         {
-            if (_metadataFile == null && _completePath != null)
-            {
-                _metadataFile = await _metadataFileService.TryGetMetadata(_completePath, SelectedItemName);
-            }
-
             if (_metadataFile != null)
             {
                 var mod = new MetadataMod(_metadataFile, ImportSource.Vanilla);
@@ -65,26 +68,6 @@ namespace Icarus.ViewModels.Import
                 return mod;
             }
             return null;
-
-            /*
-            IMetadataFile? metadataFile;
-            if (SelectedItem == null) return null;
-            if (_completePath != null)
-            {
-                metadataFile = await _metadataFileService.TryGetMetadata(_completePath, SelectedItemName);
-            }
-            else
-            {
-                metadataFile = await _metadataFileService.GetMetadata(SelectedItem);
-            }
-            if (metadataFile != null)
-            {
-                var mod = new MetadataMod(metadataFile, ImportSource.Vanilla);
-                var modViewModel = _modPackViewModel.Add(mod);
-                return mod;
-            }
-            return null;
-            */
         }
 
         protected override async Task DoImport()
