@@ -42,13 +42,13 @@ namespace Icarus.ViewModels.Import
             if (String.IsNullOrWhiteSpace(path) || !XivPathParser.IsMdl(path))
             {
                 HasSkin = false;
-                SelectedItemMdl = "";
+                SelectedModelPath = "";
                 _completePath = null;
                 CanImport = false;
             }
             else
             {
-                SelectedItemMdl = path;
+                SelectedModelPath = path;
                 _selectedModel = _modelFileService.TryGetModelFileData(path);
                 CanImport = _selectedModel != null;
                 _completePath = path;
@@ -69,24 +69,24 @@ namespace Icarus.ViewModels.Import
             {
                 HasSkin = XivPathParser.HasSkin(_selectedModel.Path);
                 AllRacesMdls = new(_modelFileService.GetAllRaceMdls(item));
+                SelectedModelPath = _selectedModel.Path;
 
                 if (AllRacesMdls.Count > 0)
                 {
                     SelectedRace = AllRacesMdls[0];
                 }
-                SelectedItemMdl = _selectedModel.Name;
             }
             else
             {
                 HasSkin = false;
                 AllRacesMdls = new();
-                SelectedItemMdl = "";
+                SelectedModelPath = "";
             }
             CanImport = modelGameFile != null;
             return Task.CompletedTask;
         }
 
-        public async Task<ModelMod?> GetVanillaMdl()
+        public ModelMod? GetVanillaMdl()
         {
             IModelGameFile? modelGameFile = _selectedModel;
 
@@ -97,26 +97,26 @@ namespace Icarus.ViewModels.Import
                 if (modViewModel == null)
                 {
                     _logService.Fatal($"Failed to get ViewModel for vanilla mdl: {mod.Name}");
-                    return await Task.FromResult<ModelMod?>(null);
+                    return null;
                 }
                 modViewModel.SetModData(modelGameFile);
-                return await Task.FromResult<ModelMod?>(mod);
+                return mod;
             }
-            return await Task.FromResult<ModelMod?>(null);
+            return null;
             //return null;
         }
 
-        protected async override Task DoImport()
+        protected override void DoImport()
         {
-            await GetVanillaMdl();
+            GetVanillaMdl();
             //return Task.CompletedTask;
         }
 
-        string _selectedItemMdl;
-        public string SelectedItemMdl
+        string _selectedModelPath;
+        public string SelectedModelPath
         {
-            get { return _selectedItemMdl; }
-            set { _selectedItemMdl = value; OnPropertyChanged(); }
+            get { return _selectedModelPath; }
+            set { _selectedModelPath = value; OnPropertyChanged(); }
         }
 
         ObservableCollection<XivRace> _allRacesMdls = new();
@@ -130,7 +130,11 @@ namespace Icarus.ViewModels.Import
         public XivRace SelectedRace
         {
             get { return _selectedRace; }
-            set { _selectedRace = value; OnPropertyChanged(); }
+            set {
+                _selectedRace = value;
+                OnPropertyChanged();
+                SelectedModelPath = XivPathParser.ChangeToRace(SelectedModelPath, _selectedRace);
+            }
         }
 
         bool _hasSkin = false;

@@ -9,6 +9,6 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <xtk1:WatermarkTextBox Watermark="Search" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" ></xtk1:WatermarkTextBox>
+        <xtk1:WatermarkTextBox Watermark="Search items" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"/>
     </Grid>
 </UserControl>

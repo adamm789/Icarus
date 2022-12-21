@@ -2,11 +2,15 @@
 using ItemDatabase.Interfaces;
 using Lumina;
 using Lumina.Data.Files;
+using Lumina.Excel;
 using Lumina.Excel.GeneratedSheets;
 using Lumina.Text;
 using Serilog;
 using xivModdingFramework.General.Enums;
+using xivModdingFramework.SqPack.FileTypes;
 using LuminaItem = Lumina.Excel.GeneratedSheets.Item;
+using Index = xivModdingFramework.SqPack.FileTypes.Index;
+using System.Collections.Immutable;
 
 namespace ItemDatabase
 {
@@ -22,6 +26,10 @@ namespace ItemDatabase
         private SortedDictionary<string, IItem> _indoorFurniture = new();
         private SortedDictionary<MainItemCategory, SortedList<string, Item>> OtherItems = new();
         private SortedDictionary<string, Dictionary<EquipmentSlot, List<IItem>>> _materialSets = new();
+
+
+        private Dictionary<string, SortedDictionary<string, IItem>> _gear = new();
+        private Dictionary<string, SortedDictionary<string, IItem>> _indoorFurniture2 = new();
 
         private SortedDictionary<string, GearModelSet> _gearModelSets = new();
         public ItemList(GameData lumina)
@@ -45,6 +53,52 @@ namespace ItemDatabase
         public Dictionary<string, SortedDictionary<string, IItem>> GetAllItems()
         {
             return _allItems;
+        }
+
+        public Dictionary<string, Dictionary<string, SortedDictionary<string, IItem>>> GetAllItems2()
+        {
+            var ret = new Dictionary<string, Dictionary<string, SortedDictionary<string, IItem>>>();
+            ret["Gear"] = _gear;
+            ret["Indoor Furniture"] = _indoorFurniture2;
+
+            return ret;
+        }
+
+        private Dictionary<string, SortedDictionary<string, IItem>> GetGear()
+        {
+            var ret = new Dictionary<string, SortedDictionary<string, IItem>>();
+            var items = _lumina.GetExcelSheet<LuminaItem>();
+
+            foreach (var item in items)
+            {
+                if (item.Name.ToString().Contains("emperor", StringComparison.OrdinalIgnoreCase))
+                {
+
+                }
+                var cat = Item.GetMainItemCategory(item);
+
+                switch (cat)
+                {
+                    // TODO: I think the only cases here for Lumina.Items are Gear and Null
+                    case MainItemCategory.Null:
+                        break;
+                    case MainItemCategory.Gear:
+                        var i = Item.GetItem(item);
+                        if (i != null)
+                        {
+                            AddItem(i);
+                        }
+                        break;
+                    case MainItemCategory.Minions:
+                        break;
+                    case MainItemCategory.IndoorFurnishings:
+                        break;
+                    case MainItemCategory.OutdoorFurnishings:
+                        break;
+                }
+            }
+
+            return ret;
         }
 
         private void BuildList()
@@ -74,10 +128,13 @@ namespace ItemDatabase
             // TODO: Create an actual storage file, so I don't have to do this every time?
 
             var items = _lumina.GetExcelSheet<LuminaItem>();
-            var furnishings = _lumina.GetExcelSheet<HousingFurniture>();
 
             foreach (var item in items)
             {
+                if (item.Name.ToString().Contains("emperor", StringComparison.OrdinalIgnoreCase))
+                {
+
+                }
                 var cat = Item.GetMainItemCategory(item);
 
                 switch (cat)
@@ -101,17 +158,91 @@ namespace ItemDatabase
                 }
             }
 
+            AddIndoorFurniture();
+            AddCharacter();
+            AddBody();
+        }
+
+        private void AddIndoorFurniture()
+        {
 #if DEBUG
+            Log.Debug($"Adding indoor furniture");
+            var furnishings = _lumina.GetExcelSheet<HousingFurniture>();
+            _indoorFurniture2["Indoor Furnishings"] = new();
+            _indoorFurniture2["Tables"] = new();
+            _indoorFurniture2["Tabletop"] = new();
+            _indoorFurniture2["Wall-mounted"] = new();
+            _indoorFurniture2["Rugs"] = new();
+
             foreach (var f in furnishings)
             {
                 var item = new IndoorFurniture(f);
                 if (String.IsNullOrWhiteSpace(item.Name)) continue;
 
                 _indoorFurniture.Add(item.Name, item);
+                string cat;
+                switch (f.HousingItemCategory)
+                {
+                    case 12:
+                        cat = "Indoor Furnishings";
+                        break;
+                    case 13:
+                        cat = "Tables";
+                        break;
+                    case 14:
+                        cat = "Tabletop";
+                        break;
+                    case 15:
+                        cat = "Wall-mounted";
+                        break;
+                    case 16:
+                        cat = "Rugs";
+                        break;
+                    default:
+                        cat = f.HousingItemCategory.ToString();
+                        break;
+                }
+                if (!_indoorFurniture2.ContainsKey(cat))
+                {
+                    _indoorFurniture2[cat] = new();
+                }
+                _indoorFurniture2[cat].Add(item.Name, item);
+
             }
             _allItems["Indoor Furniture"] = _indoorFurniture;
 #endif
-            AddBody();
+        }
+
+        private void AddCharacter()
+        {
+#if DEBUG
+            Log.Debug($"Adding character");
+            var frameworkPath = Path.Combine(_lumina.DataPath.FullName, "ffxiv");
+            var index = new Index(new DirectoryInfo(frameworkPath));
+            // Hair
+            var hair = new SortedDictionary<string, IItem>();
+            foreach (var race in XivRaces.PlayableRaces)
+            {
+                var code = race.GetRaceCode();
+                for (var i = 0; i < 300; i++)
+                {
+                    var itemNum = i.ToString().PadLeft(4, '0');
+                    var folder = $"chara/human/c{code}/obj/hair/h{itemNum}/model";
+                    // TODO: Add "chara" items
+                    // TODO: Find better way to find "chara" items
+                    var b = Task.Run(() => index.FolderExists(folder, XivDataFile._04_Chara)).Result;
+                    if (b)
+                    {
+                        var chara = new Chara(EquipmentSlot.Head, $"{race} - Hair {itemNum}", itemNum);
+                        if (!hair.ContainsKey(itemNum))
+                        {
+                            hair.Add(itemNum, chara);
+                        }
+                    }
+                }
+            }
+            _allItems["Hair"] = hair;
+#endif
         }
 
         public List<IGear>? GetSharedModels(IGear gear)
@@ -154,7 +285,6 @@ namespace ItemDatabase
                 }
                 _gearModelSets[gear.Code].Add(gear);
 
-
                 if (!_materialSets.ContainsKey(gear.Code))
                 {
                     _materialSets[gear.Code] = new();
@@ -164,6 +294,10 @@ namespace ItemDatabase
                     _materialSets[gear.Code][gear.Slot] = new();
                 }
                 _materialSets[gear.Code][gear.Slot].Add(gear);
+            }
+            else
+            {
+
             }
         }
 
@@ -193,6 +327,12 @@ namespace ItemDatabase
                 // TODO: "An item with the same key has already been added. Key: [Valentione Emissary's Boots, ItemDatabase.Equipment]"
                 _allItems[slot.ToString()].Add(gear.Name, gear);
             }
+            if (!_gear.ContainsKey(slot.ToString()))
+            {
+                _gear[slot.ToString()] = new();
+            }
+            _gear[slot.ToString()].Add(gear.Name, gear);
+
         }
 
         public bool Contains(string str)
@@ -315,6 +455,7 @@ namespace ItemDatabase
 
             //var emperorFists = new Weapon(e0301);
             //var emperorShield = new Weapon(e0101);
+            /*
             var emperorHat = new Chara(EquipmentSlot.Head, "The Emperor's New Hat", "e0279");
             var emperorRobe = new Chara(EquipmentSlot.Body, "The Emperor's New Robe", "e0279");
             var emperorGloves = new Chara(EquipmentSlot.Hands, "The Emperor's New Gloves", "e0279"); ;
@@ -335,6 +476,7 @@ namespace ItemDatabase
             AddEquipment(emperorEarrings);
             AddEquipment(emperorNecklace);
             AddEquipment(emperorRing);
+            */
         }
 
         /*

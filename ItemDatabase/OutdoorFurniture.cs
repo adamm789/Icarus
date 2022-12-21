@@ -19,20 +19,5 @@ namespace ItemDatabase
         {
             throw new NotImplementedException();
         }
-
-        public override string GetMtrlFileName()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override string GetMtrlPath(string variant="a")
-        {
-            throw new NotImplementedException();
-        }
-
-        public override string GetTexPath(XivTexType type, string variant = "")
-        {
-            throw new NotImplementedException();
-        }
     }
 }

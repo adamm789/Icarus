@@ -259,7 +259,7 @@ namespace ItemDatabase.Paths
             //var matches = gearRegexFileNameMtrl.Matches(input);
             if (!String.IsNullOrWhiteSpace(input))
             {
-                var matches = Regex.Matches(input, @"_([a-z]+).mtrl$");
+                var matches = Regex.Matches(input, @"_([0-9,a-z]+).mtrl$");
                 if (matches.Count == 1 && matches[0].Groups.Count == 2)
                 {
                     ret = matches[0].Groups[1].Value;
@@ -328,7 +328,7 @@ namespace ItemDatabase.Paths
 
         public static string ChangeMtrlVariant(string input, string variant = "a")
         {
-            var regex = new Regex(@"([a-z]).mtrl$");
+            var regex = new Regex(@"([0-9,a-z]+).mtrl$");
             var ret = $"{regex.Replace(input, variant)}.mtrl";
             return ret;
         }

@@ -59,7 +59,7 @@ namespace Icarus.ViewModels.Import
         }
 
         
-        private async Task<MetadataMod?> GetVanillaMeta()
+        private MetadataMod? GetVanillaMeta()
         {
             if (_metadataFile != null)
             {
@@ -70,9 +70,9 @@ namespace Icarus.ViewModels.Import
             return null;
         }
 
-        protected override async Task DoImport()
+        protected override void DoImport()
         {
-            await GetVanillaMeta();
+            GetVanillaMeta();
         }
     }
 }

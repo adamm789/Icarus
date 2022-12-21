@@ -67,34 +67,43 @@ namespace Icarus.Services.GameFiles
             var item = GetItem(itemArg);
             if (item == null) return null;
 
-            string itemPath;
-            string category;
-            if (item is IGear equip)
+            try
             {
-                itemPath = equip.GetMdlPath(race);
-                category = equip.Slot.ToString();
+
+                string itemPath;
+                string category;
+                if (item is IGear equip)
+                {
+                    itemPath = equip.GetMdlPath(race);
+                    category = equip.Slot.ToString();
+                }
+                else
+                {
+                    itemPath = item.GetMdlPath();
+                    category = item.Category.ToString();
+                }
+
+                (var model, var xivMdl) = GetOriginalModel(itemPath, race);
+                xivMdl.MdlPath = itemPath;
+
+                var ret = new ModelGameFile()
+                {
+                    //Item = item,
+                    Name = item.Name,
+                    Path = itemPath,
+                    Category = category,
+                    TargetRace = race,
+                    TTModel = model,
+                    XivMdl = xivMdl
+                };
+
+                return ret;
             }
-            else
+            catch (Exception ex)
             {
-                itemPath = item.GetMdlPath();
-                category = item.Category.ToString();
+                _logService.Error(ex, $"Model for \"{item.Name}\" could not be found.");
+                return null;
             }
-
-            (var model, var xivMdl) = GetOriginalModel(itemPath, race);
-            xivMdl.MdlPath = itemPath;
-
-            var ret = new ModelGameFile()
-            {
-                //Item = item,
-                Name = item.Name,
-                Path = itemPath,
-                Category = category,
-                TargetRace = race,
-                TTModel = model,
-                XivMdl = xivMdl
-            };
-
-            return ret;
         }
 
         public List<XivRace> GetAllRaceMdls(IItem? itemArg)

@@ -14,9 +14,6 @@ namespace ItemDatabase.Interfaces
 
         string GetMdlPath();
         string GetMdlFileName();
-        string GetMtrlPath(string variant = "a");
-        string GetMtrlFileName();
-        string GetTexPath(XivTexType type, string variant = "");
         string GetMetadataPath();
         bool IsMatch(string str);
     }

@@ -27,6 +27,8 @@ using IcarusModPack = Icarus.Mods.DataContainers.ModPack;
 using xivModdingFramework.Mods.DataContainers;
 using Newtonsoft.Json;
 using System.Linq;
+using TeximpNet.DDS;
+using xivModdingFramework.Models.FileTypes;
 
 namespace Icarus.Services.Files
 {
@@ -264,13 +266,11 @@ namespace Icarus.Services.Files
             // TODO: ImportRawModel?
             try
             {
-                var model = _lumina.GetFileFromDisk<MdlFile>(filePath);
-                if (model != null)
-                {
-                    var mldWithLumina = new MdlWithLumina(model);
-                }
+                var bytes = File.ReadAllBytes(filePath);
+                
+
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logService.Error(ex, "An exception has occurred.");
             }

@@ -31,11 +31,6 @@ namespace ItemDatabase
         public abstract string GetMdlPath();
         public abstract string GetMdlFileName();
 
-        public abstract string GetMtrlPath(string variant = "a");
-
-        public abstract string GetTexPath(XivTexType type, string variant = "");
-
-        public abstract string GetMtrlFileName();
         public virtual string GetMetadataPath()
         {
             return "";

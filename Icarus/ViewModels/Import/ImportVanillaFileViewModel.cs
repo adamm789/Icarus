@@ -38,7 +38,6 @@ namespace Icarus.ViewModels.Import
             set { _selectedItemName = value; OnPropertyChanged(); }
         }
 
-        // TODO: Setting complete path
         protected string? _completePath;
 
         bool _canImport = false;
@@ -51,7 +50,7 @@ namespace Icarus.ViewModels.Import
         DelegateCommand _importVanillaFileCommand;
         public DelegateCommand ImportVanillaFileCommand
         {
-            get { return _importVanillaFileCommand ??= new DelegateCommand(async _ => await DoImport(), _ => CanImport); }
+            get { return _importVanillaFileCommand ??= new DelegateCommand(_ => DoImport(), _ => CanImport); }
         }
 
         protected virtual void RaiseCanExecuteChanged()
@@ -59,7 +58,7 @@ namespace Icarus.ViewModels.Import
             ImportVanillaFileCommand.RaiseCanExecuteChanged();
         }
 
-        protected abstract Task DoImport();
+        protected abstract void DoImport();
 
         public virtual Task SetCompletePath(string? path)
         {

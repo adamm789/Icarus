@@ -106,16 +106,6 @@ namespace ItemDatabase
             return GetMdlPath(baseRace);
         }
 
-        public override string GetMtrlPath(string variant = "a")
-        {
-            //return GetMtrlFileName();
-            return GetMtrlPath(XivRace.Hyur_Midlander_Male, variant);
-        }
-
-        public override string GetMtrlFileName()
-        {
-            return GetMtrlFileName();
-        }
         public virtual string GetMtrlFileName(XivRace race = XivRace.Hyur_Midlander_Male, string variant = "a")
         {
             return $"/mt_{GetRaceCode(race)}{_baseString}{_slotName}_{variant}.mtrl";
@@ -132,28 +122,6 @@ namespace ItemDatabase
         {
             //chara/equipment/e6019/e6019_sho.meta
             return $"{_directory}{_baseString}/{_baseString}{_slotName}.meta";
-        }
-
-        public override string GetTexPath(XivTexType t, string variant = "")
-        {
-            return GetTexPath(t, XivRace.Hyur_Midlander_Male, variant);
-        }
-        public virtual string GetTexPath(XivTexType t, XivRace race = XivRace.Hyur_Midlander_Male, string variant = "a")
-        {
-
-
-            if (t is XivTexType.ColorSet)
-            {
-                return "";
-            }
-            string v = "";
-            if (variant != "a" && !String.IsNullOrEmpty(variant))
-            {
-                v = $"_{variant}";
-            }
-            //return $"{_directory}{_baseString}/texture/{_shortVariantString}_{GetRaceCode(race)}{_baseString}{_slotName}{v}_{_textureDict[t]}.tex";
-            return $"{_directory}{_baseString}/texture/v01_{GetRaceCode(race)}{_baseString}{_slotName}{v}_{_textureDict[t]}.tex";
-            //return _directory + _baseString + "/texture/" + _shortVariantString + "_" + GetRaceCode(race) + _baseString + _slotName + "_" + _textureDict[t] + ".tex";
         }
 
         public override bool IsMatch(string str)

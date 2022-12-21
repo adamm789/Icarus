@@ -29,10 +29,12 @@
                                 <ComboBox ItemsSource="{Binding AllRacesMdls}" Text="Add Mdl" SelectedValue="{Binding SelectedRace}" 
                                        DockPanel.Dock="Left"/>
                                 <Button Command="{Binding ImportVanillaFileCommand}" Content="Add Mdl" 
-                                    dd:DragDrop.DragSourceIgnore="True" DockPanel.Dock="Right"/>
+                                    dd:DragDrop.DragSourceIgnore="True" DockPanel.Dock="Right"
+                                        ToolTip="{Binding SelectedModelPath}"/>
                             </DockPanel>
                             <Button Command="{Binding ImportVanillaFileCommand}" Content="Add Mdl" 
-                                    dd:DragDrop.DragSourceIgnore="True" DockPanel.Dock="Right" Visibility="{Binding HasSkin, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
+                                    dd:DragDrop.DragSourceIgnore="True" DockPanel.Dock="Right" Visibility="{Binding HasSkin, Converter={StaticResource InverseBooleanToVisibilityConverter}}"
+                                    ToolTip="{Binding SelectedModelPath}"/>
 
                         </Grid>
                     </StackPanel>
@@ -52,18 +54,17 @@
                                         <TextBlock>
                                             <Run Text="{Binding Name}"/>
                                             <Run Text="-"/>
-                                            <Run Text="{Binding MaterialSet}"/>
                                             <Run Text="{Binding Variant}"/>
                                         </TextBlock>
                                     </DataTemplate>
                                 </ComboBox.Resources>
                             </ComboBox>
                             <Button Command="{Binding ImportVanillaFileCommand}" Content="Add Mtrl" dd:DragDrop.DragSourceIgnore="True"
-                                ToolTip="{Binding SelectedItemMtrl}" DockPanel.Dock="Right"/>
+                                ToolTip="{Binding SelectedMaterialPath}" DockPanel.Dock="Right"/>
                         </DockPanel>
 
                         <Button Command="{Binding ImportVanillaFileCommand}" Content="Add Mtrl" dd:DragDrop.DragSourceIgnore="True"
-                                ToolTip="{Binding SelectedItemMtrl}" Visibility="{Binding HasOneMaterial, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                ToolTip="{Binding SelectedMaterialPath}" Visibility="{Binding HasOneMaterial, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                     </Grid>
                     <!--
                     <UniformGrid Columns="2">
@@ -82,7 +83,8 @@
                 <DataTemplate DataType="{x:Type import:ImportVanillaTextureViewModel}">
                     <UniformGrid Columns="2">
                         <ComboBox ItemsSource="{Binding AvailableTexTypes}" SelectedValue="{Binding SelectedTexType}" IsEnabled="{Binding CanChooseTexType}"/>
-                        <Button Command="{Binding ImportVanillaFileCommand}" Content="Add Tex" dd:DragDrop.DragSourceIgnore="True"/>
+                        <Button Command="{Binding ImportVanillaFileCommand}" Content="Add Tex" dd:DragDrop.DragSourceIgnore="True"
+                                ToolTip="{Binding SelectedTexturePath}"/>
                     </UniformGrid>
                 </DataTemplate>
             </ContentControl.Resources>

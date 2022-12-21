@@ -9,7 +9,7 @@
              d:DataContext="{d:DesignInstance Type=itemviewmodels:ItemListViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    
+
     <TreeView ItemsSource="{Binding ItemList}"
                   VirtualizingStackPanel.IsVirtualizing="True"
                   dd:DragDrop.IsDragSource="True"

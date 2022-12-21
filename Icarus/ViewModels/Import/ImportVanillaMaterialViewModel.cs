@@ -56,15 +56,21 @@ namespace Icarus.ViewModels.Import
         public IMaterialGameFile? SelectedMaterialFile
         {
             get { return _selectedMaterialFile; }
-            set { _selectedMaterialFile = value; OnPropertyChanged(); }
+            set {
+                _selectedMaterialFile = value;
+                if (_selectedMaterialFile != null)
+                {
+                    SelectedMaterialPath = _selectedMaterialFile.Path;
+                }
+                OnPropertyChanged();
+            }
         }
 
-
-        string _selectedItemMtrl;
-        public string SelectedItemMtrl
+        string _selectedMaterialPath;
+        public string SelectedMaterialPath
         {
-            get { return _selectedItemMtrl; }
-            set { _selectedItemMtrl = value; OnPropertyChanged(); }
+            get { return _selectedMaterialPath; }
+            set { _selectedMaterialPath = value; OnPropertyChanged(); }
         }
 
         DelegateCommand _getVanillaMaterial;
@@ -106,7 +112,7 @@ namespace Icarus.ViewModels.Import
             set { _materialSetText = value; OnPropertyChanged(); }
         }
 
-        protected override async Task DoImport()
+        protected override void DoImport()
         {
             GetVanillaMtrl();
         }

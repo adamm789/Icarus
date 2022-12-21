@@ -35,6 +35,8 @@ namespace Icarus.ViewModels.Import
 
         public void SetMaterial(IMaterialGameFile? material)
         {
+            _selectedMaterial = material;
+
             if (material == null)
             {
                 AvailableTexTypes = null;
@@ -59,7 +61,6 @@ namespace Icarus.ViewModels.Import
                     SelectedTexType = AvailableTexTypes[0];
                 }
             }
-            _selectedMaterial = material;
             CanImport = AvailableTexTypes != null;
             CanChooseTexType = AvailableTexTypes != null;
         }
@@ -102,15 +103,30 @@ namespace Icarus.ViewModels.Import
         public XivTexType SelectedTexType
         {
             get { return _selectedTexType; }
-            set { _selectedTexType = value; OnPropertyChanged(); }
+            set {
+                _selectedTexType = value;
+                OnPropertyChanged();
+                if (_selectedMaterial != null)
+                {
+                    var info = _selectedMaterial.XivMtrl.GetMapInfo(_selectedTexType, false);
+                    SelectedTexturePath = info.Path;
+                }
+            }
         }
 
-        protected override async Task DoImport()
+        string? _selectedTexturePath;
+        public string? SelectedTexturePath
+        {
+            get { return _selectedTexturePath; }
+            set { _selectedTexturePath = value; OnPropertyChanged(); }
+        }
+
+        protected override void DoImport()
         {
             //await GetVanillaTex();
             if (_selectedMaterial != null)
             {
-                var textureGameFile = await _textureFileService.GetTextureFileData(_selectedMaterial, SelectedTexType);
+                var textureGameFile = Task.Run(() => _textureFileService.GetTextureFileData(_selectedMaterial, SelectedTexType)).Result;
                 if (textureGameFile != null && textureGameFile.XivTex != null)
                 {
                     var mod = new TextureMod(textureGameFile, ImportSource.Vanilla);

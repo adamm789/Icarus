@@ -72,27 +72,6 @@ namespace Icarus.Services.GameFiles
                     var mats = await mdl.GetReferencedMaterialNames(mdlPath);
                     mtrlPath = mtrl.GetMtrlPath(gear.GetMdlPath(), gear.GetMtrlFileName(), gear.MaterialId);
                     xivMtrl = await mtrl.GetMtrlData(mtrlPath, gear.MaterialId);
-                    /*
-                    var imcPath = gear.GetImcPath();
-                    var imcFile = _lumina.GetFile<ImcFile>(imcPath);
-
-                    var variant = gear.Variant;
-
-                    if (gear.Slot == ItemDatabase.Enums.EquipmentSlot.Body)
-                    {
-                        var x = gear.MaterialId;
-                        var matId = imcFile.GetPart(1).Variants[variant - 1].MaterialId;
-                        var mtrlPath = mtrl.GetMtrlPath(item.GetMdlPath(), item.GetMtrlFileName(), matId);
-                        var xivMtrl = await mtrl.GetMtrlData(mtrlPath, matId);
-                        return new MaterialGameFile()
-                        {
-                            Name = item.Name,
-                            Path = mtrlPath,
-                            Category = XivPathParser.GetCategoryFromPath(mtrlPath),
-                            XivMtrl = xivMtrl
-                        };
-                    }
-                    */
                 }
                 else
                 {
@@ -173,6 +152,10 @@ namespace Icarus.Services.GameFiles
                 }
 
                 var model = await mdl.GetModel(mdlPath, true);
+                if (model == null)
+                {
+                    return null;
+                }
                 materialPaths = model.Materials;
 
                 foreach (var path in materialPaths)
@@ -197,8 +180,9 @@ namespace Icarus.Services.GameFiles
                 }
                 return retVal;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logService.Debug(ex);
                 return null;
             }
         }
