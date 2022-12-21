@@ -85,7 +85,7 @@ namespace Icarus.Util.Export
         private string GetOutputFileName(IMod mod, ModOption? option = null)
         {
             var retVal = Path.GetFileNameWithoutExtension(mod.Path);
-            
+
 
             if (option != null)
             {
@@ -133,6 +133,11 @@ namespace Icarus.Util.Export
             {
                 _logService.Verbose($"Beginning mtrl to dds export.");
                 var xivMtrl = mtrlMod.GetMtrl();
+                if (xivMtrl.ColorSetData.Count == 0)
+                {
+                    _logService.Warning($"Material had no colorset. Skipping material.");
+                    return;
+                }
                 var df = IOUtil.GetDataFileFromPath(xivMtrl.MTRLPath);
                 var ttp = new TexTypePath
                 {

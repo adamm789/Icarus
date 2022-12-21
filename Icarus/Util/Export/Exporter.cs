@@ -426,6 +426,11 @@ namespace Icarus.Util
                 _logService.Verbose($"Exporting material: {mod.ModFileName} with shouldCompress={shouldCompress}");
 
                 var xivMtrl = mod.GetMtrl();
+                if (xivMtrl.ColorSetCount == 0)
+                {
+                    _logService.Warning($"Material had no colorset. Skipping material.");
+                    return Array.Empty<byte>();
+                }
                 var bytes = MtrlExtensions.CreateMtrlFile(xivMtrl);
 
                 if (!shouldCompress)
