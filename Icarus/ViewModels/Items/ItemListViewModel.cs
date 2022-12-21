@@ -11,6 +11,8 @@ using System.Windows.Documents;
 
 namespace Icarus.ViewModels.Items
 {
+    // TODO: Add one more parent category
+    // i.e. "Gear" -> list of equip slot -> list of items
     public class ItemListViewModel : ViewModelBase
     {
         const int minNumBeforeExpansion = 100;
@@ -84,7 +86,8 @@ namespace Icarus.ViewModels.Items
         private void BuildList()
         {
             _logService.Information("Building item list");
-            var entries = _itemListService.GetAllItems();
+            //var entries = _itemListService.GetAllItems2();
+            var entries = _itemListService.GetAllItems2();
 
             foreach (var entry in entries)
             {
@@ -94,7 +97,6 @@ namespace Icarus.ViewModels.Items
 
                 ItemList.Add(vm);
             }
-
             var view = (CollectionView)CollectionViewSource.GetDefaultView(ItemList);
             view.Filter = ChildSearchFilter;
         }
@@ -112,7 +114,8 @@ namespace Icarus.ViewModels.Items
             }
             if (numMatches == 1)
             {
-                _logService.Debug($"Searching with {SearchText}");
+                // TODO: Time-limit this so it's not searching on every key-stroke
+                _logService.Debug($"Searching for {SearchText}");
                 var results = _itemListService.Search(SearchText);
                 if (results.Count == 1 && SelectedItem != results[0])
                 {
@@ -138,7 +141,7 @@ namespace Icarus.ViewModels.Items
 
             foreach (var item in ItemList)
             {
-                item.IsExpanded = ShouldExpand(term, numMatches);
+                item.ExpandAll(ShouldExpand(term, numMatches));
             }
 
             var items = (CollectionView)CollectionViewSource.GetDefaultView(ItemList);
@@ -147,7 +150,7 @@ namespace Icarus.ViewModels.Items
 
         private bool ShouldExpand(string search, int numMatches)
         {
-            return !String.IsNullOrWhiteSpace(search) ||  numMatches < minNumBeforeExpansion;
+            return !String.IsNullOrWhiteSpace(search) && numMatches < minNumBeforeExpansion;
         }
 
         private bool ChildSearchFilter(object o)

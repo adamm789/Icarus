@@ -18,6 +18,7 @@ namespace Icarus.Services.Interfaces
         List<IItem> Search(string str, string variantCode, bool exactMatch = false);
         bool TrySearch(string path);
         Dictionary<string, SortedDictionary<string, IItem>> GetAllItems();
+        Dictionary<string, Dictionary<string, SortedDictionary<string, IItem>>> GetAllItems2();
         IItem? SelectedItem { get; set; }
         IItem? TryGetItem(string path, string itemName = "");
         string TryGetName(string path, string itemName = "");

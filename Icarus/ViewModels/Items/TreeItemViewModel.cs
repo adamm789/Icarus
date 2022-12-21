@@ -21,11 +21,31 @@ namespace Icarus.ViewModels.Items
         public IItem? Item { get; }
         public List<TreeItemViewModel> Children { get; } = new();
 
+        public TreeItemViewModel(string header, Dictionary<string, SortedDictionary<string, IItem>> children)
+        {
+            _header = header;
+            var numChildren = 0;
+            foreach (var kvp in children)
+            {
+                numChildren += kvp.Value.Count;
+                var vm = new TreeItemViewModel(kvp.Key, kvp.Value);
+                var eh = new PropertyChangedEventHandler(OnChildSelected);
+                vm.PropertyChanged += eh;
+
+                Children.Add(vm);
+            }
+            Header = FormatHeader(_header, numChildren);
+
+            var view = (CollectionView)CollectionViewSource.GetDefaultView(Children);
+            view.Filter = ChildSearchFilter;
+
+        }
+
         public TreeItemViewModel(string header, IDictionary<string, IItem> values)
         {
             _header = header;
 
-            Header = $"{_header} ({values.Count})";
+            Header = FormatHeader(_header, values.Count);
             foreach (var kvp in values)
             {
                 var vm = new TreeItemViewModel(kvp.Value);
@@ -49,6 +69,20 @@ namespace Icarus.ViewModels.Items
             if (item is IGear gear)
             {
                 Tooltip += $" ({gear.VariantCode})";
+            }
+        }
+
+        private static string FormatHeader(string header, int value)
+        {
+            return $"{header} ({value})";
+        }
+
+        public void ExpandAll(bool value)
+        {
+            IsExpanded = value;
+            foreach (var child in Children)
+            {
+                child.ExpandAll(value);
             }
         }
 
@@ -78,7 +112,7 @@ namespace Icarus.ViewModels.Items
             {
                 return;
             }
-            Header = $"{_header} ({i})";
+            Header = FormatHeader(_header, i);
 
             if (i == 0)
             {
@@ -93,20 +127,33 @@ namespace Icarus.ViewModels.Items
         public int Search(string term)
         {
             _searchText = term;
-            if (Children == null)
+
+            if (Children.Count == 0)
             {
-                return 0;
+                if (ChildSearchFilter(this))
+                {
+                    return 1;
+                }
+                else
+                {
+                    return 0;
+                }
             }
+
             var items = (CollectionView)CollectionViewSource.GetDefaultView(Children);
             items.Filter = ChildSearchFilter;
+            var childMatches = 0;
 
-            var numMatches =  items.Count;
+            foreach (var child in Children)
+            {
+                childMatches += child.Search(term);
+            }
 
             if (Item == null)
             {
-                Header = $"{_header} ({numMatches})";
+                Header = FormatHeader(_header, childMatches);
             }
-            return numMatches;
+            return childMatches;
         }
 
         public int HasMatch(string name)
@@ -164,7 +211,10 @@ namespace Icarus.ViewModels.Items
         public bool IsExpanded
         {
             get { return _isExpanded; }
-            set { _isExpanded = value; OnPropertyChanged(); }
+            set
+            {
+                _isExpanded = value; OnPropertyChanged();
+            }
         }
 
         public string Tooltip { get; }
