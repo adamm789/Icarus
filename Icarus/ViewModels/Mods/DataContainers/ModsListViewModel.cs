@@ -22,22 +22,13 @@ namespace Icarus.ViewModels.Mods.DataContainers
         public ModPack ModPack { get; }
         readonly ViewModelService _viewModelService;
 
-        // Used to determine if a mtrl or tex exists in the mod list (or is vanilla)
-        // Lots of cases...
-        // New material, new texture, new model
-        // DestinationPath change in material, texture, and model
-        // Preset change in material.ShaderInfo
-
-        Dictionary<ModViewModel, List<NotifyPropertyChanged>> mtrlDictionary = new();
-        Dictionary<ModViewModel, List<NotifyPropertyChanged>> texDictionary = new();
-
         NotifyPropertyChanged _displayedMod;
         public NotifyPropertyChanged DisplayedMod
         {
             get { return _displayedMod; }
             set { _displayedMod = value; OnPropertyChanged(); }
         }
-        public ModsListViewModel(ModPack modPack, ViewModelService viewModelService, ILogService logService) : base(logService)
+        public ModsListViewModel(ModPack modPack, ViewModelService viewModelService, IWindowService windowService, ILogService logService) : base(logService)
         {
             ModPack = modPack;
             _viewModelService = viewModelService;
@@ -127,22 +118,6 @@ namespace Icarus.ViewModels.Mods.DataContainers
         {
             ModPack.SimpleModsList.Add(mod.GetMod());
             SimpleModsList.Add(mod);
-
-            if (mod is MaterialModViewModel mtrlMod)
-            {
-                // add mtrlMod to dictionary
-                // go through dictionary to see if mtrlMod.DestinationPath is present
-                // update mtrlMod.Exists appropriately
-            }
-            else if (mod is TextureModViewModel texMod)
-            {
-                // add texture
-            }
-            else if (mod is ModelModViewModel mdlMod)
-            {
-                // add each unique mesh group material
-            }
-
             mod.Identifier = $"({identifier})";
             identifier++;
 
@@ -185,6 +160,13 @@ namespace Icarus.ViewModels.Mods.DataContainers
                 return true;
             }
             return false;
+        }
+
+        public void Reset()
+        {
+            _logService.Information("Clearing mods list. Removing all mods.");
+            SimpleModsList.Clear();
+            CanExport = false;
         }
 
         public void Move(ModViewModel source, ModViewModel target)

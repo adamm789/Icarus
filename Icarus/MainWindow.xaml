@@ -45,6 +45,7 @@
             <MenuItem Header="Settings" Command="{Binding OpenSettings}"/>
             <MenuItem Header="Preferences" Command="{Binding OpenPreferences}"/>
             <MenuItem Header="Log" Command="{Binding OpenLog}"/>
+            <MenuItem Header="Reset" Command="{Binding ResetCommand}"/>
         </Menu>
 
         <Grid x:Name="MainGrid" Grid.Row="1" IsEnabled="{Binding GamePathSet}" dd:DragDrop.IsDragSource="True" >

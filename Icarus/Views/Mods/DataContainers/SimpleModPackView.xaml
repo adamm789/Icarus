@@ -20,25 +20,6 @@
             <DataTemplate DataType="{x:Type datacontainers:ModPackMetaViewModel}">
                 <modviews:SimpleModPackMetaView/>
             </DataTemplate>
-
-      <!--     
-            <DataTemplate DataType="{x:Type modviewmodels:ModelModViewModel}">
-                <modviews:ModView/>
-            </DataTemplate>
-            <DataTemplate DataType="{x:Type modviewmodels:MaterialModViewModel}">
-                <modviews:ModView/>
-            </DataTemplate>
-            <DataTemplate DataType="{x:Type modviewmodels:TextureModViewModel}">
-                <modviews:ModView/>
-            </DataTemplate>
-            <DataTemplate DataType="{x:Type modviewmodels:MetadataModViewModel}">
-                <modviews:ModView/>
-            </DataTemplate>
-            <DataTemplate DataType="{x:Type modviewmodels:ReadOnlyModViewModel}">
-                <modviews:ModView/>
-            </DataTemplate>
-            -->
-            
             <DataTemplate DataType="{x:Type modviewmodels:ModelModViewModel}">
                 <modviews:ModelModView/>
             </DataTemplate>
@@ -54,7 +35,7 @@
             <DataTemplate DataType="{x:Type modviewmodels:ReadOnlyModViewModel}">
                 <modviews:ReadOnlyViewMod/>
             </DataTemplate>
-            
+
             <Style TargetType="{x:Type Button}">
                 <Setter Property="FontSize" Value="14"/>
                 <Setter Property="VerticalAlignment" Value="Stretch"/>
@@ -64,6 +45,10 @@
                 <Setter Property="Margin" Value="10,2,10,2"/>
             </Style>
         </Grid.Resources>
-            <ContentControl Content="{Binding FilteredModsList}"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <ContentControl Content="{Binding FilteredModsList}" Grid.Row="1"/>
     </Grid>
 </UserControl>

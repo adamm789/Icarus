@@ -26,7 +26,6 @@ namespace Icarus.ViewModels.Mods.DataContainers
         Timer _timer = new();
 
         int numCalled = 0;
-        readonly ILogService _logService;
 
         int _selectedIndex = 0;
         public int SelectedIndex
@@ -107,7 +106,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
             {
                 _searchTerm = value;
 
-                // Delay calling Search() until user ostensibly stops typing
+                // Delay calling Search() until user stops/slows typing
                 _timer.Stop();
                 _timer.Start();
             }

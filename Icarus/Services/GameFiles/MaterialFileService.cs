@@ -28,11 +28,9 @@ namespace Icarus.Services.GameFiles
 {
     public class MaterialFileService : GameFileService, IMaterialFileService
     {
-        // TODO: Aurum Jacket has "variant" = 106, but uses material 45
         IModelFileService _modelFileService;
         Mtrl _mtrl;
 
-        Dictionary<string, List<string>> _materialCache = new();
         public MaterialFileService(LuminaService luminaService, IItemListService itemListService, ISettingsService settingsService, IModelFileService modelFileService, ILogService logService)
             : base(luminaService, itemListService, settingsService, logService)
         {

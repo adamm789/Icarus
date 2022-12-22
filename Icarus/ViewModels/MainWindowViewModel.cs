@@ -27,6 +27,7 @@ namespace Icarus.ViewModels
     {
         private LuminaService _luminaService;
         private IWindowService _windowService = ServiceManager.GetRequiredService<IWindowService>();
+        private IMessageBoxService _messageBoxService = ServiceManager.GetRequiredService<IMessageBoxService>();
         private AppSettingsViewModel _appSettings;
 
         public MainWindowViewModel()
@@ -120,10 +121,6 @@ namespace Icarus.ViewModels
         public ImportViewModel ImportViewModel { get; set; }
 
         public ImportVanillaViewModel ImportVanillaViewModel { get; set; }
-        public ImportVanillaModelViewModel ImportVanillaModelViewModel { get; set; }
-        public ImportVanillaMaterialViewModel ImportVanillaMaterialViewModel { get; set; }
-        public ImportVanillaMetadataViewModel ImportVanillaMetadataViewModel { get; set; }
-        public ImportVanillaTextureViewModel ImportVanillaTextureViewModel { get; set; }
 
         public ItemListViewModel ItemListViewModel { get; set; }
         public FilteredModsListViewModel FilteredModsListViewModel { get; set; }
@@ -164,6 +161,11 @@ namespace Icarus.ViewModels
         {
             get { return _openLog ??= new DelegateCommand(_ => OpenLogWindow()); }
         }
+        DelegateCommand _resetCommand;
+        public DelegateCommand ResetCommand
+        {
+            get { return _resetCommand ??= new DelegateCommand(_ => Reset()); }
+        }
 
         #endregion
 
@@ -189,6 +191,16 @@ namespace Icarus.ViewModels
                 _windowService.Show<LogWindow>(_logViewModel);
             }
         }
+
+        public void Reset()
+        {
+            var result = _messageBoxService.ShowMessage("Reset all?\nThis will:\nRemove ALL mods\nRemove ALL loaded ModPacks\nRemove ALL ModPackPages\nThis action is irreversible.\nContinue?", "Reset", System.Windows.Forms.MessageBoxButtons.YesNo);
+            if (result == System.Windows.Forms.DialogResult.Yes)
+            {
+                ModsListViewModel.Reset();
+            }
+        }
+
         void IDropTarget.DragOver(IDropInfo dropInfo)
         {
             var dataObject = dropInfo.Data as DataObject;

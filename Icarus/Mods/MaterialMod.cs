@@ -215,8 +215,6 @@ namespace Icarus.Mods
         {
             try
             {
-                // TODO: Material paths variants are independent from the textures' variants
-                // v0005 for material could use v0001 for one of its textures
                 var normal = XivPathParser.GetTexPathFromMtrl(str, XivTexType.Normal);
                 var specular = XivPathParser.GetTexPathFromMtrl(str, XivTexType.Specular);
                 var multi = XivPathParser.GetTexPathFromMtrl(str, XivTexType.Multi);

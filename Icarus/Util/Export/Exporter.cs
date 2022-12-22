@@ -31,13 +31,6 @@ using xivModdingFramework.Cache;
 
 namespace Icarus.Util
 {
-    // TODO: It seems like when compressing, the vertex data is incorrectly compressed?
-    // Which I don't understand, because it's copy pasted...
-    // Even the uncompressed sizes are the same
-    // VertexDataBlockLoD Compressed, somewhere in compressedMDLData
-
-    // TODO: For some reason, when export to ttmp2, the sizes differ from one that comes from TexTools
-    // Penumbra version seems to be identical (at least sizewise)
     public class Exporter
     {
         protected ILogService _logService;

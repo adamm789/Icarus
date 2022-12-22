@@ -27,25 +27,27 @@ namespace Icarus.ViewModels.Mods.DataContainers.ModPackList
         {
             _modsListViewModel = modsList;
             _viewModelService = viewModelService;
+
+            _modsListViewModel.SimpleModsList.CollectionChanged += new(OnCollectionChanged);
         }
 
         #region Properties
         public ObservableCollection<ModPackViewModel> ModPacks { get; } = new();
         public ObservableCollection<IModPackMetaViewModel> ModPackMetas { get; } = new();
-        public ObservableCollection<ModPackPageViewModel> ModPackPages
+        public ObservableCollection<ModPackPageViewModel>? ModPackPages
         {
             get { return DisplayedModPack?.ModPackPages; }
         }
 
-        INotifyPropertyChanged _modPackPage;
-        public INotifyPropertyChanged ModPackPage
+        INotifyPropertyChanged? _modPackPage;
+        public INotifyPropertyChanged? ModPackPage
         {
             get { return _modPackPage; }
             set { _modPackPage = value; OnPropertyChanged(); }
         }
 
-        ModPackViewModel _displayedModPack;
-        public ModPackViewModel DisplayedModPack
+        ModPackViewModel? _displayedModPack;
+        public ModPackViewModel? DisplayedModPack
         {
             get { return _displayedModPack; }
             set
@@ -72,7 +74,7 @@ namespace Icarus.ViewModels.Mods.DataContainers.ModPackList
             get { return _selectedIndex; }
             set
             {
-                if (_selectedIndex != value)
+                if (_selectedIndex != value && value >= 0)
                 {
                     _selectedIndex = value;
                     OnPropertyChanged();
@@ -95,6 +97,25 @@ namespace Icarus.ViewModels.Mods.DataContainers.ModPackList
                 DisplayedModPack.PageIndex = value;
                 ModPackPage = DisplayedModPack.DisplayedViewModel;
             }
+        }
+
+        private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == NotifyCollectionChangedAction.Reset)
+            {
+                Reset();
+            }
+        }
+
+
+        public void Reset()
+        {
+            _logService.Information($"Clearing all loaded mod packs.");
+            ModPacks.Clear();
+            ModPackMetas.Clear();
+            DisplayedModPack = null;
+            ModPackPage = null;
+            OnPropertyChanged(nameof(IsEmpty));
         }
 
         public DelegateCommand? CopyPageCommand { get; set; }

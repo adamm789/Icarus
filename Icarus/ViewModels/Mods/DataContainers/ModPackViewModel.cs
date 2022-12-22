@@ -42,7 +42,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
             IsReadOnly = isReadOnly;
 
             ModPackMetaViewModel = _viewModelService.GetModPackMetaViewModel(modPack, isReadOnly);
-            ModsListViewModel = modsListViewModel ?? new ModsListViewModel(modPack, _viewModelService, logService);
+            ModsListViewModel = modsListViewModel ?? _viewModelService.GetModsListViewModel(modPack);
 
             DisplayedViewModel = ModPackMetaViewModel;
 
@@ -88,6 +88,10 @@ namespace Icarus.ViewModels.Mods.DataContainers
                 {
                     RemoveMod(item);
                 }
+            }
+            if (e.Action == NotifyCollectionChangedAction.Reset)
+            {
+                Reset();
             }
         }
 
@@ -339,8 +343,15 @@ namespace Icarus.ViewModels.Mods.DataContainers
             {
                 numRemoved += page.RemoveMods(mods);
             }
-            Log.Verbose($"Removed {numRemoved} mods from pages.");
+            _logService?.Verbose($"Removed {numRemoved} mods from pages.");
             return numRemoved;
+        }
+
+        public void Reset()
+        {
+            _logService.Information($"Clearing mod pack. Removing all pages.");
+            ModPackPages.Clear();
+            PageIndex = 0;
         }
 
         // TODO: DragDrop for ModPack

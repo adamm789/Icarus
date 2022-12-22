@@ -44,6 +44,11 @@ namespace Icarus.Services
             _metadataFileService = vanillaFileService.MetadataFileService;
         }
 
+        public IModsListViewModel GetModsListViewModel(ModPack modPack)
+        {
+            return new ModsListViewModel(modPack, this, _windowService, _logService);
+        }
+
         public ModPackMetaViewModel GetModPackMetaViewModel(ModPack modPack, bool isReadOnly = false)
         {
             return new ModPackMetaViewModel(modPack, _userPreferencesService, isReadOnly);

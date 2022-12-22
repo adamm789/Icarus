@@ -19,7 +19,6 @@ namespace Icarus.Services.GameFiles
 {
     public class TextureFileService : GameFileService, ITextureFileService
     {
-        // TODO: Aurum Jacket textures
         protected IMaterialFileService _materialFileService;
         public TextureFileService(LuminaService luminaService, IItemListService itemListService,
             ISettingsService settingsService, ILogService logService, IMaterialFileService materialFileService) 
