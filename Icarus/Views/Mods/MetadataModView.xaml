@@ -20,7 +20,7 @@
         </Grid.ColumnDefinitions>
         
         <local:ModView Grid.Row="0" Grid.ColumnSpan="3"/>
-        <Button Grid.Row="1" Grid.Column="0" Content="Copy From Search"
+        <Button Grid.Row="1" Grid.Column="0" Content="Assign From Search"
                     Command="{Binding SetDestinationCommand}"/>
         <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding DestinationName}" Margin="5,0,5,0"/>
         <Button Grid.Row="1" Grid.Column="2" Content="Edit" Command="{Binding OpenMetadataEditorCommand}"/>
