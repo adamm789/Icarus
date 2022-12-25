@@ -165,6 +165,8 @@ namespace Icarus.ViewModels.Mods.DataContainers
         public void Reset()
         {
             _logService.Information("Clearing mods list. Removing all mods.");
+            ModPack.SimpleModsList.Clear();
+            ModPack.ModPackPages.Clear();
             SimpleModsList.Clear();
             CanExport = false;
         }

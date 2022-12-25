@@ -192,8 +192,10 @@ namespace Icarus.ViewModels
             }
         }
 
+        // TODO: Implement a "CanReset" boolean
         public void Reset()
         {
+            // TODO: Wherever this "Reset" command shows up: default to "No" in messagebox
             var result = _messageBoxService.ShowMessage("Reset all?\nThis will:\nRemove ALL mods\nRemove ALL loaded ModPacks\nRemove ALL ModPackPages\nThis action is irreversible.\nContinue?", "Reset", System.Windows.Forms.MessageBoxButtons.YesNo);
             if (result == System.Windows.Forms.DialogResult.Yes)
             {
