@@ -135,9 +135,35 @@ namespace Icarus.ViewModels.Mods.DataContainers
 
         public void AddMod(ModOptionModViewModel mod)
         {
+            mod.ChangeParent(this);
             ModViewModels.Add(mod);
             _modOption.Mods.Add(mod.Mod.GetMod());
             UpdateHeader();
+        }
+
+        // TODO: Way to move OptionMod(s) from one ModOption to another ModOption
+        public void MoveOptionsInto(ModOptionViewModel modOption)
+        {
+            foreach (var option in modOption.ModViewModels)
+            {
+                if (CanAcceptMod(option.Mod))
+                {
+                    modOption.RemoveMod(option);
+                    AddMod(option);
+                }
+            }
+        }
+
+        public void CopyOptionsInto(ModOptionViewModel modOption)
+        {
+            foreach (var option in modOption.ModViewModels)
+            {
+                if (CanAcceptMod(option.Mod))
+                {
+                    var copiedOption = new ModOptionModViewModel(this, option.Mod);
+                    AddMod(copiedOption);
+                }
+            }
         }
 
         public List<IMod> GetMods()
@@ -291,14 +317,21 @@ namespace Icarus.ViewModels.Mods.DataContainers
             }
             else if (dropItem is ModOptionViewModel modOption)
             {
-                if (Parent == modOption.Parent)
+                if (!modOption.IsReadOnly)
                 {
-                    Parent.MoveTo(modOption, this);
+                    if (Parent == modOption.Parent)
+                    {
+                        Parent.MoveTo(modOption, this);
+                    }
+                    else
+                    {
+                        modOption.Parent.RemoveOption(modOption);
+                        Parent.AddOption(modOption);
+                    }
                 }
                 else
                 {
-                    modOption.Parent.RemoveOption(modOption);
-                    Parent.AddOption(modOption);
+                    Parent.CopyOption(modOption);
                 }
             }
             else if (dropItem is ModOptionModViewModel mod)

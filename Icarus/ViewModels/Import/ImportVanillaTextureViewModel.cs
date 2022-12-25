@@ -123,7 +123,6 @@ namespace Icarus.ViewModels.Import
 
         protected override void DoImport()
         {
-            //await GetVanillaTex();
             if (_selectedMaterial != null)
             {
                 var textureGameFile = Task.Run(() => _textureFileService.GetTextureFileData(_selectedMaterial, SelectedTexType)).Result;

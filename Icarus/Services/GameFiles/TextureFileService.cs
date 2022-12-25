@@ -11,9 +11,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using xivModdingFramework.General.Enums;
+using xivModdingFramework.Materials.FileTypes;
 using xivModdingFramework.SqPack.FileTypes;
 using xivModdingFramework.Textures.DataContainers;
 using xivModdingFramework.Textures.Enums;
+using xivModdingFramework.Textures.FileTypes;
 
 namespace Icarus.Services.GameFiles
 {
@@ -35,6 +37,7 @@ namespace Icarus.Services.GameFiles
 
             XivTex? savedXivTex = null;
             string? savedPath = "";
+
             foreach (var texTypePath in xivMtrl.TextureTypePathList)
             {
                 if (texTypePath.Type == XivTexType.ColorSet) continue;
@@ -53,7 +56,7 @@ namespace Icarus.Services.GameFiles
 
             if (savedXivTex == null)
             {
-                _logService.Error($"Could not get texsture for {materialFileData.Path}");
+                _logService.Error($"Could not get TexType: {type} for {materialFileData.Path}");
                 return null;
             }
 
@@ -86,55 +89,6 @@ namespace Icarus.Services.GameFiles
                 return null;
             }
             return await GetTextureFileData(materialFileData, type, variant);
-            /*
-            var xivMtrl = materialFileData.XivMtrl;
-            var typeFormatDict = new Dictionary<XivTexType, XivTexFormat>();
-
-            XivTex? savedXivTex = null;
-            string? savedPath = "";
-
-            for (var i = 0; i < xivMtrl.TexturePathList.Count; i++)
-            {
-                var texturePath = xivMtrl.TexturePathList[i];
-                var xivTex = await dat.GetType4Data(texturePath, true);
-                if (XivPathParser.GetTexType(texturePath) == type)
-                {
-                    savedXivTex = xivTex;
-                    savedPath = texturePath;
-                    savedXivTex.TextureTypeAndPath = new()
-                    {
-                        Type = type,
-                        Path = texturePath,
-                        DataFile = XivPathParser.GetXivDataFileFromPath(texturePath),
-                        Name = materialFileData.Name
-                    };
-                }
-                if (i < xivMtrl.TextureTypePathList.Count) {
-                    typeFormatDict.TryAdd(xivMtrl.TextureTypePathList[0].Type, xivTex.TextureFormat);
-                }
-                else
-                {
-                    typeFormatDict.TryAdd(XivTexType.Other, xivTex.TextureFormat);
-                }
-            }
-
-            if (String.IsNullOrWhiteSpace(savedPath))
-            {
-                savedPath = item.GetTexPath(type, variant);
-            }
-
-            var retVal = new TextureGameFile()
-            {
-                Name = materialFileData.Name,
-                Path = savedPath,
-                Category = materialFileData.Category,
-                TypeFormatDict = typeFormatDict,
-                XivMtrl = xivMtrl,
-                XivTex = savedXivTex,
-                TexType = type
-            };
-            return retVal;
-            */
         }
 
         public async Task<ITextureGameFile?> TryGetTextureFileData(string path, string itemName = "")

@@ -31,6 +31,7 @@ namespace Icarus.ViewModels.Mods
             _textureMod = mod;
             _textureFileService = textureFileService;
             _textureVariant = XivPathParser.GetTexVariant(mod.Path);
+            _texType = _textureMod.TexType;
             SetCanExport();
             TexTypeValues = new()
             {
@@ -82,11 +83,13 @@ namespace Icarus.ViewModels.Mods
             }
         }
 
+        XivTexType _texType = XivTexType.Normal;
         public XivTexType TexType
         {
-            get { return _textureMod.TexType; }
+            get { return _texType; }
             set
             {
+                _texType = value;
                 _textureMod.TexType = value;
                 OnPropertyChanged();
                 try
@@ -103,9 +106,30 @@ namespace Icarus.ViewModels.Mods
             }
         }
 
+        int _materialSet = 1;
+        public int MaterialSet
+        {
+            get { return _materialSet; }
+            set { _materialSet = value; OnPropertyChanged(); }
+        }
+
         public override async Task<IGameFile?> GetFileData(IItem? itemArg = null)
         {
-            return await _textureFileService.GetTextureFileData(itemArg, TexType, TextureVariant);
+            // Change this so it basically only gets the path?
+            var ret = await _textureFileService.GetTextureFileData(itemArg, TexType, TextureVariant);
+            if (ret == null)
+            {
+                ret = await _textureFileService.GetTextureFileData(itemArg, XivTexType.Normal, TextureVariant);
+                if (ret != null)
+                {
+                    ret.TexType = TexType;
+                    ret.Path = XivPathParser.ChangeTexType(ret.Path, TexType);
+                    ret.Path = XivPathParser.ChangeTexVariant(ret.Path, TextureVariant);
+                    ret.XivTex.TextureTypeAndPath.Type = TexType;
+                    ret.XivTex.TextureTypeAndPath.Path = ret.Path;
+                }
+            }
+            return ret;
         }
 
         public override async Task<IGameFile?> GetFileData(string path, string name= "")

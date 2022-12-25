@@ -134,6 +134,7 @@ namespace Icarus.ViewModels.Import
             await ImportFiles(dlg.FileNames);
         }
 
+        // TODO: Implement actual async import
         public async Task ImportFiles(IList<string> filePaths)
         {
             foreach (var path in filePaths)
@@ -142,7 +143,6 @@ namespace Icarus.ViewModels.Import
                 if (File.Exists(str))
                 {
                     _logService.Verbose($"Importing mod pack.");
-                    //var modPack = await ImportFile(str);
                     var modPack = await ImportFile(str);
                     _logService.Verbose($"Finished importing.");
 

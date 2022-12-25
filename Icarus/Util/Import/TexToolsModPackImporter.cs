@@ -53,7 +53,9 @@ namespace Icarus.Services.Files
 
             var fileInfo = new FileInfo(filePath);
 
-            var tempDir = Path.Combine(_projectDirectory, "temp");
+
+            //var tempDir = Path.Combine(_projectDirectory, "temp");
+            var tempDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             Directory.CreateDirectory(tempDir);
 
             var dir = new DirectoryInfo(tempDir);
@@ -61,6 +63,7 @@ namespace Icarus.Services.Files
             using var zfs = fileInfo.OpenRead();
             using var zip = ZipFile.Read(zfs);
 
+           
             string mplPath = dir + "\\ttmpl.mpl";
             string mpdPath = dir + "\\ttmpd.mpd";
 

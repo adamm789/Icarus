@@ -31,6 +31,12 @@ namespace Icarus.ViewModels.Mods.DataContainers
         public string DestinationName => Mod.DestinationName;
         public string DestinationPath => Mod.DestinationPath;
         public string DisplayedHeader => Mod.DisplayedHeader;
-        public DelegateCommand RemoveCommand { get; }
+        public DelegateCommand RemoveCommand { get; set; }
+
+        public void ChangeParent(ModOptionViewModel modOption)
+        {
+            _parent = modOption;
+            RemoveCommand = new DelegateCommand(o => _parent.RemoveMod(this));
+        }
     }
 }
