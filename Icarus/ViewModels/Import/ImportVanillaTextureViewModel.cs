@@ -25,7 +25,6 @@ namespace Icarus.ViewModels.Import
         readonly ITextureFileService _textureFileService;
         private IMaterialGameFile? _selectedMaterial;
 
-
         public ImportVanillaTextureViewModel(IModsListViewModel modPack, ITextureFileService textureFileService, ILogService logService)
     : base(modPack, logService)
         {

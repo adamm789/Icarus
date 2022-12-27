@@ -46,9 +46,13 @@
             <ContentControl.Resources>
                 <DataTemplate DataType="{x:Type import:ImportVanillaMaterialViewModel}">
                     <Grid>
-                        <DockPanel HorizontalAlignment="Stretch" Visibility="{Binding HasMoreThanOneMaterial, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Grid HorizontalAlignment="Stretch" Visibility="{Binding HasMoreThanOneMaterial, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
                             <ComboBox ItemsSource="{Binding MaterialFiles}"
-                                  SelectedValue="{Binding SelectedMaterialFile}" DockPanel.Dock="Left">
+                                  SelectedValue="{Binding SelectedMaterialFile}" Grid.Column="0">
                                 <ComboBox.Resources>
                                     <DataTemplate DataType="{x:Type gamefiles:MaterialGameFile}">
                                         <TextBlock>
@@ -60,8 +64,8 @@
                                 </ComboBox.Resources>
                             </ComboBox>
                             <Button Command="{Binding ImportVanillaFileCommand}" Content="Add Mtrl" dd:DragDrop.DragSourceIgnore="True"
-                                ToolTip="{Binding SelectedMaterialPath}" DockPanel.Dock="Right"/>
-                        </DockPanel>
+                                ToolTip="{Binding SelectedMaterialPath}" Grid.Column="1" Padding="5 0 5 0"/>
+                        </Grid>
 
                         <Button Command="{Binding ImportVanillaFileCommand}" Content="Add Mtrl" dd:DragDrop.DragSourceIgnore="True"
                                 ToolTip="{Binding SelectedMaterialPath}" Visibility="{Binding HasOneMaterial, Converter={StaticResource BooleanToVisibilityConverter}}"/>

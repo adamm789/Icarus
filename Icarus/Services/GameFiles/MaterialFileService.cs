@@ -185,6 +185,23 @@ namespace Icarus.Services.GameFiles
             }
         }
 
+        public async Task<List<IMaterialGameFile>?> GetMaterials(IModelGameFile modelGameFile)
+        {
+            var ttModel = modelGameFile.TTModel;
+            var mdlPath = modelGameFile.Path;
+            var ret = new List<IMaterialGameFile>();
+            foreach (var material in ttModel.Materials)
+            {
+                var mtrlPath = _mtrl.GetMtrlPath(mdlPath, material);
+                var materialGameFile = await TryGetMaterialFileData(mtrlPath);
+                if (materialGameFile != null)
+                {
+                    ret.Add(materialGameFile);
+                }
+            }
+            return ret;
+        }
+
         public async Task<IMaterialGameFile?> TryGetMaterialFileData(string path, string itemName = "")
         {
             var xivMtrl = await TryGetMaterialFromPath(path);

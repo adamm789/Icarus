@@ -152,6 +152,12 @@ namespace Icarus.ViewModels.Import
             //return MaterialFiles;
         }
 
+        public async Task SetModel(IModelGameFile modelGameFile)
+        {
+            MaterialFiles = await _materialFileService.GetMaterials(modelGameFile);
+
+        }
+
         private MaterialMod? GetVanillaMtrl()
         {
             // TODO: How to handle SmallClothes, Emperor's series, and skin materials

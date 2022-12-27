@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xceed.Wpf.Toolkit.Primitives;
+using xivModdingFramework.Materials.FileTypes;
 
 namespace Icarus.ViewModels.Import
 {
@@ -49,11 +50,28 @@ namespace Icarus.ViewModels.Import
             {
                 if (_itemListViewModel.SelectedItem == null)
                 {
+                    // chara/monster/m0791/obj/body/b0001/model/m0791b0001.mdl
                     var completePath = _itemListViewModel.CompletePath;
 
                     await ImportVanillaModelViewModel.SetCompletePath(completePath);
-                    await ImportVanillaMaterialViewModel.SetCompletePath(completePath);
-                    await ImportVanillaTextureViewModel.SetCompletePath(completePath);
+
+                    if (ImportVanillaModelViewModel.SelectedModelFile != null)
+                    {
+                        await ImportVanillaMaterialViewModel.SetModel(ImportVanillaModelViewModel.SelectedModelFile);
+                    }
+                    else
+                    {
+                        await ImportVanillaMaterialViewModel.SetCompletePath(completePath);
+                    }
+
+                    if (ImportVanillaMaterialViewModel.SelectedMaterialFile != null)
+                    {
+                        ImportVanillaTextureViewModel.SetMaterial(ImportVanillaMaterialViewModel.SelectedMaterialFile);
+                    }
+                    else
+                    {
+                        await ImportVanillaTextureViewModel.SetCompletePath(completePath);
+                    }
                     await ImportVanillaMetadataViewModel.SetCompletePath(completePath);
                 }
             }

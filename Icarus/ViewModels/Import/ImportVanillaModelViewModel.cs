@@ -26,7 +26,7 @@ namespace Icarus.ViewModels.Import
     {
         // chara/human/c1301/obj/face/f0001/model/c1301f0001_fac.mdl
         IModelFileService _modelFileService;
-        IModelGameFile? _selectedModel;
+        public IModelGameFile? SelectedModelFile;
 
         public ImportVanillaModelViewModel(IModsListViewModel modPackViewModel, IModelFileService modelFileService, ILogService logService) :
             base(modPackViewModel, logService)
@@ -49,8 +49,8 @@ namespace Icarus.ViewModels.Import
             else
             {
                 SelectedModelPath = path;
-                _selectedModel = _modelFileService.TryGetModelFileData(path);
-                CanImport = _selectedModel != null;
+                SelectedModelFile = _modelFileService.TryGetModelFileData(path);
+                CanImport = SelectedModelFile != null;
                 _completePath = path;
             }
             return Task.CompletedTask;
@@ -62,14 +62,14 @@ namespace Icarus.ViewModels.Import
             base.SetItem(item);
             var modelGameFile = _modelFileService.GetModelFileData(item);
 
-            _selectedModel = modelGameFile;
-            SelectedItemName = _selectedModel?.Name;
+            SelectedModelFile = modelGameFile;
+            SelectedItemName = SelectedModelFile?.Name;
 
-            if (_selectedModel != null)
+            if (SelectedModelFile != null)
             {
-                HasSkin = XivPathParser.HasSkin(_selectedModel.Path);
+                HasSkin = XivPathParser.HasSkin(SelectedModelFile.Path);
                 AllRacesMdls = new(_modelFileService.GetAllRaceMdls(item));
-                SelectedModelPath = _selectedModel.Path;
+                SelectedModelPath = SelectedModelFile.Path;
 
                 if (AllRacesMdls.Count > 0)
                 {
@@ -88,7 +88,7 @@ namespace Icarus.ViewModels.Import
 
         public ModelMod? GetVanillaMdl()
         {
-            IModelGameFile? modelGameFile = _selectedModel;
+            IModelGameFile? modelGameFile = SelectedModelFile;
 
             if (modelGameFile != null)
             {
