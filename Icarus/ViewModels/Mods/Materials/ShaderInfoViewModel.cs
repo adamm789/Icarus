@@ -173,7 +173,6 @@ namespace Icarus.ViewModels.Mods.Materials
             set { _materialMod.ShaderInfo.RenderBackfaces = value; OnPropertyChanged(); }
         }
 
-        // TODO: Look at TexTools tokenized texture paths
         public string NormalTexPath
         {
             get { return _materialMod.NormalTexPath; }

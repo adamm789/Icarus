@@ -14,10 +14,9 @@ namespace Icarus.Mods
     {
         public XivMtrl? XivMtrl { get; set; }
         public XivTexType TexType { get; set; }
-
         public Dictionary<XivTexType, XivTexFormat>? TypeFormatDict { get; set; }
-
         public XivTex? XivTex { get; set; }
+        public List<string> AdditionalPaths { get; } = new();
 
         public TextureMod(ImportSource source) : base(source)
         {

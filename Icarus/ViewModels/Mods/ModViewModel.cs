@@ -260,7 +260,7 @@ namespace Icarus.ViewModels.Mods
         void IDropTarget.DragOver(IDropInfo dropInfo)
         {
             var item = dropInfo.Data;
-            if (item is IItemViewModel)
+            if (item is ItemTreeNodeViewModel)
             {
                 dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
                 dropInfo.Effects = DragDropEffects.Copy;
@@ -273,7 +273,7 @@ namespace Icarus.ViewModels.Mods
 
             _logService.Debug($"Drop {item.GetType()} onto {GetType()}");
 
-            if (item is IItemViewModel vm)
+            if (item is ItemTreeNodeViewModel vm)
             {
                 await SetDestinationItem(vm.Item);
             }
