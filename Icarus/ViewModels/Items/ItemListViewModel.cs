@@ -1,5 +1,6 @@
 ﻿using Icarus.Services.GameFiles;
 using Icarus.Services.Interfaces;
+using Icarus.Util;
 using Icarus.ViewModels.Util;
 using ItemDatabase.Interfaces;
 using System;
@@ -34,8 +35,8 @@ namespace Icarus.ViewModels.Items
             }
         }
 
-        ObservableCollection<TreeItemViewModel> _itemList = new();
-        public ObservableCollection<TreeItemViewModel> ItemList
+        ObservableCollection<ItemTreeNodeViewModel> _itemList = new();
+        public ObservableCollection<ItemTreeNodeViewModel> ItemList
         {
             get { return _itemList; }
             set { _itemList = value; OnPropertyChanged(); }
@@ -85,6 +86,17 @@ namespace Icarus.ViewModels.Items
 
         private void BuildList()
         {
+            var root = _itemListService.CreateList();
+            foreach (var child in root.Children)
+            {
+                var vm = new ItemTreeNodeViewModel(child);
+                var eh = new PropertyChangedEventHandler(OnChildChanged);
+                vm.PropertyChanged += eh;
+                ItemList.Add(vm);
+            }
+            var view = (CollectionView)CollectionViewSource.GetDefaultView(ItemList);
+            view.Filter = ChildSearchFilter;
+            /*
             _logService.Information("Building item list");
             //var entries = _itemListService.GetAllItems2();
             var entries = _itemListService.GetAllItems2();
@@ -99,6 +111,7 @@ namespace Icarus.ViewModels.Items
             }
             var view = (CollectionView)CollectionViewSource.GetDefaultView(ItemList);
             view.Filter = ChildSearchFilter;
+            */
         }
 
         public List<IItem> Search(string str, bool exactMatch = false) => _itemListService.Search(str, exactMatch);
@@ -155,7 +168,7 @@ namespace Icarus.ViewModels.Items
 
         private bool ChildSearchFilter(object o)
         {
-            var vm = o as TreeItemViewModel;
+            var vm = o as ItemTreeNodeViewModel;
             if (string.IsNullOrWhiteSpace(_searchText))
             {
                 return true;
@@ -165,7 +178,7 @@ namespace Icarus.ViewModels.Items
 
         private void OnChildChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(TreeItemViewModel.SelectedItem) && sender is TreeItemViewModel vm)
+            if (e.PropertyName == nameof(ItemTreeNodeViewModel.SelectedItem) && sender is ItemTreeNodeViewModel vm)
             {
                 if (vm.SelectedItem != null)
                 {

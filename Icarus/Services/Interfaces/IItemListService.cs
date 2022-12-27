@@ -19,6 +19,8 @@ namespace Icarus.Services.Interfaces
         bool TrySearch(string path);
         Dictionary<string, SortedDictionary<string, IItem>> GetAllItems();
         Dictionary<string, Dictionary<string, SortedDictionary<string, IItem>>> GetAllItems2();
+        ITreeNode<(string Header, IItem? Item)> CreateList();
+
         IItem? SelectedItem { get; set; }
         IItem? TryGetItem(string path, string itemName = "");
         string TryGetName(string path, string itemName = "");

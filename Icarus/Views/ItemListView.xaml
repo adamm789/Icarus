@@ -25,7 +25,7 @@
 
         <TreeView.Resources>
             <ui:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
-            <HierarchicalDataTemplate DataType="{x:Type itemviewmodels:TreeItemViewModel}" ItemsSource="{Binding Children}">
+            <HierarchicalDataTemplate DataType="{x:Type itemviewmodels:ItemTreeNodeViewModel}" ItemsSource="{Binding Children}">
                 <StackPanel>
                     <Button Content="{Binding Header}" Background="Transparent" BorderBrush="Transparent"
                             Command="{Binding IsSelectedCommand}" Margin="0 -2 0 -1" HorizontalContentAlignment="Right"

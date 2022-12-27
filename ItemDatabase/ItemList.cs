@@ -11,6 +11,7 @@ using xivModdingFramework.SqPack.FileTypes;
 using LuminaItem = Lumina.Excel.GeneratedSheets.Item;
 using Index = xivModdingFramework.SqPack.FileTypes.Index;
 using System.Collections.Immutable;
+using System.Reflection.Emit;
 
 namespace ItemDatabase
 {
@@ -32,16 +33,129 @@ namespace ItemDatabase
         private Dictionary<string, SortedDictionary<string, IItem>> _indoorFurniture2 = new();
 
         private SortedDictionary<string, GearModelSet> _gearModelSets = new();
+
+        private ITreeNode<(string, IItem?)> _root;
         public ItemList(GameData lumina)
         {
             _lumina = lumina;
-            BuildList();
         }
 
-        public ItemList(string gamePath)
+        public ITreeNode<(string Header, IItem? Item)> CreateList()
         {
-            _lumina = new GameData(gamePath);
-            BuildList();
+            _root = new ItemTreeNode(("ROOT", null));
+            _root.Children.Add(CreateItems());
+            return _root;
+        }
+
+        public ITreeNode<(string Header, IItem? Item)> CreateItems()
+        {
+            var ret = new ItemTreeNode(("Gear", null));
+            var items = _lumina.GetExcelSheet<LuminaItem>();
+
+            var dict = new SortedDictionary<string, SortedSet<ITreeNode<(string, IItem?)>>>();
+
+            foreach (var item in items)
+            {
+                var cat = Item.GetMainItemCategory(item);
+
+                switch (cat)
+                {
+                    // TODO: I think the only cases here for Lumina.Items are Gear and Null
+                    case MainItemCategory.Null:
+                        break;
+                    case MainItemCategory.Gear:
+                        var i = Item.GetItem(item);
+                        if (i is IGear gear)
+                        {
+                            var t = CreateItem(i);
+                            SortedSet<ITreeNode<(string, IItem?)>>? parent;
+                            if (EquipmentSlot.Ring.HasFlag(gear.Slot))
+                            {
+                                if (!dict.ContainsKey(EquipmentSlot.Ring.ToString()))
+                                {
+                                    dict[EquipmentSlot.Ring.ToString()] = new();
+                                }
+                                parent = dict[EquipmentSlot.Ring.ToString()];
+                            }
+                            else
+                            {
+                                if (!dict.ContainsKey(gear.Slot.ToString()))
+                                {
+                                    dict[gear.Slot.ToString()] = new();
+                                }
+
+                                parent = dict[gear.Slot.ToString()];
+                            }
+                            if (parent != null)
+                            {
+                                parent.Add(t);
+                            }
+                            else
+                            {
+                                Log.Error($"Could not add {gear.Name}");
+                            }
+                        }
+                        break;
+                    case MainItemCategory.Minions:
+                        break;
+                    case MainItemCategory.IndoorFurnishings:
+                        break;
+                    case MainItemCategory.OutdoorFurnishings:
+                        break;
+                }
+            }
+
+            ret.Children.Add(new ItemTreeNode((EquipmentSlot.Head.ToString(), null)) { Children = dict[EquipmentSlot.Head.ToString()] });
+            ret.Children.Add(new ItemTreeNode((EquipmentSlot.Body.ToString(), null)) { Children = dict[EquipmentSlot.Body.ToString()] });
+            ret.Children.Add(new ItemTreeNode((EquipmentSlot.Hands.ToString(), null)) { Children = dict[EquipmentSlot.Hands.ToString()] });
+            ret.Children.Add(new ItemTreeNode((EquipmentSlot.Legs.ToString(), null)) { Children = dict[EquipmentSlot.Legs.ToString()] });
+            ret.Children.Add(new ItemTreeNode((EquipmentSlot.Feet.ToString(), null)) { Children = dict[EquipmentSlot.Feet.ToString()] });
+            ret.Children.Add(new ItemTreeNode((EquipmentSlot.Ears.ToString(), null)) { Children = dict[EquipmentSlot.Ears.ToString()] });
+            ret.Children.Add(new ItemTreeNode((EquipmentSlot.Neck.ToString(), null)) { Children = dict[EquipmentSlot.Neck.ToString()] });
+            ret.Children.Add(new ItemTreeNode((EquipmentSlot.Wrists.ToString(), null)) { Children = dict[EquipmentSlot.Wrists.ToString()] });
+            ret.Children.Add(new ItemTreeNode((EquipmentSlot.Ring.ToString(), null)) { Children = dict[EquipmentSlot.Ring.ToString()] });
+
+            return ret;
+        }
+
+        public ITreeNode<(string Header, IItem? Item)>? CreateItem(IItem? item)
+        {
+            if (item is IGear gear)
+            {
+                var imcPath = gear.GetImcPath();
+                var part = GetPart(gear.Slot);
+                if (part != -1)
+                {
+                    try
+                    {
+                        var imcFile = _lumina.GetFile<ImcFile>(imcPath);
+                        var materialId = imcFile.GetVariant(part, gear.Variant - 1).MaterialId;
+                        gear.MaterialId = materialId;
+                    }
+                    catch (Exception)
+                    {
+                        Log.Error($"Could not get imc file for {gear.Name}");
+                    }
+
+                    if (!_gearModelSets.ContainsKey(gear.Code))
+                    {
+                        _gearModelSets.Add(gear.Code, new GearModelSet(gear.Variant));
+                    }
+                    _gearModelSets[gear.Code].Add(gear);
+
+                    if (!_materialSets.ContainsKey(gear.Code))
+                    {
+                        _materialSets[gear.Code] = new();
+                    }
+                    if (!_materialSets[gear.Code].ContainsKey(gear.Slot))
+                    {
+                        _materialSets[gear.Code][gear.Slot] = new();
+                    }
+                    _materialSets[gear.Code][gear.Slot].Add(gear);
+                }
+                return new ItemTreeNode((gear.Name, gear));
+            }
+            return null;
         }
 
         /*
@@ -55,12 +169,21 @@ namespace ItemDatabase
             return _allItems;
         }
 
+        public Dictionary<string, Dictionary<XivRace, SortedDictionary<string, IItem>>> GetChara()
+        {
+            var ret = new Dictionary<string, Dictionary<XivRace, SortedDictionary<string, IItem>>>();
+
+            return ret;
+        }
+
         public Dictionary<string, Dictionary<string, SortedDictionary<string, IItem>>> GetAllItems2()
         {
             var ret = new Dictionary<string, Dictionary<string, SortedDictionary<string, IItem>>>();
             ret["Gear"] = _gear;
-            ret["Indoor Furniture"] = _indoorFurniture2;
 
+#if DEBUG
+            ret["Indoor Furniture"] = _indoorFurniture2;
+#endif
             return ret;
         }
 
@@ -71,10 +194,6 @@ namespace ItemDatabase
 
             foreach (var item in items)
             {
-                if (item.Name.ToString().Contains("emperor", StringComparison.OrdinalIgnoreCase))
-                {
-
-                }
                 var cat = Item.GetMainItemCategory(item);
 
                 switch (cat)
@@ -260,12 +379,6 @@ namespace ItemDatabase
             {
                 var imcPath = gear.GetImcPath();
                 var part = GetPart(gear.Slot);
-
-                if (gear.Code.StartsWith("a"))
-                {
-
-                }
-
                 if (part != -1)
                 {
                     try
@@ -274,13 +387,14 @@ namespace ItemDatabase
                         var materialId = imcFile.GetVariant(part, gear.Variant - 1).MaterialId;
                         gear.MaterialId = materialId;
                     }
-                    catch(Exception)
+                    catch (Exception)
                     {
                         Log.Error($"Could not get imc file for {gear.Name}");
                     }
                 }
                 AddEquipment(gear);
-                if (!_gearModelSets.ContainsKey(gear.Code)) {
+                if (!_gearModelSets.ContainsKey(gear.Code))
+                {
                     _gearModelSets.Add(gear.Code, new GearModelSet(gear.Variant));
                 }
                 _gearModelSets[gear.Code].Add(gear);
@@ -372,15 +486,46 @@ namespace ItemDatabase
             return new List<IItem>();
         }
 
-        // TODO: Implement "filter"?
-        public List<IItem> Search(string str, bool exactMatch = false)
+        private List<IItem> Search(ITreeNode<(string header, IItem? item)> node, Predicate<IItem> pred)
         {
-            var ret = new List<IItem>();
-            if (String.IsNullOrWhiteSpace(str))
+            if (node.Value.item != null)
             {
+                if (pred(node.Value.item))
+                {
+                    return new List<IItem>() { node.Value.item };
+                }
+                return new List<IItem>();
+            }
+            else
+            {
+                var ret = new List<IItem>();
+                foreach (var child in node.Children)
+                {
+                    ret.AddRange(Search(child, pred));
+                }
                 return ret;
             }
+        }
 
+        public List<IItem> Search(string str, bool exactMatch = false)
+        {
+            if (String.IsNullOrWhiteSpace(str))
+            {
+                return new List<IItem>();
+            }
+
+            Predicate<IItem> pred;
+            if (exactMatch)
+            {
+                pred = i => i.Name == str;
+            }
+            else
+            {
+                pred = i => i.Name.Contains(str);
+            }
+            var ret = Search(_root, pred);
+
+            /*
             foreach (var entry in _allItems.Values)
             {
                 foreach (var item in entry)
@@ -411,6 +556,7 @@ namespace ItemDatabase
                     ret.Add(furniture.Value);
                 }
             }
+            */
             return ret;
         }
 
