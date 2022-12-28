@@ -7,6 +7,7 @@
         Gear,
         Minions,
         IndoorFurnishings,
-        OutdoorFurnishings
+        OutdoorFurnishings,
+        Character
     }
 }

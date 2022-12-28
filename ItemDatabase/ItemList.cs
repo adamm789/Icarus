@@ -12,6 +12,8 @@ using LuminaItem = Lumina.Excel.GeneratedSheets.Item;
 using Index = xivModdingFramework.SqPack.FileTypes.Index;
 using System.Collections.Immutable;
 using System.Reflection.Emit;
+using ItemDatabase.Lumina;
+using CharaMakeType = ItemDatabase.Lumina.CharaMakeType;
 
 namespace ItemDatabase
 {
@@ -44,8 +46,130 @@ namespace ItemDatabase
         {
             _root = new ItemTreeNode(("ROOT", null));
             _root.Children.Add(CreateItems());
+            _root.Children.Add(CreateCharacter());
             return _root;
         }
+
+        public ITreeNode<(string Header, IItem? Item)> CreateCharacter()
+        {
+            var ret = new ItemTreeNode(("Character", null));
+            var charaMakeType = _lumina.GetExcelSheet<CharaMakeType>();
+            ret.Children.Add(CreateFaces(charaMakeType));
+
+            return ret;
+        }
+
+
+        public ITreeNode<(string Header, IItem? Item)> CreateFaces(ExcelSheet<CharaMakeType>? sheet)
+        {
+            var dict = new Dictionary<XivRace, List<IItem>>();
+            for (var i = 0; i < sheet.RowCount; i++)
+            {
+                var row = sheet.GetRow((uint)i);
+                var faceColumn = -1;
+                var tailColumn = -1;
+
+                for (var j = 0; j < row.Menu.Length; j++)
+                {
+                    var num = row.Menu[j].Row;
+                    if (num == 238)
+                    {
+                        faceColumn = j;
+                    }
+                }
+
+                if (faceColumn > 0)
+                {
+                    try
+                    {
+                        var numFaces = row.SubMenuParam[faceColumn].Where(x => x > 0).Count();
+                        var race = GetXivRace(row);
+                        if (!dict.ContainsKey(race))
+                        {
+                            dict.Add(race, new List<IItem>());
+                            for (var k = 0; k < numFaces; k++)
+                            {
+                                var face = new CharacterFace(race, k + 1);
+                                dict[race].Add(face);
+                            }
+                        }
+                    }
+                    catch (Exception)
+                    {
+
+                    }
+                }
+            }
+            var ret = new ItemTreeNode(("Faces", null));
+            foreach (var kvp in dict)
+            {
+                var race = kvp.Key;
+                var itemList = kvp.Value;
+                var child = new ItemTreeNode((race.ToString(), null));
+                ret.Children.Add(child);
+                foreach (var item in itemList)
+                {
+                    child.Children.Add(new ItemTreeNode((item.Name, item)));
+                }
+            }
+            return ret;
+        }
+
+        public XivRace GetXivRace(CharaMakeType row)
+        {
+            var race = row.Race.Row;
+            var tribe = row.Tribe.Row;
+            var gender = row.Gender;
+
+            if (tribe == 1)
+            {
+                if (gender == 0) return XivRace.Hyur_Midlander_Male;
+                else  return XivRace.Hyur_Midlander_Female;
+            }
+            else if (tribe == 2)
+            {
+                if (gender == 0) return XivRace.Hyur_Highlander_Male;
+                else return XivRace.Hyur_Highlander_Female;
+            }
+            else if (tribe == 3 || tribe == 4)
+            {
+                if (gender == 0) return XivRace.Elezen_Male;
+                else return XivRace.Elezen_Female;
+            }
+            else if (tribe == 5 || tribe == 6)
+            {
+                if (gender == 0) return XivRace.Lalafell_Male;
+                else return XivRace.Lalafell_Female;
+            }
+            else if (tribe == 7 || tribe == 8)
+            {
+                if (gender == 0) return XivRace.Miqote_Male;
+                else return XivRace.Miqote_Female;
+            }
+            else if (tribe == 9 || tribe == 10)
+            {
+                if (gender == 0) return XivRace.Roegadyn_Male;
+                else return XivRace.Roegadyn_Female;
+            }
+            else if (tribe == 11 || tribe == 12)
+            {
+                if (gender == 0) return XivRace.AuRa_Male;
+                else return XivRace.AuRa_Female;
+            }
+            else if (tribe == 13 || tribe == 14)
+            {
+                if (gender == 0) return XivRace.Hrothgar_Male;
+                else return XivRace.Hrothgar_Female;
+            }
+            else if (tribe == 15 || tribe == 16)
+            {
+                if (gender == 0) return XivRace.Viera_Male;
+                else return XivRace.Viera_Female;
+            }
+
+            throw new ArgumentException();
+        }
+
 
         public ITreeNode<(string Header, IItem? Item)> CreateItems()
         {
