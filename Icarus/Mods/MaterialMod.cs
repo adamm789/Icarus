@@ -130,6 +130,7 @@ namespace Icarus.Mods
                         if (XivPathParser.CanParsePath(ReflectionTexPath) || String.IsNullOrWhiteSpace(ReflectionTexPath)) ReflectionTexPath = ttp.Path;
                         break;
                     case XivTexType.Skin:
+                        if (XivPathParser.CanParsePath(MultiTexPath) || String.IsNullOrWhiteSpace(MultiTexPath)) MultiTexPath = ttp.Path;
                         break;
                     case XivTexType.ColorSet:
                         break;

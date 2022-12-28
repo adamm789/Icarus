@@ -14,6 +14,7 @@ using System.Collections.Immutable;
 using System.Reflection.Emit;
 using ItemDatabase.Lumina;
 using CharaMakeType = ItemDatabase.Lumina.CharaMakeType;
+using ItemDatabase.Characters;
 
 namespace ItemDatabase
 {
@@ -53,21 +54,18 @@ namespace ItemDatabase
         public ITreeNode<(string Header, IItem? Item)> CreateCharacter()
         {
             var ret = new ItemTreeNode(("Character", null));
-            var charaMakeType = _lumina.GetExcelSheet<CharaMakeType>();
-            ret.Children.Add(CreateFaces(charaMakeType));
 
-            return ret;
-        }
+            var sheet = _lumina.GetExcelSheet<CharaMakeType>();
+            var faceDict = new Dictionary<XivRace, SortedDictionary<int, IItem>>();
+            var tailDict = new Dictionary<XivRace, List<IItem>>();
+            var earDict = new Dictionary<XivRace, List<IItem>>();
 
-
-        public ITreeNode<(string Header, IItem? Item)> CreateFaces(ExcelSheet<CharaMakeType>? sheet)
-        {
-            var dict = new Dictionary<XivRace, List<IItem>>();
             for (var i = 0; i < sheet.RowCount; i++)
             {
                 var row = sheet.GetRow((uint)i);
                 var faceColumn = -1;
                 var tailColumn = -1;
+                var earColumn = -1;
 
                 for (var j = 0; j < row.Menu.Length; j++)
                 {
@@ -76,21 +74,29 @@ namespace ItemDatabase
                     {
                         faceColumn = j;
                     }
+                    else if (num == 223 || num == 226 || num == 253 || num == 257 || num == 1000)
+                    {
+                        tailColumn = j;
+                    }
+                    else if (num == 1033 || num == 1016)
+                    {
+                        earColumn = j;
+                    }
                 }
+                var race = GetXivRace(row.Tribe.Row, row.Gender);
 
                 if (faceColumn > 0)
                 {
                     try
                     {
                         var numFaces = row.SubMenuParam[faceColumn].Where(x => x > 0).Count();
-                        var race = GetXivRace(row);
-                        if (!dict.ContainsKey(race))
+                        if (!faceDict.ContainsKey(race))
                         {
-                            dict.Add(race, new List<IItem>());
+                            faceDict.Add(race, new SortedDictionary<int, IItem>());
                             for (var k = 0; k < numFaces; k++)
                             {
                                 var face = new CharacterFace(race, k + 1);
-                                dict[race].Add(face);
+                                faceDict[race].Add(k+1, face);
                             }
                         }
                     }
@@ -99,32 +105,104 @@ namespace ItemDatabase
 
                     }
                 }
+                if (tailColumn > 0)
+                {
+                    var numTails = row.SubMenuParam[tailColumn].Where(x => x > 0).Count();
+                    if (!tailDict.ContainsKey(race))
+                    {
+                        tailDict.Add(race, new List<IItem>());
+                        for (var k = 0; k < numTails; k++)
+                        {
+                            var tail = new CharacterTail(race, k + 1);
+                            tailDict[race].Add(tail);
+                        }
+                    }
+                }
+                if (earColumn > 0)
+                {
+                    var numEars = row.SubMenuParam[earColumn].Where(x => x > 0).Count();
+                    if (!earDict.ContainsKey(race))
+                    {
+                        earDict.Add(race, new List<IItem>());
+                        for (var k = 0; k < numEars; k++)
+                        {
+                            var ear = new CharacterEar(race, k + 1);
+                            earDict[race].Add(ear);
+                        }
+                    }
+                }
             }
-            var ret = new ItemTreeNode(("Faces", null));
-            foreach (var kvp in dict)
+
+            // TODO: Looping through BNpc still doesn't get all of the faces...
+            // Should I just iterate like TexTools does...?
+            var bnpc = _lumina.GetExcelSheet<BNpcCustomize>();
+            for (var i = 0; i < bnpc.RowCount; i++)
+            {
+                var row = bnpc.GetRow((uint)i);
+
+                if (row.Tribe.Row <= 0) continue;
+                var race = GetXivRace(row.Tribe.Row, row.Gender);
+
+                if (row.Face > 7 && !faceDict[race].ContainsKey(row.Face))
+                {
+                    var face = new CharacterFace(race, row.Face);
+                    faceDict[race].Add(row.Face, face);
+
+                }
+            }
+
+            var faces = new ItemTreeNode(("Faces", null));
+            foreach (var kvp in faceDict)
             {
                 var race = kvp.Key;
                 var itemList = kvp.Value;
                 var child = new ItemTreeNode((race.ToString(), null));
-                ret.Children.Add(child);
+                faces.Children.Add(child);
+                foreach (var item in itemList.Values)
+                {
+                    child.Children.Add(new ItemTreeNode((item.Name, item)));
+                }
+            }
+
+            var tails = new ItemTreeNode(("Tails", null));
+            foreach (var kvp in tailDict)
+            {
+                var race = kvp.Key;
+                var itemList = kvp.Value;
+                var child = new ItemTreeNode((race.ToString(), null));
+                tails.Children.Add(child);
                 foreach (var item in itemList)
                 {
                     child.Children.Add(new ItemTreeNode((item.Name, item)));
                 }
             }
+
+            var ears = new ItemTreeNode(("Ears", null));
+            foreach (var kvp in earDict)
+            {
+                var race = kvp.Key;
+                var itemList = kvp.Value;
+                var child = new ItemTreeNode((race.ToString(), null));
+                ears.Children.Add(child);
+                foreach (var item in itemList)
+                {
+                    child.Children.Add(new ItemTreeNode((item.Name, item)));
+                }
+            }
+
+            ret.Children.Add(faces);
+            ret.Children.Add(tails);
+            ret.Children.Add(ears);
+
             return ret;
         }
 
-        public XivRace GetXivRace(CharaMakeType row)
+        public XivRace GetXivRace(uint tribe, int gender)
         {
-            var race = row.Race.Row;
-            var tribe = row.Tribe.Row;
-            var gender = row.Gender;
-
             if (tribe == 1)
             {
                 if (gender == 0) return XivRace.Hyur_Midlander_Male;
-                else  return XivRace.Hyur_Midlander_Female;
+                else return XivRace.Hyur_Midlander_Female;
             }
             else if (tribe == 2)
             {
@@ -169,7 +247,6 @@ namespace ItemDatabase
 
             throw new ArgumentException();
         }
-
 
         public ITreeNode<(string Header, IItem? Item)> CreateItems()
         {
