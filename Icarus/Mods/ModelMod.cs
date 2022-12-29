@@ -56,19 +56,6 @@ namespace Icarus.Mods
             }
         }
 
-        /*
-        public override IMod DeepCopy(IMod other)
-        {
-            var otherModelMod = other as ModelMod;
-            var otherImportedModel = ImportedModel.DeepCopy();
-            var otherModelModifierOptions = new ModelModifierOptions()
-            {
-
-            };
-            var otherTTModel = TTModel?.DeepCopy();
-            throw new NotImplementedException();
-        }
-        */
 
         public override bool IsComplete()
         {

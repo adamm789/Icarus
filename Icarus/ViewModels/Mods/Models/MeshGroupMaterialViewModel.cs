@@ -76,14 +76,14 @@ namespace Icarus.ViewModels.Models
 
             if (sender is not ModelModViewModel modelMod) return;
 
-            
+
             if (e.PropertyName == nameof(modelMod.TargetRace))
             {
                 //TargetRace = modelMod.TargetRace;
                 UpdateRace(modelMod.TargetRace);
                 UpdateDisplayedMaterial();
             }
-            
+
         }
 
         private void OnMyPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -141,31 +141,7 @@ namespace Icarus.ViewModels.Models
         public string DisplayedMaterial
         {
             get { return _importedGroup.Material; }
-            set
-            {
-                _importedGroup.Material = value; OnPropertyChanged();
-                // TODO: Fix up changing race and manually changing displayed material
-                /*
-                if (_importedGroup.Material == value) return;
-
-                _importedGroup.Material = value;
-                if (XivPathParser.IsSkinMtrl(value))
-                {
-                    _isSkinMaterial = true;
-                    //OnPropertyChanged(nameof(IsSkinMaterial));
-                }
-
-                OnPropertyChanged();
-                if (IsSkinMaterial)
-                {
-                    SkinVariant = XivPathParser.GetMtrlVariant(value);
-                }
-                else
-                {
-                    MaterialVariant = XivPathParser.GetMtrlVariant(value);
-                }
-                */
-            }
+            set { _importedGroup.Material = value; OnPropertyChanged(); }
         }
 
         private void UpdateVariants()
@@ -200,8 +176,6 @@ namespace Icarus.ViewModels.Models
         private void UpdateRace(XivRace race)
         {
             _skinName = XivPathParser.ChangeToRace(_skinName, race);
-            // TODO: UserPreferences of default skin material will overwrite any assignment in, for example, a ttmp2
-
             if (_modelModViewModel.ImportSource == ImportSource.Raw)
             {
                 SkinVariant = _userPreferencesService.GetDefaultSkinMaterialVariant(race);

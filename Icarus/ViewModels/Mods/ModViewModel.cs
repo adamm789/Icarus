@@ -203,7 +203,6 @@ namespace Icarus.ViewModels.Mods
 
         public virtual async Task<bool> SetDestinationItem(IItem? itemArg = null)
         {
-            //var data = await _gameFileService.GetFileData(itemArg, Mod.GetType());
             var data = await GetFileData(itemArg);
             if (data != null)
             {

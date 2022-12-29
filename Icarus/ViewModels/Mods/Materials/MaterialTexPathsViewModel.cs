@@ -10,7 +10,6 @@ namespace Icarus.ViewModels.Mods.Materials
         {
         }
 
-        // TODO: Look at TexTools tokenized texture paths
         public string NormalTexPath
         {
             get { return _materialMod.NormalTexPath; }

@@ -17,8 +17,7 @@ namespace Icarus.Services.Interfaces
         List<IItem> Search(string str, bool exactMatch = false);
         List<IItem> Search(string str, string variantCode, bool exactMatch = false);
         bool TrySearch(string path);
-        Dictionary<string, SortedDictionary<string, IItem>> GetAllItems();
-        Dictionary<string, Dictionary<string, SortedDictionary<string, IItem>>> GetAllItems2();
+
         ITreeNode<(string Header, IItem? Item)> CreateList();
 
         IItem? SelectedItem { get; set; }

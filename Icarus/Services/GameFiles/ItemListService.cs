@@ -12,7 +12,6 @@ namespace Icarus.Services.GameFiles
 {
     public class ItemListService : LuminaDependentServiceBase<ItemListService>, IItemListService
     {
-        // TODO: Does it make sense to have the ItemListViewModel up here in the ItemListService?
         public ItemListViewModel ItemListViewModel {get;}
 
         ILogService _logService;
@@ -151,12 +150,6 @@ namespace Icarus.Services.GameFiles
 
             return "";
         }
-
-        public Dictionary<string, SortedDictionary<string, IItem>> GetAllItems() => _itemList.GetAllItems();
-
-        public Dictionary<string, Dictionary<string, SortedDictionary<string, IItem>>> GetAllItems2() => _itemList.GetAllItems2();
-
         public ITreeNode<(string Header, IItem? Item)> CreateList() => _itemList.CreateList();
-
     }
 }

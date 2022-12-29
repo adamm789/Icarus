@@ -80,6 +80,7 @@ namespace Icarus.ViewModels.Mods
             {
                 if (_metadataMod.ItemMetadata.Root.Info.Slot != metaFile.Slot)
                 {
+                    _logService.Error($"Unable to assign metadata to a different slot.");
                     return false;
                 }
                 var ret = base.SetModData(gameFile);
