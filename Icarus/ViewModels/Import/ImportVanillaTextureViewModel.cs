@@ -90,6 +90,11 @@ namespace Icarus.ViewModels.Import
             }
         }
         ITextureGameFile? _selectedTexture;
+        public ITextureGameFile? SelectedTexture
+        {
+            get { return _selectedTexture; }
+            set { _selectedTexture = value; _textureFileService.SelectedTextureFile = value; OnPropertyChanged(); }
+        }
 
         ObservableCollection<XivTexType>? _availableTexTypes;
         public ObservableCollection<XivTexType>? AvailableTexTypes

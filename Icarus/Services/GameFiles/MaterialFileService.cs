@@ -3,6 +3,7 @@ using Icarus.Mods.Interfaces;
 using Icarus.Services.GameFiles.Interfaces;
 using Icarus.Services.Interfaces;
 using Icarus.Util.Extensions;
+using ItemDatabase.Characters;
 using ItemDatabase.Interfaces;
 using ItemDatabase.Paths;
 using Lumina.Data.Files;
@@ -18,6 +19,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Shapes;
 using xivModdingFramework.Cache;
+using xivModdingFramework.General.Enums;
 using xivModdingFramework.Materials.DataContainers;
 using xivModdingFramework.Materials.FileTypes;
 using xivModdingFramework.Models.DataContainers;
@@ -30,6 +32,8 @@ namespace Icarus.Services.GameFiles
     {
         IModelFileService _modelFileService;
         Mtrl _mtrl;
+
+        public IMaterialGameFile? SelectedMaterialFile { get; set; }
 
         public MaterialFileService(LuminaService luminaService, IItemListService itemListService, ISettingsService settingsService, IModelFileService modelFileService, ILogService logService)
             : base(luminaService, itemListService, settingsService, logService)
@@ -51,6 +55,12 @@ namespace Icarus.Services.GameFiles
 
         public async Task<IMaterialGameFile?> GetMaterialFileData(IItem? itemArg = null, int materialSet = 1)
         {
+            if (SelectedMaterialFile != null && itemArg == null)
+            {
+                _logService.Debug($"Retuning loaded material file.");
+                return SelectedMaterialFile;
+            }
+
             var item = GetItem(itemArg);
             if (item == null) return null;
 
@@ -73,6 +83,8 @@ namespace Icarus.Services.GameFiles
                 }
                 else
                 {
+                    // TODO: How to handle "GetMaterialFileData" for character assets, which contain multiple different materials
+
                     var mdlFile = _lumina.GetFile<MdlFile>(item.GetMdlPath());
                     var model = new Model(mdlFile);
                     var materials = model.Materials;
@@ -123,12 +135,19 @@ namespace Icarus.Services.GameFiles
                     materialPaths = new();
                     var ret = new List<IMaterialGameFile>();
                     var seenPaths = new List<string>();
+
                     foreach (var m in sharedModels)
                     {
-                        var paths = await mdl.GetReferencedMaterialPaths(m.GetMdlPath(), m.MaterialId, includeSkin: false);
+                        var races = _modelFileService.GetAllRaceMdls(m);
+                        var race = XivRace.Hyur_Midlander_Male;
+                        if (races.Count > 0)
+                        {
+                            race = races[0];
+                        }
+                        var includeSkin = XivPathParser.IsSmallClothesOrEmperorSeries(m.GetMdlPath(race));
+                        var paths = await mdl.GetReferencedMaterialPaths(m.GetMdlPath(race), m.MaterialId, includeSkin: includeSkin);
                         foreach (var path in paths)
                         {
-                            if (XivPathParser.IsSkinMtrl(path)) continue;
                             if (seenPaths.Contains(path)) continue;
                             var xivMtrl = await _mtrl.GetMtrlData(path);
 
@@ -148,35 +167,37 @@ namespace Icarus.Services.GameFiles
                     }
                     return ret;
                 }
-
-                var model = await mdl.GetModel(mdlPath, true);
-                if (model == null)
+                else
                 {
-                    return null;
-                }
-                materialPaths = model.Materials;
-
-                foreach (var path in materialPaths)
-                {
-                    var xivMtrl = await _mtrl.GetMtrlData(path);
-                    if (xivMtrl == null) continue;
-                    var materialSet = XivPathParser.GetMtrlSetVariant(path);
-
-                    var mat = new MaterialGameFile()
+                    var model = await mdl.GetModel(mdlPath, true);
+                    if (model == null)
                     {
-                        Name = item.Name,
-                        Path = path,
-                        XivMtrl = xivMtrl,
-                        Category = category,
-                        MaterialSet = materialSet,
-                        Variant = XivPathParser.GetMtrlVariant(path)
-                    };
-                    if (mat != null)
-                    {
-                        retVal.Add(mat);
+                        return null;
                     }
+                    materialPaths = model.Materials;
+
+                    foreach (var path in materialPaths)
+                    {
+                        var xivMtrl = await _mtrl.GetMtrlData(path);
+                        if (xivMtrl == null) continue;
+                        var materialSet = XivPathParser.GetMtrlSetVariant(path);
+
+                        var mat = new MaterialGameFile()
+                        {
+                            Name = item.Name,
+                            Path = path,
+                            XivMtrl = xivMtrl,
+                            Category = category,
+                            MaterialSet = materialSet,
+                            Variant = XivPathParser.GetMtrlVariant(path)
+                        };
+                        if (mat != null)
+                        {
+                            retVal.Add(mat);
+                        }
+                    }
+                    return retVal;
                 }
-                return retVal;
             }
             catch (Exception ex)
             {
@@ -184,6 +205,7 @@ namespace Icarus.Services.GameFiles
                 return null;
             }
         }
+
 
         public async Task<List<IMaterialGameFile>?> GetMaterials(IModelGameFile modelGameFile)
         {

@@ -15,5 +15,6 @@ namespace Icarus.Services.GameFiles.Interfaces
 
         Task<ITextureGameFile?> GetTextureFileData(IItem? item = null, XivTexType type = XivTexType.Normal, string variant="a");
         Task<ITextureGameFile?> TryGetTextureFileData(string path, string name = "");
+        ITextureGameFile? SelectedTextureFile { get; set; }
     }
 }

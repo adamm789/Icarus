@@ -29,6 +29,7 @@ namespace Icarus.Services.GameFiles
             _materialFileService = materialFileService;
         }
 
+        public ITextureGameFile? SelectedTextureFile { get; set; }
         public async Task<ITextureGameFile?> GetTextureFileData(IMaterialGameFile materialFileData, XivTexType type = XivTexType.Normal, string variant = "a")
         {
             var dat = new Dat(_frameworkGameDirectory);
@@ -80,6 +81,12 @@ namespace Icarus.Services.GameFiles
 
         public async Task<ITextureGameFile?> GetTextureFileData(IItem? itemArg = null, XivTexType type = XivTexType.Normal, string variant = "a")
         {
+            if (SelectedTextureFile != null && itemArg == null)
+            {
+                _logService.Debug($"Returning loaded texture file.");
+                return SelectedTextureFile;
+            }
+
             var item = GetItem(itemArg);
             if (item == null) return null;
             var materialFileData = await _materialFileService.GetMaterialFileData(item);

@@ -26,13 +26,26 @@ namespace Icarus.ViewModels.Import
     {
         // chara/human/c1301/obj/face/f0001/model/c1301f0001_fac.mdl
         IModelFileService _modelFileService;
-        public IModelGameFile? SelectedModelFile;
+
+        IModelGameFile? _selectedModelFile;
+        public IModelGameFile? SelectedModelFile
+        {
+            get { return _selectedModelFile; }
+            set {
+                _selectedModelFile = value;
+                _modelFileService.SelectedModelFile = value;
+                SelectedModelPath = value?.Path;
+                SelectedItemName = value?.Name;
+                OnPropertyChanged();
+            }
+        }
+
+        Dictionary<XivRace, IModelGameFile> _raceModelDict = new();
 
         public ImportVanillaModelViewModel(IModsListViewModel modPackViewModel, IModelFileService modelFileService, ILogService logService) :
             base(modPackViewModel, logService)
         {
             _modelFileService = modelFileService;
-
         }
 
         public override Task SetCompletePath(string? path)
@@ -42,13 +55,12 @@ namespace Icarus.ViewModels.Import
             if (String.IsNullOrWhiteSpace(path) || !XivPathParser.IsMdl(path))
             {
                 HasSkin = false;
-                SelectedModelPath = "";
+                SelectedModelFile = null;
                 _completePath = null;
                 CanImport = false;
             }
             else
             {
-                SelectedModelPath = path;
                 SelectedModelFile = _modelFileService.TryGetModelFileData(path);
                 CanImport = SelectedModelFile != null;
                 _completePath = path;
@@ -60,8 +72,31 @@ namespace Icarus.ViewModels.Import
         {
             //List<IModelGameFile>? ret = null;
             base.SetItem(item);
-            var modelGameFile = _modelFileService.GetModelFileData(item);
+            //var modelGameFile = _modelFileService.GetModelFileData(item, SelectedRace);
 
+            _raceModelDict = _modelFileService.GetModelFileDataDict(item);
+            if (_raceModelDict.Count > 0)
+            {
+                AllRacesMdls = new(_modelFileService.GetAllRaceMdls(item));
+
+                if (AllRacesMdls.Count > 0)
+                {
+                    SelectedRace = AllRacesMdls[0];
+                }
+                if (_raceModelDict.ContainsKey(XivRace.All_Races))
+                {
+                    SelectedModelFile = _raceModelDict[XivRace.All_Races];
+                }
+                HasSkin = XivPathParser.HasSkin(SelectedModelFile?.Path);
+            }
+            else
+            {
+                HasSkin = false;
+                AllRacesMdls = new();
+                SelectedModelFile = null;
+            }
+
+                /*
             SelectedModelFile = modelGameFile;
             SelectedItemName = SelectedModelFile?.Name;
 
@@ -69,7 +104,6 @@ namespace Icarus.ViewModels.Import
             {
                 HasSkin = XivPathParser.HasSkin(SelectedModelFile.Path);
                 AllRacesMdls = new(_modelFileService.GetAllRaceMdls(item));
-                SelectedModelPath = SelectedModelFile.Path;
 
                 if (AllRacesMdls.Count > 0)
                 {
@@ -80,9 +114,9 @@ namespace Icarus.ViewModels.Import
             {
                 HasSkin = false;
                 AllRacesMdls = new();
-                SelectedModelPath = "";
             }
-            CanImport = modelGameFile != null;
+                */
+            CanImport = SelectedModelFile != null;
             return Task.CompletedTask;
         }
 
@@ -132,8 +166,13 @@ namespace Icarus.ViewModels.Import
             get { return _selectedRace; }
             set {
                 _selectedRace = value;
+                if (_raceModelDict.ContainsKey(value))
+                {
+                    SelectedModelFile = _raceModelDict[value];
+                }
                 OnPropertyChanged();
-                SelectedModelPath = XivPathParser.ChangeToRace(SelectedModelPath, _selectedRace);
+                //SelectedModelPath = XivPathParser.ChangeToRace(SelectedModelPath, _selectedRace);
+
             }
         }
 

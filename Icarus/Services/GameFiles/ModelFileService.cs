@@ -19,11 +19,14 @@ namespace Icarus.Services.GameFiles
 {
     public class ModelFileService : GameFileService, IModelFileService
     {
-        public ModelFileService(LuminaService luminaService, IItemListService itemListService, ISettingsService settingsService, ILogService logService)
+        readonly IMetadataFileService _metadataFileService;
+        public ModelFileService(LuminaService luminaService, IItemListService itemListService, ISettingsService settingsService, IMetadataFileService metadataFileService, ILogService logService)
         : base(luminaService, itemListService, settingsService, logService)
         {
-
+            _metadataFileService = metadataFileService;
         }
+
+        public IModelGameFile? SelectedModelFile { get; set; }
 
         public List<IGear>? GetSharedModels(IGear gear)
         {
@@ -62,14 +65,75 @@ namespace Icarus.Services.GameFiles
             }
         }
 
+        public IModelGameFile? GetModelFileData(IItem? itemArg = null)
+        {
+            if (SelectedModelFile != null && itemArg == null)
+            {
+                _logService.Debug($"Returning loaded model file.");
+                return SelectedModelFile;
+            }
+
+            var item = GetItem(itemArg);
+            if (item == null) return null;
+            var metadata = Task.Run(() =>_metadataFileService.GetMetadata(item)).Result;
+
+            string path;
+            XivRace race = XivRace.Hyur_Midlander_Male;
+
+            if (metadata != null && metadata.ItemMetadata.EqdpEntries.Count > 0 && item is IGear gear)
+            {
+                foreach (var kvp in metadata.ItemMetadata.EqdpEntries)
+                {
+                    if (kvp.Value.bit1)
+                    {
+                        race = kvp.Key;
+                        break;
+                    }
+                }
+                path = gear.GetMdlPath(race);
+            }
+            else
+            {
+                path = item.GetMdlPath();
+                race = XivPathParser.GetRaceFromString(path);
+            }
+
+            return GetModelFileData(itemArg, race);
+        }
+
+        public Dictionary<XivRace, IModelGameFile> GetModelFileDataDict(IItem? itemArg = null)
+        {
+            var races = GetAllRaceMdls(itemArg);
+            if (races.Count == 0)
+            {
+                races.Add(XivRace.All_Races);
+            }
+            var ret = new Dictionary<XivRace, IModelGameFile>();
+            foreach (var race in races)
+            {
+                var data = GetModelFileData(itemArg, race);
+                if (data != null)
+                {
+                    ret.Add(race, data);
+                }
+            }
+            return ret;
+        }
+
         public IModelGameFile? GetModelFileData(IItem? itemArg = null, XivRace race = XivRace.Hyur_Midlander_Male)
         {
+            /*
+            if (SelectedModelFile != null && itemArg == null && SelectedModelFile.TargetRace == race)
+            {
+                _logService.Debug($"Returning loaded model file.");
+                return SelectedModelFile;
+            }
+            */
             var item = GetItem(itemArg);
             if (item == null) return null;
 
             try
             {
-
                 string itemPath;
                 string category;
                 if (item is IGear equip)
@@ -110,6 +174,9 @@ namespace Icarus.Services.GameFiles
         {
             var mdls = new List<XivRace>();
             var item = GetItem(itemArg);
+
+            if (item == null) return mdls;
+
             if (item is IGear gear)
             {
                 foreach (var race in XivRaces.PlayableRaces)
@@ -119,6 +186,14 @@ namespace Icarus.Services.GameFiles
                     {
                         mdls.Add(race);
                     }
+                }
+            }
+            else
+            {
+                var race = XivPathParser.GetRaceFromString(item.GetMdlPath());
+                if (race != XivRace.All_Races)
+                {
+                    mdls.Add(race);
                 }
             }
             return mdls;

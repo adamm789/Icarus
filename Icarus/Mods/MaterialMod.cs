@@ -71,6 +71,7 @@ namespace Icarus.Mods
 
         private void Init(XivMtrl xivMtrl)
         {
+            Log.Debug($"Calling Init");
             if (this.XivMtrl == null)
             {
                 Log.Verbose($"Initializing mtrl: {xivMtrl.MTRLPath}");
@@ -212,7 +213,7 @@ namespace Icarus.Mods
             XivMtrl.ColorSetDyeData = ColorSetDyeData;
         }
 
-        public void SetMtrlPath(string str, bool forced = true)
+        public void SetMtrlPath(string str, bool forced = false)
         {
             try
             {
@@ -222,7 +223,7 @@ namespace Icarus.Mods
                 var diffuse = XivPathParser.GetTexPathFromMtrl(str, XivTexType.Diffuse);
                 var reflection = XivPathParser.GetTexPathFromMtrl(str, XivTexType.Reflection);
 
-                if (XivPathParser.CanParsePath(NormalTexPath))
+                if ((forced || !String.IsNullOrWhiteSpace(normal)) && XivPathParser.CanParsePath(NormalTexPath))
                 {
                     NormalTexPath = normal;
                 }
@@ -308,7 +309,7 @@ namespace Icarus.Mods
                 throw new ArgumentException($"ModData was not of MaterialGameFile. It was {gameFile.GetType()}.");
             }
             base.SetModData(materialGameFile);
-            Init(materialGameFile.XivMtrl);
+            //Init(materialGameFile.XivMtrl);
         }
     }
 }

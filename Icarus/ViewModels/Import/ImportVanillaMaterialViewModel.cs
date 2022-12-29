@@ -58,6 +58,7 @@ namespace Icarus.ViewModels.Import
             get { return _selectedMaterialFile; }
             set {
                 _selectedMaterialFile = value;
+                _materialFileService.SelectedMaterialFile = value;
                 if (_selectedMaterialFile != null)
                 {
                     SelectedMaterialPath = _selectedMaterialFile.Path;
@@ -178,7 +179,7 @@ namespace Icarus.ViewModels.Import
                     _logService.Fatal($"Failed to get ViewModel vanilla mtrl: {mod.Name}");
                     return null;
                 }
-                modViewModel.SetModData(materialGameFile);
+                //modViewModel.SetModData(materialGameFile);
                 return mod;
             }
             return null;
