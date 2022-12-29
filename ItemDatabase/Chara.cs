@@ -20,6 +20,7 @@ namespace ItemDatabase
 
             _shortVariantString = "v00";
             _longVariantString = "v0000";
+            MaterialId = -1;
         }
 
         public Chara(EquipmentSlot slot, string name, string baseString)
@@ -34,6 +35,7 @@ namespace ItemDatabase
             _slotName = Slot.GetShortHandSlot(true);
             _shortVariantString = "v00";
             _longVariantString = "v0000";
+            MaterialId = -1;
         }
 
         public override string GetMtrlPath(XivRace race = XivRace.Hyur_Midlander_Male, string variant = "a")

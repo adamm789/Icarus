@@ -72,8 +72,6 @@ namespace ItemDatabase
             Code = _baseString;
             VariantCode = $"{_baseString}{_slotName}_v{_variant}";
         }
-
-
         public override string GetMdlPath()
         {
             return GetMdlPath(XivRace.Hyur_Midlander_Male);

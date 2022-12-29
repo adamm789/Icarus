@@ -11,10 +11,8 @@
              d:DesignHeight="450" d:DesignWidth="800">
 
     <TreeView ItemsSource="{Binding ItemList}"
-                  VirtualizingStackPanel.IsVirtualizing="True"
-                  dd:DragDrop.IsDragSource="True"
-              dd:DragDrop.DragHandler="{Binding}">
-
+              VirtualizingStackPanel.IsVirtualizing="True"
+              dd:DragDrop.DragSourceIgnore="True">
         <TreeView.ItemContainerStyle>
             <Style TargetType="{x:Type TreeViewItem}">
                 <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True"/>
@@ -29,7 +27,7 @@
                 <StackPanel>
                     <Button Content="{Binding Header}" Background="Transparent" BorderBrush="Transparent"
                             Command="{Binding IsSelectedCommand}" Margin="0 -2 0 -1" HorizontalContentAlignment="Right"
-                            FontSize="14" ToolTip="{Binding Tooltip}" />
+                            FontSize="14"/>
                 </StackPanel>
             </HierarchicalDataTemplate>
         </TreeView.Resources>

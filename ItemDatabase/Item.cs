@@ -2,6 +2,7 @@
 using ItemDatabase.Interfaces;
 using Lumina.Excel.GeneratedSheets;
 using xivModdingFramework.Cache;
+using xivModdingFramework.General.Enums;
 using xivModdingFramework.Textures.Enums;
 using LuminaItem = Lumina.Excel.GeneratedSheets.Item;
 

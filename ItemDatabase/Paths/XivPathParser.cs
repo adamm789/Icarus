@@ -73,18 +73,16 @@ namespace ItemDatabase.Paths
 
         public static bool IsMaleSkin(XivRace race)
         {
-            if (XivRaces.PlayableRaces.Contains(race))
+
+            if (race.ToString().Contains("_Male"))
             {
-                var x = race.ToString();
-                if (race.ToString().Contains("_Male"))
-                {
-                    return true;
-                }
-                else if (race.ToString().Contains("_Female"))
-                {
-                    return false;
-                }
+                return true;
             }
+            else if (race.ToString().Contains("_Female"))
+            {
+                return false;
+            }
+
             var err = String.Format("Unknown gendered race: {0}", race.ToString());
             throw new ArgumentException(err);
         }
@@ -180,7 +178,7 @@ namespace ItemDatabase.Paths
             return skinRegex.Replace(input, GetRaceString(race));
         }
 
-        public static bool HasSkin(string input)
+        public static bool HasSkin(string? input)
         {
             if (string.IsNullOrEmpty(input)) return false;
             return skinRegex.IsMatch(input);
@@ -188,10 +186,16 @@ namespace ItemDatabase.Paths
 
         static readonly Regex skinMtrl = new(@"mt_c[0-9]{4}b");
 
-        public static bool IsSkinMtrl(string input)
+        public static bool IsSkinMtrl(string? input)
         {
             if (string.IsNullOrWhiteSpace(input)) return false;
             return skinMtrl.IsMatch(input);
+        }
+
+        public static bool IsSmallClothesOrEmperorSeries(string? input)
+        {
+            if (string.IsNullOrWhiteSpace(input)) return false;
+            return Regex.IsMatch(input, @"c[0-9]{4}e0000") || Regex.IsMatch(input, @"c[0-9]{4}e0279");
         }
 
         // TODO: Bibo textures... Maybe?
@@ -208,7 +212,7 @@ namespace ItemDatabase.Paths
                 }
             }
 
-            return XivRace.Hyur_Midlander_Male;
+            return XivRace.All_Races;
         }
 
         public static string GetRaceString(XivRace race)

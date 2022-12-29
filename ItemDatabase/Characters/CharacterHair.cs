@@ -7,16 +7,16 @@ using xivModdingFramework.General.Enums;
 
 namespace ItemDatabase.Characters
 {
-    public class CharacterTail : Character
+    public class CharacterHair : Character
     {
-        public CharacterTail(XivRace race, int num) : base(race, num)
+        public CharacterHair(XivRace race, int num) : base(race, num)
         {
-            Name = $"{_race.GetDisplayName()} Tail {_num}";
+            Name = $"{race.GetDisplayName()} Hair {_num}";
         }
 
         public override string GetMdlPath()
         {
-            return $"chara/human/c{_raceString}/obj/tail/t{_numString}/model/c{_raceString}t{_numString}_til.mdl";
+            return $"chara/human/c{_raceString}/obj/hair/h{_numString}/model/c{_raceString}h{_numString}_hir.mdl";
         }
     }
 }

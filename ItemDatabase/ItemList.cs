@@ -24,33 +24,205 @@ namespace ItemDatabase
         GameData _lumina;
         public Dictionary<SeString, List<LuminaItem>> dict = new();
 
-        private List<IItem> _items = new();
-
-        private Dictionary<string, SortedDictionary<string, IItem>> _allItems = new();
-        private SortedDictionary<string, IItem> _indoorFurniture = new();
-        private SortedDictionary<MainItemCategory, SortedList<string, Item>> OtherItems = new();
         private SortedDictionary<string, Dictionary<EquipmentSlot, List<IItem>>> _materialSets = new();
-
-
-        private Dictionary<string, SortedDictionary<string, IItem>> _gear = new();
-        private Dictionary<string, SortedDictionary<string, IItem>> _indoorFurniture2 = new();
-
         private SortedDictionary<string, GearModelSet> _gearModelSets = new();
 
-        private ITreeNode<(string, IItem?)> _root;
+        private ItemTreeNode _root;
         public ItemList(GameData lumina)
         {
             _lumina = lumina;
         }
 
-        public ITreeNode<(string Header, IItem? Item)> CreateList()
+        public ItemTreeNode CreateList()
         {
             _root = new ItemTreeNode(("ROOT", null));
-            _root.Children.Add(CreateItems());
-            _root.Children.Add(CreateCharacter());
+            _root.AddChild(CreateItems());
+            _root.AddChild(CreateCharacterLoop());
+            _root.AddChild(CreateFurniture());
             return _root;
         }
 
+        public ITreeNode<(string Header, IItem? Item)> CreateCharacterLoop()
+        {
+            Log.Debug($"Adding Charater Items via loop.");
+            var ret = new ItemTreeNode(("Character", null));
+
+            var bodies = new ItemTreeNode(("Body", null));
+            var faces = new ItemTreeNode(("Faces", null));
+            var hairstyles = new ItemTreeNode(("Hair", null));
+
+            var faceDict = new Dictionary<XivRace, SortedDictionary<int, IItem>>();
+            var hairDict = new Dictionary<XivRace, SortedDictionary<int, IItem>>();
+            var bodyDict = new Dictionary<XivRace, SortedDictionary<int, IItem>>();
+
+            for (var i = 0; i < 300; i++)
+            {
+                foreach (var race in XivRaces.PlayableRaces)
+                {
+                    if (!faceDict.ContainsKey(race))
+                    {
+                        faceDict.Add(race, new SortedDictionary<int, IItem>());
+                    }
+                    if (!hairDict.ContainsKey(race))
+                    {
+                        hairDict.Add(race, new SortedDictionary<int, IItem>());
+                    }
+                    if (!bodyDict.ContainsKey(race))
+                    {
+                        bodyDict.Add(race, new SortedDictionary<int, IItem>());
+                    }
+
+                    var face = new CharacterFace(race, i);
+                    if (_lumina.FileExists(face.GetMdlPath()) && !faceDict[race].ContainsKey(i))
+                    {
+                        faceDict[race].Add(i, face);
+                    }
+
+                    var hair = new CharacterHair(race, i);
+                    if (_lumina.FileExists(hair.GetMdlPath()) && !hairDict[race].ContainsKey(i))
+                    {
+                        hairDict[race].Add(i, hair);
+                    }
+
+
+                    var body = new CharacterBody(race, i);
+                    if (_lumina.FileExists(body.GetMdlPath()) && !bodyDict[race].ContainsKey(i))
+                    {
+                        bodyDict[race].Add(i, body);
+                    }
+
+                }
+            }
+            foreach (var race in XivRaces.PlayableRaces)
+            {
+                if (faceDict.ContainsKey(race))
+                {
+                    var values = faceDict[race].Values;
+                    var child = new ItemTreeNode((race.GetDisplayName(), null));
+                    foreach (var value in values)
+                    {
+                        child.AddChild(value);
+                    }
+                    faces.AddChild(child);
+                }
+                if (hairDict.ContainsKey(race))
+                {
+                    var values = hairDict[race].Values;
+                    var child = new ItemTreeNode((race.GetDisplayName(), null));
+                    foreach (var value in values)
+                    {
+                        child.AddChild(value);
+                    }
+                    hairstyles.AddChild(child);
+                }
+                if (bodyDict.ContainsKey(race))
+                {
+                    var values = bodyDict[race].Values;
+                    var child = new ItemTreeNode((race.GetDisplayName(), null));
+                    foreach (var value in values)
+                    {
+                        child.AddChild(value);
+                    }
+                    bodies.AddChild(child);
+                }
+            }
+
+            ret.AddChild(bodies);
+            ret.AddChild(faces);
+            ret.AddChild(hairstyles);
+            (var tails, var ears) = GetTailsAndEars();
+            ret.AddChild(tails);
+            ret.AddChild(ears);
+            return ret;
+        }
+
+        public (ItemTreeNode tails, ItemTreeNode ears) GetTailsAndEars(ExcelSheet<CharaMakeType>? sheet = null)
+        {
+            if (sheet == null)
+            {
+                sheet = _lumina.GetExcelSheet<CharaMakeType>();
+            }
+            var tailDict = new Dictionary<XivRace, List<IItem>>();
+            var earDict = new Dictionary<XivRace, List<IItem>>();
+
+            for (var i = 0; i < sheet.RowCount; i++)
+            {
+                var row = sheet.GetRow((uint)i);
+                var tailColumn = -1;
+                var earColumn = -1;
+
+
+                for (var j = 0; j < row.Menu.Length; j++)
+                {
+                    var num = row.Menu[j].Row;
+
+                    if (num == 223 || num == 226 || num == 253 || num == 257 || num == 1000)
+                    {
+                        tailColumn = j;
+                    }
+                    else if (num == 1033 || num == 1016)
+                    {
+                        earColumn = j;
+                    }
+                }
+                var race = GetXivRace(row.Tribe.Row, row.Gender);
+                if (tailColumn > 0)
+                {
+                    var numTails = row.SubMenuParam[tailColumn].Where(x => x > 0).Count();
+                    if (!tailDict.ContainsKey(race))
+                    {
+                        tailDict.Add(race, new List<IItem>());
+                        for (var k = 0; k < numTails; k++)
+                        {
+                            var tail = new CharacterTail(race, k + 1);
+                            tailDict[race].Add(tail);
+                        }
+                    }
+                }
+                if (earColumn > 0)
+                {
+                    var numEars = row.SubMenuParam[earColumn].Where(x => x > 0).Count();
+                    if (!earDict.ContainsKey(race))
+                    {
+                        earDict.Add(race, new List<IItem>());
+                        for (var k = 0; k < numEars; k++)
+                        {
+                            var ear = new CharacterEar(race, k + 1);
+                            earDict[race].Add(ear);
+                        }
+                    }
+                }
+            }
+            var tails = new ItemTreeNode(("Tails", null));
+            foreach (var kvp in tailDict)
+            {
+                var race = kvp.Key;
+                var itemList = kvp.Value;
+                var child = new ItemTreeNode((race.GetDisplayName(), null));
+                tails.AddChild(child);
+                foreach (var item in itemList)
+                {
+                    child.AddChild(item);
+                }
+            }
+
+            var ears = new ItemTreeNode(("Ears", null));
+            foreach (var kvp in earDict)
+            {
+                var race = kvp.Key;
+                var itemList = kvp.Value;
+                var child = new ItemTreeNode((race.GetDisplayName(), null));
+                ears.AddChild(child);
+                foreach (var item in itemList)
+                {
+                    child.AddChild(item);
+                }
+            }
+            return (tails, ears);
+        }
+
+
+        // TODO: Clean up method to obtain Character items
         public ITreeNode<(string Header, IItem? Item)> CreateCharacter()
         {
             var ret = new ItemTreeNode(("Character", null));
@@ -70,8 +242,12 @@ namespace ItemDatabase
                 for (var j = 0; j < row.Menu.Length; j++)
                 {
                     var num = row.Menu[j].Row;
-                    if (num == 238)
+                    if (num == 238 || num == 252)
                     {
+                        if (faceColumn != -1)
+                        {
+
+                        }
                         faceColumn = j;
                     }
                     else if (num == 223 || num == 226 || num == 253 || num == 257 || num == 1000)
@@ -81,6 +257,10 @@ namespace ItemDatabase
                     else if (num == 1033 || num == 1016)
                     {
                         earColumn = j;
+                    }
+                    else if (num == 234)
+                    {
+                        // hair
                     }
                 }
                 var race = GetXivRace(row.Tribe.Row, row.Gender);
@@ -96,7 +276,7 @@ namespace ItemDatabase
                             for (var k = 0; k < numFaces; k++)
                             {
                                 var face = new CharacterFace(race, k + 1);
-                                faceDict[race].Add(k+1, face);
+                                faceDict[race].Add(k + 1, face);
                             }
                         }
                     }
@@ -156,11 +336,11 @@ namespace ItemDatabase
             {
                 var race = kvp.Key;
                 var itemList = kvp.Value;
-                var child = new ItemTreeNode((race.ToString(), null));
-                faces.Children.Add(child);
+                var child = new ItemTreeNode((race.GetDisplayName(), null));
+                faces.AddChild(child);
                 foreach (var item in itemList.Values)
                 {
-                    child.Children.Add(new ItemTreeNode((item.Name, item)));
+                    child.AddChild(item);
                 }
             }
 
@@ -169,11 +349,11 @@ namespace ItemDatabase
             {
                 var race = kvp.Key;
                 var itemList = kvp.Value;
-                var child = new ItemTreeNode((race.ToString(), null));
-                tails.Children.Add(child);
+                var child = new ItemTreeNode((race.GetDisplayName(), null));
+                tails.AddChild(child);
                 foreach (var item in itemList)
                 {
-                    child.Children.Add(new ItemTreeNode((item.Name, item)));
+                    child.AddChild(item);
                 }
             }
 
@@ -182,17 +362,17 @@ namespace ItemDatabase
             {
                 var race = kvp.Key;
                 var itemList = kvp.Value;
-                var child = new ItemTreeNode((race.ToString(), null));
-                ears.Children.Add(child);
+                var child = new ItemTreeNode((race.GetDisplayName(), null));
+                ears.AddChild(child);
                 foreach (var item in itemList)
                 {
-                    child.Children.Add(new ItemTreeNode((item.Name, item)));
+                    child.AddChild(item);
                 }
             }
 
-            ret.Children.Add(faces);
-            ret.Children.Add(tails);
-            ret.Children.Add(ears);
+            ret.AddChild(faces);
+            ret.AddChild(tails);
+            ret.AddChild(ears);
 
             return ret;
         }
@@ -287,7 +467,7 @@ namespace ItemDatabase
 
                                 parent = dict[gear.Slot.ToString()];
                             }
-                            if (parent != null)
+                            if (parent != null && t != null)
                             {
                                 parent.Add(t);
                             }
@@ -306,15 +486,22 @@ namespace ItemDatabase
                 }
             }
 
-            ret.Children.Add(new ItemTreeNode((EquipmentSlot.Head.ToString(), null)) { Children = dict[EquipmentSlot.Head.ToString()] });
-            ret.Children.Add(new ItemTreeNode((EquipmentSlot.Body.ToString(), null)) { Children = dict[EquipmentSlot.Body.ToString()] });
-            ret.Children.Add(new ItemTreeNode((EquipmentSlot.Hands.ToString(), null)) { Children = dict[EquipmentSlot.Hands.ToString()] });
-            ret.Children.Add(new ItemTreeNode((EquipmentSlot.Legs.ToString(), null)) { Children = dict[EquipmentSlot.Legs.ToString()] });
-            ret.Children.Add(new ItemTreeNode((EquipmentSlot.Feet.ToString(), null)) { Children = dict[EquipmentSlot.Feet.ToString()] });
-            ret.Children.Add(new ItemTreeNode((EquipmentSlot.Ears.ToString(), null)) { Children = dict[EquipmentSlot.Ears.ToString()] });
-            ret.Children.Add(new ItemTreeNode((EquipmentSlot.Neck.ToString(), null)) { Children = dict[EquipmentSlot.Neck.ToString()] });
-            ret.Children.Add(new ItemTreeNode((EquipmentSlot.Wrists.ToString(), null)) { Children = dict[EquipmentSlot.Wrists.ToString()] });
-            ret.Children.Add(new ItemTreeNode((EquipmentSlot.Ring.ToString(), null)) { Children = dict[EquipmentSlot.Ring.ToString()] });
+            dict[EquipmentSlot.Body.ToString()].Add(new ItemTreeNode(("SmallClothes Body", new Chara(EquipmentSlot.Body, "SmallClothes Body", "e0000"))));
+            dict[EquipmentSlot.Hands.ToString()].Add(new ItemTreeNode(("SmallClothes Hands", new Chara(EquipmentSlot.Hands, "SmallClothes Hands", "e0000"))));
+            dict[EquipmentSlot.Legs.ToString()].Add(new ItemTreeNode(("SmallClothes Legs", new Chara(EquipmentSlot.Legs, "SmallClothes Legs", "e0000"))));
+            dict[EquipmentSlot.Feet.ToString()].Add(new ItemTreeNode(("SmallClothes Feet", new Chara(EquipmentSlot.Feet, "SmallClothes Feet", "e0000"))));
+
+            var equipmentOrder = new List<EquipmentSlot>()
+            {
+                EquipmentSlot.Head, EquipmentSlot.Body, EquipmentSlot.Hands, EquipmentSlot.Legs, EquipmentSlot.Feet,
+                EquipmentSlot.Ears, EquipmentSlot.Neck, EquipmentSlot.Wrists, EquipmentSlot.Ring
+            };
+            foreach (var slot in equipmentOrder)
+            {
+                var node = new ItemTreeNode((slot.ToString(), null));
+                node.AddChildren(dict[slot.ToString()]);
+                ret.AddChild(node);
+            }
 
             return ret;
         }
@@ -359,210 +546,50 @@ namespace ItemDatabase
             return null;
         }
 
-        /*
-        public Dictionary<EquipmentSlot, SortedDictionary<string, IItem>> GetAllItems()
+        public ITreeNode<(string Header, IItem? Item)> CreateFurniture()
         {
-            return _gear;
-        }
-        */
-        public Dictionary<string, SortedDictionary<string, IItem>> GetAllItems()
-        {
-            return _allItems;
-        }
+            Log.Debug($"Adding Housing Furniture");
+            var ret = new ItemTreeNode(("Indoor Furniture", null));
+            var furniture = _lumina.GetExcelSheet<HousingFurniture>();
 
-        public Dictionary<string, Dictionary<XivRace, SortedDictionary<string, IItem>>> GetChara()
-        {
-            var ret = new Dictionary<string, Dictionary<XivRace, SortedDictionary<string, IItem>>>();
+            var furnishings = new ItemTreeNode(("Indoor Furnishings", null));
+            var tables = new ItemTreeNode(("Tables", null));
+            var tabletop = new ItemTreeNode(("Tabletop", null));
+            var wallMounted = new ItemTreeNode(("Wall-mounted", null));
+            var rugs = new ItemTreeNode(("Rugs", null));
 
-            return ret;
-        }
-
-        public Dictionary<string, Dictionary<string, SortedDictionary<string, IItem>>> GetAllItems2()
-        {
-            var ret = new Dictionary<string, Dictionary<string, SortedDictionary<string, IItem>>>();
-            ret["Gear"] = _gear;
-
-#if DEBUG
-            ret["Indoor Furniture"] = _indoorFurniture2;
-#endif
-            return ret;
-        }
-
-        private Dictionary<string, SortedDictionary<string, IItem>> GetGear()
-        {
-            var ret = new Dictionary<string, SortedDictionary<string, IItem>>();
-            var items = _lumina.GetExcelSheet<LuminaItem>();
-
-            foreach (var item in items)
-            {
-                var cat = Item.GetMainItemCategory(item);
-
-                switch (cat)
-                {
-                    // TODO: I think the only cases here for Lumina.Items are Gear and Null
-                    case MainItemCategory.Null:
-                        break;
-                    case MainItemCategory.Gear:
-                        var i = Item.GetItem(item);
-                        if (i != null)
-                        {
-                            AddItem(i);
-                        }
-                        break;
-                    case MainItemCategory.Minions:
-                        break;
-                    case MainItemCategory.IndoorFurnishings:
-                        break;
-                    case MainItemCategory.OutdoorFurnishings:
-                        break;
-                }
-            }
-
-            return ret;
-        }
-
-        private void BuildList()
-        {
-            /*
-            _gear[EquipmentSlot.Head] = new();
-            _gear[EquipmentSlot.Body] = new();
-            _gear[EquipmentSlot.Hands] = new();
-            _gear[EquipmentSlot.Legs] = new();
-            _gear[EquipmentSlot.Feet] = new();
-            _gear[EquipmentSlot.Ears] = new();
-            _gear[EquipmentSlot.Neck] = new();
-            _gear[EquipmentSlot.Wrists] = new();
-            _gear[EquipmentSlot.Ring] = new();
-            */
-
-            _allItems[EquipmentSlot.Head.ToString()] = new();
-            _allItems[EquipmentSlot.Body.ToString()] = new();
-            _allItems[EquipmentSlot.Hands.ToString()] = new();
-            _allItems[EquipmentSlot.Legs.ToString()] = new();
-            _allItems[EquipmentSlot.Feet.ToString()] = new();
-            _allItems[EquipmentSlot.Ears.ToString()] = new();
-            _allItems[EquipmentSlot.Neck.ToString()] = new();
-            _allItems[EquipmentSlot.Wrists.ToString()] = new();
-            _allItems[EquipmentSlot.Ring.ToString()] = new();
-
-            // TODO: Create an actual storage file, so I don't have to do this every time?
-
-            var items = _lumina.GetExcelSheet<LuminaItem>();
-
-            foreach (var item in items)
-            {
-                if (item.Name.ToString().Contains("emperor", StringComparison.OrdinalIgnoreCase))
-                {
-
-                }
-                var cat = Item.GetMainItemCategory(item);
-
-                switch (cat)
-                {
-                    // TODO: I think the only cases here for Lumina.Items are Gear and Null
-                    case MainItemCategory.Null:
-                        break;
-                    case MainItemCategory.Gear:
-                        var i = Item.GetItem(item);
-                        if (i != null)
-                        {
-                            AddItem(i);
-                        }
-                        break;
-                    case MainItemCategory.Minions:
-                        break;
-                    case MainItemCategory.IndoorFurnishings:
-                        break;
-                    case MainItemCategory.OutdoorFurnishings:
-                        break;
-                }
-            }
-
-            AddIndoorFurniture();
-            AddCharacter();
-            AddBody();
-        }
-
-        private void AddIndoorFurniture()
-        {
-#if DEBUG
-            Log.Debug($"Adding indoor furniture");
-            var furnishings = _lumina.GetExcelSheet<HousingFurniture>();
-            _indoorFurniture2["Indoor Furnishings"] = new();
-            _indoorFurniture2["Tables"] = new();
-            _indoorFurniture2["Tabletop"] = new();
-            _indoorFurniture2["Wall-mounted"] = new();
-            _indoorFurniture2["Rugs"] = new();
-
-            foreach (var f in furnishings)
+            foreach (var f in furniture)
             {
                 var item = new IndoorFurniture(f);
                 if (String.IsNullOrWhiteSpace(item.Name)) continue;
-
-                _indoorFurniture.Add(item.Name, item);
-                string cat;
                 switch (f.HousingItemCategory)
                 {
                     case 12:
-                        cat = "Indoor Furnishings";
+                        furnishings.AddChild(item);
                         break;
                     case 13:
-                        cat = "Tables";
+                        tables.AddChild(item);
                         break;
                     case 14:
-                        cat = "Tabletop";
+                        tabletop.AddChild(item);
                         break;
                     case 15:
-                        cat = "Wall-mounted";
+                        wallMounted.AddChild(item);
                         break;
                     case 16:
-                        cat = "Rugs";
+                        rugs.AddChild(item);
                         break;
                     default:
-                        cat = f.HousingItemCategory.ToString();
+                        Log.Debug($"Could not get category for {item.Name}");
                         break;
                 }
-                if (!_indoorFurniture2.ContainsKey(cat))
-                {
-                    _indoorFurniture2[cat] = new();
-                }
-                _indoorFurniture2[cat].Add(item.Name, item);
-
             }
-            _allItems["Indoor Furniture"] = _indoorFurniture;
-#endif
-        }
-
-        private void AddCharacter()
-        {
-#if DEBUG
-            Log.Debug($"Adding character");
-            var frameworkPath = Path.Combine(_lumina.DataPath.FullName, "ffxiv");
-            var index = new Index(new DirectoryInfo(frameworkPath));
-            // Hair
-            var hair = new SortedDictionary<string, IItem>();
-            foreach (var race in XivRaces.PlayableRaces)
-            {
-                var code = race.GetRaceCode();
-                for (var i = 0; i < 300; i++)
-                {
-                    var itemNum = i.ToString().PadLeft(4, '0');
-                    var folder = $"chara/human/c{code}/obj/hair/h{itemNum}/model";
-                    // TODO: Add "chara" items
-                    // TODO: Find better way to find "chara" items
-                    var b = Task.Run(() => index.FolderExists(folder, XivDataFile._04_Chara)).Result;
-                    if (b)
-                    {
-                        var chara = new Chara(EquipmentSlot.Head, $"{race} - Hair {itemNum}", itemNum);
-                        if (!hair.ContainsKey(itemNum))
-                        {
-                            hair.Add(itemNum, chara);
-                        }
-                    }
-                }
-            }
-            _allItems["Hair"] = hair;
-#endif
+            ret.AddChild(furnishings);
+            ret.AddChild(tables);
+            ret.AddChild(tabletop);
+            ret.AddChild(wallMounted);
+            ret.AddChild(rugs);
+            return ret;
         }
 
         public List<IGear>? GetSharedModels(IGear gear)
@@ -571,49 +598,7 @@ namespace ItemDatabase
             {
                 return _gearModelSets[gear.Code].GetSlot(gear.Slot);
             }
-            return null;
-        }
-
-        private void AddItem(IItem item)
-        {
-            if (item is IGear gear)
-            {
-                var imcPath = gear.GetImcPath();
-                var part = GetPart(gear.Slot);
-                if (part != -1)
-                {
-                    try
-                    {
-                        var imcFile = _lumina.GetFile<ImcFile>(imcPath);
-                        var materialId = imcFile.GetVariant(part, gear.Variant - 1).MaterialId;
-                        gear.MaterialId = materialId;
-                    }
-                    catch (Exception)
-                    {
-                        Log.Error($"Could not get imc file for {gear.Name}");
-                    }
-                }
-                AddEquipment(gear);
-                if (!_gearModelSets.ContainsKey(gear.Code))
-                {
-                    _gearModelSets.Add(gear.Code, new GearModelSet(gear.Variant));
-                }
-                _gearModelSets[gear.Code].Add(gear);
-
-                if (!_materialSets.ContainsKey(gear.Code))
-                {
-                    _materialSets[gear.Code] = new();
-                }
-                if (!_materialSets[gear.Code].ContainsKey(gear.Slot))
-                {
-                    _materialSets[gear.Code][gear.Slot] = new();
-                }
-                _materialSets[gear.Code][gear.Slot].Add(gear);
-            }
-            else
-            {
-
-            }
+            return new List<IGear>() { gear };
         }
 
         private int GetPart(EquipmentSlot slot)
@@ -630,6 +615,7 @@ namespace ItemDatabase
             }
         }
 
+        /*
         private void AddEquipment(IGear gear)
         {
             var slot = gear.Slot;
@@ -649,7 +635,7 @@ namespace ItemDatabase
             _gear[slot.ToString()].Add(gear.Name, gear);
 
         }
-
+        */
         public bool Contains(string str)
         {
             var results = Search(str, false);
@@ -722,7 +708,7 @@ namespace ItemDatabase
             }
             else
             {
-                pred = i => i.Name.Contains(str);
+                pred = i => i.Name.Contains(str, StringComparison.OrdinalIgnoreCase);
             }
             var ret = Search(_root, pred);
 
@@ -781,113 +767,5 @@ namespace ItemDatabase
             }
             return ret;
         }
-
-
-        /// <summary>
-        /// Adds SmallClothes and The Emperor series
-        /// </summary>
-        private void AddBody()
-        {
-            // TODO: More research if this has to be manual?
-            // i.e. Can I find this information in one of the Lumina ExcelRows?
-            var smallClothesBody = new Chara(EquipmentSlot.Body, "SmallClothes Body", "e0000");
-            var smallClothesHands = new Chara(EquipmentSlot.Hands, "SmallClothes Hands", "e0000"); ;
-            var smallClothesLegs = new Chara(EquipmentSlot.Legs, "SmallClothes Legs", "e0000");
-            var smallClothesFeet = new Chara(EquipmentSlot.Feet, "SmallClothes Feet", "e0000");
-
-            AddEquipment(smallClothesBody);
-            AddEquipment(smallClothesHands);
-            AddEquipment(smallClothesLegs);
-            AddEquipment(smallClothesFeet);
-
-            //var emperorFists = new Weapon(e0301);
-            //var emperorShield = new Weapon(e0101);
-            /*
-            var emperorHat = new Chara(EquipmentSlot.Head, "The Emperor's New Hat", "e0279");
-            var emperorRobe = new Chara(EquipmentSlot.Body, "The Emperor's New Robe", "e0279");
-            var emperorGloves = new Chara(EquipmentSlot.Hands, "The Emperor's New Gloves", "e0279"); ;
-            var emperorBreeches = new Chara(EquipmentSlot.Legs, "The Emperor's New Breeches", "e0279");
-            var emperorFeet = new Chara(EquipmentSlot.Feet, "The Emperor's New Boots", "e0279");
-
-            var emperorBracelet = new Chara(EquipmentSlot.Wrists, "The Emperor's New Bracelet", "a0053");
-            var emperorEarrings = new Chara(EquipmentSlot.Ears, "The Emperor's New Earrings", "a0053");
-            var emperorNecklace = new Chara(EquipmentSlot.Neck, "The Emperor's New Necklace", "a0053");
-            var emperorRing = new Chara(EquipmentSlot.RightRing, "The Emperor's New Ring", "a0053");
-
-            AddEquipment(emperorHat);
-            AddEquipment(emperorRobe);
-            AddEquipment(emperorGloves);
-            AddEquipment(emperorBreeches);
-            AddEquipment(emperorFeet);
-            AddEquipment(emperorBracelet);
-            AddEquipment(emperorEarrings);
-            AddEquipment(emperorNecklace);
-            AddEquipment(emperorRing);
-            */
-        }
-
-        /*
-        public void Add(ItemData item)
-        {
-            if (String.IsNullOrWhiteSpace(item.Name))
-            {
-                return;
-            }
-            var equipSlot = item.EquipData.EquipSlot;
-            var modelMain = item.ModelMain;
-            if (equipSlot != EquipmentSlot.None)
-            {
-
-                if (!Gear.ContainsKey(equipSlot))
-                {
-                    Gear.Add(equipSlot, new());
-                }
-                if (!Gear[equipSlot].ContainsKey(modelMain))
-                {
-                    Gear[equipSlot].Add(modelMain, new List<ItemData>());
-                }
-
-                Gear[equipSlot][modelMain].Add(item);
-                return;
-            }
-            var itemCategory = item.MainCategory;
-
-            if (itemCategory == MainItemCategory.Null)
-            {
-                return;
-            }
-
-            if (!OtherItems.ContainsKey(itemCategory))
-            {
-                OtherItems.Add(itemCategory, new());
-            }
-
-            if (!OtherItems[itemCategory].ContainsKey(item.Name))
-            {
-                OtherItems[itemCategory].Add(item.Name, item);
-
-            }
-        }*/
-
-        /*
-        public List<ItemData>? Search(string str)
-        {
-            var ret = new List<ItemData>();
-            foreach (var slot in Gear.Values)
-            {
-                foreach (var dict in slot.Values)
-                {
-                    foreach (var item in dict)
-                    {
-                        if (item.Name.Contains(str, StringComparison.OrdinalIgnoreCase))
-                        {
-                            ret.Add(item);
-                        }
-                    }
-                }
-            }
-            return ret;
-        }
-        */
     }
 }

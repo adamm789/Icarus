@@ -13,7 +13,7 @@ namespace ItemDatabase.Characters
     {
         public CharacterFace(XivRace race, int num) : base(race, num)
         {
-            Name = $"{_race} Face {_num}";
+            Name = $"{_race.GetDisplayName()} Face {_num}";
         }
         public override string GetMdlPath()
         {

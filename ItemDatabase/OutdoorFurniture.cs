@@ -1,5 +1,4 @@
-﻿using xivModdingFramework.Textures.Enums;
-using LuminaItem = Lumina.Excel.GeneratedSheets.Item;
+﻿using LuminaItem = Lumina.Excel.GeneratedSheets.Item;
 
 namespace ItemDatabase
 {
