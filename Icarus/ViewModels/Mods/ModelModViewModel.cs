@@ -24,6 +24,8 @@ using System.IO;
 
 namespace Icarus.ViewModels.Mods
 {
+    // TODO: When assigning (at least a hair) the materials do not keep their variants
+
     // TODO: Figure out how to handle housing furniture...?
     // Housing furniture can have a letter at the very end of the file name
     // to indicate the part
@@ -49,15 +51,6 @@ namespace Icarus.ViewModels.Mods
 
             var importedModel = modelMod.ImportedModel;
 
-            if (importedModel != null)
-            {
-                foreach (var meshGroup in importedModel.MeshGroups)
-                {
-                    var meshGroupViewModel = viewModelService.GetMeshGroupViewModel(meshGroup, this);
-                    MeshGroups.Add(meshGroupViewModel);
-                }
-            }
-
             OptionsViewModel = new(modelMod.Options);
 
             if (modelMod.IsComplete())
@@ -71,6 +64,16 @@ namespace Icarus.ViewModels.Mods
                 }
                 UpdateAttributes(modelMod.TTModel, modelMod.Path);
             }
+
+            if (importedModel != null)
+            {
+                foreach (var meshGroup in importedModel.MeshGroups)
+                {
+                    var meshGroupViewModel = viewModelService.GetMeshGroupViewModel(meshGroup, this);
+                    MeshGroups.Add(meshGroupViewModel);
+                }
+            }
+
             SetCanExport();
         }
         #endregion

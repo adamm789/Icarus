@@ -5,9 +5,11 @@ using Icarus.Services.GameFiles.Interfaces;
 using Icarus.Services.Interfaces;
 using ItemDatabase.Interfaces;
 using ItemDatabase.Paths;
+using Newtonsoft.Json.Linq;
 using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Threading.Tasks;
 using xivModdingFramework.Textures.Enums;
@@ -41,6 +43,9 @@ namespace Icarus.ViewModels.Mods
                 XivTexType.Specular
             };
         }
+
+        //ObservableCollection<string> _additionalPaths = new();
+        public ObservableCollection<string> AdditionalPaths = new();
 
         // TODO: Should this just hide the TexType combo box?
         bool _canParseTexType = true;
@@ -80,6 +85,7 @@ namespace Icarus.ViewModels.Mods
                     CanParseTexType = false;
                 }
                 base.DestinationPath = value;
+                
             }
         }
 
@@ -143,6 +149,8 @@ namespace Icarus.ViewModels.Mods
             {
                 return false;
             }
+            //_logService.Debug($"Adding: {texGameFile.Path}");
+            //_textureMod.AdditionalPaths.Add(texGameFile.Path);
             CanParseTexType = true;
             return base.SetModData(texGameFile);
         }

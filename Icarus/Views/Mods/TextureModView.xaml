@@ -18,20 +18,31 @@
                 <ui:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"
                                                  True="Visible" False="Hidden"/>
             </Grid.Resources>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" Command="{Binding SetDestinationCommand}" Content="Assign From Search"/>
-            <TextBlock Grid.Column="1" Text="{Binding DestinationName}" Margin="5,0,5,0"/>
-            <ComboBox Grid.Column="2" ItemsSource="{Binding VariantList}" SelectedValue="{Binding TextureVariant}"
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" Command="{Binding SetDestinationCommand}" Content="Assign From Search"/>
+                <TextBlock Grid.Column="1" Text="{Binding DestinationName}" Margin="5,0,5,0"/>
+                <ComboBox Grid.Column="2" ItemsSource="{Binding VariantList}" SelectedValue="{Binding TextureVariant}"
                       Visibility="{Binding CanParsePath, Converter={StaticResource BooleanToVisibilityConverter}}"
                       PreviewMouseWheel="ListView_PreviewMouseWheel"/>
-            <ComboBox Grid.Column="3" ItemsSource="{Binding TexTypeValues}" SelectedValue="{Binding TexType}"
+                <ComboBox Grid.Column="3" ItemsSource="{Binding TexTypeValues}" SelectedValue="{Binding TexType}"
                       Visibility="{Binding CanParseTexType, Converter={StaticResource BooleanToVisibilityConverter}}"
                       PreviewMouseWheel="ListView_PreviewMouseWheel"/>
+            </Grid>
+            <!--
+            <ListView Grid.Row="1" ItemsSource="{Binding AdditionalPaths}"/>
+            -->
         </Grid>
     </StackPanel>
 </UserControl>
