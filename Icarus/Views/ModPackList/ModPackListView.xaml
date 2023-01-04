@@ -8,7 +8,7 @@
              xmlns:dd="urn:gong-wpf-dragdrop"
              xmlns:ui="clr-namespace:Icarus.UI"
              xmlns:datacontainers="clr-namespace:Icarus.ViewModels.Mods.DataContainers"
-             xmlns:mplviewmodels="clr-namespace:Icarus.ViewModels.Mods.DataContainers.ModPackList"
+             xmlns:mplviewmodels="clr-namespace:Icarus.ViewModels.ModPackList"
              d:DataContext="{d:DesignInstance Type=mplviewmodels:ModPackListViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
@@ -21,8 +21,7 @@
                 <modviews:AdvancedModPackMetaView/>
             </DataTemplate>
             <DataTemplate DataType="{x:Type datacontainers:ModPackPageViewModel}">
-                <ListView ItemsSource="{Binding ModGroups}"
-                          MouseWheel="HandlePreviewMouseWheel"
+                <ui:ScrollListView ItemsSource="{Binding ModGroups}"
                           ScrollViewer.CanContentScroll="False"
                           VirtualizingStackPanel.IsVirtualizing="True"
                           HorizontalContentAlignment="Stretch"/>
@@ -34,10 +33,9 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     <TextBlock Grid.Row="0" Text="{Binding GroupName}"/>
-                    <ListView Grid.Row="1" ItemsSource="{Binding OptionList}"
+                    <ui:ScrollListView Grid.Row="1" ItemsSource="{Binding OptionList}"
                               ScrollViewer.CanContentScroll="False"
-                              VirtualizingStackPanel.IsVirtualizing="True"
-                              MouseWheel="HandlePreviewMouseWheel"/>
+                              VirtualizingStackPanel.IsVirtualizing="True"/>
                 </Grid>
             </DataTemplate>
             <DataTemplate DataType="{x:Type datacontainers:ModOptionViewModel}">
@@ -54,14 +52,21 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <ComboBox Grid.Row="0" ItemsSource="{Binding ModPackMetas}" SelectedIndex="{Binding SelectedIndex}"
-                  IsEnabled="{Binding IsEmpty, Converter={StaticResource InverseBooleanConverter}}">
-            <ComboBox.ItemTemplate>
-                <DataTemplate DataType="{x:Type datacontainers:ModPackMetaViewModel}">
-                    <TextBlock Text="{Binding Name}"/>
-                </DataTemplate>
-            </ComboBox.ItemTemplate>
-        </ComboBox>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <ComboBox Grid.Column="0" ItemsSource="{Binding ModPackMetas}" SelectedIndex="{Binding SelectedIndex}"
+                      IsEnabled="{Binding IsEmpty, Converter={StaticResource InverseBooleanConverter}}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate DataType="{x:Type datacontainers:ModPackMetaViewModel}">
+                        <TextBlock Text="{Binding Name}"/>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+            <Button Grid.Column="1" Content="Append All Pages" Command="{Binding CopyAllPagesCommand}"/>
+        </Grid>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>

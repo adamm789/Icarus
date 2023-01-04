@@ -9,9 +9,9 @@ using Icarus.ViewModels.Editor;
 using Icarus.ViewModels.Export;
 using Icarus.ViewModels.Import;
 using Icarus.ViewModels.Items;
+using Icarus.ViewModels.ModPackList;
 using Icarus.ViewModels.Mods.DataContainers;
 using Icarus.ViewModels.Mods.DataContainers.Interfaces;
-using Icarus.ViewModels.Mods.DataContainers.ModPackList;
 using Icarus.ViewModels.Util;
 using Icarus.Views;
 using System.ComponentModel;
@@ -55,7 +55,7 @@ namespace Icarus.ViewModels
             //ModsListViewModel = ModPackViewModel.ModsListViewModel;
             //FilteredModsListViewModel = ModsListViewModel.FilteredModsList;
 
-            ModPackListViewModel = new ModPackListViewModel(ModPackViewModel.ModsListViewModel, viewModelService, logService);
+            ModPackListViewModel = new ModPackListViewModel(ModPackViewModel, viewModelService, logService);
 
             ItemListViewModel = new(itemListService, logService);
             ImportVanillaViewModel = new(ModPackViewModel.ModsListViewModel, ItemListViewModel, ServiceManager.GetRequiredService<VanillaFileService>(), logService);

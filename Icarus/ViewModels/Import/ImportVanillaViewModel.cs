@@ -4,13 +4,7 @@ using Icarus.ViewModels.Items;
 using Icarus.ViewModels.Mods.DataContainers.Interfaces;
 using Icarus.ViewModels.Util;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Xceed.Wpf.Toolkit.Primitives;
-using xivModdingFramework.Materials.FileTypes;
 
 namespace Icarus.ViewModels.Import
 {
@@ -42,9 +36,13 @@ namespace Icarus.ViewModels.Import
             if (e.PropertyName == nameof(ItemListViewModel.SelectedItem))
             {
                 var item = _itemListViewModel.SelectedItem;
-                await ImportVanillaModelViewModel.SetItem(item);
-                await ImportVanillaMaterialViewModel.SetItem(item);
-                await ImportVanillaMetadataViewModel.SetItem(item);
+                var modelTask = ImportVanillaModelViewModel.SetItem(item);
+                var materialTask = ImportVanillaMaterialViewModel.SetItem(item);
+                var metadataTask = ImportVanillaMetadataViewModel.SetItem(item);
+
+                await modelTask;
+                await materialTask;
+                await metadataTask;
             }
             else if (e.PropertyName == nameof(ItemListViewModel.CompletePath))
             {

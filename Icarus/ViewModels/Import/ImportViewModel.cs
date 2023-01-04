@@ -4,10 +4,10 @@ using Icarus.Services;
 using Icarus.Services.Files;
 using Icarus.Services.Interfaces;
 using Icarus.Util.Import;
+using Icarus.ViewModels.ModPackList;
 using Icarus.ViewModels.Mods;
 using Icarus.ViewModels.Mods.DataContainers;
 using Icarus.ViewModels.Mods.DataContainers.Interfaces;
-using Icarus.ViewModels.Mods.DataContainers.ModPackList;
 using Icarus.ViewModels.Util;
 using System;
 using System.Collections.Generic;
@@ -30,6 +30,10 @@ namespace Icarus.ViewModels.Import
             "|.dds | *.dds" +
             "|.png | *.png" +
             "|.bmp | *.bmp";
+        readonly List<string> _extensions = new List<string>()
+        {
+            ".ttmp2", ".fbx", ".dds", ".png", ".bmp"
+        };
 
         readonly IModPackViewModel _modPackViewModel;
         readonly ImportService _importService;
@@ -39,12 +43,6 @@ namespace Icarus.ViewModels.Import
         private string _initialDirectory = "";
 
         public ImportModPackViewModel ImportModPackViewModel;
-
-        public ImportViewModel(IModPackViewModel modPackViewModel, ViewModelService viewModelService, ImportService importService,
-            ISettingsService settingsService, ILogService logService) : base(logService)
-        {
-
-        }
 
         public ImportViewModel(IModPackViewModel modPack, ModPackListViewModel modPackList, ImportService importService,
             ISettingsService settingsService, ImportModPackViewModel importSimpleTexToolsViewModel, ILogService logService)
@@ -208,7 +206,11 @@ namespace Icarus.ViewModels.Import
             foreach (var str in collection)
             {
                 var ext = Path.GetExtension(str);
-                if (ext != ".fbx" && ext != ".ttmp2" && ext != ".dds" && ext != ".png" && ext != ".bmp")
+                if (String.IsNullOrEmpty(ext))
+                {
+                    return false;
+                }
+                if (!_extensions.Contains(ext))
                 {
                     return false;
                 }

@@ -11,8 +11,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Specialized;
 using Icarus.Services.Interfaces;
+using Icarus.ViewModels.Mods.DataContainers;
 
-namespace Icarus.ViewModels.Mods.DataContainers.ModPackList
+namespace Icarus.ViewModels.ModPackList
 {
     // TODO: Copy to current page if current page has no groups
     // TODO: When copying metadata from a modpack, it doesn't seem to be correct
@@ -21,11 +22,13 @@ namespace Icarus.ViewModels.Mods.DataContainers.ModPackList
     {
         readonly IModsListViewModel _modsListViewModel;
         readonly ViewModelService _viewModelService;
+        readonly IModPackViewModel _modPackViewModel;
 
         // TODO: What to do if user deletes mods that are part of one of the mods in the ModPackList?
-        public ModPackListViewModel(IModsListViewModel modsList, ViewModelService viewModelService, ILogService logService) : base(logService)
+        public ModPackListViewModel(IModPackViewModel modPackViewModel, ViewModelService viewModelService, ILogService logService) : base(logService)
         {
-            _modsListViewModel = modsList;
+            _modPackViewModel = modPackViewModel;
+            _modsListViewModel = _modPackViewModel.ModsListViewModel;
             _viewModelService = viewModelService;
 
             _modsListViewModel.SimpleModsList.CollectionChanged += new(OnCollectionChanged);
@@ -43,7 +46,11 @@ namespace Icarus.ViewModels.Mods.DataContainers.ModPackList
         public INotifyPropertyChanged? ModPackPage
         {
             get { return _modPackPage; }
-            set { _modPackPage = value; OnPropertyChanged(); }
+            set {
+                _modPackPage = value;
+                OnPropertyChanged();
+                CopyPageCommand.RaiseCanExecuteChanged();
+            }
         }
 
         ModPackViewModel? _displayedModPack;
@@ -56,6 +63,7 @@ namespace Icarus.ViewModels.Mods.DataContainers.ModPackList
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(ModPackPages));
                 OnPropertyChanged(nameof(AvailablePageIndices));
+                CopyAllPagesCommand.RaiseCanExecuteChanged();
             }
         }
         public bool IsEmpty
@@ -118,11 +126,41 @@ namespace Icarus.ViewModels.Mods.DataContainers.ModPackList
             OnPropertyChanged(nameof(IsEmpty));
         }
 
-        public DelegateCommand? CopyPageCommand { get; set; }
+        DelegateCommand _copyPageCommand;
+        public DelegateCommand CopyPageCommand
+        {
+            get { return _copyPageCommand ??= new DelegateCommand(_ => OnCopyPage(), _ => ModPackPage != null); }
+        }
+
+        DelegateCommand _copyAllPagesCommand;
+        public DelegateCommand CopyAllPagesCommand
+        {
+            get { return _copyAllPagesCommand ??= new DelegateCommand(_ => OnCopyAllPages(), _ => ModPackPages != null); }
+        }
 
         private void OnCopyPage()
         {
+            if (ModPackPage is ModPackPageViewModel page)
+            {
+                // TODO: When on meta, copy page... copies everything?
+                _modPackViewModel.CopyPage(page);
+                // TODO: This does not update the display if the current page is empty
+            }
+            if (ModPackPage is ModPackMetaViewModel meta)
+            {
+                _modPackViewModel.SetMetadata(meta);
+            }
+        }
 
+        private void OnCopyAllPages()
+        {
+            if (ModPackPages != null)
+            {
+                foreach (var page in ModPackPages)
+                {
+                    _modPackViewModel.AddPage(page);
+                }
+            }
         }
 
         #endregion

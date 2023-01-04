@@ -1,7 +1,7 @@
 ﻿using Icarus.ViewModels.Export;
+using Icarus.ViewModels.ModPackList;
 using Icarus.ViewModels.Mods.DataContainers;
 using Icarus.ViewModels.Mods.DataContainers.Interfaces;
-using Icarus.ViewModels.Mods.DataContainers.ModPackList;
 using Icarus.ViewModels.Util;
 using Icarus.Views.Mods;
 using System;
@@ -38,7 +38,6 @@ namespace Icarus.ViewModels.Editor
             ExportViewModel = exportViewModel;
             ModPackListViewModel = modPackListViewModel;
 
-            ModPackListViewModel.CopyPageCommand = new DelegateCommand(o => OnCopy());
             ModPackViewModel.PropertyChanged += new(OnSelectedOptionChange);
         }
 
@@ -67,18 +66,7 @@ namespace Icarus.ViewModels.Editor
             set { _displayedOption = value; OnPropertyChanged(); }
         }
 
-        private void OnCopy()
-        {
-            if (ModPackListViewModel.ModPackPage is ModPackPageViewModel page)
-            {
-                // TODO: When on meta, copy page... copies everything?
-                ModPackViewModel.CopyPage(page);
-            }
-            if (ModPackListViewModel.ModPackPage is ModPackMetaViewModel meta)
-            {
-                ModPackViewModel.SetMetadata(meta);
-            }
-        }
+
 
         int _selectedTabIndex = 0;
         public int SelectedTabIndex

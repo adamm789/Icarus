@@ -46,6 +46,10 @@
       <Guid>215d64d2-031c-33c7-96e3-61794cd1ee61</Guid>
     </COMReference>
   </ItemGroup>
+	
+  <ItemGroup>
+    <Content Include="Ignore\TextFile1.txt" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
@@ -90,6 +94,5 @@
 
   <ItemGroup>
     <Folder Include="Wpf\" />
-    <Folder Include="Views\ModPackList\" />
   </ItemGroup>
 </Project>
