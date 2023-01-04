@@ -55,12 +55,6 @@ namespace Icarus.Services.GameFiles
 
         public async Task<IMaterialGameFile?> GetMaterialFileData(IItem? itemArg = null, int materialSet = 1)
         {
-            if (SelectedMaterialFile != null && itemArg == null)
-            {
-                _logService.Debug($"Retuning loaded material file.");
-                return SelectedMaterialFile;
-            }
-
             var item = GetItem(itemArg);
             if (item == null) return null;
 
@@ -205,7 +199,6 @@ namespace Icarus.Services.GameFiles
                 return null;
             }
         }
-
 
         public async Task<List<IMaterialGameFile>?> GetMaterials(IModelGameFile modelGameFile)
         {

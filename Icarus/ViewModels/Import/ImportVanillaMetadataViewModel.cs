@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using ItemDatabase.Interfaces;
 using ItemDatabase.Paths;
 using System.Text.RegularExpressions;
+using Icarus.Mods.GameFiles;
 
 namespace Icarus.ViewModels.Import
 {
@@ -36,6 +37,7 @@ namespace Icarus.ViewModels.Import
 
         public async override Task<IMetadataFile?> SetItem(IItem? item)
         {
+            await base.SetItem(item);
             _metadataFile = await _metadataFileService.GetMetadata(item);
             HasMetadata = _metadataFile?.ItemMetadata != null;
             CanImport = HasMetadata;
@@ -59,20 +61,30 @@ namespace Icarus.ViewModels.Import
         }
 
         
-        private MetadataMod? GetVanillaMeta()
+        private async Task<MetadataMod?> GetVanillaMeta()
         {
-            if (_metadataFile != null)
+            IMetadataFile? metadataFile = null;
+            if (SelectedItem != null)
             {
-                var mod = new MetadataMod(_metadataFile, ImportSource.Vanilla);
+                metadataFile = await _metadataFileService.GetMetadata(SelectedItem);
+            }
+            else if (!String.IsNullOrWhiteSpace(_completePath))
+            {
+                metadataFile = await _metadataFileService.TryGetMetadata(_completePath);
+            }
+
+            if (metadataFile != null)
+            {
+                var mod = new MetadataMod(metadataFile, ImportSource.Vanilla);
                 var modViewModel = _modPackViewModel.Add(mod);
                 return mod;
             }
             return null;
         }
 
-        protected override void DoImport()
+        protected override async Task DoImport()
         {
-            GetVanillaMeta();
+            await GetVanillaMeta();
         }
     }
 }

@@ -113,9 +113,9 @@ namespace Icarus.ViewModels.Import
             set { _materialSetText = value; OnPropertyChanged(); }
         }
 
-        protected override void DoImport()
+        protected override async Task DoImport()
         {
-            GetVanillaMtrl();
+            await GetVanillaMtrl();
         }
 
         public async override Task SetCompletePath(string? path)
@@ -136,6 +136,7 @@ namespace Icarus.ViewModels.Import
 
         public override async Task SetItem(IItem? item)
         {
+            await base.SetItem(item);
             MaterialFiles = await _materialFileService.GetMaterialSet(item);
             if (MaterialFiles != null)
             {
@@ -156,14 +157,22 @@ namespace Icarus.ViewModels.Import
         public async Task SetModel(IModelGameFile modelGameFile)
         {
             MaterialFiles = await _materialFileService.GetMaterials(modelGameFile);
-
         }
 
-        private MaterialMod? GetVanillaMtrl()
+        private async Task<MaterialMod?> GetVanillaMtrl()
         {
             // TODO: How to handle SmallClothes, Emperor's series, and skin materials
             // TODO: Most of SmallClothes don't seem to have a material
-            var materialGameFile = SelectedMaterialFile;
+            IMaterialGameFile? materialGameFile = null;
+            if (SelectedItem != null)
+            {
+                var materialSet = SelectedMaterialFile != null ? SelectedMaterialFile.MaterialSet : 1;
+                materialGameFile = await _materialFileService.GetMaterialFileData(SelectedItem, materialSet);
+            }
+            else if (!String.IsNullOrWhiteSpace(_completePath))
+            {
+                materialGameFile = await _materialFileService.TryGetMaterialFileData(_completePath);
+            }
 
             if (materialGameFile != null)
             {

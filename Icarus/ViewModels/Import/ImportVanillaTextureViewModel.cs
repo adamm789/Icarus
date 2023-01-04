@@ -125,11 +125,11 @@ namespace Icarus.ViewModels.Import
             set { _selectedTexturePath = value; OnPropertyChanged(); }
         }
 
-        protected override void DoImport()
+        protected async override Task DoImport()
         {
             if (_selectedMaterial != null)
             {
-                var textureGameFile = Task.Run(() => _textureFileService.GetTextureFileData(_selectedMaterial, SelectedTexType)).Result;
+                var textureGameFile = await _textureFileService.GetTextureFileData(_selectedMaterial, SelectedTexType);
                 if (textureGameFile != null && textureGameFile.XivTex != null)
                 {
                     var mod = new TextureMod(textureGameFile, ImportSource.Vanilla);

@@ -96,33 +96,21 @@ namespace Icarus.ViewModels.Import
                 SelectedModelFile = null;
             }
 
-                /*
-            SelectedModelFile = modelGameFile;
-            SelectedItemName = SelectedModelFile?.Name;
-
-            if (SelectedModelFile != null)
-            {
-                HasSkin = XivPathParser.HasSkin(SelectedModelFile.Path);
-                AllRacesMdls = new(_modelFileService.GetAllRaceMdls(item));
-
-                if (AllRacesMdls.Count > 0)
-                {
-                    SelectedRace = AllRacesMdls[0];
-                }
-            }
-            else
-            {
-                HasSkin = false;
-                AllRacesMdls = new();
-            }
-                */
             CanImport = SelectedModelFile != null;
             return Task.CompletedTask;
         }
 
-        public ModelMod? GetVanillaMdl()
+        public async Task<ModelMod?> GetVanillaMdl()
         {
-            IModelGameFile? modelGameFile = SelectedModelFile;
+            IModelGameFile? modelGameFile = null;
+            if (SelectedItem != null)
+            {
+                modelGameFile = _modelFileService.GetModelFileData(SelectedItem);
+            }
+            else if (!String.IsNullOrWhiteSpace(_completePath))
+            {
+                modelGameFile = _modelFileService.TryGetModelFileData(_completePath);
+            }
 
             if (modelGameFile != null)
             {
@@ -134,15 +122,15 @@ namespace Icarus.ViewModels.Import
                     return null;
                 }
                 modViewModel.SetModData(modelGameFile);
-                return mod;
+                return await Task.FromResult(mod);
             }
-            return null;
+            return await Task.FromResult<ModelMod?>(null);
             //return null;
         }
 
-        protected override void DoImport()
+        protected async override Task DoImport()
         {
-            GetVanillaMdl();
+            await GetVanillaMdl();
             //return Task.CompletedTask;
         }
 
