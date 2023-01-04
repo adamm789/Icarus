@@ -50,10 +50,9 @@
         </ComboBox>
 
         <ContentControl Content="{Binding OptionsViewModel}" Grid.Row="2" Grid.ColumnSpan="3"/>
-        <ListView Grid.Row="3" Grid.ColumnSpan="3" ItemsSource="{Binding MeshGroups}"
-                  PreviewMouseWheel="ListView_PreviewMouseWheel" ScrollViewer.CanContentScroll="False"
-                  HorizontalContentAlignment="Stretch"
-                  ScrollViewer.VerticalScrollBarVisibility="Hidden">
-        </ListView>
+        <ui:ScrollListView Grid.Row="3" Grid.ColumnSpan="3" ItemsSource="{Binding MeshGroups}"
+                           ScrollViewer.CanContentScroll="False" HorizontalContentAlignment="Stretch"
+                           ScrollViewer.VerticalScrollBarVisibility="Hidden" dd:DragDrop.DragSourceIgnore="True">
+        </ui:ScrollListView>
     </Grid>
 </UserControl>

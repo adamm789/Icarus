@@ -68,18 +68,91 @@
                 </StackPanel>
             </Grid>
 
-            <ListView Grid.Row="2" Grid.Column="0"
+            <ui:ScrollListView Grid.Row="2" Grid.Column="0"
                     ItemsSource="{Binding OptionList}"
                     SelectedItem="{Binding DisplayedOption}"
                     HorizontalContentAlignment="Stretch"
                     VerticalContentAlignment="Stretch"
                     ScrollViewer.CanContentScroll="False"
                     VirtualizingStackPanel.IsVirtualizing="True"
-                    PreviewMouseWheel="HandlePreviewMouseWheel"
                     dd:DragDrop.IsDragSource="True"
                     dd:DragDrop.IsDropTarget="True"
                     dd:DragDrop.DropHandler="{Binding}">
-            </ListView>
+            </ui:ScrollListView>
         </Grid>
     </Border>
+    <!--
+    <Expander>
+        <Expander.Header>
+            <Grid HorizontalAlignment="{Binding HorizontalAlignment, RelativeSource={RelativeSource AncestorType=ContentPresenter}, Mode=OneWayToSource}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0" Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Label Grid.Column="0" Width="25"/>
+
+                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding GroupName}" TextWrapping="WrapWithOverflow"/>
+                    <Button Grid.Row="0" Grid.Column="2" Command="{Binding RemoveCommand}" Content="Remove" IsTabStop="False" Focusable="False"/>
+                </Grid>
+            </Grid>
+
+        </Expander.Header>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="1" Grid.Column="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid Grid.Column="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" Command="{Binding AddOptionCommand}">New Option</Button>
+
+                <TextBox Text="{Binding NewOptionName, UpdateSourceTrigger=PropertyChanged}" Grid.Column="1">
+                    <TextBox.InputBindings>
+                        <KeyBinding Key="Return" Command="{Binding AddOptionCommand}"/>
+                    </TextBox.InputBindings>
+                </TextBox>
+            </Grid>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10 0 10 0">
+                <RadioButton IsChecked="{Binding SingleSelection}" Content="Single"
+                            HorizontalAlignment="Center" VerticalContentAlignment="Center" Margin="5 0 5 0"/>
+                <RadioButton IsChecked="{Binding SingleSelection, Converter={StaticResource InverseBooleanConverter}}" Content="Multi"
+                            HorizontalAlignment="Center" VerticalContentAlignment="Center" Margin="5 0 5 0"/>
+            </StackPanel>
+        </Grid>
+
+        <ListView Grid.Row="2" Grid.Column="0"
+            ItemsSource="{Binding OptionList}"
+            SelectedItem="{Binding DisplayedOption}"
+            HorizontalContentAlignment="Stretch"
+            VerticalContentAlignment="Stretch"
+            ScrollViewer.CanContentScroll="False"
+            VirtualizingStackPanel.IsVirtualizing="True"
+            PreviewMouseWheel="HandlePreviewMouseWheel"
+            dd:DragDrop.IsDragSource="True"
+            dd:DragDrop.IsDropTarget="True"
+            dd:DragDrop.DropHandler="{Binding}">
+        </ListView>
+        </Grid>
+    </Expander>
+    -->
 </UserControl>

@@ -28,13 +28,21 @@
         <TextBox Grid.Row="0" Grid.Column="0" Text="{Binding DisplayedMaterial}"/>
 
         <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Visibility="{Binding CanParsePath, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <Grid Margin="0 0 5 0" >
+            <Grid Margin="0 0 5 0" MinWidth="50">
+                <!--
                 <ComboBox SelectedValue="{Binding MaterialVariant}" ItemsSource="{Binding VariantList}"
                            Visibility="{Binding IsSkinMaterial, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
 
                 <ComboBox SelectedValue="{Binding SkinVariant}" ItemsSource="{Binding VariantList}"
                           Visibility="{Binding IsSkinMaterial, Converter={StaticResource BooleanToVisibilityConverter}}">
                 </ComboBox>
+                -->
+                <ui:ClickSelectTextBox Text="{Binding MaterialVariant, UpdateSourceTrigger=PropertyChanged}"
+                                       MaxWidth="100"
+                                       Visibility="{Binding IsSkinMaterial, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
+                <ui:ClickSelectTextBox Text="{Binding SkinVariant, UpdateSourceTrigger=PropertyChanged}"
+                                       MaxWidth="100"
+                                       Visibility="{Binding IsSkinMaterial, Converter={StaticResource BooleanToVisibilityConverter}}"/>
             </Grid>
             
             <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding IsSkinMaterial, Mode=TwoWay}"
