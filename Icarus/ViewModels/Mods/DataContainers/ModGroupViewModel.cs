@@ -6,7 +6,10 @@ using Icarus.ViewModels.Util;
 using Serilog;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Windows;
+using System.Windows.Data;
+using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace Icarus.ViewModels.Mods.DataContainers
 {
@@ -230,8 +233,17 @@ namespace Icarus.ViewModels.Mods.DataContainers
         {
             var oldIndex = OptionList.IndexOf(oldViewModel);
             var newIndex = OptionList.IndexOf(newViewModel);
-
             MoveTo(oldIndex, newIndex);
+        }
+
+        public void UpdateDisplay()
+        {
+            ICollectionView view = CollectionViewSource.GetDefaultView(OptionList);
+            view.Refresh();
+            foreach (var option in OptionList)
+            {
+                option.UpdateDisplay();
+            }
         }
 
         void IDropTarget.DragOver(IDropInfo dropInfo)

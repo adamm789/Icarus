@@ -9,6 +9,8 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
+using System.Windows.Data;
+using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace Icarus.ViewModels.Mods.DataContainers
 {
@@ -238,6 +240,13 @@ namespace Icarus.ViewModels.Mods.DataContainers
         public bool CanAcceptMod(ModViewModel mod)
         {
             return mod != null && !ModExists(mod);
+        }
+
+        public void UpdateDisplay()
+        {
+            UpdateHeader();
+            ICollectionView view = CollectionViewSource.GetDefaultView(ModViewModels);
+            view.Refresh();
         }
 
         private bool ModExists(ModViewModel mod)

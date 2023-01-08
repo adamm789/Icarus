@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace Icarus.ViewModels.Mods.DataContainers
 {
-    public class ModPackMetaViewModel : NotifyPropertyChanged, IModPackMetaViewModel
+    public class ModPackMetaViewModel : ViewModelBase, IModPackMetaViewModel
     {
         readonly IUserPreferencesService _userPreferencesService;
         public ModPack ModPack { get; }
@@ -14,7 +14,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
 
         #region Constructor(s)
 
-        public ModPackMetaViewModel(ModPack modPack, IUserPreferencesService userPreferencesService, bool isReadOnly = false)
+        public ModPackMetaViewModel(ModPack modPack, IUserPreferencesService userPreferencesService, ILogService logService, bool isReadOnly = false) : base(logService)
         {
             ModPack = modPack;
             IsReadOnly = isReadOnly;

@@ -49,7 +49,6 @@ namespace Icarus.ViewModels.Mods
             SetCanExport();
         }
 
-
         ColorSetViewModel _colorSetViewModel;
         public ColorSetViewModel ColorSetViewModel
         {
@@ -67,6 +66,12 @@ namespace Icarus.ViewModels.Mods
         public DelegateCommand OpenMaterialEditorCommand
         {
             get { return _openMaterialEditorCommand ??= new DelegateCommand(o => OpenMaterialEditor()); }
+        }
+
+        public bool AssignToAllPaths
+        {
+            get { return _material.AssignToAllPaths; }
+            set { _material.AssignToAllPaths = value; OnPropertyChanged(); }
         }
 
         public void OpenMaterialEditor()
@@ -104,6 +109,7 @@ namespace Icarus.ViewModels.Mods
                 _materialVariant = value;
                 OnPropertyChanged();
                 base.DestinationPath = XivPathParser.ChangeMtrlVariant(base.DestinationPath, value);
+                _material.Variant = value;
             }
         }
 
@@ -119,7 +125,14 @@ namespace Icarus.ViewModels.Mods
 
         public override async Task<IGameFile?> GetFileData(IItem? itemArg = null)
         {
-            return await _materialFileService.GetMaterialFileData(itemArg);
+
+            var ret = await _materialFileService.GetMaterialFileData(itemArg);
+            if (ret != null && _materialFileService.MaterialSet != null)
+            {
+                _material.SetAllPaths(_materialFileService.MaterialSet);
+            }
+
+            return ret;
         }
 
         public override async Task<IGameFile?> GetFileData(string path, string name = "")

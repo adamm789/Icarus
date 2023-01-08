@@ -4,6 +4,7 @@ using Icarus.ViewModels.Mods.DataContainers;
 using Icarus.ViewModels.Mods.DataContainers.Interfaces;
 using Icarus.ViewModels.Util;
 using Icarus.Views.Mods;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -20,7 +21,6 @@ namespace Icarus.ViewModels
         public FilteredModsListViewModel FilteredMods { get; set; }
         protected PropertyChangedEventHandler _eh;
         protected Type _selectedType = typeof(ModViewModel);
-        protected string _modType = "";
 
         public ModsListSelectionViewModel(IModsListViewModel modsListViewModel, ILogService logService) : base(logService)
         {
@@ -34,34 +34,144 @@ namespace Icarus.ViewModels
                 m.PropertyChanged += _eh;
             }
 
-            FilteredMods.PropertyChanged += new(OnFilteredModsListPropertyChanged);
             _modsListViewModel.SimpleModsList.CollectionChanged += new(OnCollectionChanged);
-
             UpdateText();
+
+            UpdateAllText();
         }
 
-        bool _shouldApplyToAll = true;
-        public bool ShouldApplyToAll
+        bool _allModels = true;
+        public bool AllModels
         {
-            get { return _shouldApplyToAll; }
-            set {
-                _shouldApplyToAll = value;
+            get { return _allModels; }
+            set
+            {
+                _allModels = value;
                 OnPropertyChanged();
-                foreach (var m in _modsListViewModel.SimpleModsList)
-                {
-                    if (_selectedType.IsInstanceOfType(m))
-                    {
-                        Apply(m, value);
-                    }
-                }
+                ApplyToType(typeof(ModelModViewModel), value);
+                UpdateText(ref _allModelsText, typeof(ModelModViewModel), value);
+                OnPropertyChanged(nameof(AllModelsText));
             }
         }
 
-        string _applyToAllText;
-        public string ApplyToAllText
+        string _allModelsText;
+        public string AllModelsText
         {
-            get { return _applyToAllText; }
-            set { _applyToAllText = value; OnPropertyChanged(); }
+            get { return _allModelsText; }
+            set { _allModelsText = value; OnPropertyChanged(); }
+        }
+
+        bool _allMaterials = true;
+        public bool AllMaterials
+        {
+            get { return _allMaterials; }
+            set
+            {
+                _allMaterials = value;
+                OnPropertyChanged();
+                ApplyToType(typeof(MaterialModViewModel), value);
+                UpdateText(ref _allMaterialsText, typeof(MaterialModViewModel), value);
+                OnPropertyChanged(nameof(AllMaterialsText));
+            }
+        }
+
+        string _allMaterialsText;
+        public string AllMaterialsText
+        {
+            get { return _allMaterialsText; }
+            set { _allMaterialsText = value; OnPropertyChanged(); }
+        }
+
+        bool _allTextures = true;
+        public bool AllTextures
+        {
+            get { return _allTextures; }
+            set
+            {
+                _allTextures = value;
+                OnPropertyChanged();
+                ApplyToType(typeof(TextureModViewModel), value);
+                UpdateText(ref _allTexturesText, typeof(TextureModViewModel), value);
+                OnPropertyChanged(nameof(AllTexturesText));
+
+            }
+        }
+
+        bool _allMetadata = true;
+        public bool AllMetadata
+        {
+            get { return _allMetadata; }
+            set
+            {
+                _allMetadata = value;
+                OnPropertyChanged();
+                ApplyToType(typeof(MetadataModViewModel), value);
+                UpdateText(ref _allMetadataText, typeof(MetadataModViewModel), value);
+                OnPropertyChanged(nameof(AllMetadataText));
+            }
+        }
+
+        string _allMetadataText;
+        public string AllMetadataText
+        {
+            get { return _allMetadataText; }
+            set { _allMetadataText = value; OnPropertyChanged(); }
+        }
+
+        bool _allReadOnly = true;
+        public bool AllReadOnly
+        {
+            get { return _allReadOnly; }
+            set
+            {
+                _allReadOnly = value;
+                OnPropertyChanged();
+                ApplyToType(typeof(ReadOnlyModViewModel), value);
+                UpdateText(ref _allReadOnlyText, typeof(ReadOnlyModViewModel), value);
+                OnPropertyChanged(nameof(AllReadOnlyText));
+            }
+        }
+
+        string _allReadOnlyText;
+        public string AllReadOnlyText
+        {
+            get { return _allReadOnlyText; }
+            set { _allReadOnlyText = value; OnPropertyChanged(); }
+        }
+
+        protected void UpdateAllText()
+        {
+            _allModels = FilteredMods.ModelMods.AllSelected;
+            _allMaterials = FilteredMods.MaterialMods.AllSelected;
+            _allTextures = FilteredMods.TextureMods.AllSelected;
+            _allMetadata = FilteredMods.MetadataMods.AllSelected;
+            _allReadOnly = FilteredMods.ReadOnlyMods.AllSelected;
+
+            OnPropertyChanged(nameof(AllModels));
+            OnPropertyChanged(nameof(AllMaterials));
+            OnPropertyChanged(nameof(AllTextures));
+            OnPropertyChanged(nameof(AllMetadata));
+            OnPropertyChanged(nameof(AllMetadata));
+            /*
+            UpdateText(ref _allModelsText, typeof(ModelModViewModel));
+            UpdateText(ref _allMaterialsText, typeof(MaterialModViewModel));
+            UpdateText(ref _allTexturesText, typeof(TextureModViewModel));
+            UpdateText(ref _allMetadataText, typeof(MetadataModViewModel));
+            UpdateText(ref _allReadOnlyText, typeof(ReadOnlyModViewModel));
+
+            OnPropertyChanged(nameof(AllModelsText));
+            OnPropertyChanged(nameof(AllMaterialsText));
+            OnPropertyChanged(nameof(AllTexturesText));
+            OnPropertyChanged(nameof(AllMetadataText));
+            OnPropertyChanged(nameof(AllReadOnlyText));
+            */
+        }
+
+        string _allTexturesText;
+        public string AllTexturesText
+        {
+            get { return _allTexturesText; }
+            set { _allTexturesText = value; OnPropertyChanged(); }
         }
 
         protected string _confirmText = "";
@@ -72,58 +182,49 @@ namespace Icarus.ViewModels
         }
 
         protected abstract void Apply(ModViewModel mvm, bool value);
+        protected void ApplyToType(Type type, bool value)
+        {
+            var list = _modsListViewModel.SimpleModsList.Where(x => type.IsInstanceOfType(x));
+            foreach (var val in list)
+            {
+                Apply(val, value);
+            }
+        }
         protected abstract void InvertMod(ModViewModel mvm);
         protected abstract void UpdateText();
 
-        protected void UpdateText(int numSelected, int totalTypeSelected)
+        protected virtual void UpdateText(ref string text, Type t, bool allSelected = true)
         {
-            if (numSelected != totalTypeSelected)
+            var typeString = "";
+            if (t == typeof(ModelModViewModel))
             {
-                _shouldApplyToAll = false;
-                ApplyToAllText = $"Select All {_modType}";
+                typeString = "Model";
             }
-            else
+            else if (t == typeof(MaterialModViewModel))
             {
-                _shouldApplyToAll = true;
-                ApplyToAllText = $"Unselect All {_modType}";
+                typeString = "Material";
             }
-            OnPropertyChanged(nameof(ShouldApplyToAll));
+            else if (t == typeof(TextureModViewModel))
+            {
+                typeString = "Texture";
+            }
+            else if (t == typeof(MetadataModViewModel))
+            {
+                typeString = "Metadata";
+            }
+            else if (t == typeof(ReadOnlyModViewModel))
+            {
+                typeString = "ReadOnly";
+            }
+            var verbage = "Select";
+            if (allSelected)
+            {
+                verbage = "Unselect";
+            }
+            text = $"{verbage} all {typeString} mods";
         }
 
         protected abstract void OnModsListPropertyChanged(object sender, PropertyChangedEventArgs e);
-
-        private void OnFilteredModsListPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (sender is FilteredModsListViewModel modsList && e.PropertyName == nameof(FilteredModsListViewModel.SelectedType))
-            {
-                _selectedType = modsList.SelectedType;
-                if (modsList.SelectedType == typeof(ModelModViewModel))
-                {
-                    _modType = "Models";
-                }
-                else if (modsList.SelectedType == typeof(MaterialModViewModel))
-                {
-                    _modType = "Materials";
-                }
-                else if (modsList.SelectedType == typeof(TextureModViewModel))
-                {
-                    _modType = "Textures";
-                }
-                else if (modsList.SelectedType == typeof(MetadataModViewModel))
-                {
-                    _modType = "Metadata";
-                }
-                else if (modsList.SelectedType == typeof(ReadOnlyModViewModel))
-                {
-                    _modType = "Metadata";
-                }
-                else
-                {
-                    _modType = "";
-                }
-                UpdateText();
-            }
-        }
 
         private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {

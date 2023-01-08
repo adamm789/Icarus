@@ -162,6 +162,13 @@ namespace ItemDatabase
             return retVal;
         }
 
+        /// <summary>
+        /// Returns a dictionary:
+        /// key=arbitrary header/identifier, value=another dictionary:
+        ///     key="part" number, value=List of vanilla attributes
+        /// </summary>
+        /// <param name="slot"></param>
+        /// <returns></returns>
         public static Dictionary<string, Dictionary<int, List<XivAttribute>>> GetAttributeBodyPresets(EquipmentSlot slot)
         {
             var dict = new Dictionary<string, Dictionary<int, List<XivAttribute>>>();

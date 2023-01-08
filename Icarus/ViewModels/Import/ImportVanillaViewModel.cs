@@ -17,6 +17,13 @@ namespace Icarus.ViewModels.Import
 
         readonly ItemListViewModel _itemListViewModel;
 
+        string? _selectedItemName;
+        public string? SelectedItemName
+        {
+            get { return _selectedItemName; }
+            set { _selectedItemName = value; OnPropertyChanged(); }
+        }
+
         public ImportVanillaViewModel(IModsListViewModel modPack, ItemListViewModel itemListViewModel, VanillaFileService vanillaFileService, ILogService logService)
             : base(logService)
         {
@@ -36,6 +43,8 @@ namespace Icarus.ViewModels.Import
             if (e.PropertyName == nameof(ItemListViewModel.SelectedItem))
             {
                 var item = _itemListViewModel.SelectedItem;
+                SelectedItemName = item?.Name;
+
                 var modelTask = ImportVanillaModelViewModel.SetItem(item);
                 var materialTask = ImportVanillaMaterialViewModel.SetItem(item);
                 var metadataTask = ImportVanillaMetadataViewModel.SetItem(item);

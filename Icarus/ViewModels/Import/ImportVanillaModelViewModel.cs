@@ -35,7 +35,6 @@ namespace Icarus.ViewModels.Import
                 _selectedModelFile = value;
                 _modelFileService.SelectedModelFile = value;
                 SelectedModelPath = value?.Path;
-                SelectedItemName = value?.Name;
                 OnPropertyChanged();
             }
         }
@@ -118,7 +117,7 @@ namespace Icarus.ViewModels.Import
                 var modViewModel = _modPackViewModel.Add(mod);
                 if (modViewModel == null)
                 {
-                    _logService.Fatal($"Failed to get ViewModel for vanilla mdl: {mod.Name}");
+                    _logService?.Fatal($"Failed to get ViewModel for vanilla mdl: {mod.Name}");
                     return null;
                 }
                 modViewModel.SetModData(modelGameFile);

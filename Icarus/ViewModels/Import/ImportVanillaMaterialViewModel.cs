@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using ItemDatabase.Interfaces;
 using Icarus.ViewModels.Util;
 using ItemDatabase.Paths;
+using Icarus.Mods.GameFiles;
 
 namespace Icarus.ViewModels.Import
 {
@@ -46,6 +47,7 @@ namespace Icarus.ViewModels.Import
             set
             {
                 _materialFiles = value;
+                _materialFileService.MaterialSet = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(HasOneMaterial));
                 OnPropertyChanged(nameof(HasMoreThanOneMaterial));
@@ -59,6 +61,7 @@ namespace Icarus.ViewModels.Import
             set {
                 _selectedMaterialFile = value;
                 _materialFileService.SelectedMaterialFile = value;
+                CanImport = _selectedMaterialFile != null;
                 if (_selectedMaterialFile != null)
                 {
                     SelectedMaterialPath = _selectedMaterialFile.Path;
@@ -77,7 +80,7 @@ namespace Icarus.ViewModels.Import
         DelegateCommand _getVanillaMaterial;
         public DelegateCommand GetVanillaMaterial
         {
-            get { return _getVanillaMaterial ??= new DelegateCommand(_ => GetVanillaMtrl(), _ => CanImport == true); }
+            get { return _getVanillaMaterial ??= new DelegateCommand(async _ => await GetVanillaMtrl(), _ => CanImport == true); }
         }
 
         DelegateCommand _importMaterialSetCommand;
@@ -163,29 +166,42 @@ namespace Icarus.ViewModels.Import
         {
             // TODO: How to handle SmallClothes, Emperor's series, and skin materials
             // TODO: Most of SmallClothes don't seem to have a material
+
+            /*
             IMaterialGameFile? materialGameFile = null;
+
+            // TODO: This is inaccurate. I should probably just copy the SelectedMaterialFile
             if (SelectedItem != null)
             {
                 var materialSet = SelectedMaterialFile != null ? SelectedMaterialFile.MaterialSet : 1;
                 materialGameFile = await _materialFileService.GetMaterialFileData(SelectedItem, materialSet);
+                if (materialGameFile != null && SelectedMaterialFile != null)
+                {
+                    materialGameFile.Name = SelectedMaterialFile.Name;
+                }
             }
             else if (!String.IsNullOrWhiteSpace(_completePath))
             {
                 materialGameFile = await _materialFileService.TryGetMaterialFileData(_completePath);
             }
-
-            if (materialGameFile != null)
+            */
+            if (SelectedMaterialFile != null)
             {
+                var materialGameFile = await _materialFileService.CopyMaterialGameFile(SelectedMaterialFile);
                 if (materialGameFile.XivMtrl == null)
                 {
-                    _logService.Error($"Could not find the material");
+                    _logService?.Error($"Could not find the material");
                     return null;
                 }
                 var mod = new MaterialMod(materialGameFile, ImportSource.Vanilla);
+                if (MaterialFiles != null)
+                {
+                    mod.SetAllPaths(MaterialFiles);
+                }
                 var modViewModel = _modPackViewModel.Add(mod);
                 if (modViewModel == null)
                 {
-                    _logService.Fatal($"Failed to get ViewModel vanilla mtrl: {mod.Name}");
+                    _logService?.Fatal($"Failed to get ViewModel vanilla mtrl: {mod.Name}");
                     return null;
                 }
                 //modViewModel.SetModData(materialGameFile);
@@ -209,7 +225,7 @@ namespace Icarus.ViewModels.Import
                         var modViewModel = _modPackViewModel.Add(mod);
                         if (modViewModel == null)
                         {
-                            _logService.Fatal($"Failed to get view model for vanilla mtrl :{mod.Name}");
+                            _logService?.Fatal($"Failed to get view model for vanilla mtrl :{mod.Name}");
                         }
                         materialMods.Add(mod);
                         modViewModel.SetModData(mat);

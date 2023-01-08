@@ -25,6 +25,9 @@ namespace Icarus.ViewModels.Editor
         // TODO: Edit option name from within and add a "tab/"label" thing to re-order
 
         // TODO: "Copy Page" should change to "Copy Metadata" on first (metadata) page
+
+        // TODO: Allow advanced modpacks to be create when all of the mods in the pack pages are complete
+        // Currently, it requires ALL mods to complete, not just ones that are contained in the advanced pack
         public FilteredModsListViewModel FilteredModsListViewModel { get; }
         public IModPackViewModel ModPackViewModel { get; }
         public ExportViewModel ExportViewModel { get; }

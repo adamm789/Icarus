@@ -5,7 +5,12 @@ namespace Icarus.ViewModels.Util
 {
     public class ViewModelBase : NotifyPropertyChanged
     {
-        protected ILogService _logService;
+        protected ILogService? _logService;
+
+        public ViewModelBase()
+        {
+
+        }
 
         public ViewModelBase(ILogService logService)
         {

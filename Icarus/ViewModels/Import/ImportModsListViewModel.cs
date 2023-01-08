@@ -32,17 +32,15 @@ namespace Icarus.ViewModels.Import
         public ImportModsListViewModel(IModPackViewModel modPack, ILogService logService)
            : base(modPack.ModsListViewModel, logService) {
             _modPackViewModel = modPack;
-        }
-
-        public ImportModsListViewModel(IModsListViewModel modsListViewModel, ILogService logService)
-            : base(modsListViewModel, logService)
-        {
+            FilteredMods.SetFilterFunction(x => x.ShouldImport);
+            FilteredMods.UpdateList();
         }
 
         protected override void OnModsListPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(ModViewModel.ShouldImport) && sender is ModViewModel mvm)
             {
+                FilteredMods.UpdateList();
                 UpdateText();
             }
         }
@@ -84,12 +82,15 @@ namespace Icarus.ViewModels.Import
 
         protected override void UpdateText()
         {
+            /*
             var selectedTypeList = _modsListViewModel.SimpleModsList.Where(m => _selectedType.IsInstanceOfType(m));
             var numSelected = selectedTypeList.Where(m => m.ShouldImport).Count();
 
             ConfirmText = $"Import {_modsListViewModel.SimpleModsList.Where(m => m.ShouldImport).Count()}/{_modsListViewModel.SimpleModsList.Count()} mods";
+            */
 
-            base.UpdateText(numSelected, selectedTypeList.Count());
+            //base.UpdateText(numSelected, selectedTypeList.Count());
+            ConfirmText = $"Import {FilteredMods.AllMods.NumSelected}/{FilteredMods.AllMods.TotalNum} mods";
         }
     }
 }

@@ -240,6 +240,11 @@ namespace Icarus.Util
                         // TODO: What to do here?
                         def.Files.Add(entry.Path, entry.Path);
                     }
+
+                    if (entry is IAdditionalPathsMod pathsMod)
+                    {
+
+                    }
                 }
             }
 

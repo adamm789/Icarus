@@ -13,7 +13,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Forms;
-using SaveFileDialog = System.Windows.Forms.SaveFileDialog;
 
 namespace Icarus.ViewModels.Export
 {
@@ -26,8 +25,8 @@ namespace Icarus.ViewModels.Export
         public ExportSimpleViewModel(IModsListViewModel modsListViewModel, ILogService logService) 
             : base(modsListViewModel, logService)
         {
-            var headerPredicate = new Func<ModViewModel, bool>(m => m.ShouldExport);
-            FilteredMods.SetHeaderPredicate(headerPredicate);
+            var filterFunction = new Func<ModViewModel, bool>(m => m.ShouldExport);
+            FilteredMods.SetFilterFunction(filterFunction);
         }
 
         public void SetDialog(CommonDialog dialog)
@@ -39,8 +38,8 @@ namespace Icarus.ViewModels.Export
         {
             if (e.PropertyName == nameof(ModViewModel.ShouldExport) && sender is ModViewModel mvm)
             {
+                FilteredMods.UpdateList();
                 UpdateText();
-                FilteredMods.UpdateHeaders();
             }
         }
 
@@ -71,12 +70,16 @@ namespace Icarus.ViewModels.Export
 
         protected override void UpdateText()
         {
+            /*
             var selectedTypeList = _modsListViewModel.SimpleModsList.Where(m => _selectedType.IsInstanceOfType(m));
             var numSelected = selectedTypeList.Where(m => m.ShouldExport).Count();
 
-            ConfirmText = $"Export {_modsListViewModel.SimpleModsList.Where(m => m.ShouldExport).Count()}/{_modsListViewModel.SimpleModsList.Count()} mods";
+            ConfirmText = $"Export {_modsListViewModel.SimpleModsList.Where(m => m.ShouldExport).Count()}/{_modsListViewModel.SimpleModsList.Count} mods";
 
             base.UpdateText(numSelected, selectedTypeList.Count());
+            */
+            ConfirmText = $"Export {FilteredMods.AllMods.NumSelected}/{FilteredMods.AllMods.TotalNum} mods";
+            UpdateAllText();
         }
     }
 }

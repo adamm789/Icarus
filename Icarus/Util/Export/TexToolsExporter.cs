@@ -5,6 +5,7 @@ using Icarus.Services.Interfaces;
 using Ionic.Zip;
 using ItemDatabase.Paths;
 using Lumina;
+using Lumina.Data;
 using Newtonsoft.Json;
 using Serilog;
 using SharpDX.Direct2D1;
@@ -18,7 +19,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using TeximpNet.DDS;
 using xivModdingFramework.Mods.DataContainers;
+using static HelixToolkit.SharpDX.Core.Model.Metadata;
 using FrameworkModPack = xivModdingFramework.Mods.DataContainers.ModPack;
 using IcarusModPack = Icarus.Mods.DataContainers.ModPack;
 using Path = System.IO.Path;
@@ -88,6 +91,7 @@ namespace Icarus.Util
             modPackJson.SimpleModsList = new();
 
             var exportEntries = entries.FindAll(m => m.ShouldExport);
+            // TODO: For "additional paths mods" add to "numexported"?
             if (exportEntries.Count == 0)
             {
                 _logService.Information("No entries were selected for export.");
@@ -128,15 +132,43 @@ namespace Icarus.Util
                         continue;
                     }
 
+                    /*
                     var modsJson = GetModsJson(entry, offset, bytes.Length, modPack);
+                    List<ModsJson>? pathsModJson = null;
+
+                    if (entry is IAdditionalPathsMod pathsMod && pathsMod.HasAdditionalPaths)
+                    {
+                        pathsModJson = GetAdditionalPaths(pathsMod, offset, bytes.Length, modPack);
+                    }
 
                     if (modsJson != null)
                     {
                         modPackJson.SimpleModsList.Add(modsJson);
+
+                        if (pathsModJson != null)
+                        {
+                            modPackJson.SimpleModsList.AddRange(pathsModJson);
+                        }
+
                         offset += bytes.Length;
                         bw.Write(bytes);
                         numModsWritten++;
                     }
+                    */
+
+                    if (entry is IAdditionalPathsMod pathsMod && pathsMod.AssignToAllPaths)
+                    {
+                        var pathsModJson = GetAllPathsModJson(pathsMod, offset, bytes.Length, modPack);
+                        modPackJson.SimpleModsList.AddRange(pathsModJson);
+                    }
+                    else
+                    {
+                        var modJson = GetModsJson(entry, offset, bytes.Length, modPack);
+                        modPackJson.SimpleModsList.Add(modJson);
+                    }
+                    offset += bytes.Length;
+                    bw.Write(bytes);
+                    numModsWritten++;
                 }
             }
 
@@ -307,13 +339,44 @@ namespace Icarus.Util
                                 
                                     offsetDict.Add(modOptionMod, offset);
                                 */
+                                /*
                                 var modsJson = GetModsJson(modOptionMod, offset, bytes.Length);
+
+                                List<ModsJson>? pathsModJson = null;
+                                if (modOptionMod is IAdditionalPathsMod pathsMod && pathsMod.HasAdditionalPaths)
+                                {
+                                    pathsModJson = GetAdditionalPaths(pathsMod, offset, bytes.Length, modPack);
+                                }
 
                                 if (modsJson != null)
                                 {
                                     modOptionJson.ModsJsons.Add(modsJson);
                                     bw.Write(bytes);
                                     offset += bytes.Length;
+                                    numModsWritten++;
+                                    options++;
+                                }
+                                */
+                                var success = false;
+                                if (modOptionMod is IAdditionalPathsMod pathsMod && pathsMod.AssignToAllPaths)
+                                {
+                                    var pathsModJson = GetAllPathsModJson(pathsMod, offset, bytes.Length, modPack);
+                                    modPackJson.SimpleModsList.AddRange(pathsModJson);
+                                    success = true;
+                                }
+                                else
+                                {
+                                    var modsJson = GetModsJson(modOptionMod, offset, bytes.Length, modPack);
+                                    if (modsJson != null)
+                                    {
+                                        modOptionJson.ModsJsons.Add(modsJson);
+                                        success = true;
+                                    }
+                                }
+                                if (success)
+                                {
+                                    offset += bytes.Length;
+                                    bw.Write(bytes);
                                     numModsWritten++;
                                     options++;
                                 }
@@ -461,6 +524,50 @@ namespace Icarus.Util
             }
 
             return modsJson;
+        }
+
+        private List<ModsJson> GetAllPathsModJson(IAdditionalPathsMod mod, long offset, int modSize, IcarusModPack? modPack = null)
+        {
+            _logService.Debug($"Applying to all {mod.AllPathsDictionary.Count} variants.");
+            var ret = new List<ModsJson>();
+            var category = mod.Category;
+            var isDefault = mod.IsDefault;
+
+            foreach (var (path, name) in mod.AllPathsDictionary)
+            {
+                if (ForbiddenModTypes.Contains(path))
+                {
+                    _logService.Error($"{path} is a forbidden mod type. Skipping");
+                    continue;
+                }
+                var datFile = XivPathParser.GetDatFile(path);
+                var modsJson = new ModsJson
+                {
+                    Name = name,
+                    Category = category,
+                    FullPath = path,
+                    ModSize = modSize,
+                    DatFile = datFile,
+                    IsDefault = isDefault,
+                    ModOffset = offset
+                };
+
+                isDefault = false;
+
+                if (modPack != null)
+                {
+                    modsJson.ModPackEntry = new FrameworkModPack
+                    {
+                        name = modPack.Name,
+                        author = modPack.Author,
+                        version = modPack.Version,
+                        url = modPack.Url
+                    };
+                }
+                ret.Add(modsJson);
+            }
+
+            return ret;
         }
 
         private async Task<byte[]> GetBytes(IMod entry, int counter = 0)

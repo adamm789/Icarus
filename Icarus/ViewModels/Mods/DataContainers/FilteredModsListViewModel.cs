@@ -112,24 +112,24 @@ namespace Icarus.ViewModels.Mods.DataContainers
             }
         }
 
-        public void SetHeaderPredicate(Func<ModViewModel, bool> predicate)
+        public void SetFilterFunction(Func<ModViewModel, bool> foo)
         {
-            AllMods.HeaderPredicate = predicate;
-            ModelMods.HeaderPredicate = predicate;
-            MaterialMods.HeaderPredicate = predicate;
-            TextureMods.HeaderPredicate = predicate;
-            MetadataMods.HeaderPredicate = predicate;
-            ReadOnlyMods.HeaderPredicate = predicate;
+            AllMods.FilterFunction = foo;
+            ModelMods.FilterFunction = foo;
+            MaterialMods.FilterFunction = foo;
+            TextureMods.FilterFunction = foo;
+            MetadataMods.FilterFunction = foo;
+            ReadOnlyMods.FilterFunction = foo;
         }
 
-        public void UpdateHeaders()
+        public void UpdateList()
         {
-            AllMods.UpdateHeader();
-            ModelMods.UpdateHeader();
-            MaterialMods.UpdateHeader();
-            TextureMods.UpdateHeader();
-            MetadataMods.UpdateHeader();
-            ReadOnlyMods.UpdateHeader();
+            AllMods.UpdateList();
+            ModelMods.UpdateList();
+            MaterialMods.UpdateList();
+            TextureMods.UpdateList();
+            MetadataMods.UpdateList();
+            ReadOnlyMods.UpdateList();
         }
 
         public FilteredTypeModsListViewModel<ModViewModel> AllMods { get; }

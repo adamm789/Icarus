@@ -31,13 +31,6 @@ namespace Icarus.ViewModels.Import
             _modPackViewModel = modPackViewmodel;
         }
 
-        string? _selectedItemName;
-        public string? SelectedItemName
-        {
-            get { return _selectedItemName; }
-            set { _selectedItemName = value; OnPropertyChanged(); }
-        }
-
         protected IItem? SelectedItem;
 
         protected string? _completePath;
@@ -64,7 +57,6 @@ namespace Icarus.ViewModels.Import
 
         public virtual Task SetCompletePath(string? path)
         {
-            SelectedItemName = "";
             return Task.CompletedTask;
         }
 

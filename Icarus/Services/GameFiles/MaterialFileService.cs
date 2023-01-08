@@ -34,6 +34,7 @@ namespace Icarus.Services.GameFiles
         Mtrl _mtrl;
 
         public IMaterialGameFile? SelectedMaterialFile { get; set; }
+        public List<IMaterialGameFile>? MaterialSet { get; set; }
 
         public MaterialFileService(LuminaService luminaService, IItemListService itemListService, ISettingsService settingsService, IModelFileService modelFileService, ILogService logService)
             : base(luminaService, itemListService, settingsService, logService)
@@ -51,6 +52,25 @@ namespace Icarus.Services.GameFiles
         {
             var bytes = _lumina.GetFile("chara/base_material/stainingtemplate.stm").Data;
             return new StainingTemplateFile(bytes);
+        }
+
+        public async Task<IMaterialGameFile> CopyMaterialGameFile(IMaterialGameFile materialGameFile)
+        {
+            var mtrl = new Mtrl(_frameworkGameDirectory);
+            var xivMtrl = await mtrl.GetMtrlData(materialGameFile.Path);
+            if (xivMtrl == null)
+            {
+                _logService.Fatal($"Could not get mtrl from {materialGameFile.Path}");
+            }
+            return new MaterialGameFile()
+            {
+                Name = materialGameFile.Name,
+                Path = materialGameFile.Path,
+                Category = materialGameFile.Category,
+                XivMtrl = xivMtrl,
+                MaterialSet = materialGameFile.MaterialSet,
+                Variant = materialGameFile.Variant
+            };
         }
 
         public async Task<IMaterialGameFile?> GetMaterialFileData(IItem? itemArg = null, int materialSet = 1)
@@ -127,7 +147,7 @@ namespace Icarus.Services.GameFiles
                     if (sharedModels == null) return null;
 
                     materialPaths = new();
-                    var ret = new List<IMaterialGameFile>();
+                    var ret = new SortedList<string, IMaterialGameFile>();
                     var seenPaths = new List<string>();
 
                     foreach (var m in sharedModels)
@@ -155,11 +175,11 @@ namespace Icarus.Services.GameFiles
                                 MaterialSet = m.MaterialId,
                                 Variant = XivPathParser.GetMtrlVariant(path)
                             };
-                            ret.Add(mat);
-                            seenPaths.Add(path);
+                            ret.TryAdd(m.Name, mat);
+                            //seenPaths.Add(path);
                         }
                     }
-                    return ret;
+                    return ret.Values.ToList();
                 }
                 else
                 {

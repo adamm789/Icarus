@@ -80,7 +80,7 @@ namespace Icarus.Services.GameFiles
             string path;
             XivRace race = XivRace.Hyur_Midlander_Male;
 
-            if (metadata != null && metadata.ItemMetadata.EqdpEntries.Count > 0 && item is IGear gear)
+            if (metadata != null && item is IGear gear && metadata.ItemMetadata?.EqdpEntries?.Count > 0)
             {
                 foreach (var kvp in metadata.ItemMetadata.EqdpEntries)
                 {

@@ -18,6 +18,11 @@ namespace ItemDatabase
             }
         }
 
+        public override bool IsMatch(string str)
+        {
+            return base.IsMatch(str) || code.Contains(str, StringComparison.OrdinalIgnoreCase);
+        }
+
         public override string GetMdlFileName()
         {
             //throw new NotImplementedException();

@@ -185,6 +185,12 @@ namespace Icarus.ViewModels.Mods.DataContainers
         {
             // TODO: If a user copies a modpackpage (from an imported advanced ttmp2) to the currently displayed empty page,
             // the page is not updated until the user switches pages and then back
+            foreach (var group in ModGroups)
+            {
+                group.UpdateDisplay();
+            }
+            ICollectionView view = CollectionViewSource.GetDefaultView(ModGroups);
+            view.Refresh();
         }
 
         void IDropTarget.DragOver(IDropInfo dropInfo)

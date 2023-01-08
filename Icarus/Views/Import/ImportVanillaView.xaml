@@ -15,29 +15,34 @@
     <StackPanel>
         <StackPanel.Resources>
             <ui:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"
-                True="Visible" False="Hidden"/>
+                                             True="Visible" False="Hidden"/>
             <ui:BooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter"
-                                 True="Hidden" False="Visible"/>
+                                             True="Hidden" False="Visible"/>
         </StackPanel.Resources>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBox Grid.Column="0" Text="{Binding SelectedItemName}" IsReadOnly="True" HorizontalContentAlignment="Center"/>
+            <Button Grid.Column="1" Content="View"/>
+        </Grid>
         <ContentControl Content="{Binding ImportVanillaModelViewModel}">
             <ContentControl.Resources>
                 <DataTemplate DataType="{x:Type vm:ImportVanillaModelViewModel}">
-                    <StackPanel>
-                        <TextBox Text="{Binding SelectedItemName}" IsReadOnly="True" Margin="0 10 0 5" HorizontalContentAlignment="Center"/>
-                        <Grid>
-                            <DockPanel Visibility="{Binding HasSkin, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                <ComboBox ItemsSource="{Binding AllRacesMdls}" Text="Add Mdl" SelectedValue="{Binding SelectedRace}" 
+                    <Grid>
+                        <DockPanel Visibility="{Binding HasSkin, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <ComboBox ItemsSource="{Binding AllRacesMdls}" Text="Add Mdl" SelectedValue="{Binding SelectedRace}" 
                                        DockPanel.Dock="Left"/>
-                                <Button Command="{Binding ImportVanillaFileCommand}" Content="Add Mdl" 
+                            <Button Command="{Binding ImportVanillaFileCommand}" Content="Add Mdl" 
                                     dd:DragDrop.DragSourceIgnore="True" DockPanel.Dock="Right"
                                         ToolTip="{Binding SelectedModelPath}"/>
-                            </DockPanel>
-                            <Button Command="{Binding ImportVanillaFileCommand}" Content="Add Mdl" 
-                                    dd:DragDrop.DragSourceIgnore="True" DockPanel.Dock="Right" Visibility="{Binding HasSkin, Converter={StaticResource InverseBooleanToVisibilityConverter}}"
+                        </DockPanel>
+                        <Button Command="{Binding ImportVanillaFileCommand}" Content="Add Mdl" 
+                                    dd:DragDrop.DragSourceIgnore="True" DockPanel.Dock="Right"
+                                Visibility="{Binding HasSkin, Converter={StaticResource InverseBooleanToVisibilityConverter}}"
                                     ToolTip="{Binding SelectedModelPath}"/>
-
-                        </Grid>
-                    </StackPanel>
+                    </Grid>
                 </DataTemplate>
             </ContentControl.Resources>
         </ContentControl>

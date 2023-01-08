@@ -15,7 +15,7 @@ using Half = SharpDX.Half;
 
 namespace Icarus.Mods
 {
-    public class MaterialMod : Mod, IMaterialGameFile
+    public class MaterialMod : Mod, IMaterialGameFile, IAdditionalPathsMod
     {
         // TODO: Keep track of original paths? And allow a reset button?
         // TODO: Put related tex files "under" the parent material?
@@ -29,9 +29,29 @@ namespace Icarus.Mods
         public string ReflectionTexPath { get; set; }
         public int MaterialSet { get; set; }
 
-        public string Variant { get; set; }
+        string _variant = "a";
+        public string Variant
+        {
+            get { return _variant; }
+            set
+            {
+                _variant = value;
+
+                var temp = new Dictionary<string, string>();
+                foreach (var (path, name) in AllPathsDictionary)
+                {
+                    var newPath = XivPathParser.ChangeMtrlVariant(path, _variant);
+                    temp.Add(newPath, name);
+                }
+                AllPathsDictionary = temp;
+
+            }
+        }
         public bool IsFurniture => ShaderInfo.Shader == MtrlShader.Furniture;
         public bool IsDyeableFurniture => ShaderInfo.Shader == MtrlShader.DyeableFurniture;
+
+        public bool AssignToAllPaths { get; set; } = false;
+        public Dictionary<string, string> AllPathsDictionary { get; protected set; } = new();
 
         public XivMtrl XivMtrl { get; set; }
 
@@ -66,6 +86,16 @@ namespace Icarus.Mods
 
             var materialGameFile = gameFile as MaterialGameFile;
             Init(materialGameFile.XivMtrl);
+        }
+
+        public void SetAllPaths(List<IMaterialGameFile> files)
+        {
+            AllPathsDictionary.Clear();
+            foreach (var file in files)
+            {
+                var path = XivPathParser.ChangeMtrlVariant(file.Path, Variant);
+                AllPathsDictionary.TryAdd(path, file.Name);
+            }
         }
 
 
@@ -217,6 +247,7 @@ namespace Icarus.Mods
         {
             try
             {
+                // TODO: This does not take into account stupid material variants and their texture paths
                 var normal = XivPathParser.GetTexPathFromMtrl(str, XivTexType.Normal);
                 var specular = XivPathParser.GetTexPathFromMtrl(str, XivTexType.Specular);
                 var multi = XivPathParser.GetTexPathFromMtrl(str, XivTexType.Multi);
@@ -309,7 +340,6 @@ namespace Icarus.Mods
                 throw new ArgumentException($"ModData was not of MaterialGameFile. It was {gameFile.GetType()}.");
             }
             base.SetModData(materialGameFile);
-            //Init(materialGameFile.XivMtrl);
         }
     }
 }

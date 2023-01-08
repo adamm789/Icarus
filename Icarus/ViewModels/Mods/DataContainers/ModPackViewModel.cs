@@ -5,6 +5,7 @@ using Icarus.Services.Interfaces;
 using Icarus.ViewModels.Mods.DataContainers.Interfaces;
 using Icarus.ViewModels.Util;
 using Serilog;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -24,6 +25,8 @@ namespace Icarus.ViewModels.Mods.DataContainers
         // TODO: Ability to see all imported advanced modpacks and their options
         // TODO: Allow user to drag and drop groups, options, and pages to the current pack
         public ObservableCollection<ModPackPageViewModel> ModPackPages { get; } = new();
+        //public ObservableCollection<INotifyPropertyChanged> ModPackPages1 { get; } = new();
+        public InlineAddTabControl Tabs { get; }
 
         // public ObservableCollection<INotifyPropertyChanged> ModPackPages { get; } = new();
 
@@ -54,6 +57,9 @@ namespace Icarus.ViewModels.Mods.DataContainers
                 ModPackPages.Add(packPage);
             }
             IsReadOnly = isReadOnly;
+            Tabs = new(
+                new List<(string, INotifyPropertyChanged)>() { ("Meta", ModPackMetaViewModel) },
+                new Action<object>(_ => IncreasePageIndex()));
         }
 
         public void SetMetadata(ModPackMetaViewModel meta)
@@ -172,6 +178,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
         {
             ModPack.ModPackPages.Add(packPage.GetModPackPage());
             ModPackPages.Add(packPage);
+            Tabs.AddEntry(ModPackPages.Count.ToString(), packPage);
             packPage.PropertyChanged += new PropertyChangedEventHandler(OnOptionSelected);
         }
 

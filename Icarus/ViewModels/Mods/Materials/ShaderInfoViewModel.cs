@@ -173,6 +173,7 @@ namespace Icarus.ViewModels.Mods.Materials
             set { _materialMod.ShaderInfo.RenderBackfaces = value; OnPropertyChanged(); }
         }
 
+        // TODO: These paths should probably not be here...
         // TODO: Ability to directly "assign" these
         public string NormalTexPath
         {

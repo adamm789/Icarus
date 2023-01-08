@@ -332,6 +332,7 @@ namespace ItemDatabase.Paths
 
         public static string ChangeMtrlVariant(string input, string variant = "a")
         {
+            if (String.IsNullOrEmpty(input)) return input;
             var regex = new Regex(@"([0-9,a-z]+).mtrl$");
             var ret = $"{regex.Replace(input, variant)}.mtrl";
             return ret;

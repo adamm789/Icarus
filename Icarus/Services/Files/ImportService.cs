@@ -29,6 +29,7 @@ using Newtonsoft.Json;
 using System.Linq;
 using TeximpNet.DDS;
 using xivModdingFramework.Models.FileTypes;
+using Lumina.Data;
 
 namespace Icarus.Services.Files
 {
@@ -199,7 +200,17 @@ namespace Icarus.Services.Files
             try
             {
                 _logService.Information($"Trying to import {filePath} as model.");
-                var importedModel = await _converterService.FbxToTTModel(filePath);
+                var importedModel = await _converterService.FbxToTTModel(filePath).ContinueWith(
+                    task =>
+                    {
+                        if (task.Exception != null)
+                        {
+                            var ex = task.Exception.InnerException;
+                            throw ex;
+                        }
+                        return task.Result;
+                    }
+                    );
                 var sane = TTModel.SanityCheck(importedModel, _logService.LoggingFunction);
 
                 if (!sane)
@@ -266,7 +277,7 @@ namespace Icarus.Services.Files
             try
             {
                 var bytes = File.ReadAllBytes(filePath);
-                
+                var x = _lumina.GetFileFromDisk<FileResource>(filePath);
 
             }
             catch (Exception ex)

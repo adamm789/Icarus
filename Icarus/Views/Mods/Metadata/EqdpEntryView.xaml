@@ -9,13 +9,8 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="Auto"/>
-        </Grid.ColumnDefinitions>
-        <TextBlock Text="{Binding Race}" Grid.Column="0" Margin="2 2 5 2"/>
-        <StackPanel Orientation="Horizontal" Grid.Column="1">
-            <CheckBox IsChecked="{Binding Bit1}"/>
-        </StackPanel>
+        <CheckBox IsChecked="{Binding Bit1}">
+            <TextBlock Text="{Binding Race}" Grid.Column="0" Margin="2 2 5 2"/>
+        </CheckBox>
     </Grid>
 </UserControl>

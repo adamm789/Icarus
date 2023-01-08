@@ -21,6 +21,9 @@ namespace Icarus.ViewModels.Mods.DataContainers.ModsList
 
         public Type ModType;
 
+        public int TotalNum = 0;
+        public int NumSelected = 0;
+
         public FilteredTypeModsListViewModel(FilteredModsListViewModel parent, string header, ILogService logService) : base(logService)
         {
             _parent = parent;
@@ -29,31 +32,51 @@ namespace Icarus.ViewModels.Mods.DataContainers.ModsList
 
             SimpleModsList = parent.SimpleModsList;
             SimpleModsList.CollectionChanged += new(OnCollectionChanged);
-            UpdateHeader();
+
+            UpdateList();
             ModType = typeof(T);
         }
+
+        public bool AllSelected => TotalNum == NumSelected;
 
         private void OnParentPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(_parent.SearchTerm))
             {
-                UpdateHeader();
-                
+                UpdateList();
             }
         }
 
         private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
+            UpdateList();
+        }
+
+        public Func<ModViewModel, bool>? FilterFunction;
+        public Func<FilteredTypeModsListViewModel<T>, string>? HeaderFunction;
+
+        public void UpdateList()
+        {
+            TotalNum = ModsList.Cast<ModViewModel>().Count();
+            if (FilterFunction == null)
+            {
+                NumSelected = TotalNum;
+            }
+            else
+            {
+                NumSelected = ModsList.Cast<ModViewModel>().Where(FilterFunction).Count();
+            }
             UpdateHeader();
         }
 
-        public Func<ModViewModel, bool>? HeaderPredicate;
-
         public void UpdateHeader()
         {
-            if (HeaderPredicate == null)
+            TotalNum = ModsList.Cast<ModViewModel>().Count();
+
+            if (FilterFunction == null)
             {
-                Header = $"{_type} ({ModsList.Cast<ModViewModel>().Count()})";
+                NumSelected = TotalNum;
+                Header = $"{_type} ({TotalNum})";
             }
             else
             {
@@ -61,7 +84,8 @@ namespace Icarus.ViewModels.Mods.DataContainers.ModsList
                 {
 
                 }
-                Header = $"{_type} ({ModsList.Cast<ModViewModel>().Where(HeaderPredicate).Count()}/{ModsList.Cast<ModViewModel>().Count()})";
+                NumSelected = ModsList.Cast<ModViewModel>().Where(FilterFunction).Count();
+                Header = $"{_type} ({NumSelected}/{TotalNum})";
             }
             OnPropertyChanged(nameof(ModsList));
         }
@@ -79,12 +103,12 @@ namespace Icarus.ViewModels.Mods.DataContainers.ModsList
             get
             {
                 _modsList = new CollectionViewSource { Source = SimpleModsList }.View;
-                _modsList.Filter = m => FilterFunction(m);
+                _modsList.Filter = m => SearchFilterFunction(m);
                 return _modsList;
             }
         }
 
-        private bool FilterFunction(object o)
+        private bool SearchFilterFunction(object o)
         {
             if (_parent != null)
             {

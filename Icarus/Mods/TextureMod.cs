@@ -79,5 +79,20 @@ namespace Icarus.Mods
 
             return XivTexFormat.A8R8G8B8;
         }
+
+        public bool AddPath(string path)
+        {
+            if (!AdditionalPaths.Contains(path) && Path != path)
+            {
+                AdditionalPaths.Add(path);
+                return true;
+            }
+            return false;
+        }
+
+        public bool RemovePath(string path)
+        {
+            return AdditionalPaths.Remove(path);
+        }
     }
 }

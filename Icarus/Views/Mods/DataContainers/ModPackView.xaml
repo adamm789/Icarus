@@ -8,12 +8,14 @@
              xmlns:modviews="clr-namespace:Icarus.Views.Mods"
              xmlns:modviewmodels="clr-namespace:Icarus.ViewModels.Mods"
              xmlns:datacontainers="clr-namespace:Icarus.ViewModels.Mods.DataContainers"
+             xmlns:utilviews="clr-namespace:Icarus.Views.Util"
+             xmlns:utilviewmodels="clr-namespace:Icarus.ViewModels.Util"
              d:DataContext="{d:DesignInstance Type=datacontainers:ModPackViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
@@ -24,8 +26,49 @@
             <DataTemplate DataType="{x:Type datacontainers:ModPackPageViewModel}">
                 <local:ModPackPageView/>
             </DataTemplate>
+            <DataTemplate DataType="{x:Type utilviewmodels:TabControlViewModel}">
+                <utilviews:TabControlView/>
+            </DataTemplate>
         </Grid.Resources>
+        <ContentControl Content="{Binding Tabs}">
+
+        </ContentControl>
+        <!--
         <ContentControl Content="{Binding DisplayedViewModel}" HorizontalAlignment="Stretch" VerticalContentAlignment="Stretch" Grid.Row="1" Margin="5"/>
         <editorviews:EditorNavigatorView Grid.Row="2" Margin="5"/>
+        -->
+        <!--
+        <Button Grid.Row="0" Command="{Binding IncreaseCommand}" />
+        <TabControl Grid.Row="1" ItemsSource="{Binding ModPackPages1}">
+            <TabControl.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding PageIndex}"/>
+                </DataTemplate>
+            </TabControl.ItemTemplate>
+            <TabControl.ContentTemplate>
+                <DataTemplate DataType="{x:Type datacontainers:ModPackPageViewModel}">
+                    <Grid Grid.Row="0" Margin="0,0,0,5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Group Name:" Grid.Column="0" Margin="0,0,5,0"/>
+                        <Button Command="{Binding AddGroupCommand}" Grid.Row="0" Grid.Column="1" Content="Add Group"/>
+
+                        <TextBox Text="{Binding NewGroupName, UpdateSourceTrigger=PropertyChanged}" Grid.Row="0" Grid.Column="2">
+                            <TextBox.InputBindings>
+                                <KeyBinding Key="Return" Command="{Binding AddGroupCommand}"/>
+                            </TextBox.InputBindings>
+                        </TextBox>
+
+                        <Button Command="{Binding RemoveCommand}" Grid.Row="0" Grid.Column="3" Content="Remove"/>
+                    </Grid>
+                </DataTemplate>
+            </TabControl.ContentTemplate>
+            
+        </TabControl>
+        -->
     </Grid>
 </UserControl>
