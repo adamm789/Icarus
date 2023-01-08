@@ -20,8 +20,10 @@ namespace Icarus.ViewModels.Mods.DataContainers
             IsReadOnly = isReadOnly;
             _userPreferencesService = userPreferencesService;
 
+            /*
             Author = userPreferencesService.DefaultAuthor;
             Url = userPreferencesService.DefaultWebsite;
+            */
         }
 
         public void CopyFrom(ModPack modPack)

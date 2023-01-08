@@ -22,7 +22,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
         public DelegateCommand? RemoveCommand { get; set; }
         public bool IsReadOnly = false;
 
-        public ModPackPageViewModel(ModPackPageViewModel other, int index, ModPackViewModel parent)
+        public ModPackPageViewModel(ModPackPageViewModel other, ModPackViewModel parent)
         {
             _modPackPage = new(other._modPackPage);
             _viewModelService = other._viewModelService;
@@ -67,6 +67,9 @@ namespace Icarus.ViewModels.Mods.DataContainers
             }
         }
 
+        /// <summary>
+        /// The 1-based index of the page
+        /// </summary>
         public int PageIndex
         {
             get { return _modPackPage.PageIndex; }
@@ -179,18 +182,6 @@ namespace Icarus.ViewModels.Mods.DataContainers
                 return false;
             }
             return true;
-        }
-
-        public void UpdateDisplay()
-        {
-            // TODO: If a user copies a modpackpage (from an imported advanced ttmp2) to the currently displayed empty page,
-            // the page is not updated until the user switches pages and then back
-            foreach (var group in ModGroups)
-            {
-                group.UpdateDisplay();
-            }
-            ICollectionView view = CollectionViewSource.GetDefaultView(ModGroups);
-            view.Refresh();
         }
 
         void IDropTarget.DragOver(IDropInfo dropInfo)

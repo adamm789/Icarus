@@ -66,12 +66,13 @@ namespace Icarus.ViewModels.Mods.DataContainers
             }
         }
 
-        public List<int> GetAvailablePageIndices()
+        public List<string> GetAvailablePageIndices()
         {
-            var ret = new List<int>();
-            for (var i = 0; i < ModPackPages.Count + 1; i++)
+            var ret = new List<string>();
+            ret.Add("Metadata");
+            for (var i = 0; i < ModPackPages.Count; i++)
             {
-                ret.Add(i);
+                ret.Add((i + 1).ToString());
             }
 
             return ret;
@@ -123,6 +124,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
         }
 
         // ModPackPageViewModel or ModPackMetaViewModel
+
         INotifyPropertyChanged _displayedViewModel;
         public INotifyPropertyChanged DisplayedViewModel
         {
@@ -131,10 +133,6 @@ namespace Icarus.ViewModels.Mods.DataContainers
             {
                 _displayedViewModel = value;
                 OnPropertyChanged();
-                if (value is not ModPackPageViewModel)
-                {
-                    DisplayedModPackPage = null;
-                }
             }
         }
 
@@ -157,17 +155,21 @@ namespace Icarus.ViewModels.Mods.DataContainers
             get { return _addPageCommand ??= new DelegateCommand(_ => AddPage(), _ => CanAddPage()); }
         }
 
-        ModPackPageViewModel? _displayedModPackPage;
-        public ModPackPageViewModel? DisplayedModPackPage
+        ModPackPageViewModel? _selectedModPackPage;
+        public ModPackPageViewModel? SelectedModPackPage
         {
-            get { return _displayedModPackPage; }
+            get { return _selectedModPackPage; }
             set
             {
-                _displayedModPackPage = value;
+                _selectedModPackPage = value;
                 OnPropertyChanged();
                 if (value != null)
                 {
                     DisplayedViewModel = value;
+                }
+                else
+                {
+                    DisplayedViewModel = ModPackMetaViewModel;
                 }
             }
         }
@@ -190,7 +192,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
             var page = new ModPackPageViewModel(ModPackPages.Count, this, _viewModelService);
 
             AddPage(page);
-            DisplayedModPackPage = page;
+            SelectedModPackPage = page;
             return page;
         }
 
@@ -205,11 +207,8 @@ namespace Icarus.ViewModels.Mods.DataContainers
         {
             ModPack.ModPackPages.Insert(index, packPage.GetModPackPage());
             ModPackPages.Insert(index, packPage);
-            packPage.PageIndex = index;
-            if (DisplayedViewModel is ModPackPageViewModel page)
-            {
-                page.UpdateDisplay();
-            }
+
+            UpdatePageIndices();
         }
 
         public void CopyPage(ModPackPageViewModel page)
@@ -224,24 +223,50 @@ namespace Icarus.ViewModels.Mods.DataContainers
             else {
             */
             // TODO: If last page is empty, set that page to this one
+
+            // TODO: When copying pages, if there are no pack pages, the index starts at 0
             var pageIndex = ModPackPages.Count;
+
+            var p = new ModPackPageViewModel(page, this);
+            p.PropertyChanged += new PropertyChangedEventHandler(OnOptionSelected);
             if (ModPackPages.Count > 0 && ModPackPages[ModPackPages.Count - 1].IsEmpty())
             {
-                pageIndex -= 1;
+                ModPackPages[ModPackPages.Count - 1] = p;
+                p.PageIndex = pageIndex;
+                UpdatePageIndices();
             }
-            var p = new ModPackPageViewModel(page, pageIndex, this);
-            p.PropertyChanged += new PropertyChangedEventHandler(OnOptionSelected);
-
-            InsertPage(p, pageIndex);
+            else
+            {
+                InsertPage(p, pageIndex);
+            }
             //}
         }
 
         public void RemovePage(ModPackPageViewModel packPage)
         {
+            var index = packPage.PageIndex - 1;
             ModPack.ModPackPages.Remove(packPage.GetModPackPage());
             ModPackPages.Remove(packPage);
 
-            PageIndex = packPage.PageIndex - 1;
+            UpdatePageIndices();
+            if (index <= 0 )
+            {
+                SelectedModPackPage = null;
+                DisplayedViewModel = ModPackMetaViewModel;
+            }
+            else
+            {
+                SelectedModPackPage = ModPackPages[index - 1];
+            }
+        }
+
+        protected void UpdatePageIndices()
+        {
+            for (var i = 0; i < ModPackPages.Count; i++)
+            {
+                var page = ModPackPages[i];
+                page.PageIndex = i + 1;
+            }
         }
 
         public bool ArePagesEmpty()
@@ -310,6 +335,8 @@ namespace Icarus.ViewModels.Mods.DataContainers
         public void Reset()
         {
             _logService?.Information($"Clearing mod pack. Removing all pages.");
+            SelectedModPackPage = null;
+            DisplayedViewModel = ModPackMetaViewModel;
             ModPackPages.Clear();
             PageIndex = 0;
         }

@@ -27,8 +27,8 @@ namespace Icarus.ViewModels.Mods.DataContainers.Interfaces
         void Move(ModPackPageViewModel source, ModPackPageViewModel target);
         bool ArePagesEmpty();
 
-        List<int> GetAvailablePageIndices();
-        INotifyPropertyChanged DisplayedViewModel { get; set; }
+        List<string> GetAvailablePageIndices();
+        //INotifyPropertyChanged DisplayedViewModel { get; set; }
         ModOptionViewModel SelectedOption { get; set; }
         void SetMetadata(ModPackMetaViewModel meta);
     }

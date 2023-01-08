@@ -57,10 +57,10 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <ComboBox Grid.Column="0" ItemsSource="{Binding ModPackMetas}" SelectedIndex="{Binding SelectedIndex}"
+            <ComboBox Grid.Column="0" ItemsSource="{Binding ModPacks}" SelectedValue="{Binding SelectedModPack}"
                       IsEnabled="{Binding IsEmpty, Converter={StaticResource InverseBooleanConverter}}">
                 <ComboBox.ItemTemplate>
-                    <DataTemplate DataType="{x:Type datacontainers:ModPackMetaViewModel}">
+                    <DataTemplate>
                         <TextBlock Text="{Binding Name}"/>
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
@@ -76,6 +76,6 @@
                    IsEnabled="{Binding IsEmpty, Converter={StaticResource InverseBooleanConverter}}"/>
             <Button Grid.Column="1" Content="Copy Page" Command="{Binding CopyPageCommand}"/>
         </Grid>
-        <ContentControl Grid.Row="2" Content="{Binding ModPackPage}"/>
+        <ContentControl Grid.Row="2" Content="{Binding DisplayedViewModel}"/>
     </Grid>
 </UserControl>

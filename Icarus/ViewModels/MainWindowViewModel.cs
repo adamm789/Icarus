@@ -94,15 +94,7 @@ namespace Icarus.ViewModels
             if (e.PropertyName == nameof(ImportService.IsImportingAdvanced))
             {
                 var import = sender as ImportService;
-                CanOpenAdvanced = !import.IsImportingAdvanced;
             }
-        }
-
-        bool _canOpenAdvanced = true;
-        public bool CanOpenAdvanced
-        {
-            get { return _canOpenAdvanced; }
-            set { _canOpenAdvanced = value; OnPropertyChanged(); }
         }
 
         public bool CanExport

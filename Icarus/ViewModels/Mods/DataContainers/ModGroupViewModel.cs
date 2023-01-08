@@ -236,16 +236,6 @@ namespace Icarus.ViewModels.Mods.DataContainers
             MoveTo(oldIndex, newIndex);
         }
 
-        public void UpdateDisplay()
-        {
-            ICollectionView view = CollectionViewSource.GetDefaultView(OptionList);
-            view.Refresh();
-            foreach (var option in OptionList)
-            {
-                option.UpdateDisplay();
-            }
-        }
-
         void IDropTarget.DragOver(IDropInfo dropInfo)
         {
             var source = dropInfo.Data;

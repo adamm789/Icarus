@@ -242,13 +242,6 @@ namespace Icarus.ViewModels.Mods.DataContainers
             return mod != null && !ModExists(mod);
         }
 
-        public void UpdateDisplay()
-        {
-            UpdateHeader();
-            ICollectionView view = CollectionViewSource.GetDefaultView(ModViewModels);
-            view.Refresh();
-        }
-
         private bool ModExists(ModViewModel mod)
         {
             foreach (var mm in ModViewModels)
