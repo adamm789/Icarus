@@ -12,8 +12,11 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Forms;
 
@@ -24,36 +27,8 @@ namespace Icarus.ViewModels.Mods.DataContainers
         public ObservableCollection<ModViewModel> SimpleModsList { get; }
 
         Timer _timer = new();
-
         int numCalled = 0;
 
-        int _selectedIndex = 0;
-        public int SelectedIndex
-        {
-            get { return _selectedIndex; }
-            set
-            {
-                _selectedIndex = value;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(SelectedType));
-            }
-        }
-
-        public Type SelectedType
-        {
-            get
-            {
-                return SelectedIndex switch
-                {
-                    1 => typeof(ModelModViewModel),
-                    2 => typeof(MaterialModViewModel),
-                    3 => typeof(TextureModViewModel),
-                    4 => typeof(MetadataModViewModel),
-                    5 => typeof(ReadOnlyModViewModel),
-                    _ => typeof(ModViewModel),
-                };
-            }
-        }
 
         public FilteredModsListViewModel(IModsListViewModel modsListViewModel, ILogService logService) : base(logService)
         {

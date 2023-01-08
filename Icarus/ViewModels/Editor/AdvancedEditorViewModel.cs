@@ -61,15 +61,12 @@ namespace Icarus.ViewModels.Editor
             }
         }
 
-
         ModOptionViewModel? _displayedOption;
         public ModOptionViewModel? DisplayedOption
         {
             get { return _displayedOption; }
             set { _displayedOption = value; OnPropertyChanged(); }
         }
-
-
 
         int _selectedTabIndex = 0;
         public int SelectedTabIndex

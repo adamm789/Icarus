@@ -42,7 +42,7 @@
         <xtk1:WatermarkTextBox Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}"
                                Watermark="Filter mods" AcceptsReturn="False" Grid.Row="0" Grid.Column="1"/>
 
-        <TabControl Grid.Row="1" Grid.ColumnSpan="2" SelectedIndex="{Binding SelectedIndex}">
+        <TabControl Grid.Row="1" Grid.ColumnSpan="2">
             <TabItem DataContext="{Binding AllMods}" Header="{Binding Header}">
                 <ListView ItemsSource="{Binding ModsList}"/>
             </TabItem>

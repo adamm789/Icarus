@@ -603,12 +603,22 @@ namespace ItemDatabase
 
         private int GetPart(EquipmentSlot slot)
         {
+            // TODO: I have no idea if the accessories are even like this...
             switch (slot)
             {
-                case EquipmentSlot.Head: return 0;
-                case EquipmentSlot.Body: return 1;
-                case EquipmentSlot.Hands: return 2;
-                case EquipmentSlot.Legs: return 3;
+                case EquipmentSlot.Head:
+                case EquipmentSlot.Ears:
+                    return 0;
+                case EquipmentSlot.Body:
+                case EquipmentSlot.Neck:
+                    return 1;
+                case EquipmentSlot.Hands:
+                case EquipmentSlot.Wrists:
+                    return 2;
+                case EquipmentSlot.Legs:
+                case EquipmentSlot.RightRing:
+                    return 3;
+                case EquipmentSlot.LeftRing:
                 case EquipmentSlot.Feet: return 4;
 
                 default: return 0;
