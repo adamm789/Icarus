@@ -27,7 +27,6 @@ namespace Icarus.ViewModels.Mods.DataContainers.Interfaces
         void Move(ModPackPageViewModel source, ModPackPageViewModel target);
         bool ArePagesEmpty();
 
-        void IncreasePageIndex();
         List<int> GetAvailablePageIndices();
         INotifyPropertyChanged DisplayedViewModel { get; set; }
         ModOptionViewModel SelectedOption { get; set; }
