@@ -1,0 +1,68 @@
+﻿<Window x:Class="Icarus.Views.Items.VanillaFileWindow"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Icarus.Views.Items"
+             xmlns:items="clr-namespace:Icarus.ViewModels.Items"
+             xmlns:files="clr-namespace:Icarus.Mods.GameFiles"
+             xmlns:ui="clr-namespace:Icarus.UI"
+             d:DataContext="{d:DesignInstance Type=items:VanillaFileViewModel}"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             Height="500" Width="800" FontSize="14">
+    <ScrollViewer>
+        <StackPanel>
+            <StackPanel.Resources>
+                <Style TargetType="{x:Type TextBlock}">
+                    <Setter Property="Margin" Value="5"/>
+                </Style>
+                <Style TargetType="{x:Type TextBox}">
+                    <Setter Property="IsReadOnly" Value="True"/>
+                </Style>
+                <DataTemplate DataType="{x:Type files:ModelGameFile}">
+                    <StackPanel Orientation="Horizontal">
+                        <ui:ClickSelectTextBox Text="{Binding Path}" FontSize="14"/>
+                    </StackPanel>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type files:MaterialGameFile}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding Name}"/>
+                    </StackPanel>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type files:TextureGameFile}">
+                    <TextBox Text="{Binding Path}" IsReadOnly="True"/>
+                </DataTemplate>
+            </StackPanel.Resources>
+            <ui:ScrollListView ItemsSource="{Binding ModelFiles}"/>
+            <ui:ScrollListView ItemsSource="{Binding Materials}" HorizontalContentAlignment="Stretch">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Border BorderBrush="Black" BorderThickness="1" Margin="5">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Text="{Binding MaterialId, StringFormat={} Material Set {0}}" Margin="0 0 5 0"/>
+                                <StackPanel Grid.Column="1">
+                                    <ui:ClickSelectTextBox Text="{Binding Path}" IsReadOnly="True" FontSize="14"/>
+                                    <ListBox ItemsSource="{Binding Textures}">
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <ui:ClickSelectTextBox Text="{Binding Mode=OneWay}" Padding="5"/>
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+                                    </ListBox>
+                                    <ui:ScrollListView ItemsSource="{Binding Names}"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ui:ScrollListView>
+            <ui:ScrollListView ItemsSource="{Binding TextureFiles}"/>
+        </StackPanel>
+    </ScrollViewer>
+</Window>

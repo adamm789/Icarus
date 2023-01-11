@@ -15,6 +15,7 @@ using ItemDatabase.Interfaces;
 using Icarus.ViewModels.Util;
 using ItemDatabase.Paths;
 using Icarus.Mods.GameFiles;
+using System.Collections.Immutable;
 
 namespace Icarus.ViewModels.Import
 {
@@ -52,6 +53,13 @@ namespace Icarus.ViewModels.Import
                 OnPropertyChanged(nameof(HasOneMaterial));
                 OnPropertyChanged(nameof(HasMoreThanOneMaterial));
             }
+        }
+
+        Dictionary<string, List<IMaterialGameFile>>? _materialsDict;
+        public Dictionary<string, List<IMaterialGameFile>>? MaterialsDict
+        {
+            get { return _materialsDict; }
+            set { _materialsDict = value;  OnPropertyChanged(); }
         }
 
         IMaterialGameFile? _selectedMaterialFile;
@@ -140,9 +148,16 @@ namespace Icarus.ViewModels.Import
         public override async Task SetItem(IItem? item)
         {
             await base.SetItem(item);
-            MaterialFiles = await _materialFileService.GetMaterialSet(item);
-            if (MaterialFiles != null)
+            MaterialsDict = await _materialFileService.GetMaterialSetsDict(item);
+            if (MaterialsDict != null)
             {
+                var newFiles = new List<IMaterialGameFile>();
+                foreach (var kvp in MaterialsDict)
+                {
+                    var material = kvp.Value.First();
+                    newFiles.Add(material);
+                }
+                MaterialFiles = newFiles;
                 if (item is IGear gear)
                 {
                     SelectedMaterialFile = MaterialFiles.FirstOrDefault(m => m.MaterialSet == gear.MaterialId);
@@ -151,6 +166,10 @@ namespace Icarus.ViewModels.Import
                 {
                     SelectedMaterialFile = MaterialFiles[0];
                 }
+            }
+            else
+            {
+                MaterialFiles = null;
             }
 
             CanImport = MaterialFiles != null;

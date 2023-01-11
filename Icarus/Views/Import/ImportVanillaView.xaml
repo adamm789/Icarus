@@ -25,8 +25,9 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <TextBox Grid.Column="0" Text="{Binding SelectedItemName}" IsReadOnly="True" HorizontalContentAlignment="Center"/>
-            <Button Grid.Column="1" Content="View"/>
+            <Button Grid.Column="1" Content="Info" Command="{Binding OpenInformationCommand}"/>
         </Grid>
+        <!-- Models -->
         <ContentControl Content="{Binding ImportVanillaModelViewModel}">
             <ContentControl.Resources>
                 <DataTemplate DataType="{x:Type vm:ImportVanillaModelViewModel}">
@@ -47,6 +48,7 @@
             </ContentControl.Resources>
         </ContentControl>
 
+        <!-- Materials -->
         <ContentControl Content="{Binding ImportVanillaMaterialViewModel}">
             <ContentControl.Resources>
                 <DataTemplate DataType="{x:Type import:ImportVanillaMaterialViewModel}">
@@ -60,11 +62,7 @@
                                   SelectedValue="{Binding SelectedMaterialFile}" Grid.Column="0">
                                 <ComboBox.Resources>
                                     <DataTemplate DataType="{x:Type gamefiles:MaterialGameFile}">
-                                        <TextBlock>
-                                            <Run Text="{Binding Name}"/>
-                                            <Run Text="-"/>
-                                            <Run Text="{Binding Variant}"/>
-                                        </TextBlock>
+                                        <TextBlock Text="{Binding Path}"/>
                                     </DataTemplate>
                                 </ComboBox.Resources>
                             </ComboBox>

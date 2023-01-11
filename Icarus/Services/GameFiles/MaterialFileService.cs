@@ -3,28 +3,18 @@ using Icarus.Mods.Interfaces;
 using Icarus.Services.GameFiles.Interfaces;
 using Icarus.Services.Interfaces;
 using Icarus.Util.Extensions;
-using ItemDatabase.Characters;
 using ItemDatabase.Interfaces;
 using ItemDatabase.Paths;
 using Lumina.Data.Files;
-using Lumina.Data.Parsing;
 using Lumina.Models.Models;
-using SharpDX;
-using SharpDX.DirectWrite;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Shapes;
-using xivModdingFramework.Cache;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Materials.DataContainers;
 using xivModdingFramework.Materials.FileTypes;
-using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Models.FileTypes;
-using xivModdingFramework.Models.ModelTextures;
 
 namespace Icarus.Services.GameFiles
 {
@@ -123,6 +113,108 @@ namespace Icarus.Services.GameFiles
             {
                 _logService.Error(ex, "Exception caught while getting Material File Data.");
             }
+            return null;
+        }
+
+        public async Task<Dictionary<string, List<IMaterialGameFile>>?> GetMaterialSetsDict(IItem? itemArg = null)
+        {
+            var item = GetItem(itemArg);
+            if (item == null) return null;
+            var mdlPath = item.GetMdlPath();
+            var mdl = new Mdl(_frameworkGameDirectory, XivPathParser.GetXivDataFileFromPath(mdlPath));
+
+            var category = XivPathParser.GetCategoryFromPath(mdlPath);
+            SortedDictionary<string, SortedList<string, IMaterialGameFile>> sortedDict = new();
+            try
+            {
+                if (item is IGear gear)
+                {
+                    var sharedModels = _itemListService.GetSharedModels(gear);
+                    if (sharedModels == null) return null;
+                    foreach (var m in sharedModels)
+                    {
+                        var races = _modelFileService.GetAllRaceMdls(m);
+                        var race = XivRace.Hyur_Midlander_Male;
+                        if (races.Count > 0)
+                        {
+                            race = races[0];
+                        }
+                        var includeSkin = XivPathParser.IsSmallClothesOrEmperorSeries(m.GetMdlPath(race));
+                        var paths = await mdl.GetReferencedMaterialPaths(m.GetMdlPath(race), m.MaterialId, includeSkin: includeSkin);
+
+                        foreach (var path in paths)
+                        {
+                            var xivMtrl = await _mtrl.GetMtrlData(path);
+
+                            if (xivMtrl == null) continue;
+                            var mat = new MaterialGameFile()
+                            {
+                                Name = m.Name,
+                                Path = path,
+                                XivMtrl = xivMtrl,
+                                Category = category,
+                                MaterialSet = m.MaterialId,
+                                Variant = XivPathParser.GetMtrlVariant(path)
+                            };
+                            if (mat == null) continue;
+
+
+                            if (!sortedDict.ContainsKey(path))
+                            {
+                                sortedDict[path] = new();
+                            }
+
+                            sortedDict[path].Add(mat.Name, mat);
+                        }
+                    }
+                    var ret = new Dictionary<string, List<IMaterialGameFile>>();
+                    foreach (var kvp in sortedDict)
+                    {
+                        ret.Add(kvp.Key, new List<IMaterialGameFile>(kvp.Value.Values));
+                    }
+                    return ret;
+                }
+                else
+                {
+                    var model = await mdl.GetModel(mdlPath, true);
+                    var ret = new Dictionary<string, List<IMaterialGameFile>>();
+                    if (model == null)
+                    {
+                        return null;
+                    }
+                    foreach (var path in model.Materials)
+                    {
+                        var xivMtrl = await _mtrl.GetMtrlData(path);
+                        if (xivMtrl == null) continue;
+
+                        if (!ret.ContainsKey(path))
+                        {
+                            ret[path] = new();
+                        }
+                        var materialSet = XivPathParser.GetMtrlSetVariant(path);
+
+                        var mat = new MaterialGameFile()
+                        {
+                            Name = item.Name,
+                            Path = path,
+                            XivMtrl = xivMtrl,
+                            Category = category,
+                            MaterialSet = materialSet,
+                            Variant = XivPathParser.GetMtrlVariant(path)
+                        };
+                        if (mat != null)
+                        {
+                            ret[path].Add(mat);
+                        }
+                    }
+                    return ret;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logService.Error(ex, $"Getting material set for {item.Name} threw an exception");
+            }
+
             return null;
         }
 

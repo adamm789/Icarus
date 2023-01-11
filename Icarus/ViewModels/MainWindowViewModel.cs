@@ -58,7 +58,7 @@ namespace Icarus.ViewModels
             ModPackListViewModel = new ModPackListViewModel(ModPackViewModel, viewModelService, logService);
 
             ItemListViewModel = new(itemListService, logService);
-            ImportVanillaViewModel = new(ModPackViewModel.ModsListViewModel, ItemListViewModel, ServiceManager.GetRequiredService<VanillaFileService>(), logService);
+            ImportVanillaViewModel = new(ModPackViewModel.ModsListViewModel, ItemListViewModel, ServiceManager.GetRequiredService<VanillaFileService>(), _windowService, logService);
 
             ExportViewModel = new(ModPackViewModel.ModsListViewModel, _messageBoxService, _exportService, ServiceManager.GetRequiredService<IWindowService>(), logService);
             //var importModsListViewModel = new ImportModsListViewModel(ModPackViewModel.ModsListViewModel, logService);

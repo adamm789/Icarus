@@ -11,6 +11,7 @@ namespace Icarus.Services.GameFiles.Interfaces
     public interface IMaterialFileService : IGameFileService
     {
         Task<IMaterialGameFile?> GetMaterialFileData(IItem? item, int materialSet = 1);
+        Task<Dictionary<string, List<IMaterialGameFile>>?> GetMaterialSetsDict(IItem? itemArg = null);
         Task<List<IMaterialGameFile>?> GetMaterialSet(IItem? itemArg = null);
 
         Task<IMaterialGameFile?> TryGetMaterialFileData(string path, string name = "");
