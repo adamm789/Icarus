@@ -70,14 +70,6 @@ namespace Icarus.ViewModels.Export
 
         protected override void UpdateText()
         {
-            /*
-            var selectedTypeList = _modsListViewModel.SimpleModsList.Where(m => _selectedType.IsInstanceOfType(m));
-            var numSelected = selectedTypeList.Where(m => m.ShouldExport).Count();
-
-            ConfirmText = $"Export {_modsListViewModel.SimpleModsList.Where(m => m.ShouldExport).Count()}/{_modsListViewModel.SimpleModsList.Count} mods";
-
-            base.UpdateText(numSelected, selectedTypeList.Count());
-            */
             ConfirmText = $"Export {FilteredMods.AllMods.NumSelected}/{FilteredMods.AllMods.TotalNum} mods";
             UpdateAllText();
         }
