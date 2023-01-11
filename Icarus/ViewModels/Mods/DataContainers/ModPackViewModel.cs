@@ -46,7 +46,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
             ModsListViewModel.SimpleModsList.CollectionChanged += new NotifyCollectionChangedEventHandler(OnCollectionChanged);
             foreach (var page in ModPack.ModPackPages)
             {
-                var packPage = new ModPackPageViewModel(page, this, _viewModelService, IsReadOnly);
+                var packPage = new ModPackPageViewModel(page, this, _viewModelService, _logService, IsReadOnly);
                 packPage.PropertyChanged += new(OnOptionSelected);
                 ModPackPages.Add(packPage);
             }
@@ -101,18 +101,6 @@ namespace Icarus.ViewModels.Mods.DataContainers
         public void AddRange(IEnumerable<ModViewModel> mods)
         {
             ModsListViewModel.AddRange(mods);
-        }
-
-        // TODO: Debug page index
-        int _pageIndex = 0;
-        public int PageIndex
-        {
-            get { return _pageIndex; }
-            set
-            {
-                _pageIndex = value;
-                OnPropertyChanged();
-            }
         }
 
         // Used to disable "Previous Page" on the mod meta page
@@ -189,7 +177,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
 
         public ModPackPageViewModel AddPage()
         {
-            var page = new ModPackPageViewModel(ModPackPages.Count, this, _viewModelService);
+            var page = new ModPackPageViewModel(ModPackPages.Count, this, _viewModelService, _logService);
 
             AddPage(page);
             SelectedModPackPage = page;
@@ -227,9 +215,9 @@ namespace Icarus.ViewModels.Mods.DataContainers
             // TODO: When copying pages, if there are no pack pages, the index starts at 0
             var pageIndex = ModPackPages.Count;
 
-            var p = new ModPackPageViewModel(page, this);
+            var p = new ModPackPageViewModel(page, this, _logService);
             p.PropertyChanged += new PropertyChangedEventHandler(OnOptionSelected);
-            if (ModPackPages.Count > 0 && ModPackPages[ModPackPages.Count - 1].IsEmpty())
+            if (ModPackPages.Count > 0 && ModPackPages[ModPackPages.Count - 1].HasZeroOptions)
             {
                 ModPackPages[ModPackPages.Count - 1] = p;
                 p.PageIndex = pageIndex;
@@ -284,23 +272,30 @@ namespace Icarus.ViewModels.Mods.DataContainers
 
         public void Move(ModPackPageViewModel source, ModPackPageViewModel target)
         {
+            if (source.HasZeroOptions || target.HasZeroOptions)
+            {
+                _logService?.Debug($"Trying to move an empty pack page.");
+                return;
+            }
             // TODO: More error checks?
             var sourceIndex = ModPackPages.IndexOf(source);
             var targetIndex = ModPackPages.IndexOf(target);
 
+            _logService?.Debug($"Moving page index {sourceIndex} to page index {targetIndex}.");
+
             ModPackPages.Move(sourceIndex, targetIndex);
             ModPack.MovePage(sourceIndex, targetIndex);
 
+            source.PageIndex = targetIndex + 1;
+            target.PageIndex = sourceIndex + 1;
+
             // Change to new page index if it has moved
+            /**
             if (PageIndex == sourceIndex + 1)
             {
                 PageIndex = targetIndex + 1;
             }
-        }
-
-        private void DecreasePageIndex()
-        {
-            PageIndex--;
+            */
         }
 
         private void RemoveModViewModel(ModViewModel mod)
@@ -338,7 +333,6 @@ namespace Icarus.ViewModels.Mods.DataContainers
             SelectedModPackPage = null;
             DisplayedViewModel = ModPackMetaViewModel;
             ModPackPages.Clear();
-            PageIndex = 0;
         }
 
         // TODO: DragDrop for ModPack
@@ -346,7 +340,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
         {
             var source = dropInfo.Data;
             var target = dropInfo.TargetItem;
-            if (source is ModPackPageViewModel && target is ModPackPageViewModel)
+            if (source is ModPackPageViewModel sourcePage && target is ModPackPageViewModel && !sourcePage.HasZeroOptions)
             {
                 dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
                 dropInfo.Effects = DragDropEffects.Copy;

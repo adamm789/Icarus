@@ -11,10 +11,12 @@ using System.Windows;
 using Serilog;
 using System.Windows.Data;
 using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
+using System.Collections.Specialized;
+using Icarus.Services.Interfaces;
 
 namespace Icarus.ViewModels.Mods.DataContainers
 {
-    public class ModPackPageViewModel : NotifyPropertyChanged, IDropTarget
+    public class ModPackPageViewModel : ViewModelBase, IDropTarget
     {
         protected ModPackPage _modPackPage;
         readonly ViewModelService _viewModelService;
@@ -22,7 +24,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
         public DelegateCommand? RemoveCommand { get; set; }
         public bool IsReadOnly = false;
 
-        public ModPackPageViewModel(ModPackPageViewModel other, ModPackViewModel parent)
+        public ModPackPageViewModel(ModPackPageViewModel other, ModPackViewModel parent, ILogService logService) : base(logService)
         {
             _modPackPage = new(other._modPackPage);
             _viewModelService = other._viewModelService;
@@ -34,14 +36,14 @@ namespace Icarus.ViewModels.Mods.DataContainers
             }
         }
 
-        public ModPackPageViewModel(int index, ModPackViewModel parent, ViewModelService viewModelService)
+        public ModPackPageViewModel(int index, ModPackViewModel parent, ViewModelService viewModelService, ILogService logService) : base(logService)
         {
             _modPackPage = new(index + 1);
             _viewModelService = viewModelService;
             RemoveCommand = new(o => parent.RemovePage(this));
         }
 
-        public ModPackPageViewModel(ModPackPage page, ModPackViewModel parent, ViewModelService viewModelService, bool isReadOnly = false)
+        public ModPackPageViewModel(ModPackPage page, ModPackViewModel parent, ViewModelService viewModelService, ILogService logService, bool isReadOnly = false) : base(logService)
         {
             _modPackPage = new(page);
             _viewModelService = viewModelService;
@@ -142,10 +144,31 @@ namespace Icarus.ViewModels.Mods.DataContainers
                 NewGroupName = NewGroupName.Trim();
                 var vm = new ModGroupViewModel(NewGroupName, this, _viewModelService, IsReadOnly);
 
+                var eh = new NotifyCollectionChangedEventHandler(OnGroupCollectionChanged);
+                vm.OptionList.CollectionChanged += eh;
+                _groupEventHandler.Add(vm, eh);
                 AddGroup(vm);
                 NewGroupName = string.Empty;
             }
         }
+
+        int _numOptions = 0;
+
+        private void OnGroupCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems != null)
+            {
+                _numOptions += e.NewItems.Count;
+            }
+            if (e.Action == NotifyCollectionChangedAction.Remove && e.OldItems != null)
+            {
+                _numOptions -= e.OldItems.Count;
+            }
+
+            HasZeroOptions = _numOptions == 0;
+        }
+
+        private Dictionary<ModGroupViewModel, NotifyCollectionChangedEventHandler> _groupEventHandler = new();
 
         public ModPackPage GetModPackPage()
         {
@@ -164,6 +187,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
         {
             if (oldIndex < 0 || oldIndex > ModGroups.Count || newIndex < 0 || newIndex > ModGroups.Count)
             {
+                _logService?.Debug($"Invalid oldIndex: {oldIndex} - newIndex: {newIndex}");
                 return;
             }
 
@@ -182,6 +206,24 @@ namespace Icarus.ViewModels.Mods.DataContainers
                 return false;
             }
             return true;
+        }
+
+        bool _hasZeroOptions = true;
+        public bool HasZeroOptions
+        {
+            get { return _hasZeroOptions; }
+            set { _hasZeroOptions = value; OnPropertyChanged(); }
+        }
+
+
+        public int GetNumMods()
+        {
+            var ret = 0;
+            foreach (var group in ModGroups)
+            {
+                ret += group.OptionList.Count;
+            }
+            return ret;
         }
 
         void IDropTarget.DragOver(IDropInfo dropInfo)
