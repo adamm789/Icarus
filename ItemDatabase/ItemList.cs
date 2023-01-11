@@ -36,9 +36,18 @@ namespace ItemDatabase
         public ItemTreeNode CreateList()
         {
             _root = new ItemTreeNode(("ROOT", null));
-            _root.AddChild(CreateItems());
-            _root.AddChild(CreateCharacterLoop());
-            _root.AddChild(CreateFurniture());
+            Log.Debug($"Starting list.");
+            
+            var items = CreateItems();
+            var character = CreateCharacterLoop();
+            var furniture = CreateFurniture();
+
+            _root.AddChild(items);
+            _root.AddChild(character);
+
+            if (furniture != null) _root.AddChild(furniture);
+
+            Log.Debug("Ending list");
             return _root;
         }
 
@@ -546,50 +555,59 @@ namespace ItemDatabase
             return null;
         }
 
-        public ITreeNode<(string Header, IItem? Item)> CreateFurniture()
+        public ITreeNode<(string Header, IItem? Item)>? CreateFurniture()
         {
             Log.Debug($"Adding Housing Furniture");
-            var ret = new ItemTreeNode(("Indoor Furniture", null));
-            var furniture = _lumina.GetExcelSheet<HousingFurniture>();
-
-            var furnishings = new ItemTreeNode(("Indoor Furnishings", null));
-            var tables = new ItemTreeNode(("Tables", null));
-            var tabletop = new ItemTreeNode(("Tabletop", null));
-            var wallMounted = new ItemTreeNode(("Wall-mounted", null));
-            var rugs = new ItemTreeNode(("Rugs", null));
-
-            foreach (var f in furniture)
+            try
             {
-                var item = new IndoorFurniture(f);
-                if (String.IsNullOrWhiteSpace(item.Name)) continue;
-                switch (f.HousingItemCategory)
+                var ret = new ItemTreeNode(("Indoor Furniture", null));
+                var furniture = _lumina.GetExcelSheet<HousingFurniture>();
+
+                var furnishings = new ItemTreeNode(("Indoor Furnishings", null));
+                var tables = new ItemTreeNode(("Tables", null));
+                var tabletop = new ItemTreeNode(("Tabletop", null));
+                var wallMounted = new ItemTreeNode(("Wall-mounted", null));
+                var rugs = new ItemTreeNode(("Rugs", null));
+
+                foreach (var f in furniture)
                 {
-                    case 12:
-                        furnishings.AddChild(item);
-                        break;
-                    case 13:
-                        tables.AddChild(item);
-                        break;
-                    case 14:
-                        tabletop.AddChild(item);
-                        break;
-                    case 15:
-                        wallMounted.AddChild(item);
-                        break;
-                    case 16:
-                        rugs.AddChild(item);
-                        break;
-                    default:
-                        Log.Debug($"Could not get category for {item.Name}");
-                        break;
+                    var item = new IndoorFurniture(f);
+                    if (String.IsNullOrWhiteSpace(item.Name)) continue;
+                    switch (f.HousingItemCategory)
+                    {
+                        case 12:
+                            furnishings.AddChild(item);
+                            break;
+                        case 13:
+                            tables.AddChild(item);
+                            break;
+                        case 14:
+                            tabletop.AddChild(item);
+                            break;
+                        case 15:
+                            wallMounted.AddChild(item);
+                            break;
+                        case 16:
+                            rugs.AddChild(item);
+                            break;
+                        default:
+                            Log.Debug($"Could not get category for {item.Name}");
+                            break;
+                    }
                 }
+                ret.AddChild(furnishings);
+                ret.AddChild(tables);
+                ret.AddChild(tabletop);
+                ret.AddChild(wallMounted);
+                ret.AddChild(rugs);
+                return ret;
             }
-            ret.AddChild(furnishings);
-            ret.AddChild(tables);
-            ret.AddChild(tabletop);
-            ret.AddChild(wallMounted);
-            ret.AddChild(rugs);
-            return ret;
+            catch (Exception ex)
+            {
+                Log.Debug($"Could not add housing furniture.");
+                Log.Error(ex.Message);
+            }
+            return null;
         }
 
         public List<IGear>? GetSharedModels(IGear gear)
@@ -625,27 +643,6 @@ namespace ItemDatabase
             }
         }
 
-        /*
-        private void AddEquipment(IGear gear)
-        {
-            var slot = gear.Slot;
-            if (EquipmentSlot.Ring.HasFlag(slot))
-            {
-                slot = EquipmentSlot.Ring;
-            }
-            if (!_allItems[slot.ToString()].ContainsKey(gear.Name))
-            {
-                // TODO: "An item with the same key has already been added. Key: [Valentione Emissary's Boots, ItemDatabase.Equipment]"
-                _allItems[slot.ToString()].Add(gear.Name, gear);
-            }
-            if (!_gear.ContainsKey(slot.ToString()))
-            {
-                _gear[slot.ToString()] = new();
-            }
-            _gear[slot.ToString()].Add(gear.Name, gear);
-
-        }
-        */
         public bool Contains(string str)
         {
             var results = Search(str, false);
@@ -718,42 +715,9 @@ namespace ItemDatabase
             }
             else
             {
-                pred = i => i.Name.Contains(str, StringComparison.OrdinalIgnoreCase);
+                pred = i => i.IsMatch(str);
             }
             var ret = Search(_root, pred);
-
-            /*
-            foreach (var entry in _allItems.Values)
-            {
-                foreach (var item in entry)
-                {
-                    if (item.Value.IsMatch(str))
-                    {
-                        if (exactMatch)
-                        {
-                            if (item.Value.Name == str)
-                            {
-                                ret.Add(item.Value);
-                                break;
-                            }
-                        }
-                        else
-                        {
-                            ret.Add(item.Value);
-                        }
-                    }
-                }
-            }
-
-            // Include furniture?
-            foreach (var furniture in _indoorFurniture)
-            {
-                if (furniture.Value.IsMatch(str))
-                {
-                    ret.Add(furniture.Value);
-                }
-            }
-            */
             return ret;
         }
 

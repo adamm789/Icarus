@@ -150,7 +150,7 @@ namespace ItemDatabase.Paths
 
         public static string ChangeTexVariant(string path, string variant = "")
         {
-            var texVariantRegex = new Regex(@"(_[a-z]+)_[n,m,s,d].tex$");
+            var texVariantRegex = new Regex(@"([_]*[a-z]*)_[n,m,s,d].tex$");
 
             if (texVariantRegex.IsMatch(path))
             {
