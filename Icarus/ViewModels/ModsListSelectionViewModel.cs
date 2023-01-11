@@ -40,6 +40,8 @@ namespace Icarus.ViewModels
             UpdateAllText();
         }
 
+        // TODO: "AreModels" to toggle visibility of the option to select all?
+
         bool _allModels = true;
         public bool AllModels
         {
@@ -54,7 +56,7 @@ namespace Icarus.ViewModels
             }
         }
 
-        string _allModelsText;
+        string _allModelsText = "All Model Mods";
         public string AllModelsText
         {
             get { return _allModelsText; }
@@ -75,13 +77,6 @@ namespace Icarus.ViewModels
             }
         }
 
-        string _allMaterialsText;
-        public string AllMaterialsText
-        {
-            get { return _allMaterialsText; }
-            set { _allMaterialsText = value; OnPropertyChanged(); }
-        }
-
         bool _allTextures = true;
         public bool AllTextures
         {
@@ -95,6 +90,20 @@ namespace Icarus.ViewModels
                 OnPropertyChanged(nameof(AllTexturesText));
 
             }
+        }
+
+        string _allTexturesText = "All Texture Mods";
+        public string AllTexturesText
+        {
+            get { return _allTexturesText; }
+            set { _allTexturesText = value; OnPropertyChanged(); }
+        }
+
+        string _allMaterialsText = "All Material Mods";
+        public string AllMaterialsText
+        {
+            get { return _allMaterialsText; }
+            set { _allMaterialsText = value; OnPropertyChanged(); }
         }
 
         bool _allMetadata = true;
@@ -111,7 +120,7 @@ namespace Icarus.ViewModels
             }
         }
 
-        string _allMetadataText;
+        string _allMetadataText = "All Metadata Mods";
         public string AllMetadataText
         {
             get { return _allMetadataText; }
@@ -132,7 +141,7 @@ namespace Icarus.ViewModels
             }
         }
 
-        string _allReadOnlyText;
+        string _allReadOnlyText = "All ReadOnly Mods";
         public string AllReadOnlyText
         {
             get { return _allReadOnlyText; }
@@ -152,26 +161,6 @@ namespace Icarus.ViewModels
             OnPropertyChanged(nameof(AllTextures));
             OnPropertyChanged(nameof(AllMetadata));
             OnPropertyChanged(nameof(AllMetadata));
-            /*
-            UpdateText(ref _allModelsText, typeof(ModelModViewModel));
-            UpdateText(ref _allMaterialsText, typeof(MaterialModViewModel));
-            UpdateText(ref _allTexturesText, typeof(TextureModViewModel));
-            UpdateText(ref _allMetadataText, typeof(MetadataModViewModel));
-            UpdateText(ref _allReadOnlyText, typeof(ReadOnlyModViewModel));
-
-            OnPropertyChanged(nameof(AllModelsText));
-            OnPropertyChanged(nameof(AllMaterialsText));
-            OnPropertyChanged(nameof(AllTexturesText));
-            OnPropertyChanged(nameof(AllMetadataText));
-            OnPropertyChanged(nameof(AllReadOnlyText));
-            */
-        }
-
-        string _allTexturesText;
-        public string AllTexturesText
-        {
-            get { return _allTexturesText; }
-            set { _allTexturesText = value; OnPropertyChanged(); }
         }
 
         protected string _confirmText = "";
@@ -221,7 +210,7 @@ namespace Icarus.ViewModels
             {
                 verbage = "Unselect";
             }
-            text = $"{verbage} all {typeString} mods";
+            text = $"All {typeString} mods";
         }
 
         protected abstract void OnModsListPropertyChanged(object sender, PropertyChangedEventArgs e);
