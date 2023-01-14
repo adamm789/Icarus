@@ -6,6 +6,7 @@ using Icarus.ViewModels.Util;
 using Serilog;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Data;
@@ -37,6 +38,9 @@ namespace Icarus.ViewModels.Mods.DataContainers
             {
                 SingleSelection = false;
             }
+
+            OptionList.CollectionChanged += new(OnOptionListCollectionChanged);
+            HasZeroOptions = OptionList.Count == 0;
         }
 
         public ModGroupViewModel(string name, ModPackPageViewModel parent, ViewModelService modFileService, bool isReadOnly = false)
@@ -46,7 +50,11 @@ namespace Icarus.ViewModels.Mods.DataContainers
 
             _modGroup = new(name);
             RemoveCommand = new DelegateCommand(o => parent.RemoveGroup(this));
+
+            OptionList.CollectionChanged += new(OnOptionListCollectionChanged);
+            HasZeroOptions = OptionList.Count == 0;
         }
+
         public ModGroupViewModel(ModGroup group, ModPackPageViewModel parent, ViewModelService modFileService, bool isReadOnly = false)
         {
             _modFileService = modFileService;
@@ -63,6 +71,16 @@ namespace Icarus.ViewModels.Mods.DataContainers
                 AddOption(optionViewModel);
             }
             RemoveCommand = new DelegateCommand(o => parent.RemoveGroup(this));
+            OptionList.CollectionChanged += new(OnOptionListCollectionChanged);
+            HasZeroOptions = OptionList.Count == 0;
+        }
+
+        private void OnOptionListCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action != NotifyCollectionChangedAction.Move)
+            {
+                HasZeroOptions = OptionList.Count == 0;
+            }
         }
 
         // TODO: When selecting an option in a different group that was previously selected, the "option tab" does not update
@@ -125,6 +143,13 @@ namespace Icarus.ViewModels.Mods.DataContainers
         {
             get { return _optionList; }
             set { _optionList = value; OnPropertyChanged(); }
+        }
+
+        bool _hasZeroOptions = true;
+        public bool HasZeroOptions
+        {
+            get { return _hasZeroOptions;}
+            set { _hasZeroOptions = value; OnPropertyChanged(); }
         }
 
         public DelegateCommand? RemoveCommand { get; set; }
@@ -246,13 +271,13 @@ namespace Icarus.ViewModels.Mods.DataContainers
                 if (modOption.CanAcceptMod(mod))
                 {
                     dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
-                    dropInfo.Effects = DragDropEffects.Copy;
+                    dropInfo.Effects = DragDropEffects.Move;
                 }
             }
-            else if (source is ModOptionViewModel sourceOption && target is ModOptionViewModel targetOption)
+            else if (source is ModOptionViewModel && target is ModOptionViewModel)
             {
                 dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
-                dropInfo.Effects = DragDropEffects.Copy;
+                dropInfo.Effects = DragDropEffects.Move;
             }
             else if (source is ModOptionViewModel && target is ModGroupViewModel)
             {
@@ -266,10 +291,11 @@ namespace Icarus.ViewModels.Mods.DataContainers
 
         void IDropTarget.Drop(IDropInfo dropInfo)
         {
-            Log.Debug($"Drop onto {GetType()}.");
             // TODO: Multiple drag sources?
             var source = dropInfo.Data;
             var target = dropInfo.TargetItem;
+
+            Log.Debug($"Drop {source} on {target} in {GetType()}");
 
             if (source is ModViewModel mod && target is ModOptionViewModel modOption)
             {

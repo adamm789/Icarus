@@ -13,6 +13,7 @@ using System.Windows.Data;
 using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 using System.Collections.Specialized;
 using Icarus.Services.Interfaces;
+using static Lumina.Data.Parsing.Uld.UldRoot;
 
 namespace Icarus.ViewModels.Mods.DataContainers
 {
@@ -29,11 +30,20 @@ namespace Icarus.ViewModels.Mods.DataContainers
             _modPackPage = new(other._modPackPage);
             _viewModelService = other._viewModelService;
             RemoveCommand = new(o => parent.RemovePage(this));
+            var hasZeroOptions = true;
+
             foreach (var group in other.ModGroups)
             {
                 var newGroup = new ModGroupViewModel(group, this);
                 AddGroup(newGroup);
+                if (!newGroup.HasZeroOptions)
+                {
+                    hasZeroOptions = false;
+                }
             }
+
+            HasZeroOptions = hasZeroOptions;
+            ModGroups.CollectionChanged += new NotifyCollectionChangedEventHandler(OnModGroupCollectionChanged);
         }
 
         public ModPackPageViewModel(int index, ModPackViewModel parent, ViewModelService viewModelService, ILogService logService) : base(logService)
@@ -41,6 +51,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
             _modPackPage = new(index + 1);
             _viewModelService = viewModelService;
             RemoveCommand = new(o => parent.RemovePage(this));
+            ModGroups.CollectionChanged += new NotifyCollectionChangedEventHandler(OnModGroupCollectionChanged);
         }
 
         public ModPackPageViewModel(ModPackPage page, ModPackViewModel parent, ViewModelService viewModelService, ILogService logService, bool isReadOnly = false) : base(logService)
@@ -48,24 +59,43 @@ namespace Icarus.ViewModels.Mods.DataContainers
             _modPackPage = new(page);
             _viewModelService = viewModelService;
             IsReadOnly = isReadOnly;
+            var hasZeroOptions = true;
+
             foreach (var group in page.ModGroups)
             {
-                //var groupViewModel = new ModGroupViewModel(group, gameFileDataService, windowService);
                 var groupViewModel = new ModGroupViewModel(group, this, _viewModelService, IsReadOnly);
                 AddGroup(groupViewModel);
+                if (!groupViewModel.HasZeroOptions)
+                {
+                    hasZeroOptions = false;
+                }
             }
+            HasZeroOptions = hasZeroOptions;
+
+            ModGroups.CollectionChanged += new NotifyCollectionChangedEventHandler(OnModGroupCollectionChanged);
             RemoveCommand = new(o => parent.RemovePage(this));
-            IsReadOnly = isReadOnly;
         }
 
         ModGroupViewModel _previousGroup;
-        private void OnSelectedOption(object sender, PropertyChangedEventArgs e)
+        private void OnModGroupPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (sender is ModGroupViewModel vm && e.PropertyName == nameof(ModGroupViewModel.DisplayedOption) && vm.DisplayedOption != null)
             {
                 if (_previousGroup != null && _previousGroup != vm) _previousGroup.DisplayedOption = null;
                 DisplayedOption = vm.DisplayedOption;
                 _previousGroup = vm;
+            }
+            if (e.PropertyName == nameof(ModGroupViewModel.HasZeroOptions))
+            {
+                foreach (var group in ModGroups)
+                {
+                    if (!group.HasZeroOptions)
+                    {
+                        HasZeroOptions = false;
+                        return;
+                    }
+                }
+                HasZeroOptions = true;
             }
         }
 
@@ -105,16 +135,18 @@ namespace Icarus.ViewModels.Mods.DataContainers
             return vm;
         }
 
-        private Dictionary<ModGroupViewModel, PropertyChangedEventHandler> handlerDict = new();
+        private Dictionary<ModGroupViewModel, PropertyChangedEventHandler> _selectedOptionsDict = new();
 
         public void AddGroup(ModGroupViewModel group)
         {
             ModGroups.Add(group);
             _modPackPage.AddGroup(group.GetGroup());
             group.RemoveCommand = new(o => RemoveGroup(group));
-            var eh = new PropertyChangedEventHandler(OnSelectedOption);
+
+            var eh = new PropertyChangedEventHandler(OnModGroupPropertyChanged);
             group.PropertyChanged += eh;
-            handlerDict.Add(group, eh);
+
+            _selectedOptionsDict.Add(group, eh);
         }
 
         public void RemoveGroup(ModGroupViewModel group)
@@ -122,9 +154,11 @@ namespace Icarus.ViewModels.Mods.DataContainers
             ModGroups.Remove(group);
             _modPackPage.ModGroups.Remove(group.GetGroup());
             group.OnRemove();
-            var eh = handlerDict[group];
+
+            var eh = _selectedOptionsDict[group];
             group.PropertyChanged -= eh;
-            handlerDict.Remove(group);
+
+            _selectedOptionsDict.Remove(group);
         }
 
         public int RemoveMods(List<ModViewModel> mods)
@@ -144,31 +178,18 @@ namespace Icarus.ViewModels.Mods.DataContainers
                 NewGroupName = NewGroupName.Trim();
                 var vm = new ModGroupViewModel(NewGroupName, this, _viewModelService, IsReadOnly);
 
-                var eh = new NotifyCollectionChangedEventHandler(OnGroupCollectionChanged);
-                vm.OptionList.CollectionChanged += eh;
-                _groupEventHandler.Add(vm, eh);
                 AddGroup(vm);
                 NewGroupName = string.Empty;
             }
         }
 
-        int _numOptions = 0;
-
-        private void OnGroupCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private void OnModGroupCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems != null)
+            if (ModGroups.Count == 0)
             {
-                _numOptions += e.NewItems.Count;
+                HasZeroOptions = true;
             }
-            if (e.Action == NotifyCollectionChangedAction.Remove && e.OldItems != null)
-            {
-                _numOptions -= e.OldItems.Count;
-            }
-
-            HasZeroOptions = _numOptions == 0;
         }
-
-        private Dictionary<ModGroupViewModel, NotifyCollectionChangedEventHandler> _groupEventHandler = new();
 
         public ModPackPage GetModPackPage()
         {
@@ -231,15 +252,15 @@ namespace Icarus.ViewModels.Mods.DataContainers
             var source = dropInfo.Data;
             var target = dropInfo.TargetItem;
 
-            if (source is ModOptionViewModel sourceOption && target is ModOptionViewModel targetOption)
+            if (source is ModOptionViewModel && target is ModOptionViewModel)
             {
                 dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
-                dropInfo.Effects = DragDropEffects.Copy;
+                dropInfo.Effects = DragDropEffects.Move;
             }
             else if (source is ModGroupViewModel && target is ModGroupViewModel)
             {
                 dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
-                dropInfo.Effects = DragDropEffects.Copy;
+                dropInfo.Effects = DragDropEffects.Move;
             }
             else if (source is ModGroupViewModel)
             {
@@ -256,7 +277,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
         {
             var source = dropInfo.Data;
             var target = dropInfo.TargetItem;
-            Log.Debug($"Drop {source.GetType()} onto {GetType()}");
+            Log.Debug($"Drop {source} onto {target} in {GetType()}");
             if (target is ModGroupViewModel targetGroup)
             {
                 // TODO: BEtter method for determining if MoveTo should be called
@@ -281,8 +302,16 @@ namespace Icarus.ViewModels.Mods.DataContainers
                     }
                     else
                     {
-                        sourceOption.RemoveCommand.Execute(sourceOption);
-                        targetGroup.AddOption(sourceOption);
+                        if (sourceOption.RemoveCommand != null)
+                        {
+                            sourceOption.RemoveCommand.Execute(sourceOption);
+                            targetGroup.AddOption(sourceOption);
+                        }
+                        else
+                        {
+                            dropInfo.NotHandled = false;
+                            _logService?.Error($"RemoveCommand for option was null.");
+                        }
                     }
                 }
                 else

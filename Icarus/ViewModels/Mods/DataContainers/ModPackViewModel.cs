@@ -286,8 +286,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
             ModPackPages.Move(sourceIndex, targetIndex);
             ModPack.MovePage(sourceIndex, targetIndex);
 
-            source.PageIndex = targetIndex + 1;
-            target.PageIndex = sourceIndex + 1;
+            UpdatePageIndices();
 
             // Change to new page index if it has moved
             /**
@@ -340,18 +339,22 @@ namespace Icarus.ViewModels.Mods.DataContainers
         {
             var source = dropInfo.Data;
             var target = dropInfo.TargetItem;
-            if (source is ModPackPageViewModel sourcePage && target is ModPackPageViewModel && !sourcePage.HasZeroOptions)
+            var targetPage = target as ModPackPageViewModel;
+
+            if (source is ModPackPageViewModel sourcePage && targetPage != null
+                && !sourcePage.HasZeroOptions && !targetPage.HasZeroOptions)
+            {
+                dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
+                dropInfo.Effects = DragDropEffects.Move;
+            }
+            else if (source is ModGroupViewModel group && targetPage !=null)
             {
                 dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
                 dropInfo.Effects = DragDropEffects.Copy;
             }
-            else if (source is ModGroupViewModel)
-            {
-
-            }
             else
             {
-                dropInfo.NotHandled = true;
+                dropInfo.NotHandled = false;
             }
         }
 
@@ -360,10 +363,22 @@ namespace Icarus.ViewModels.Mods.DataContainers
             var source = dropInfo.Data;
             var target = dropInfo.TargetItem;
 
-            _logService?.Debug($"Drop onto {target} from {GetType()}");
-            if (source is ModPackPageViewModel sourcePage && target is ModPackPageViewModel targetPage)
+            var targetPage = target as ModPackPageViewModel;
+
+            _logService?.Debug($"Drop {source} onto {target} in {GetType()}");
+            if (source is ModPackPageViewModel sourcePage && targetPage != null)
             {
                 Move(sourcePage, targetPage);
+            }
+            else if (source is ModGroupViewModel group && targetPage != null)
+            {
+                if (group.RemoveCommand == null)
+                {
+                    _logService?.Error($"RemoveCommand for group is null");
+                    return;
+                }
+                group.RemoveCommand.Execute(group);
+                targetPage.AddGroup(group);
             }
             else
             {

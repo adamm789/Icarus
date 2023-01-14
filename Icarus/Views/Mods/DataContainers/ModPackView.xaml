@@ -44,12 +44,16 @@
                             <Setter.Value>
                                 <ControlTemplate TargetType="{x:Type ListViewItem}">
                                     <Border x:Name="Border">
-                                            <ContentPresenter HorizontalAlignment="Center"/>
+                                        <Grid>
+                                            <Label Background="Red" Visibility="{Binding HasZeroOptions, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                            <TextBlock x:Name="Presenter" Text="{Binding PageIndex}" Padding ="5"/>
+                                        </Grid>
                                     </Border>
                                     <ControlTemplate.Triggers>
                                         <Trigger Property="IsSelected" Value="True">
                                             <Setter TargetName="Border" Property="BorderBrush" Value="Black"/>
                                             <Setter TargetName="Border" Property="BorderThickness" Value="2"/>
+                                            <Setter TargetName="Presenter" Property="FontWeight" Value="Bold"/>
                                         </Trigger>
                                     </ControlTemplate.Triggers>
                                 </ControlTemplate>

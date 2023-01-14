@@ -297,7 +297,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
                 // TODO: Different effects for when they share the same group parent (to change ordering within groups)
                 // or different group parent (to move between groups)
                 dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
-                dropInfo.Effects = DragDropEffects.Copy;
+                dropInfo.Effects = DragDropEffects.Move;
             }
             else
             {
@@ -308,7 +308,8 @@ namespace Icarus.ViewModels.Mods.DataContainers
         void IDropTarget.Drop(IDropInfo dropInfo)
         {
             var dropItem = dropInfo.Data;
-            Log.Debug($"Drop {dropItem.GetType()} onto {GetType()}");
+            var targetItem = dropInfo.TargetItem;
+            Log.Debug($"Drop {dropItem} onto {targetItem} in {GetType()}");
 
             if (dropItem is ModViewModel modViewModel)
             {
