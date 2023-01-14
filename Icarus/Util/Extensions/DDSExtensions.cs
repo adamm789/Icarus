@@ -20,6 +20,15 @@ namespace Icarus.Util.Extensions
 
             int mipLength;
 
+            if (!shouldCompress)
+            {
+                br.BaseStream.Seek(128, SeekOrigin.Begin);
+                var length = br.BaseStream.Length;
+                var bytes = new byte[length - 128];
+                br.Read(bytes);
+                return (bytes.ToList(), mipPartOffsets, mipPartCount);
+            }
+
             switch (format)
             {
                 case XivTexFormat.DXT1:
@@ -72,16 +81,7 @@ namespace Icarus.Util.Extensions
                         }
 
                         var uncompBytes = br.ReadBytes(uncompLength);
-                        byte[] compressed;
-                        if (shouldCompress)
-                        {
-                            compressed = await IOUtil.Compressor(uncompBytes);
-                        }
-                        else
-                        {
-                            compressed = uncompBytes;
-                            comp = false;
-                        }
+                        byte[] compressed = await IOUtil.Compressor(uncompBytes);
 
                         if (compressed.Length > uncompLength)
                         {
@@ -121,16 +121,7 @@ namespace Icarus.Util.Extensions
                     }
 
                     var uncompBytes = br.ReadBytes(uncompLength);
-                    byte[] compressed;
-                    if (shouldCompress)
-                    {
-                        compressed = await IOUtil.Compressor(uncompBytes);
-                    }
-                    else
-                    {
-                        compressed = uncompBytes;
-                        comp = false;
-                    }
+                    byte[] compressed = await IOUtil.Compressor(uncompBytes);
 
                     if (compressed.Length > uncompLength)
                     {

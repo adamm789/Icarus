@@ -1,4 +1,5 @@
-﻿using Serilog;
+﻿using Lumina.Data.Files;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -119,7 +120,6 @@ namespace Icarus.Util.Extensions
             headerData.AddRange(BitConverter.GetBytes((short)1));
             headerData.AddRange(BitConverter.GetBytes((short)newMipCount));
 
-
             headerData.AddRange(BitConverter.GetBytes(0));
             headerData.AddRange(BitConverter.GetBytes(1));
             headerData.AddRange(BitConverter.GetBytes(2));
@@ -223,8 +223,11 @@ namespace Icarus.Util.Extensions
                     {
                         //var DDSInfo = await DDS.ReadDDS(br, texFormat, newWidth, newHeight, newMipCount);
                         var DDSInfo = await DDSExtensions.ReadDDS(br, texFormat, newWidth, newHeight, newMipCount, shouldCompress);
-
-                        newTex.AddRange(DatExtensions.MakeType4DatHeader(texFormat, DDSInfo.mipPartOffsets, DDSInfo.mipPartCounts, (int)uncompressedLength, newMipCount, newWidth, newHeight));
+                        if (shouldCompress)
+                        {
+                            newTex.AddRange(DatExtensions.MakeType4DatHeader(texFormat, DDSInfo.mipPartOffsets, DDSInfo.mipPartCounts, (int)uncompressedLength, newMipCount, newWidth, newHeight));
+                        }
+                        
                         newTex.AddRange(TexExtensions.MakeTextureInfoHeader(texFormat, newWidth, newHeight, newMipCount));
                         newTex.AddRange(DDSInfo.dds);
 
@@ -246,6 +249,7 @@ namespace Icarus.Util.Extensions
             }
             return Array.Empty<byte>();
         }
+
         public static async Task<byte[]> GetImageData(DirectoryInfo gameDirectory, XivTex xivTex, int layer = -1)
         {
             var tex = new Tex(gameDirectory);

@@ -163,11 +163,13 @@ namespace Icarus.Util
 
             _logService.Debug($"Exporting texture: {mod.ModFileName} with forTexTools={forTexTools}");
 
+            /*
             if (!forTexTools)
             {
                 _logService.Error("Unknown export method for Penumbra texture (.tex)");
                 return Array.Empty<byte>();
             }
+            */
 
             var isDds = Path.GetExtension(mod.ModFilePath).ToLower() == ".dds";
             var texFormat = mod.GetTexFormat();
@@ -346,7 +348,6 @@ namespace Icarus.Util
             CheckRaceConversion(mm);
 
             // Removed to be able to use other race's materials
-            //ModelModifiers.FixUpSkinReferences(copy, ogPath, _logService.LoggingFunction);
             ogMdl.MdlPath = ogPath;
             return copy;
         }
