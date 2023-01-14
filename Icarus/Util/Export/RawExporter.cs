@@ -138,6 +138,7 @@ namespace Icarus.Util.Export
                     _logService.Warning($"Material had no colorset. Skipping material.");
                     return;
                 }
+
                 var df = IOUtil.GetDataFileFromPath(xivMtrl.MTRLPath);
                 var ttp = new TexTypePath
                 {
