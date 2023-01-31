@@ -8,7 +8,8 @@
              mc:Ignorable="d" 
              Title="Settings"
              Width="600" Height="250"
-        FontSize="14">
+        FontSize="14"
+        WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>

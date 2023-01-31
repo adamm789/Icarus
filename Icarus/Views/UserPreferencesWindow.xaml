@@ -9,7 +9,8 @@
              d:DataContext="{d:DesignInstance Type=services:UserPreferencesService}"
              mc:Ignorable="d" 
              Width="500" Height="300"
-        FontSize="16">
+        FontSize="16"
+        WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>

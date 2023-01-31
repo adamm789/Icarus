@@ -1,4 +1,6 @@
 ﻿using ItemDatabase.Enums;
+using Lumina;
+using Lumina.Excel;
 using Lumina.Excel.GeneratedSheets;
 using System;
 using System.Collections.Generic;

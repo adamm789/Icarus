@@ -3,18 +3,14 @@ using ItemDatabase.Interfaces;
 using Lumina;
 using Lumina.Data.Files;
 using Lumina.Excel;
-using Lumina.Excel.GeneratedSheets;
 using Lumina.Text;
 using Serilog;
 using xivModdingFramework.General.Enums;
-using xivModdingFramework.SqPack.FileTypes;
 using LuminaItem = Lumina.Excel.GeneratedSheets.Item;
-using Index = xivModdingFramework.SqPack.FileTypes.Index;
-using System.Collections.Immutable;
-using System.Reflection.Emit;
-using ItemDatabase.Lumina;
 using CharaMakeType = ItemDatabase.Lumina.CharaMakeType;
 using ItemDatabase.Characters;
+using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Exceptions;
 
 namespace ItemDatabase
 {
@@ -37,7 +33,7 @@ namespace ItemDatabase
         {
             _root = new ItemTreeNode(("ROOT", null));
             Log.Debug($"Starting list.");
-            
+
             var items = CreateItems();
             var character = CreateCharacterLoop();
             var furniture = CreateFurniture();
@@ -247,6 +243,7 @@ namespace ItemDatabase
                 var faceColumn = -1;
                 var tailColumn = -1;
                 var earColumn = -1;
+                var hairColumn = -1;
 
                 for (var j = 0; j < row.Menu.Length; j++)
                 {
@@ -269,7 +266,7 @@ namespace ItemDatabase
                     }
                     else if (num == 234)
                     {
-                        // hair
+                        hairColumn = j;
                     }
                 }
                 var race = GetXivRace(row.Tribe.Row, row.Gender);
@@ -319,6 +316,11 @@ namespace ItemDatabase
                             earDict[race].Add(ear);
                         }
                     }
+                }
+                if (hairColumn > 0)
+                {
+                    var hairsss = row.SubMenuParam[hairColumn].Where(x => x > 0);
+                    var numHair = row.SubMenuParam[hairColumn].Where(x => x > 0).Count();
                 }
             }
 
@@ -440,7 +442,17 @@ namespace ItemDatabase
         public ITreeNode<(string Header, IItem? Item)> CreateItems()
         {
             var ret = new ItemTreeNode(("Gear", null));
-            var items = _lumina.GetExcelSheet<LuminaItem>();
+            ExcelSheet<LuminaItem> items;
+            try
+            {
+                items = _lumina.GetExcelSheet<LuminaItem>();
+            }
+            catch (ExcelSheetColumnChecksumMismatchException ex)
+            {
+                Log.Error($"Could not add gear.");
+                Log.Error(ex.Message);
+                return ret;
+            }
 
             var dict = new SortedDictionary<string, SortedSet<ITreeNode<(string, IItem?)>>>();
 

@@ -7,7 +7,7 @@
     <UseWPF>true</UseWPF>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <UseWindowsForms>True</UseWindowsForms>
-    <Configurations>Debug;Release;Tests</Configurations>
+    <Configurations>Debug;Release</Configurations>
     <AppDesignerFolder>Properties</AppDesignerFolder>
   </PropertyGroup>
 
@@ -52,21 +52,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.1.0" />
     <PackageReference Include="DotNetProjects.Extended.Wpf.Toolkit" Version="5.0.103">
       <TreatAsUsed>true</TreatAsUsed>
     </PackageReference>
     <PackageReference Include="DotNetZip" Version="1.16.0">
       <TreatAsUsed>true</TreatAsUsed>
     </PackageReference>
-    <PackageReference Include="Extended.Wpf.Toolkit" Version="4.4.0" />
-    <PackageReference Include="gong-wpf-dragdrop" Version="3.2.0" />
-    <PackageReference Include="Lumina" Version="3.10.0">
-      <TreatAsUsed>true</TreatAsUsed>
-    </PackageReference>
-    <PackageReference Include="Lumina.Excel" Version="6.2.1">
-      <TreatAsUsed>true</TreatAsUsed>
-    </PackageReference>
+    <PackageReference Include="Extended.Wpf.Toolkit" Version="4.5.0" />
+    <PackageReference Include="gong-wpf-dragdrop" Version="3.2.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
     <PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
