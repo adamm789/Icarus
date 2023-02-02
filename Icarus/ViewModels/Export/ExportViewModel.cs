@@ -160,7 +160,7 @@ return false;
                 string outputPath = "";
                 var success = false;
                 var numSelected = _modsListViewModel.SimpleModsList.Where(m => m.ShouldExport).Count();
-                if (shouldDelete && numSelected > 0 && info != null)
+                if (shouldDelete && (numSelected > 0 || ExportType.Advanced.HasFlag(type)) && info != null)
                 {
                     try
                     {
@@ -190,7 +190,7 @@ return false;
                         DisplayFailure();
                     }
                 }
-                if (numSelected == 0)
+                if (numSelected == 0 && ExportType.Simple.HasFlag(type))
                 {
                     _logService.Information("Zero mods were selected for export.");
                 }
