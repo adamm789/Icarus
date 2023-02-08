@@ -139,6 +139,7 @@ namespace Icarus.Mods
         {
             // TODO: How do I handle custom texture paths?
             Path = xivMtrl.MTRLPath;
+            Variant = XivPathParser.GetMtrlVariant(Path);
             foreach (var ttp in xivMtrl.TextureTypePathList)
             {
                 switch (ttp.Type)

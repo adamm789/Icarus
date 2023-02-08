@@ -61,10 +61,8 @@ namespace Icarus.Services.GameFiles
                 return null;
             }
 
-            if (String.IsNullOrWhiteSpace(savedPath))
-            {
-                savedPath = XivPathParser.ChangeTexVariant(savedPath, variant);
-            }
+
+            savedPath = XivPathParser.ChangeTexVariant(savedPath, variant);
 
             var retVal = new TextureGameFile()
             {

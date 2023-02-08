@@ -18,6 +18,8 @@ namespace Icarus.Util
 {
     public class PenumbraExporter : Exporter
     {
+        // TODO: Penumbra Metadata export
+        // TODO: Penumbra Advanced ModPack export
         public PenumbraExporter(GameData lumina, ILogService logService) : base(lumina, logService)
         {
 

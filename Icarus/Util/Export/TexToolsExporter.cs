@@ -168,6 +168,7 @@ namespace Icarus.Util
                     }
                     offset += bytes.Length;
                     bw.Write(bytes);
+                    _logService.Debug($"Wrote {bytes.Length} bytes");
                     numModsWritten++;
                 }
             }
