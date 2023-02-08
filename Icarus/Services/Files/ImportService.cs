@@ -30,6 +30,7 @@ using System.Linq;
 using TeximpNet.DDS;
 using xivModdingFramework.Models.FileTypes;
 using Lumina.Data;
+using xivModdingFramework.Materials.FileTypes;
 
 namespace Icarus.Services.Files
 {
@@ -40,8 +41,11 @@ namespace Icarus.Services.Files
         readonly IGameFileService _gameFileDataService;
         readonly ISettingsService _settingsService;
         readonly IModelFileService _modelFileService;
+        readonly IItemListService _itemListService;
 
         TexToolsModPackImporter _ttmpImporter;
+        PenumbraModPackImporter _pmpImporter;
+
         protected Queue<string> _importFileQueue = new();
 
         public ObservableQueue<string> _stringQueue = new();
@@ -49,13 +53,14 @@ namespace Icarus.Services.Files
         ObservableCollection<IcarusModPack> ImportCollection;
 
         public ImportService(IGameFileService gameFileDataService, ISettingsService settingsService, ConverterService converterService, ILogService logService, LuminaService lumina,
-            IModelFileService modelFileService) : base(lumina)
+            IModelFileService modelFileService, IItemListService itemListService) : base(lumina)
         {
             _settingsService = settingsService;
             _logService = logService;
             _converterService = converterService;
             _gameFileDataService = gameFileDataService;
-            _modelFileService = modelFileService;   
+            _modelFileService = modelFileService;
+            _itemListService = itemListService;
         }
 
         protected override void OnLuminaSet()
@@ -63,6 +68,7 @@ namespace Icarus.Services.Files
             var projectDirectory = _settingsService.ProjectDirectory;
             var gamePathFramework = Path.Combine(_settingsService.GameDirectoryLumina, "ffxiv");
             _ttmpImporter = new(projectDirectory, gamePathFramework);
+            _pmpImporter = new(_settingsService.GameDirectoryLumina);
         }
 
         public bool IsImporting
@@ -82,33 +88,42 @@ namespace Icarus.Services.Files
             set { _isImportingAdvanced = value; OnPropertyChanged(); }
         }
 
-        // TODO: enum 
-        public bool IsSimpleModPack(string filePath)
+        public async Task<IcarusModPack> ImportDirectory(string dirPath)
         {
-            var ext = Path.GetExtension(filePath);
-            if (ext == ".ttmp2")
+            var attr = File.GetAttributes(dirPath);
+            if (attr.HasFlag(FileAttributes.Directory))
             {
-                var fileInfo = new FileInfo(filePath);
+                // check for default_mod.json and... group_ .json files
+                var dir = new DirectoryInfo(dirPath);
+                var files = dir.GetFiles();
+                var defaultModJson = files.Where(x => x.Name.Contains("default_mod.json", StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+                var metaJson = files.Where(x => x.Name.Contains("meta.json", StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
 
-                using var zfs = fileInfo.OpenRead();
-                using var zip = ZipFile.Read(zfs);
-                var tempDir = Path.Combine(_settingsService.ProjectDirectory, "temp");
-                Directory.CreateDirectory(tempDir);
-                var dir = new DirectoryInfo(tempDir);
-                string mplPath = dir + "\\ttmpl.mpl";
-                ZipEntry mpl = zip.Entries.First(x => x.FileName.EndsWith(".mpl"));
-                mpl.Extract(tempDir, ExtractExistingFileAction.OverwriteSilently);
-
-                ModPackJson? modPack = JsonConvert.DeserializeObject<ModPackJson>(File.ReadAllText(mplPath));
-                if (modPack == null)
+                if (defaultModJson != null && metaJson != null)
                 {
-                    throw new ArgumentException("Could not get ModPack.");
+                    // TODO: Import penumbra (uncompressed) directory
+                    return new IcarusModPack();
                 }
-                return modPack.SimpleModsList != null;
+                else
+                {
+                    if (defaultModJson == null)
+                    {
+                        _logService.Error($"Could not find default_mod.json in {dirPath}");
+                    }
+                    if (metaJson == null)
+                    {
+                        _logService.Error($"Could not find meta.json in {dirPath}");
+                    }
+
+                    _logService.Error($"Could not import from directory: {dirPath}");
+                    return new IcarusModPack();
+                }
+
             }
             else
             {
-                throw new ArgumentException($"File was not ttmp2.");
+                _logService.Error($"{dirPath} could not be imported as directory.");
+                return new IcarusModPack();
             }
         }
 
@@ -126,26 +141,32 @@ namespace Icarus.Services.Files
             var ext = Path.GetExtension(filePath);
             var retModPack = new IcarusModPack();
             IMod? mod = null;
-            if (ext == ".fbx")
+            switch (ext)
             {
-                mod = await TryImportModel(filePath);
+                case ".fbx":
+                    mod = await TryImportModel(filePath);
+                    break;
+                case ".ttmp2":
+                    retModPack = await TryImportTTModPack(filePath);
+                    break;
+                case ".dds":
+                    mod = await Task.Run(() => TryImportDDS(filePath));
+                    break;
+                case ".png":
+                case ".bmp":
+                    mod = ImportTexture(filePath);
+                    break;
+                case ".pmp":
+                    retModPack = await _pmpImporter.ExtractPenumbraModPack(filePath);
+                    break;
+                case ".mdl":
+                    mod = await Task.Run(() => _pmpImporter.TryImportIMdl(filePath));
+                    break;
+                default:
+                    _logService.Error($"Unsupported extension: {ext}");
+                    break;
             }
-            else if (ext == ".ttmp2")
-            {
-                retModPack = await TryImportTTModPack(filePath);
-            }
-            else if (ext == ".dds")
-            {
-                mod = await Task.Run(() => TryImportDDS(filePath));
-            }
-            else if (ext == ".png" || ext == ".bmp")
-            {
-                mod = ImportTexture(filePath);
-            }
-            else if (ext == ".mdl")
-            {
-                mod = TryImportRawModel(filePath);
-            }
+
             _importFileQueue.Dequeue();
             UpdateProperties();
 
@@ -268,22 +289,6 @@ namespace Icarus.Services.Files
             }
 
             _logService.Error($"Could not import {filePath} as model.");
-            return null;
-        }
-
-        public ModelMod? TryImportRawModel(string filePath)
-        { 
-            // TODO: ImportRawModel?
-            try
-            {
-                var bytes = File.ReadAllBytes(filePath);
-                var x = _lumina.GetFileFromDisk<FileResource>(filePath);
-
-            }
-            catch (Exception ex)
-            {
-                _logService.Error(ex, "An exception has occurred.");
-            }
             return null;
         }
 

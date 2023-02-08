@@ -18,6 +18,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="10*"/>
             <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
 
         <ProgressBar Grid.Row="0" Grid.Column="0"
@@ -26,6 +27,7 @@
         </ProgressBar>
         <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding ImportingFile}"/>
         <Button Grid.Row="0" Grid.Column="1" Content="Browse..." Command="{Binding OnBrowseCommand}"/>
+        <Button Grid.Row="0" Grid.Column="2" Content="Browse Directory" Command="{Binding OnBrowseDirecoryCommand}"/>
 
     </Grid>
 </UserControl>

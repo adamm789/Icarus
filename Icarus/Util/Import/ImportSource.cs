@@ -9,7 +9,10 @@ namespace Icarus.Util.Import
     public enum ImportSource
     {
         Vanilla,
+        // .fbx, .dds, .png, .bmp
         Raw,
-        TexToolsModPack
+        TexToolsModPack,
+        // .mdl, .mtrl, .tex
+        RawGameFile
     }
 }

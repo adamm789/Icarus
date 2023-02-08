@@ -24,15 +24,17 @@ namespace Icarus.ViewModels.Import
     public class ImportViewModel : ViewModelBase
     {
         readonly string _filter =
-            "Valid Files | *.ttmp2; *.fbx; *.dds; *.png; *.bmp" +
+            "Valid Files | *.ttmp2; *.fbx; *.dds; *.png; *.bmp; *.pmp; *.mdl" +
             "|.ttmp2 | *.ttmp2" +
             "|.fbx | *.fbx" +
             "|.dds | *.dds" +
             "|.png | *.png" +
-            "|.bmp | *.bmp";
+            "|.bmp | *.bmp" +
+            "|.pmp | *.pmp" +
+            "|.mdl | *.mdl";
         readonly List<string> _extensions = new List<string>()
         {
-            ".ttmp2", ".fbx", ".dds", ".png", ".bmp"
+            ".ttmp2", ".fbx", ".dds", ".png", ".bmp", ".pmp", ".mdl"
         };
 
         readonly IModPackViewModel _modPackViewModel;
@@ -83,7 +85,13 @@ namespace Icarus.ViewModels.Import
         DelegateCommand _onBrowseCommand;
         public DelegateCommand OnBrowseCommand
         {
-            get { return _onBrowseCommand ??= new DelegateCommand(async _ => await ImportFile()); }
+            get { return _onBrowseCommand ??= new DelegateCommand(async _ => await ImportFiles()); }
+        }
+
+        DelegateCommand _onBrowseDirecoryCommand;
+        public DelegateCommand OnBrowseDirecoryCommand
+        {
+            get { return _onBrowseDirecoryCommand ??= new DelegateCommand(async _ => await ImportDirectory()); }
         }
 
         double _individualProgressValue = 0;
@@ -115,21 +123,44 @@ namespace Icarus.ViewModels.Import
 
         #endregion
 
-        private async Task ImportFile()
+        private async Task ImportFiles()
         {
+            // TODO: Ability to import the raw penumbra directory (so I don't have to extract anything, which can be long, it seems)
             if (String.IsNullOrWhiteSpace(_initialDirectory))
             {
                 _initialDirectory = _settingsService.BrowseDirectory;
             }
-            var dlg = new OpenFileDialog
+            
+            using var dlg = new OpenFileDialog
             {
                 Filter = _filter,
                 InitialDirectory = _initialDirectory,
                 Multiselect = true
             };
+
             dlg.ShowDialog();
 
             await ImportFiles(dlg.FileNames);
+        }
+
+        private async Task ImportDirectory()
+        {
+            if (String.IsNullOrWhiteSpace(_initialDirectory))
+            {
+                _initialDirectory = _settingsService.BrowseDirectory;
+            }
+            using var dlg = new FolderBrowserDialog
+            {
+
+            };
+            dlg.ShowDialog();
+
+            await ImportDirectory(dlg.SelectedPath);
+        }
+
+        public async Task ImportDirectory(string dir)
+        {
+            var modPack = await Task.Run(() => _importService.ImportDirectory(dir));
         }
 
         // TODO: Implement actual async import
@@ -140,13 +171,13 @@ namespace Icarus.ViewModels.Import
                 var str = Path.Combine(path);
                 if (File.Exists(str))
                 {
-                    _logService.Verbose($"Importing mod pack.");
+                    _logService?.Verbose($"Importing mod pack.");
                     var modPack = await ImportFile(str);
-                    _logService.Verbose($"Finished importing.");
+                    _logService?.Verbose($"Finished importing.");
 
                     if (modPack.SimpleModsList.Count == 0)
                     {
-                        _logService.Error($"Could not import {str}.");
+                        _logService?.Error($"Could not import {str}.");
                         continue;
                     }
 
@@ -186,14 +217,14 @@ namespace Icarus.ViewModels.Import
             {
                 if (!mod.ShouldImport)
                 {
-                    _logService.Information("Not all mods were imported. Skipping mod pack pages.");
+                    _logService?.Information("Not all mods were imported. Skipping mod pack pages.");
                     shouldImportPages = false;
                     break;
                 }
             }
             if (shouldImportPages)
             {
-                _logService.Information($"Importing mod pack pages.");
+                _logService?.Information($"Importing mod pack pages.");
                 // TODO: modPackViewModel.ModPack here does not have the mod pack pages
                 _modPackListViewModel.Add(modPackViewModel.ModPack);
             }
@@ -202,7 +233,6 @@ namespace Icarus.ViewModels.Import
 
         public bool CanAcceptFiles(StringCollection collection)
         {
-            //var filter = "Valid Files | *.fbx; *.ttmp2; *.dds; *.png; *.bmp" + "|FBX File | *.fbx" + "|TexTools ModPack | *.ttmp2" + "| dds | *.dds" + "| png | *.png" + "| bmp | *.bmp";
             foreach (var str in collection)
             {
                 var ext = Path.GetExtension(str);
