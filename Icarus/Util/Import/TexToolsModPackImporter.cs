@@ -28,6 +28,7 @@ using ModGroup = Icarus.Mods.DataContainers.ModGroup;
 using ModOption = Icarus.Mods.DataContainers.ModOption;
 using ModPack = Icarus.Mods.DataContainers.ModPack;
 using System.Collections.Concurrent;
+using xivModdingFramework.Models.FileTypes;
 
 namespace Icarus.Services.Files
 {
@@ -215,7 +216,8 @@ namespace Icarus.Services.Files
             try
             {
                 var mdlFile = pack.ReadFile<MdlFile>(mods.ModOffset);
-                var xivMdl = MdlWithFramework.GetRawMdlDataFramework(mods.FullPath, mdlFile.Data, mdlFile.Meshes.Length);
+                //var xivMdl = MdlWithFramework.GetRawMdlDataFramework(mods.FullPath, mdlFile.Data, mdlFile.Meshes.Length);
+                var xivMdl = Mdl.GetRawMdlData(mods.FullPath, mdlFile.Data, mdlFile.Meshes.Length);
                 var imported = TTModel.FromRaw(xivMdl);
                 var ret = new ModelMod(mods.FullPath, imported, ImportSource.TexToolsModPack)
                 {
