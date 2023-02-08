@@ -103,16 +103,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
             ModsListViewModel.AddRange(mods);
         }
 
-        // Used to disable "Previous Page" on the mod meta page
-        bool _isNotFirstPage = false;
-        public bool IsNotFirstPage
-        {
-            get { return _isNotFirstPage; }
-            set { _isNotFirstPage = value; OnPropertyChanged(); }
-        }
-
         // ModPackPageViewModel or ModPackMetaViewModel
-
         INotifyPropertyChanged _displayedViewModel;
         public INotifyPropertyChanged DisplayedViewModel
         {
@@ -124,6 +115,14 @@ namespace Icarus.ViewModels.Mods.DataContainers
             }
         }
 
+        bool _metadataSelected = true;
+        public bool MetadataSelected
+        {
+            get { return _metadataSelected; }
+            set { _metadataSelected = value; OnPropertyChanged(); }
+        }
+
+
         ModOptionViewModel? _selectedOption;
         public ModOptionViewModel? SelectedOption
         {
@@ -134,7 +133,13 @@ namespace Icarus.ViewModels.Mods.DataContainers
         DelegateCommand _showMetadataCommand;
         public DelegateCommand ShowMetadataCommand
         {
-            get { return _showMetadataCommand ??= new DelegateCommand(_ => DisplayedViewModel = ModPackMetaViewModel); }
+            get { return _showMetadataCommand ??= new DelegateCommand(_ => ShowMetadata()); }
+        }
+
+        private void ShowMetadata()
+        {
+            DisplayedViewModel = ModPackMetaViewModel;
+            SelectedModPackPage = null;
         }
 
         DelegateCommand _addPageCommand;
@@ -159,6 +164,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
                 {
                     DisplayedViewModel = ModPackMetaViewModel;
                 }
+                MetadataSelected = value == null;
             }
         }
 
