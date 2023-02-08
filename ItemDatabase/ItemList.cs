@@ -633,7 +633,6 @@ namespace ItemDatabase
 
         private int GetPart(EquipmentSlot slot)
         {
-            // TODO: I have no idea if the accessories are even like this...
             switch (slot)
             {
                 case EquipmentSlot.Head:

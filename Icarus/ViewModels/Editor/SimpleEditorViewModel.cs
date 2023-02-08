@@ -18,7 +18,6 @@ namespace Icarus.ViewModels.Editor
     // TODO: Very short freeze when ctrl+c
     public class SimpleEditorViewModel : NotifyPropertyChanged
     {
-        // TODO: Ability to delete all mods
         // TODO: Create a "trash can" for "deleted" mods
         public ImportViewModel ImportViewModel { get; }
         public IModPackMetaViewModel ModPackMetaViewModel { get; }

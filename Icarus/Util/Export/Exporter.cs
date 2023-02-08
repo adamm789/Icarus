@@ -158,18 +158,9 @@ namespace Icarus.Util
         // MakeTexData: https://github.com/TexTools/xivModdingFramework/blob/81c234e7b767d56665185e07aabeeae21d895f0b/xivModdingFramework/Textures/FileTypes/Tex.cs#L905
         protected async Task<byte[]> TryWriteTextureToBytes(TextureMod mod, bool forTexTools)
         {
-            // TODO: Export texture to .pmp
             // TODO: Extract writing texture to bytes into its own function or move to another class
 
             _logService.Debug($"Exporting texture: {mod.ModFileName} with forTexTools={forTexTools}");
-
-            /*
-            if (!forTexTools)
-            {
-                _logService.Error("Unknown export method for Penumbra texture (.tex)");
-                return Array.Empty<byte>();
-            }
-            */
 
             var isDds = Path.GetExtension(mod.ModFilePath).ToLower() == ".dds";
             var texFormat = mod.GetTexFormat();
