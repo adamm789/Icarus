@@ -1,4 +1,5 @@
 ﻿using Icarus.Mods.Interfaces;
+using Icarus.Mods.Penumbra;
 using Icarus.Util.Extensions;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -67,6 +68,15 @@ namespace Icarus.Mods.DataContainers
         public void CopyMetadata(ModPack other)
         {
             _modPackJson = other._modPackJson;
+        }
+
+        public void SetMetadata(PenumbraMeta meta)
+        {
+            Name = meta.Name;
+            Author = meta.Author;
+            Description = meta.Description;
+            Version = meta.Version;
+            Url = meta.Website;
         }
 
         private void SetDefaultModPack()

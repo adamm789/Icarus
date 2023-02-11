@@ -2,15 +2,20 @@
 
 namespace Icarus.Mods.Penumbra
 {
-    internal class PenumbraMeta
+    public class PenumbraMeta
     {
-        public string Name;
-        public string Author;
-        public string Version;
-        public string Description;
-        public string Url;
+        public string Name = " My Penumbra Mod";
+        public string Author = "Penumbra User";
+        public string Version = "1.0.0";
+        public string Description = "";
+        public string Website = "";
         public int FileVersion = 1;
         public ulong ImportDate = 0;
+
+        public PenumbraMeta()
+        {
+
+        }
 
         public PenumbraMeta(ModPack m)
         {
@@ -18,7 +23,7 @@ namespace Icarus.Mods.Penumbra
             Author = m.Author;
             Version = m.Version;
             Description = m.Description;
-            Url = m.Url;
+            Website = m.Url;
         }
     }
 }

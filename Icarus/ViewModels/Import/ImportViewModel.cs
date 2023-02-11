@@ -17,6 +17,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using xivModdingFramework.Materials.FileTypes;
 
 namespace Icarus.ViewModels.Import
 {
@@ -130,7 +131,7 @@ namespace Icarus.ViewModels.Import
             {
                 _initialDirectory = _settingsService.BrowseDirectory;
             }
-            
+
             using var dlg = new OpenFileDialog
             {
                 Filter = _filter,
@@ -160,7 +161,15 @@ namespace Icarus.ViewModels.Import
 
         public async Task ImportDirectory(string dir)
         {
+            _logService?.Verbose($"Importing penumbra directory: {dir}");
             var modPack = await Task.Run(() => _importService.ImportDirectory(dir));
+            _logService?.Verbose($"Finished importing");
+
+            var success = AddModPack(modPack);
+            if (!success)
+            {
+                _logService?.Error($"Could not import Penumbra directory: {dir}");
+            }
         }
 
         // TODO: Implement actual async import
@@ -175,29 +184,38 @@ namespace Icarus.ViewModels.Import
                     var modPack = await ImportFile(str);
                     _logService?.Verbose($"Finished importing.");
 
-                    if (modPack.SimpleModsList.Count == 0)
+                    var success = AddModPack(modPack);
+                    if (!success)
                     {
-                        _logService?.Error($"Could not import {str}.");
-                        continue;
-                    }
-
-                    if (modPack.ModPackPages.Count > 0)
-                    {
-                        _modPackListViewModel.Add(modPack);
-                    }
-
-                    if (modPack.SimpleModsList.Count == 1 && modPack.SimpleModsList[0].ImportSource == ImportSource.Raw || modPack.ModPackPages.Count > 0)
-                    {
-                        _modPackViewModel.Add(modPack);
-                    }
-                    else
-                    {
-                        // TODO: How to handle partial imports of advanced mod packs?
-                        // If not all mods are imported, should the mod pack pages be skipped?
-                        ImportModPackViewModel.Add(modPack);
+                        _logService?.Error($"Could not import {str}");
                     }
                 }
             }
+        }
+
+        private bool AddModPack(ModPack modPack)
+        {
+            if (modPack.SimpleModsList.Count == 0)
+            {
+                return false;
+            }
+
+            if (modPack.ModPackPages.Count > 0)
+            {
+                _modPackListViewModel.Add(modPack);
+            }
+
+            if (modPack.SimpleModsList.Count == 1 && modPack.SimpleModsList[0].ImportSource == ImportSource.Raw || modPack.ModPackPages.Count > 0)
+            {
+                _modPackViewModel.Add(modPack);
+            }
+            else
+            {
+                // TODO: How to handle partial imports of advanced mod packs?
+                // If not all mods are imported, should the mod pack pages be skipped?
+                ImportModPackViewModel.Add(modPack);
+            }
+            return true;
         }
 
         public async Task<ModPack> ImportFile(string filePath)
