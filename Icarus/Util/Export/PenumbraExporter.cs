@@ -68,18 +68,32 @@ namespace Icarus.Util
                 File.WriteAllText(Path.Combine(tempDir, "default_mod.json"), defaultJson);
             }
 
+            var exportEntries = modPack.SimpleModsList.FindAll(m => m.ShouldExport);
+            if (exportEntries.Count == 0)
+            {
+                _logService.Information($"No entries were selected for export");
+                return "";
+            }
+            var tasks = new Task<byte[]>[exportEntries.Count];
+            var byteList = new List<byte[]>();
+
+            for (var i = 0; i < exportEntries.Count; i++)
+            {
+                var j = i;
+                tasks[j] = WriteToBytes(exportEntries[j], false);
+            }
+
+            await Task.WhenAll(tasks);
+
             var numFiles = 0;
             var numWritten = 0;
-            foreach (var entry in modPack.SimpleModsList)
-            {
-                // Maybe unecessary? But just to be safe, i guess
-                if (ForbiddenModTypes.Contains(entry.Path)) continue;
-                if (!entry.ShouldExport) continue;
 
+            for (var i = 0; i < exportEntries.Count; i++)
+            {
                 try
                 {
-                    var bytes = await WriteToBytes(entry, false);
-                    numFiles++;
+                    var entry = exportEntries[i];
+                    var bytes = tasks[i].Result;
                     if (bytes.Length == 0) continue;
 
                     var path = Path.Combine(tempDir, entry.Path);
@@ -106,10 +120,12 @@ namespace Icarus.Util
                         }
                     }
                     File.WriteAllBytes(path, bytes);
+                    numFiles++;
                     numWritten++;
-                } catch (Exception ex)
+                }
+                catch (Exception ex)
                 {
-                    _logService.Error(ex, "An exception has occurred");
+                    _logService.Error(ex, $"Could not export entry {i}");
                 }
             }
 
@@ -239,7 +255,6 @@ namespace Icarus.Util
                     }
                     else
                     {
-                        // TODO: What to do here?
                         if (entry is IAdditionalPathsMod pathsMod && pathsMod.AssignToAllPaths)
                         {
                             foreach (var kvp in pathsMod.AllPathsDictionary)
@@ -251,7 +266,6 @@ namespace Icarus.Util
                         else
                         {
                             def.Files.Add(entry.Path, entry.Path);
-
                         }
                     }
 
