@@ -1,7 +1,6 @@
 ﻿using Icarus.Mods;
 using Icarus.Mods.DataContainers;
 using Icarus.Mods.Interfaces;
-using Icarus.Util;
 using Icarus.Util.Extensions;
 using Ionic.Zip;
 using ItemDatabase.Paths;
@@ -16,8 +15,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using xivModdingFramework.General.Enums;
-using xivModdingFramework.Materials.DataContainers;
 using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Mods.DataContainers;
 using xivModdingFramework.Mods.FileTypes;
@@ -29,6 +26,7 @@ using ModOption = Icarus.Mods.DataContainers.ModOption;
 using ModPack = Icarus.Mods.DataContainers.ModPack;
 using System.Collections.Concurrent;
 using xivModdingFramework.Models.FileTypes;
+using xivModdingFramework.Materials.FileTypes;
 
 namespace Icarus.Services.Files
 {
@@ -53,7 +51,6 @@ namespace Icarus.Services.Files
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
             var fileInfo = new FileInfo(filePath);
-
 
             //var tempDir = Path.Combine(_projectDirectory, "temp");
             var tempDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
@@ -317,7 +314,8 @@ namespace Icarus.Services.Files
                 var file = pack.ReadFile<MtrlFile>(mods.ModOffset);
                 var gameDirectory = new DirectoryInfo(_gameDirectory);
 
-                var xivMtrl = await MtrlExtensions.GetMtrlData(gameDirectory, file.Data, mods.FullPath);
+                //var xivMtrl = await MtrlExtensions.GetMtrlData(gameDirectory, file.Data, mods.FullPath);
+                var xivMtrl = await Mtrl.GetMtrlData(gameDirectory, file.Data, mods.FullPath);
 
                 var mtrlMod = new MaterialMod(xivMtrl)
                 {

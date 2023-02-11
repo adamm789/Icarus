@@ -18,6 +18,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Shell;
 using xivModdingFramework.Materials.DataContainers;
+using xivModdingFramework.Materials.FileTypes;
 using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Models.FileTypes;
 using static System.Net.Mime.MediaTypeNames;
@@ -256,8 +257,9 @@ namespace Icarus.Util.Import
             try
             {
                 var mtrlData = File.ReadAllBytes(filePath);
-
-                mtrl = await MtrlExtensions.GetMtrlData(frameworkDir, mtrlData, gamePath);
+                    
+                //mtrl = await MtrlExtensions.GetMtrlData(frameworkDir, mtrlData, gamePath);
+                mtrl = await Mtrl.GetMtrlData(frameworkDir, mtrlData, gamePath);
                 if (mtrl != null)
                 {
                     var mod = new MaterialMod(mtrl)

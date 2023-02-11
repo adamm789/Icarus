@@ -15,6 +15,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Markup;
 using xivModdingFramework.Helpers;
+using xivModdingFramework.Materials.FileTypes;
 using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.Models.Helpers;
 using xivModdingFramework.Textures.DataContainers;
@@ -147,7 +148,8 @@ namespace Icarus.Util.Export
                     DataFile = df
                 };
 
-                var xivTex = MtrlExtensions.MtrlToXivTex(xivMtrl, ttp);
+                //var xivTex = MtrlExtensions.MtrlToXivTex(xivMtrl, ttp);
+                var xivTex = Mtrl.MtrlToXivTexStatic(xivMtrl, ttp);
                 outputPath = Path.Combine(outputPath, outputFileName);
                 var ogPath = outputPath;
                 var i = 0;

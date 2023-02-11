@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using xivModdingFramework.General.Enums;
 using xivModdingFramework.Helpers;
 using xivModdingFramework.Materials.DataContainers;
 using xivModdingFramework.SqPack.FileTypes;
@@ -23,13 +24,22 @@ namespace Icarus.Util.Extensions
         /// <param name="mtrlData"></param>
         /// <param name="mtrlPath"></param>
         /// <returns></returns>
+       /*
         public static async Task<XivMtrl> GetMtrlData(DirectoryInfo gameDirectory, byte[] mtrlData, string mtrlPath)
         {
             var dat = new Dat(gameDirectory);
             var index = new Index(gameDirectory);
 
             // Get uncompressed mtrl data
-            var df = IOUtil.GetDataFileFromPath(mtrlPath);
+            XivDataFile df = XivDataFile._00_Common;
+            try
+            {
+                df = IOUtil.GetDataFileFromPath(mtrlPath);
+            }
+            catch (Exception ex)
+            {
+
+            }
             XivMtrl xivMtrl = null;
             using (var br = new BinaryReader(new MemoryStream(mtrlData)))
             {
@@ -257,8 +267,9 @@ namespace Icarus.Util.Extensions
 
             return xivMtrl;
         }
-
+       */
         //https://github.com/TexTools/xivModdingFramework/blob/81c234e7b767d56665185e07aabeeae21d895f0b/xivModdingFramework/Materials/FileTypes/Mtrl.cs#L753
+        /*
         public static byte[] CreateMtrlFile(XivMtrl xivMtrl)
         {
             var mtrlBytes = new List<byte>();
@@ -427,7 +438,8 @@ namespace Icarus.Util.Extensions
             IOUtil.ReplaceBytesAt(mtrlBytes, BitConverter.GetBytes(xivMtrl.TexturePathsDataSize), texturePathsDataSizePointer);
             return mtrlBytes.ToArray();
         }
-
+        */
+        /*
         //https://github.com/TexTools/xivModdingFramework/blob/81c234e7b767d56665185e07aabeeae21d895f0b/xivModdingFramework/Materials/FileTypes/Mtrl.cs#L640
         public static XivTex MtrlToXivTex(XivMtrl xivMtrl, TexTypePath ttp)
         {
@@ -450,6 +462,7 @@ namespace Icarus.Util.Extensions
 
             return xivTex;
         }
+        */
 
     }
 }

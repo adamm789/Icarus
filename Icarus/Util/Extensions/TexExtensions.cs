@@ -99,85 +99,6 @@ namespace Icarus.Util.Extensions
 
         };
 
-        /// <summary>
-        /// Creates the header for the texture info from the data to be imported.
-        /// </summary>
-        /// <param name="xivTex">Data for the currently displayed texture.</param>
-        /// <param name="newWidth">The width of the DDS texture to be imported.</param>
-        /// <param name="newHeight">The height of the DDS texture to be imported.</param>
-        /// <param name="newMipCount">The number of mipmaps the DDS texture to be imported contains.</param>
-        /// <returns>The created header data.</returns>
-        public static List<byte> MakeTextureInfoHeader(XivTexFormat format, int newWidth, int newHeight, int newMipCount)
-        {
-            var headerData = new List<byte>();
-
-            headerData.AddRange(BitConverter.GetBytes((short)0));
-            headerData.AddRange(BitConverter.GetBytes((short)128));
-            headerData.AddRange(BitConverter.GetBytes(short.Parse(format.GetTexFormatCode())));
-            headerData.AddRange(BitConverter.GetBytes((short)0));
-            headerData.AddRange(BitConverter.GetBytes((short)newWidth));
-            headerData.AddRange(BitConverter.GetBytes((short)newHeight));
-            headerData.AddRange(BitConverter.GetBytes((short)1));
-            headerData.AddRange(BitConverter.GetBytes((short)newMipCount));
-
-            headerData.AddRange(BitConverter.GetBytes(0));
-            headerData.AddRange(BitConverter.GetBytes(1));
-            headerData.AddRange(BitConverter.GetBytes(2));
-
-            int mipLength;
-
-            switch (format)
-            {
-                case XivTexFormat.DXT1:
-                    mipLength = (newWidth * newHeight) / 2;
-                    break;
-                case XivTexFormat.DXT5:
-                case XivTexFormat.A8:
-                    mipLength = newWidth * newHeight;
-                    break;
-                case XivTexFormat.A1R5G5B5:
-                case XivTexFormat.A4R4G4B4:
-                    mipLength = (newWidth * newHeight) * 2;
-                    break;
-                case XivTexFormat.L8:
-                case XivTexFormat.A8R8G8B8:
-                case XivTexFormat.X8R8G8B8:
-                case XivTexFormat.R32F:
-                case XivTexFormat.G16R16F:
-                case XivTexFormat.G32R32F:
-                case XivTexFormat.A16B16G16R16F:
-                case XivTexFormat.A32B32G32R32F:
-                case XivTexFormat.DXT3:
-                case XivTexFormat.D16:
-                default:
-                    mipLength = (newWidth * newHeight) * 4;
-                    break;
-            }
-
-            var combinedLength = 80;
-
-            for (var i = 0; i < newMipCount; i++)
-            {
-                headerData.AddRange(BitConverter.GetBytes(combinedLength));
-                combinedLength = combinedLength + mipLength;
-
-                if (mipLength > 16)
-                {
-                    mipLength = mipLength / 4;
-                }
-                else
-                {
-                    mipLength = 16;
-                }
-            }
-
-            var padding = 80 - headerData.Count;
-
-            headerData.AddRange(new byte[padding]);
-
-            return headerData;
-        }
-
         public static void SaveTexAsDDS(string path, XivTex xivTex)
         {
             path = Path.ChangeExtension(path, ".dds");
@@ -228,7 +149,7 @@ namespace Icarus.Util.Extensions
                             newTex.AddRange(DatExtensions.MakeType4DatHeader(texFormat, DDSInfo.mipPartOffsets, DDSInfo.mipPartCounts, (int)uncompressedLength, newMipCount, newWidth, newHeight));
                         }
                         
-                        newTex.AddRange(TexExtensions.MakeTextureInfoHeader(texFormat, newWidth, newHeight, newMipCount));
+                        newTex.AddRange(Tex.MakeTextureInfoHeader(texFormat, newWidth, newHeight, newMipCount));
                         newTex.AddRange(DDSInfo.dds);
 
                         return newTex.ToArray();
@@ -236,7 +157,7 @@ namespace Icarus.Util.Extensions
                     else
                     {
                         br.BaseStream.Seek(128, SeekOrigin.Begin);
-                        newTex.AddRange(TexExtensions.MakeTextureInfoHeader(texFormat, newWidth, newHeight, newMipCount));
+                        newTex.AddRange(Tex.MakeTextureInfoHeader(texFormat, newWidth, newHeight, newMipCount));
                         newTex.AddRange(br.ReadBytes((int)uncompressedLength));
                         var data = await DatExtensions.CreateType2Data(newTex.ToArray(), shouldCompress);
                         return data;

@@ -28,6 +28,7 @@ using Path = System.IO.Path;
 using ModPack = Icarus.Mods.DataContainers.ModPack;
 using System.Linq;
 using xivModdingFramework.Cache;
+using xivModdingFramework.Materials.FileTypes;
 
 namespace Icarus.Util
 {
@@ -416,7 +417,8 @@ namespace Icarus.Util
                     _logService.Warning($"Material had no colorset. Skipping material.");
                     return Array.Empty<byte>();
                 }
-                var bytes = MtrlExtensions.CreateMtrlFile(xivMtrl);
+                //var bytes = MtrlExtensions.CreateMtrlFile(xivMtrl);
+                var bytes = Mtrl.CreateMtrlFile(xivMtrl);
 
                 if (!shouldCompress)
                 {

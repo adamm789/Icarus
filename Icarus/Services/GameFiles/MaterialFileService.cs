@@ -374,7 +374,8 @@ namespace Icarus.Services.GameFiles
                 if (_lumina.FileExists(path))
                 {
                     var mtrlFile = _lumina.GetFile<MtrlFile>(path);
-                    var xivMtrl = await MtrlExtensions.GetMtrlData(_frameworkGameDirectory, mtrlFile.Data, path);
+                    //var xivMtrl = await MtrlExtensions.GetMtrlData(_frameworkGameDirectory, mtrlFile.Data, path);
+                    var xivMtrl = await Mtrl.GetMtrlData(_frameworkGameDirectory, mtrlFile.Data, path);
                     return xivMtrl;
                 }
             }
