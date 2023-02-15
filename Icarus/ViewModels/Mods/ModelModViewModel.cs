@@ -53,6 +53,15 @@ namespace Icarus.ViewModels.Mods
 
             OptionsViewModel = new(modelMod.Options);
 
+            if (importedModel != null)
+            {
+                foreach (var meshGroup in importedModel.MeshGroups)
+                {
+                    var meshGroupViewModel = viewModelService.GetMeshGroupViewModel(meshGroup, this);
+                    MeshGroups.Add(meshGroupViewModel);
+                }
+            }
+
             if (modelMod.IsComplete())
             {
                 //DisplayedHeader = $"{FileName} ({modelMod.Name})";
@@ -63,15 +72,6 @@ namespace Icarus.ViewModels.Mods
                     TargetRace = modelMod.TargetRace;
                 }
                 UpdateAttributes(modelMod.TTModel, modelMod.Path);
-            }
-
-            if (importedModel != null)
-            {
-                foreach (var meshGroup in importedModel.MeshGroups)
-                {
-                    var meshGroupViewModel = viewModelService.GetMeshGroupViewModel(meshGroup, this);
-                    MeshGroups.Add(meshGroupViewModel);
-                }
             }
 
             SetCanExport();
