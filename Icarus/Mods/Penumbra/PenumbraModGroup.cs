@@ -8,6 +8,7 @@ namespace Icarus.Mods.Penumbra
         public string Description = "";
         public int Priority = 0;
         public string Type = "Single";
+        public int DefaultSettings = 0;
         public List<PenumbraModOption> Options = new();
     }
 }

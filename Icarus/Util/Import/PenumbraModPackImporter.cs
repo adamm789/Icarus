@@ -6,25 +6,18 @@ using Icarus.Util.Extensions;
 using Ionic.Zip;
 using ItemDatabase.Paths;
 using Lumina;
-using Lumina.Data;
-using Lumina.Data.Files;
 using Newtonsoft.Json;
 using Serilog;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Shell;
 using xivModdingFramework.Materials.DataContainers;
 using xivModdingFramework.Materials.FileTypes;
 using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Models.FileTypes;
 using xivModdingFramework.SqPack.FileTypes;
 using xivModdingFramework.Textures.DataContainers;
-using xivModdingFramework.Textures.FileTypes;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Icarus.Util.Import
 {
@@ -131,6 +124,11 @@ namespace Icarus.Util.Import
                                         ret.SimpleModsList.Add(mod);
                                         modOption.AddMod(mod);
                                     }
+                                }
+
+                                foreach (var manipulation in option.Manipulations)
+                                {
+                                    // TODO: MetadataMod
                                 }
 
                                 if (modOption.Mods.Count > 0)
@@ -254,54 +252,6 @@ namespace Icarus.Util.Import
                 }
             }
 
-            /*
-            try
-            {
-                Log.Debug($"Beginning extraction");
-                zip.ExtractAll(tempPath);
-                Log.Debug($"Finished extraction");
-                var defaultModFile = tempDir.EnumerateFiles().Where(x => x.Name.Contains("default_mod")).FirstOrDefault();
-                if (defaultModFile != null)
-                {
-                    // TODO: Check this for "simple" mods
-                    var defaultModText = File.ReadAllText(defaultModFile.FullName);
-                    if (defaultModText != null)
-                    {
-                        var contents = JsonConvert.DeserializeObject<PenumbraDefaultMod>(defaultModText);
-                        if (contents != null)
-                        {
-                            foreach (var kvp in contents.Files)
-                            {
-                                var mod = await ProcessMod(kvp, tempPath);
-                                if (mod != null)
-                                {
-                                    ret.SimpleModsList.Add(mod);
-                                }
-                            }
-                        }
-                    }
-                    return ret;
-                }
-                else
-                {
-                    Log.Error($"Could not find default_mod");
-                }
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex.Message);
-            }
-            finally
-            {
-                zfs.Close();
-                if (tempDir.Exists)
-                {
-                    Log.Verbose($"Deleting temporary directory: {tempDir.FullName}");
-                    tempDir.Delete(true);
-                }
-            }
-            */
-
             return null;
         }
 
@@ -402,6 +352,7 @@ namespace Icarus.Util.Import
         {
             try
             {
+                // TODO: This may still be unable to read certain tex files
                 var texData = File.ReadAllBytes(filePath);
                 //var tex = await DatExtensions.GetType4Data(texData);
                 var tex = await TexExtensions.GetXivTex(texData);

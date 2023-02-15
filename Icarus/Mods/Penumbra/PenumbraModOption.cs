@@ -5,8 +5,9 @@ namespace Icarus.Mods.Penumbra
     public class PenumbraModOption
     {
         public string Name = "";
+        public string Description = "";
         public Dictionary<string, string> Files = new();
         // FileSwaps
-        // Manipulations
+        public List<PenumbraManipulation> Manipulations = new();
     }
 }

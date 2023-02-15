@@ -4,12 +4,14 @@ using Icarus.Mods.Penumbra;
 using Icarus.Services.GameFiles;
 using Icarus.Services.Interfaces;
 using Ionic.Zip;
+using ItemDatabase.Paths;
 using Lumina;
 using Microsoft.VisualBasic.FileIO;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using ModPack = Icarus.Mods.DataContainers.ModPack;
@@ -221,7 +223,27 @@ namespace Icarus.Util
                             penumbraOption.Files.Add(mods.Path, optionPath);
                             if (mods is MetadataMod meta)
                             {
+                                var primaryIdRegex = new Regex(@"[a,e]([0-9]){4}");
+                                if (!primaryIdRegex.IsMatch(mods.Path))
+                                {
+                                    continue;
+                                }
+                                var matches = primaryIdRegex.Matches(mods.Path);
+                                var item = new PenumbraManipulation()
+                                {
+                                    Type = "Imc"
+                                };
+                                //penumbraOption.Manipulations.Add(item);
                                 // TODO: Put into "Manipulations"
+                                foreach (var imc in meta.ImcEntries)
+                                {
+                                    var entry = new PenumbraImcEntry()
+                                    {
+                                        MaterialId = imc.MaterialSet,
+                                        DecalId = imc.Decal,
+                                        VfxId = imc.Vfx
+                                    };
+                                }
                             }
                             //}
                         }

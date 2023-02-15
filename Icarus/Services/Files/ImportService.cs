@@ -95,30 +95,16 @@ namespace Icarus.Services.Files
             {
                 // check for default_mod.json and... group_ .json files
                 var dir = new DirectoryInfo(dirPath);
-                var files = dir.GetFiles();
-                var defaultModJson = files.Where(x => x.Name.Contains("default_mod.json", StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
-                var metaJson = files.Where(x => x.Name.Contains("meta.json", StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+                var modPack = await _pmpImporter.ImportPenumbraDirectory(dir);
 
-                if (defaultModJson != null && metaJson != null)
+                if (modPack != null)
                 {
-                    // TODO: Import penumbra (uncompressed) directory
-                    return new IcarusModPack();
+                    return modPack;
                 }
                 else
                 {
-                    if (defaultModJson == null)
-                    {
-                        _logService.Error($"Could not find default_mod.json in {dirPath}");
-                    }
-                    if (metaJson == null)
-                    {
-                        _logService.Error($"Could not find meta.json in {dirPath}");
-                    }
-
-                    _logService.Error($"Could not import from directory: {dirPath}");
                     return new IcarusModPack();
                 }
-
             }
             else
             {
@@ -160,7 +146,7 @@ namespace Icarus.Services.Files
                     retModPack = await _pmpImporter.ExtractPenumbraModPack(filePath);
                     break;
                 case ".mdl":
-                    mod = await Task.Run(() => _pmpImporter.TryImportIMdl(filePath));
+                    mod = await Task.Run(() => _pmpImporter.TryImportMdl(filePath));
                     break;
                 default:
                     _logService.Error($"Unsupported extension: {ext}");
