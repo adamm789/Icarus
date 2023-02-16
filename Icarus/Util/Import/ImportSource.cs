@@ -11,7 +11,10 @@ namespace Icarus.Util.Import
         Vanilla,
         // .fbx, .dds, .png, .bmp
         Raw,
+        // .ttmp2
         TexToolsModPack,
+        // .pmp or file structure
+        PenumbraModPack,
         // .mdl, .mtrl, .tex
         RawGameFile
     }

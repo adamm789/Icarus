@@ -33,6 +33,7 @@ namespace Icarus.Util.Import
             _lumina = new(_gameDirectory);
         }
 
+        // TODO: Asynchronous import
         private async Task<ModPack?> TryReadDefaultMod(DirectoryInfo dir)
         {
             var dirPath = dir.FullName;
@@ -259,24 +260,23 @@ namespace Icarus.Util.Import
         {
             // TODO: Need "Name" of the item
             var ext = Path.GetExtension(filePath);
+            IMod? ret = null;
 
             if (ext == ".mdl")
             {
                 //var mdl = TryImportMdl(gameFilePath, filePath);
-                var mdl = TryImportMdl(filePath, gameFilePath);
-                return mdl;
+                ret = TryImportMdl(filePath, gameFilePath);
             }
             else if (ext == ".mtrl")
             {
-                var mtrl = await TryImportMtrl(filePath, gameFilePath);
-                return mtrl;
+                ret = await TryImportMtrl(filePath, gameFilePath);
             }
             else if (ext == ".tex")
             {
-                var tex = await TryImportTex(filePath, gameFilePath);
-                return tex;
+                ret = await TryImportTex(filePath, gameFilePath);
             }
-            return null;
+            ret ??= TryImportReadOnlyMod(filePath, gameFilePath);
+            return ret;
         }
 
         public ModelMod? TryImportMdl(string filePath, string gameFilePath = "")
@@ -298,7 +298,7 @@ namespace Icarus.Util.Import
                 else
                 {
                     var category = XivPathParser.GetCategoryFromPath(gameFilePath);
-                    var ret = new ModelMod(gameFilePath, imported, ImportSource.TexToolsModPack)
+                    var ret = new ModelMod(gameFilePath, imported, ImportSource.PenumbraModPack)
                     {
                         Path = gameFilePath,
                         Category = category,
@@ -330,7 +330,7 @@ namespace Icarus.Util.Import
                 mtrl = await Mtrl.GetMtrlData(frameworkDir, mtrlData, gamePath);
                 if (mtrl != null)
                 {
-                    var mod = new MaterialMod(mtrl)
+                    var mod = new MaterialMod(mtrl, ImportSource.PenumbraModPack)
                     {
                         ModFileName = filePath,
                         ModFilePath = filePath,
@@ -367,7 +367,7 @@ namespace Icarus.Util.Import
                 };
                 tex.TextureTypeAndPath = texTypePath;
 
-                var ret = new TextureMod(tex, ImportSource.RawGameFile)
+                var ret = new TextureMod(tex, ImportSource.PenumbraModPack)
                 {
                     ModFileName = filePath,
                     ModFilePath = filePath,
@@ -381,6 +381,20 @@ namespace Icarus.Util.Import
                 Log.Error(ex.Message);
             }
             return null;
+        }
+
+        public ReadOnlyMod TryImportReadOnlyMod(string filePath, string gamePath)
+        {
+            Log.Warning($"Fell through to ReadOnlyMod trying to import {filePath}");
+            var data = File.ReadAllBytes(filePath);
+            var ret = new ReadOnlyMod(ImportSource.PenumbraModPack)
+            {
+                ModFileName = filePath,
+                ModFilePath = filePath,
+                Path = gamePath,
+                Data = data
+            };
+            return ret;
         }
     }
 }
