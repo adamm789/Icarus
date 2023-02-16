@@ -59,18 +59,9 @@
             <mods:FilteredModsListView dd:DragDrop.IsDropTarget="True"/>
         </ContentControl>
 
-        <TabControl Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" dd:DragDrop.IsDropTarget="False">
-            <TabItem Header="Pages">
-                <ContentControl Grid.Row="0" Grid.Column="1" DataContext="{Binding ModPackViewModel}">
-                    <modviews:ModPackView/>
-                </ContentControl>
-            </TabItem>
-            <TabItem Header="Pack">
-                <ContentControl DataContext="{Binding ModPackViewModel}">
-                    <editors:ModPackEditor/>
-                </ContentControl>
-            </TabItem>
-        </TabControl>
+        <ContentControl Grid.Row="0" Grid.Column="1" DataContext="{Binding ModPackViewModel}">
+            <modviews:ModPackView/>
+        </ContentControl>
         <ContentControl Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Content="{Binding ExportViewModel}" Margin="5"/>
 
         <TabControl Grid.Row="0" Grid.Column="2" SelectedIndex="{Binding SelectedTabIndex}">
