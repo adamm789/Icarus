@@ -74,6 +74,8 @@ namespace Icarus.ViewModels.Mods
             set { _material.AssignToAllPaths = value; OnPropertyChanged(); }
         }
 
+        public bool HasMultipleMaterialSets => _material.AllPathsDictionary.Count > 1;
+
         public void OpenMaterialEditor()
         {
             _windowService.Show<ShaderInfoWindow>(this);
@@ -92,14 +94,6 @@ namespace Icarus.ViewModels.Mods
             get { return _selectedMaterialSet; }
             set { _selectedMaterialSet = value; OnPropertyChanged(); }
         }
-
-        List<int> _materialSetList = new();
-        public List<int> MaterialSetList
-        {
-            get { return _materialSetList; }
-            set { _materialSetList = value; OnPropertyChanged(); }
-        }
-
         string _materialVariant = "a";
         public string MaterialVariant
         {
