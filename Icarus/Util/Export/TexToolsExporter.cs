@@ -362,7 +362,7 @@ namespace Icarus.Util
                                 if (modOptionMod is IAdditionalPathsMod pathsMod && pathsMod.AssignToAllPaths)
                                 {
                                     var pathsModJson = GetAllPathsModJson(pathsMod, offset, bytes.Length, modPack);
-                                    modPackJson.SimpleModsList.AddRange(pathsModJson);
+                                    modOptionJson.ModsJsons.AddRange(pathsModJson);
                                     success = true;
                                 }
                                 else
