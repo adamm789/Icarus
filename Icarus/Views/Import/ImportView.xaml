@@ -26,8 +26,8 @@
                      IsIndeterminate="{Binding IsProgressIndeterminate}">
         </ProgressBar>
         <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding ImportingFile}"/>
-        <Button Grid.Row="0" Grid.Column="1" Content="Browse..." Command="{Binding OnBrowseCommand}"/>
-        <Button Grid.Row="0" Grid.Column="2" Content="Browse Directory" Command="{Binding OnBrowseDirecoryCommand}"/>
+        <Button Grid.Row="0" Grid.Column="1" Content="Browse..." ToolTip="Open Folder Explorer and select valid file(s)" Command="{Binding OnBrowseCommand}"/>
+        <Button Grid.Row="0" Grid.Column="2" Content="Browse Directory" ToolTip="Browse to a Penumbra mod folder.&#x0a;It should contain &quot;default_mod.json&quot; and &quot;meta.json&quot; " Command="{Binding OnBrowseDirecoryCommand}"/>
 
     </Grid>
 </UserControl>

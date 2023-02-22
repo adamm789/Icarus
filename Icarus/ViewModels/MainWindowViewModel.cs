@@ -60,11 +60,11 @@ namespace Icarus.ViewModels
             ItemListViewModel = new(itemListService, logService);
             ImportVanillaViewModel = new(ModPackViewModel.ModsListViewModel, ItemListViewModel, ServiceManager.GetRequiredService<VanillaFileService>(), _windowService, logService);
 
-            ExportViewModel = new(ModPackViewModel.ModsListViewModel, _messageBoxService, _exportService, ServiceManager.GetRequiredService<IWindowService>(), logService);
+            ExportViewModel = new(ModPackViewModel.ModsListViewModel, _messageBoxService, _exportService, _windowService, logService);
             //var importModsListViewModel = new ImportModsListViewModel(ModPackViewModel.ModsListViewModel, logService);
 
-            var importModPackViewModel = new ImportModPackViewModel(viewModelService, ServiceManager.GetRequiredService<IWindowService>(), logService);
-            ImportViewModel = new(ModPackViewModel, ModPackListViewModel, _importService, settingsService, importModPackViewModel, logService);
+            var importModPackViewModel = new ImportModPackViewModel(viewModelService, _windowService, logService);
+            ImportViewModel = new(ModPackViewModel, ModPackListViewModel, _importService, settingsService, importModPackViewModel, _messageBoxService, logService);
 
             SimpleEditorViewModel = new(ModPackViewModel, ItemListViewModel, ImportViewModel, ExportViewModel, ImportVanillaViewModel, importModPackViewModel);
             AdvancedEditorViewModel = new(ModPackViewModel, ExportViewModel, ModPackListViewModel);

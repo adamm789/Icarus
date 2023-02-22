@@ -42,19 +42,21 @@ namespace Icarus.ViewModels.Import
         readonly ImportService _importService;
         readonly ISettingsService _settingsService;
         readonly ModPackListViewModel _modPackListViewModel;
+        readonly IMessageBoxService? _messageBoxService;
 
         private string _initialDirectory = "";
 
         public ImportModPackViewModel ImportModPackViewModel;
 
         public ImportViewModel(IModPackViewModel modPack, ModPackListViewModel modPackList, ImportService importService,
-            ISettingsService settingsService, ImportModPackViewModel importSimpleTexToolsViewModel, ILogService logService)
+            ISettingsService settingsService, ImportModPackViewModel importSimpleTexToolsViewModel, IMessageBoxService? messageBoxService, ILogService? logService)
             : base(logService)
         {
             _settingsService = settingsService;
             _modPackViewModel = modPack;
             _modPackListViewModel = modPackList;
             _importService = importService;
+            _messageBoxService = messageBoxService;
             _logService = logService;
 
             ImportModPackViewModel = importSimpleTexToolsViewModel;
@@ -156,7 +158,16 @@ namespace Icarus.ViewModels.Import
             };
             dlg.ShowDialog();
 
-            await ImportDirectory(dlg.SelectedPath);
+            if (_importService.IsValidPenumbraDirectory(dlg.SelectedPath))
+            {
+                await ImportDirectory(dlg.SelectedPath);
+            }
+            else
+            {
+                var errorMessage = "Directory deemed invalid. \nMake sure the directory contains both \"default_mod.json\" and \"meta.json\"";
+                _logService?.Error(errorMessage);
+                _messageBoxService?.ShowMessage(errorMessage, "Invalid Penumbra Directory", MessageBoxButtons.OK);
+            }
         }
 
         public async Task ImportDirectory(string dir)

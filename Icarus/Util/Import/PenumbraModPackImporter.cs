@@ -34,11 +34,24 @@ namespace Icarus.Util.Import
         }
 
         // TODO: Asynchronous import
+
+        public bool IsValidPenumbraDirectory(DirectoryInfo dir)
+        {
+            if (dir.Exists)
+            {
+                var files = dir.EnumerateFiles();
+                var defaultMod = files.Where(x => x.Name.Contains("default_mod.json")).FirstOrDefault();
+                var meta = files.Where(x => x.Name.Contains("meta.json")).FirstOrDefault();
+                return (defaultMod != null) && (meta != null);
+            }
+            return false;
+        }
+
         private async Task<ModPack?> TryReadDefaultMod(DirectoryInfo dir)
         {
             var dirPath = dir.FullName;
             var fileName = dir.Name;
-            var defaultModFile = dir.EnumerateFiles().Where(x => x.Name.Contains("default_mod")).FirstOrDefault();
+            var defaultModFile = dir.EnumerateFiles().Where(x => x.Name.Contains("default_mod.json")).FirstOrDefault();
             if (defaultModFile != null)
             {
                 // TODO: Check this for "simple" mods
@@ -90,6 +103,7 @@ namespace Icarus.Util.Import
             var dirPath = dir.FullName;
             var fileName = dir.Name;
 
+            Log.Verbose("Trying to read Penumbra groups");
             var groups = dir.EnumerateFiles().Where(x => x.Name.Contains("group"));
             if (groups != null)
             {
@@ -258,6 +272,7 @@ namespace Icarus.Util.Import
 
         private async Task<IMod?> ProcessMod(string filePath, string gameFilePath)
         {
+            Log.Verbose($"Processing {filePath}");
             // TODO: Need "Name" of the item
             var ext = Path.GetExtension(filePath);
             IMod? ret = null;
@@ -286,6 +301,7 @@ namespace Icarus.Util.Import
                 var mdlData = File.ReadAllBytes(filePath);
                 var xivMdl = Mdl.GetRawMdlData(gameFilePath, mdlData);
                 var imported = TTModel.FromRaw(xivMdl);
+                imported.Source = gameFilePath;
                 if (String.IsNullOrWhiteSpace(gameFilePath))
                 {
                     var ret = new ModelMod(filePath, imported, ImportSource.RawGameFile)
