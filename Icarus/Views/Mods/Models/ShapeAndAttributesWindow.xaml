@@ -11,7 +11,8 @@
         mc:Ignorable="d"
         MinHeight="400" MinWidth="800"
         Height="400" Width="800"
-        Title="Shape and Attribute Editor">
+        Title="Shape and Attribute Editor"
+        WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.Resources>
             <DataTemplate DataType="{x:Type models:ShapeViewModel}">
@@ -92,6 +93,10 @@
             </TabItem>
             <TabItem Header="Standard">
                 <ListView ItemsSource="{Binding SlotAttributes}" HorizontalContentAlignment="Stretch" ScrollViewer.CanContentScroll="False"
+                          dd:DragDrop.IsDragSource="True"/>
+            </TabItem>
+            <TabItem Header="All">
+                <ListView ItemsSource="{Binding AllAttributes}" HorizontalContentAlignment="Stretch" ScrollViewer.CanContentScroll="False"
                           dd:DragDrop.IsDragSource="True"/>
             </TabItem>
         </TabControl>
