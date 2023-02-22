@@ -52,16 +52,6 @@ namespace Icarus.ViewModels.Mods
             var importedModel = modelMod.ImportedModel;
 
             OptionsViewModel = new(modelMod.Options);
-
-            if (importedModel != null)
-            {
-                foreach (var meshGroup in importedModel.MeshGroups)
-                {
-                    var meshGroupViewModel = viewModelService.GetMeshGroupViewModel(meshGroup, this);
-                    MeshGroups.Add(meshGroupViewModel);
-                }
-            }
-
             if (modelMod.IsComplete())
             {
                 //DisplayedHeader = $"{FileName} ({modelMod.Name})";
@@ -72,6 +62,15 @@ namespace Icarus.ViewModels.Mods
                     TargetRace = modelMod.TargetRace;
                 }
                 UpdateAttributes(modelMod.TTModel, modelMod.Path);
+            }
+
+            if (importedModel != null)
+            {
+                foreach (var meshGroup in importedModel.MeshGroups)
+                {
+                    var meshGroupViewModel = viewModelService.GetMeshGroupViewModel(meshGroup, this);
+                    MeshGroups.Add(meshGroupViewModel);
+                }
             }
 
             SetCanExport();
@@ -133,6 +132,9 @@ namespace Icarus.ViewModels.Mods
             {
                 var ttModel = modelGameFile.TTModel;
                 UpdateAttributes(ttModel, modelGameFile.Path);
+
+                // TODO: I think assigning the ImportedModel.Source here is safe?
+                _modelMod.ImportedModel.Source = ttModel.Source;
                 if (ttModel.MeshGroups.Count == MeshGroups.Count)
                 {
                     for (var i = 0; i < ttModel.MeshGroups.Count; i++)
@@ -153,6 +155,7 @@ namespace Icarus.ViewModels.Mods
             return false;
         }
 
+        // TODO: Gear that covers multiple slots, e.g. Chocobo Suit, should attributes from ALL of its covered slots
         private void UpdateAttributes(TTModel ttModel, string path)
         {
             var slot = XivPathParser.GetEquipmentSlot(path);
