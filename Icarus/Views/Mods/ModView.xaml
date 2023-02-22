@@ -25,7 +25,7 @@
         <Button Grid.Row="0" Grid.Column="2" Command="{Binding DeleteCommand}" Content="Delete"/>
         
         <TextBlock Grid.Row="1" Grid.Column="0" Text="Destination:"/>
-        <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding DestinationPath, UpdateSourceTrigger=LostFocus}"
+        <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding DestinationPath, UpdateSourceTrigger=PropertyChanged}"
                      IsReadOnly="{Binding IsReadOnly}"/>
     </Grid>
 </UserControl>

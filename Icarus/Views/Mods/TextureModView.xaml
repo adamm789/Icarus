@@ -9,7 +9,6 @@
              xmlns:modviewmodels="clr-namespace:Icarus.ViewModels.Mods"
              xmlns:enums="clr-namespace:xivModdingFramework.General.Enums;assembly=xivModdingFramework"
              d:DataContext="{d:DesignInstance Type=modviewmodels:TextureModViewModel}"
-
              d:DesignHeight="450" d:DesignWidth="800">
     <StackPanel>
         <local:ModView Grid.Row="0"/>
@@ -33,9 +32,14 @@
                 </Grid.ColumnDefinitions>
                 <Button Grid.Column="0" Command="{Binding SetDestinationCommand}" Content="Assign From Search"/>
                 <TextBlock Grid.Column="1" Text="{Binding DestinationName}" Margin="5,0,5,0"/>
+                <!--
                 <ComboBox Grid.Column="2" ItemsSource="{Binding VariantList}" SelectedValue="{Binding TextureVariant}"
                       Visibility="{Binding CanParsePath, Converter={StaticResource BooleanToVisibilityConverter}}"
                       PreviewMouseWheel="ListView_PreviewMouseWheel"/>
+                -->
+                <ui:ClickSelectTextBox Grid.Column="2" Text="{Binding TextureVariant, UpdateSourceTrigger=PropertyChanged}"
+                                       MinWidth="50" MaxWidth="50"/>
+
                 <ComboBox Grid.Column="3" ItemsSource="{Binding TexTypeValues}" SelectedValue="{Binding TexType}"
                       Visibility="{Binding CanParseTexType, Converter={StaticResource BooleanToVisibilityConverter}}"
                       PreviewMouseWheel="ListView_PreviewMouseWheel"/>
