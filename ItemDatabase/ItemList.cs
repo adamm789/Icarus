@@ -693,6 +693,7 @@ namespace ItemDatabase
 
         private List<IItem> Search(ITreeNode<(string header, IItem? item)> node, Predicate<IItem> pred)
         {
+            if (node == null) return new List<IItem>();
             if (node.Value.item != null)
             {
                 if (pred(node.Value.item))

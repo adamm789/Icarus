@@ -44,9 +44,9 @@ namespace Icarus.Mods
                     temp.Add(newPath, name);
                 }
                 AllPathsDictionary = temp;
-
             }
         }
+
         public bool IsFurniture => ShaderInfo.Shader == MtrlShader.Furniture;
         public bool IsDyeableFurniture => ShaderInfo.Shader == MtrlShader.DyeableFurniture;
 

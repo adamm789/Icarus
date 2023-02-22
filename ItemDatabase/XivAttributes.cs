@@ -26,7 +26,6 @@ namespace ItemDatabase
 
             }
             return "Unknown";
-
         }
 
         private static Regex _variantRegex = new(@"{variant}");

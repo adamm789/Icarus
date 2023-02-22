@@ -44,7 +44,7 @@ namespace ItemDatabase.Paths
 
 
         // Arbitary regex for supported paths
-        static readonly Regex canParseRegex = new(@"c[0-9]{4}[a,b,e][0-9]{4}");
+        static readonly Regex canParseRegex = new(@"c[0-9]{4}[a,e][0-9]{4}");
 
         public static bool CanParsePath(string input)
         {
@@ -313,7 +313,7 @@ namespace ItemDatabase.Paths
                 var mtrl = $"/mt_{mat}{suffix}.mtrl";
                 return mtrl;
             }
-            return input;
+            throw new ArgumentException($"Could not get mtrl file name from {input}");
         }
 
         public static string GetMtrlFileName(string input, XivRace race)
