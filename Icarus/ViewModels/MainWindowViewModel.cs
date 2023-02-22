@@ -219,7 +219,7 @@ namespace Icarus.ViewModels
             var dataObject = dropInfo.Data as DataObject;
             if (dataObject != null && dataObject.ContainsFileDropList())
             {
-                ImportViewModel.ImportFiles(dataObject.GetFileDropList().Cast<string>().ToList());
+                ImportViewModel.ImportAndAddPaths(dataObject.GetFileDropList().Cast<string>().ToList());
             }
             else
             {

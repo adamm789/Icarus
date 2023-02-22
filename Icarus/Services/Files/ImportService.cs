@@ -88,29 +88,40 @@ namespace Icarus.Services.Files
             set { _isImportingAdvanced = value; OnPropertyChanged(); }
         }
 
+        public bool IsValidPenumbraDirectory(string dirPath) => _pmpImporter.IsValidPenumbraDirectory(new DirectoryInfo(dirPath));
+
         public async Task<IcarusModPack> ImportDirectory(string dirPath)
         {
+            _logService?.Verbose($"Trying to import penumbra directory: {dirPath}");
+            var importingFile = $"Importing {_importFileQueue.Count + 1} mod(s)";
+            _importFileQueue.Enqueue(importingFile);
+
+            UpdateProperties();
             var attr = File.GetAttributes(dirPath);
             if (attr.HasFlag(FileAttributes.Directory))
             {
                 // check for default_mod.json and... group_ .json files
                 var dir = new DirectoryInfo(dirPath);
                 var modPack = await _pmpImporter.ImportPenumbraDirectory(dir);
+                _logService?.Verbose($"Finished import");
 
                 if (modPack != null)
                 {
+                    _logService?.Verbose($"Penumbra directory sucessfully imported {modPack.SimpleModsList.Count} mods");
+                    _importFileQueue.Dequeue();
+
+                    UpdateProperties();
                     return modPack;
-                }
-                else
-                {
-                    return new IcarusModPack();
                 }
             }
             else
             {
-                _logService.Error($"{dirPath} could not be imported as directory.");
-                return new IcarusModPack();
+                _logService?.Verbose($"{dirPath} could not be imported as directory.");
             }
+            _importFileQueue.Dequeue();
+
+            UpdateProperties();
+            return new IcarusModPack();
         }
 
         /// <summary>

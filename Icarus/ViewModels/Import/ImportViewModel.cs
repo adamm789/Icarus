@@ -143,7 +143,7 @@ namespace Icarus.ViewModels.Import
 
             dlg.ShowDialog();
 
-            await ImportFiles(dlg.FileNames);
+            await ImportAndAddPaths(dlg.FileNames);
         }
 
         private async Task ImportDirectory()
@@ -160,7 +160,7 @@ namespace Icarus.ViewModels.Import
 
             if (_importService.IsValidPenumbraDirectory(dlg.SelectedPath))
             {
-                await ImportDirectory(dlg.SelectedPath);
+                await ImportAndAddDirectory(dlg.SelectedPath);
             }
             else
             {
@@ -170,7 +170,7 @@ namespace Icarus.ViewModels.Import
             }
         }
 
-        public async Task ImportDirectory(string dir)
+        public async Task ImportAndAddDirectory(string dir)
         {
             _logService?.Verbose($"Importing penumbra directory: {dir}");
             var modPack = await Task.Run(() => _importService.ImportDirectory(dir));
@@ -184,28 +184,39 @@ namespace Icarus.ViewModels.Import
         }
 
         // TODO: Implement actual async import
-        public async Task ImportFiles(IList<string> filePaths)
+        public async Task ImportAndAddPaths(IList<string> filePaths)
         {
             foreach (var path in filePaths)
             {
                 var str = Path.Combine(path);
-                if (File.Exists(str))
+                ModPack? modPack = null;
+                var success = false;
+                if (Directory.Exists(str))
+                {
+                    _logService?.Verbose($"Importing directory");
+                    modPack = await ImportDirectory(str);
+                }
+                else if (File.Exists(str))
                 {
                     _logService?.Verbose($"Importing mod pack.");
-                    var modPack = await ImportFile(str);
-                    _logService?.Verbose($"Finished importing.");
+                    modPack = await ImportFile(str);
+                    _logService?.Verbose($"Finished importing file.");
+                }
 
-                    var success = AddModPack(modPack);
-                    if (!success)
-                    {
-                        _logService?.Error($"Could not import {str}");
-                    }
+                if (modPack != null)
+                {
+                    success = AddModPack(modPack);
+                }
+                if (!success)
+                {
+                    _logService?.Error($"Could not import {str}");
                 }
             }
         }
 
         private bool AddModPack(ModPack modPack)
         {
+            _logService.Verbose($"Adding mod pack");
             if (modPack.SimpleModsList.Count == 0)
             {
                 return false;
@@ -234,6 +245,11 @@ namespace Icarus.ViewModels.Import
             return await Task.Run(() => _importService.ImportFile(filePath));
         }
 
+        public async Task<ModPack> ImportDirectory(string dirPath)
+        {
+            return await Task.Run(() => _importService.ImportDirectory(dirPath));
+        }
+
         public void Add(IEnumerable<ModViewModel> mods)
         {
             _modPackViewModel.AddRange(mods);
@@ -260,18 +276,29 @@ namespace Icarus.ViewModels.Import
             _modPackViewModel.AddRange(modsList.SimpleModsList);
         }
 
+        // TODO: Currently only allows a collection where ALL are valid, not just some
         public bool CanAcceptFiles(StringCollection collection)
         {
             foreach (var str in collection)
             {
-                var ext = Path.GetExtension(str);
-                if (String.IsNullOrEmpty(ext))
+                if (Directory.Exists(str))
                 {
-                    return false;
+                    if (!_importService.IsValidPenumbraDirectory(str))
+                    {
+                        return false;
+                    }
                 }
-                if (!_extensions.Contains(ext))
+                else
                 {
-                    return false;
+                    var ext = Path.GetExtension(str);
+                    if (String.IsNullOrEmpty(ext))
+                    {
+                        return false;
+                    }
+                    if (!_extensions.Contains(ext))
+                    {
+                        return false;
+                    }
                 }
             }
             return true;
