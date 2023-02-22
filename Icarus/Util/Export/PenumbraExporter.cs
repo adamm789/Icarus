@@ -15,6 +15,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using ModPack = Icarus.Mods.DataContainers.ModPack;
+using GameData = Lumina.GameData;
 
 namespace Icarus.Util
 {
@@ -58,7 +59,7 @@ namespace Icarus.Util
 
         internal async Task<string> ExportToSimple(ModPack modPack, string outputDir, bool toPmp = true, bool toFileStructure = true)
         {
-            _logService.Information("Starting export to simple penumbra modpack.");
+            _logService?.Information("Starting export to simple penumbra modpack.");
             var tempDir = GetTempDirectory(outputDir);
 
             if (toFileStructure)
@@ -73,7 +74,7 @@ namespace Icarus.Util
             var exportEntries = modPack.SimpleModsList.FindAll(m => m.ShouldExport);
             if (exportEntries.Count == 0)
             {
-                _logService.Information($"No entries were selected for export");
+                _logService?.Information($"No entries were selected for export");
                 return "";
             }
             var tasks = new Task<byte[]>[exportEntries.Count];
@@ -105,7 +106,7 @@ namespace Icarus.Util
                         file.Directory.Create();
                         if (File.Exists(path))
                         {
-                            _logService.Warning($"{file.Name} already exists and is being overwritten by a newer version.");
+                            _logService?.Warning($"{file.Name} already exists and is being overwritten by a newer version.");
                         }
                     }
                     else
@@ -127,7 +128,7 @@ namespace Icarus.Util
                 }
                 catch (Exception ex)
                 {
-                    _logService.Error(ex, $"Could not export entry {i}");
+                    _logService?.Error(ex, $"Could not export entry {i}");
                 }
             }
 
@@ -244,6 +245,7 @@ namespace Icarus.Util
                                         VfxId = imc.Vfx
                                     };
                                 }
+
                             }
                             //}
                         }

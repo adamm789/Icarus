@@ -270,7 +270,7 @@ namespace Icarus.ViewModels.Mods
         {
             var item = dropInfo.Data;
 
-            _logService.Debug($"Drop {item.GetType()} onto {GetType()}");
+            _logService?.Debug($"Drop {item.GetType()} onto {GetType()}");
 
             if (item is ItemTreeNodeViewModel vm)
             {

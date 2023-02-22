@@ -18,10 +18,7 @@ using System.Security;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
-using TeximpNet.DDS;
 using xivModdingFramework.Mods.DataContainers;
-using static HelixToolkit.SharpDX.Core.Model.Metadata;
 using FrameworkModPack = xivModdingFramework.Mods.DataContainers.ModPack;
 using IcarusModPack = Icarus.Mods.DataContainers.ModPack;
 using Path = System.IO.Path;
@@ -72,7 +69,7 @@ namespace Icarus.Util
             if (entries == null || entries.Count == 0)
             {
                 var err = "SimpleModsList/Entries is null or empty. Returning.";
-                _logService.Error(err);
+                _logService?.Error(err);
                 throw new ArgumentNullException(err);
             }
 
@@ -104,7 +101,7 @@ namespace Icarus.Util
             {
                 var j = i;
 
-                _logService.Debug($"On entry {i}");
+                _logService?.Debug($"On entry {i}");
                 tasks[j] = Task.Run(() => GetBytes(exportEntries[j], j));
                 //byteList.Add(await GetBytes(entries[i]));
             }
@@ -115,7 +112,7 @@ namespace Icarus.Util
             var offset = 0;
             var numMods = 0;
             var numModsWritten = 0;
-            _logService.Debug($"Writing to {_tempMPD}");
+            _logService?.Debug($"Writing to {_tempMPD}");
 
             using (var bw = new BinaryWriter(File.Open(_tempMPD, FileMode.Create)))
             {
@@ -128,7 +125,7 @@ namespace Icarus.Util
 
                     if (bytes == Array.Empty<byte>())
                     {
-                        _logService.Error($"Could not get bytes for {entry.Name}. Skipping entry {i}.");
+                        _logService?.Error($"Could not get bytes for {entry.Name}. Skipping entry {i}.");
                         continue;
                     }
 
@@ -168,7 +165,7 @@ namespace Icarus.Util
                     }
                     offset += bytes.Length;
                     bw.Write(bytes);
-                    _logService.Debug($"Wrote {bytes.Length} bytes");
+                    _logService?.Debug($"Wrote {bytes.Length} bytes");
                     numModsWritten++;
                 }
             }
@@ -181,12 +178,12 @@ namespace Icarus.Util
         public async Task<string> ExportToAdvanced(IcarusModPack modPack, FileInfo fileInfo,
             CancellationToken? cancellationToken = null, IProgress<(int, int)>? progress = null)
         {
-            _logService.Information("Exporting to advanced textools modpack.");
+            _logService?.Information("Exporting to advanced textools modpack.");
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
             if (fileInfo.Exists)
             {
-                _logService.Debug($"Deleting {fileInfo.FullName} while exporting to advanced textools.");
+                _logService?.Debug($"Deleting {fileInfo.FullName} while exporting to advanced textools.");
                 fileInfo.Delete();
             }
 
@@ -243,7 +240,7 @@ namespace Icarus.Util
                     // Disallow pages without groups
                     if (modPackPage.ModGroups.Count <= 0)
                     {
-                        _logService.Warning($"Page {modPackPage.PageIndex} has no groups. Skipping page.");
+                        _logService?.Warning($"Page {modPackPage.PageIndex} has no groups. Skipping page.");
                         continue;
                     }
                     var modPackPageJson = new ModPackPageJson
@@ -258,7 +255,7 @@ namespace Icarus.Util
                         // Disallow groups with no options
                         if (modGroup.OptionList.Count <= 0)
                         {
-                            _logService.Warning($"{modGroup.GroupName} has no options. Skipping group.");
+                            _logService?.Warning($"{modGroup.GroupName} has no options. Skipping group.");
                             continue;
                         }
 
@@ -285,7 +282,7 @@ namespace Icarus.Util
                                 }
                                 else
                                 {
-                                    _logService.Error($"Could not add {imageFileName} to imageList.");
+                                    _logService?.Error($"Could not add {imageFileName} to imageList.");
                                 }
                             }
                             var fn = imageFileName == "" ? "" : "images/" + Path.GetFileName(imageFileName);
@@ -313,8 +310,8 @@ namespace Icarus.Util
 
                                 if (bytes == Array.Empty<byte>())
                                 {
-                                    _logService.Error($"Could not get bytes for {modOptionMod.Name}. " +
-                                        $"Skipping page {modPackPage.PageIndex}, group {modGroup.GroupName}, option {options}");
+                                    _logService?.Error($"Could not get bytes for {modOptionMod.Name}. " 
+                                        + $"Skipping page {modPackPage.PageIndex}, group {modGroup.GroupName}, option {options}");
                                     continue;
                                 }
                                 var modOffset = offset;
@@ -390,7 +387,6 @@ namespace Icarus.Util
             LogNumModsWritten(numMods, numModsWritten);
 
             return modPackPath;
-
         }
 
         private string GetMPLPath(string tempDir)
@@ -407,17 +403,17 @@ namespace Icarus.Util
         {
             if (numMods == numModsWritten)
             {
-                _logService.Information($"Wrote {numModsWritten} out of {numMods} mods.");
+                _logService?.Information($"Wrote {numModsWritten} out of {numMods} mods.");
             }
             else
             {
-                _logService.Warning($"But only wrote {numModsWritten} out of {numMods}.");
+                _logService?.Warning($"But only wrote {numModsWritten} out of {numMods}.");
             }
         }
 
         private string TrySaveFile(IcarusModPack modPack, FileInfo file, ModPackJson modPackJson, HashSet<string>? imageList = null)
         {
-            _logService.Information("Trying to save ttmp2 file");
+            _logService?.Information("Trying to save ttmp2 file");
             var zf = new ZipFile
             {
                 UseZip64WhenSaving = Zip64Option.AsNecessary,
@@ -433,7 +429,7 @@ namespace Icarus.Util
 
                 File.WriteAllText(_tempMPL, JsonConvert.SerializeObject(modPackJson));
 
-                _logService.Debug($"_tempMPL = {_tempMPL} - _tempMPD = {_tempMPD}");
+                _logService?.Debug($"_tempMPL = {_tempMPL} - _tempMPD = {_tempMPD}");
 
                 zf.AddFile(_tempMPL, "");
                 zf.AddFile(_tempMPD, "");
@@ -448,7 +444,7 @@ namespace Icarus.Util
                 zf.Save(file.FullName);
 
                 var entries = modPack.SimpleModsList;
-                _logService.Information($"Successfully wrote to {file.FullName}.");
+                _logService?.Information($"Successfully wrote to {file.FullName}.");
                 return file.FullName;
             }
             catch (Exception ex)
@@ -459,7 +455,7 @@ namespace Icarus.Util
             {
                 if (Directory.Exists(_tempDir))
                 {
-                    _logService.Debug($"Deleting temporary directory: {_tempDir}");
+                    _logService?.Debug($"Deleting temporary directory: {_tempDir}");
                     Directory.Delete(_tempDir, true);
                 }
                 zf.Dispose();
@@ -496,7 +492,7 @@ namespace Icarus.Util
             // Maybe unecessary? But just to be safe, I guess
             if (ForbiddenModTypes.Contains(path))
             {
-                _logService.Error($"{path} is a forbidden mod type. Skipping");
+                _logService?.Error($"{path} is a forbidden mod type. Skipping");
                 return null;
             }
 
@@ -529,7 +525,7 @@ namespace Icarus.Util
 
         private List<ModsJson> GetAllPathsModJson(IAdditionalPathsMod mod, long offset, int modSize, IcarusModPack? modPack = null)
         {
-            _logService.Debug($"Applying to all {mod.AllPathsDictionary.Count} variants.");
+            _logService?.Debug($"Applying to all {mod.AllPathsDictionary.Count} variants.");
             var ret = new List<ModsJson>();
             var category = mod.Category;
             var isDefault = mod.IsDefault;
@@ -538,7 +534,7 @@ namespace Icarus.Util
             {
                 if (ForbiddenModTypes.Contains(path))
                 {
-                    _logService.Error($"{path} is a forbidden mod type. Skipping");
+                    _logService?.Error($"{path} is a forbidden mod type. Skipping");
                     continue;
                 }
                 var datFile = XivPathParser.GetDatFile(path);
