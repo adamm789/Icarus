@@ -12,7 +12,7 @@ namespace Icarus.ViewModels.Util
 
         }
 
-        public ViewModelBase(ILogService logService)
+        public ViewModelBase(ILogService? logService)
         {
             _logService = logService;
         }
