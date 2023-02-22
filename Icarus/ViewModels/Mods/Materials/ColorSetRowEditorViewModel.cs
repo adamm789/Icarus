@@ -101,6 +101,7 @@ namespace Icarus.ViewModels.Mods.Materials
             set { _canApplyToEmissive = value; OnPropertyChanged(); }
         }
 
+        // TODO: IF a row is dyeable, distinguish it from non-dyeable rows
         string _dyeTemplateId;
         public string DyeTemplateId
         {
@@ -115,6 +116,13 @@ namespace Icarus.ViewModels.Mods.Materials
                 {
                     b = new BitArray(BitConverter.GetBytes((ushort)0));
                     CanEditDye = false;
+                    savedDyes = new() { UseDiffuse, UseSpecular, UseEmissive, UseGloss, UseSpecPower };
+
+                    UseDiffuse = false;
+                    UseSpecular = false;
+                    UseEmissive = false;
+                    UseGloss = false;
+                    UseSpecPower = false;
                 }
                 else
                 {
@@ -131,6 +139,17 @@ namespace Icarus.ViewModels.Mods.Materials
                     {
                         CanApplyToEmissive = false;
                     }
+
+                    if (savedDyes != null && savedDyes.Count > 0)
+                    {
+                        UseDiffuse = savedDyes[0];
+                        UseSpecular = savedDyes[1];
+                        UseEmissive = savedDyes[2];
+                        UseGloss = savedDyes[3];
+                        UseSpecPower = savedDyes[4];
+                        savedDyes = null;
+                    }
+
                 }
                 if (b.Length == 16)
                 {
@@ -140,6 +159,8 @@ namespace Icarus.ViewModels.Mods.Materials
                 //_materialMod.ColorSetDyeData[_rowNumber * 2] = (byte)value;
             }
         }
+
+        List<bool>? savedDyes;
 
         bool _useDiffuse = false;
         public bool UseDiffuse
