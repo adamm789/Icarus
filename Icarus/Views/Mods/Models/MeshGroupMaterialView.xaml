@@ -5,6 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:models="clr-namespace:Icarus.ViewModels.Models" 
              xmlns:ui="clr-namespace:Icarus.UI"
+             xmlns:pathviews="clr-namespace:Icarus.Views.Mods.Paths"
+             xmlns:pathviewmodels="clr-namespace:Icarus.ViewModels.Mods.Paths"
              d:DataContext="{d:DesignInstance Type=models:MeshGroupMaterialViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -15,6 +17,9 @@
             <ui:BooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter"
                                              True="Hidden" False="Visible"/>
             <ui:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+            <DataTemplate DataType="{x:Type pathviewmodels:MtrlPathViewModel}">
+                <pathviews:MtrlPathView/>
+            </DataTemplate>
         </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -24,19 +29,15 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
+        <StackPanel>
+            <ContentControl Content="{Binding MtrlPathViewModel}">
+        </ContentControl>
+        </StackPanel>
+        <!--
+        <TextBox Grid.Row="0" Grid.Column="0" Text="{Binding DisplayedMaterial, UpdateSourceTrigger=PropertyChanged}"/>
 
-        <TextBox Grid.Row="0" Grid.Column="0" Text="{Binding DisplayedMaterial}"/>
-
-        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Visibility="{Binding CanParsePath, Converter={StaticResource BooleanToVisibilityConverter}}">
+        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
             <Grid Margin="0 0 5 0" MinWidth="50">
-                <!--
-                <ComboBox SelectedValue="{Binding MaterialVariant}" ItemsSource="{Binding VariantList}"
-                           Visibility="{Binding IsSkinMaterial, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
-
-                <ComboBox SelectedValue="{Binding SkinVariant}" ItemsSource="{Binding VariantList}"
-                          Visibility="{Binding IsSkinMaterial, Converter={StaticResource BooleanToVisibilityConverter}}">
-                </ComboBox>
-                -->
                 <ui:ClickSelectTextBox Text="{Binding MaterialVariant, UpdateSourceTrigger=PropertyChanged}"
                                        MaxWidth="100"
                                        Visibility="{Binding IsSkinMaterial, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
@@ -48,5 +49,6 @@
             <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding IsSkinMaterial, Mode=TwoWay}"
                         Visibility="{Binding CanAssignSkin, Converter={StaticResource BooleanToVisibilityConverter}}">Is Skin?</CheckBox>
         </StackPanel>
+        -->
     </Grid>
 </UserControl>

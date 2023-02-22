@@ -3,6 +3,7 @@ using Icarus.Services.Interfaces;
 using Icarus.ViewModels.Mods;
 using Icarus.ViewModels.Util;
 using Icarus.Views.Models;
+using ItemDatabase;
 using ItemDatabase.Enums;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -20,6 +21,24 @@ namespace Icarus.ViewModels.Models
 
         public MeshGroupViewModel(TTMeshGroup group, ModelModViewModel modelMod, ViewModelService viewModelService, IWindowService windowService)
         {
+            if (AllAttributes == null)
+            {
+                AllAttributes = new();
+                foreach (var attr in AttributePreset.GetAllAttributes())
+                {
+                    if (attr.IsVariantAttribute())
+                    {
+                        var attrViewModel = new VariantAttributeViewModel(attr);
+                        AllAttributes.Add(attrViewModel);
+                    }
+                    else
+                    {
+                        var attrViewModel = new AttributeViewModel(attr);
+                        AllAttributes.Add(attrViewModel);
+                    }
+                }
+            }
+
             MaterialViewModel = viewModelService.GetMeshGroupMaterialViewModel(group, modelMod);
             _importedGroup = group;
             Name = group.Name;
@@ -78,6 +97,8 @@ namespace Icarus.ViewModels.Models
             get { return _slotAttributes; }
             set { _slotAttributes = value; OnPropertyChanged(); }
         }
+
+        public static List<AttributeViewModel> AllAttributes { get; set; }
 
         public void SetAttributePresets(Dictionary<string, Dictionary<int, List<string>>>? bodyPresets)
         {

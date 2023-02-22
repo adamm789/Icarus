@@ -3,12 +3,14 @@ using Icarus.Mods.Interfaces;
 using Icarus.Services.Interfaces;
 using Icarus.Util.Import;
 using Icarus.ViewModels.Mods;
+using Icarus.ViewModels.Mods.Paths;
 using Icarus.ViewModels.Util;
 using ItemDatabase.Paths;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
+using System.Text.RegularExpressions;
 using xivModdingFramework.General.Enums;
 using xivModdingFramework.Models.DataContainers;
 
@@ -24,94 +26,66 @@ namespace Icarus.ViewModels.Models
         private string _skinName = "/mt_c0101b0001_";
         private string _initialMaterial = "";
 
+        public MtrlPathViewModel MtrlPathViewModel
+        {
+            get; set;
+        }
+
         public MeshGroupMaterialViewModel(TTMeshGroup group, ModelModViewModel model, IUserPreferencesService userPreferences)
         {
             _importedGroup = group;
             _userPreferencesService = userPreferences;
             _modelModViewModel = model;
 
-            _materialName = group.Material;
-            _isSkinMaterial = XivPathParser.IsSkinMtrl(_importedGroup.Material);
-            _initialMaterial = group.Material;
-            DisplayedMaterial = _initialMaterial;
-            MaterialVariant = XivPathParser.GetMtrlVariant(DisplayedMaterial);
-            DestinationModelPath = model.DestinationPath;
+            if (string.IsNullOrWhiteSpace(group.Material))
+            {
+                group.Material = "";
+            }
 
-            InitializeSkinVariant(model.TargetRace);
+            MtrlPathViewModel = new(ref group.Material, userPreferences, model.ImportSource);
+            MtrlPathViewModel.ChangeRace(model.TargetRace);
+            MtrlPathViewModel.PropertyChanged += new PropertyChangedEventHandler(OnMaterialChanged);
 
-            //UpdateRace(model.TargetRace);
+            model.PropertyChanged += new PropertyChangedEventHandler(OnModelChanged);
+        }
 
-            PropertyChanged += new PropertyChangedEventHandler(OnMyPropertyChanged);
+        private void OnMaterialChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(MtrlPathViewModel.DisplayedMaterial))
+            {
+                DisplayedMaterial = MtrlPathViewModel.DisplayedMaterial;
+            }
+        }
 
-            var eh = new PropertyChangedEventHandler(ParentChanged);
-            model.PropertyChanged += eh;
+        private void OnModelChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(ModelModViewModel.DestinationPath))
+            {
+                MtrlPathViewModel.ChangeDestinationModel(_modelModViewModel.DestinationPath);
+            }
+            if (e.PropertyName == nameof(ModelModViewModel.TargetRace))
+            {
+                MtrlPathViewModel.ChangeRace(_modelModViewModel.TargetRace);
+            }
         }
 
 
-        string _skinVariant = "a";
         public string SkinVariant
         {
-            get { return _skinVariant; }
-            set { _skinVariant = value; OnPropertyChanged(); }
+            get { return MtrlPathViewModel.SkinVariant; }
+            set { MtrlPathViewModel.SkinVariant = value; OnPropertyChanged(); }
         }
 
-        string _materialVariant = "a";
         public string MaterialVariant
         {
-            get { return _materialVariant; }
-            set { _materialVariant = value; OnPropertyChanged(); }
+            get { return MtrlPathViewModel.MaterialVariant; }
+            set { MtrlPathViewModel.MaterialVariant = value; OnPropertyChanged(); }
         }
 
-        public bool CanParsePath => XivPathParser.CanParsePath(DestinationModelPath);
-        public bool CanAssignSkin { get => _modelModViewModel.HasSkin; }
-
-        private void ParentChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (sender is not ModViewModel mod) return;
-
-            if (e.PropertyName == nameof(mod.DestinationPath))
-            {
-                DestinationModelPath = mod.DestinationPath;
-            }
-
-            if (sender is not ModelModViewModel modelMod) return;
-
-
-            if (e.PropertyName == nameof(modelMod.TargetRace))
-            {
-                //TargetRace = modelMod.TargetRace;
-                UpdateRace(modelMod.TargetRace);
-                UpdateDisplayedMaterial();
-            }
-
-        }
-
-        private void OnMyPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == nameof(SkinVariant) || e.PropertyName == nameof(MaterialVariant)
-                || e.PropertyName == nameof(DestinationModelPath) || e.PropertyName == nameof(IsSkinMaterial))
-            {
-                UpdateDisplayedMaterial();
-            }
-
-            if (e.PropertyName == nameof(DisplayedMaterial))
-            {
-                UpdateVariants();
-            }
-        }
-
-        string _destinationModelPath = "";
-        public string DestinationModelPath
-        {
-            get { return _destinationModelPath; }
-            set { _destinationModelPath = value; OnPropertyChanged(); }
-        }
-
-        bool _isSkinMaterial = false;
         public bool IsSkinMaterial
         {
-            get { return _isSkinMaterial; }
-            set { _isSkinMaterial = value; OnPropertyChanged(); }
+            get { return MtrlPathViewModel.IsSkinMaterial; }
+            set { MtrlPathViewModel.IsSkinMaterial = value; OnPropertyChanged(); }
         }
 
         // TODO: Implement an "exists" function, which keeps track of if a material exists or not
@@ -126,103 +100,11 @@ namespace Icarus.ViewModels.Models
             set { _exists = value; OnPropertyChanged(); }
         }
 
-        // TODO: Have material target race only affect the skin
-        /*
-        XivRace _targetRace = XivRace.Hyur_Midlander_Male;
-        private XivRace TargetRace
-        {
-            get { return _targetRace; }
-            set{_targetRace = value;
-                //UpdateDisplayedMaterial();
-            }
-        }
-        */
-
+        // TODO: How to handle assignment to "Character" models, e.g. faces which have multiple different materials?
         public string DisplayedMaterial
         {
             get { return _importedGroup.Material; }
             set { _importedGroup.Material = value; OnPropertyChanged(); }
         }
-
-        private void UpdateVariants()
-        {
-            if (IsSkinMaterial)
-            {
-                _skinVariant = XivPathParser.GetMtrlVariant(DisplayedMaterial);
-            }
-            else
-            {
-                _materialVariant = XivPathParser.GetMtrlVariant(DisplayedMaterial);
-            }
-        }
-
-        private void UpdateDisplayedMaterial()
-        {
-            OnPropertyChanged(nameof(CanParsePath));
-            if (CanParsePath)
-            {
-                UpdateItem();
-                if (IsSkinMaterial)
-                {
-                    DisplayedMaterial = _skinName + _skinVariant + ".mtrl";
-                }
-                else
-                {
-                    DisplayedMaterial = _materialName;
-                }
-            }
-        }
-
-        private void UpdateRace(XivRace race)
-        {
-            _skinName = XivPathParser.ChangeToRace(_skinName, race);
-            if (_modelModViewModel.ImportSource == ImportSource.Raw)
-            {
-                SkinVariant = _userPreferencesService.GetDefaultSkinMaterialVariant(race);
-            }
-            else if (_modelModViewModel.ImportSource == ImportSource.TexToolsModPack)
-            {
-                if (IsSkinMaterial)
-                {
-                    SkinVariant = XivPathParser.GetMtrlVariant(DisplayedMaterial);
-                }
-                else
-                {
-                    SkinVariant = _userPreferencesService.GetDefaultSkinMaterialVariant(race);
-                }
-            }
-        }
-
-        private void InitializeSkinVariant(XivRace race)
-        {
-            if (_modelModViewModel.ImportSource == ImportSource.Raw)
-            {
-                _skinVariant = _userPreferencesService.GetDefaultSkinMaterialVariant(race);
-            }
-            else if (_modelModViewModel.ImportSource == ImportSource.TexToolsModPack)
-            {
-                if (IsSkinMaterial)
-                {
-                    _skinVariant = XivPathParser.GetMtrlVariant(DisplayedMaterial);
-                }
-                else
-                {
-                    _skinVariant = _userPreferencesService.GetDefaultSkinMaterialVariant(race);
-                }
-            }
-        }
-
-        private void UpdateItem()
-        {
-            OnPropertyChanged(nameof(CanAssignSkin));
-            _materialName = XivPathParser.GetMtrlFileName(DestinationModelPath, _materialVariant);
-            _materialName = XivPathParser.PathCorrectFileNameMtrl(_materialName);
-        }
-
-        public List<string> VariantList { get; } = new()
-        {
-            "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m",
-            "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"
-        };
     }
 }

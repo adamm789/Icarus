@@ -1,0 +1,42 @@
+﻿<UserControl x:Class="Icarus.Views.Mods.Paths.MtrlPathView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Icarus.Views.Mods.Paths"
+             xmlns:ui="clr-namespace:Icarus.UI"
+             xmlns:pathviewmodels="clr-namespace:Icarus.ViewModels.Mods.Paths"
+             d:DataContext="{d:DesignInstance Type=pathviewmodels:MtrlPathViewModel}"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="10*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.Resources>
+            <ui:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"
+                                             True="Visible" False="Hidden"/>
+            <ui:BooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter"
+                                             True="Hidden" False="Visible"/>
+            <ui:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+
+        </Grid.Resources>
+        <TextBox Grid.Column="0"  Text="{Binding DisplayedMaterial, UpdateSourceTrigger=PropertyChanged}"/>
+        <Grid Grid.Column="1" Margin="0 0 5 0" MinWidth="50">
+            <ui:ClickSelectTextBox Text="{Binding MaterialVariant, UpdateSourceTrigger=PropertyChanged}"
+                                       MaxWidth="50"
+                                       Visibility="{Binding IsSkinMaterial, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
+            <ui:ClickSelectTextBox Text="{Binding SkinVariant, UpdateSourceTrigger=PropertyChanged}"
+                                       MaxWidth="50"
+                                       Visibility="{Binding IsSkinMaterial, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+        </Grid>
+        <Grid Grid.Column="2">
+            <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding IsSkinMaterial, Mode=TwoWay}"
+                        Visibility="{Binding CanAssignSkin, Converter={StaticResource BooleanToVisibilityConverter}}">Is Skin?</CheckBox>
+            <ComboBox Grid.Column="3" ItemsSource="{Binding FaceMaterials}" Visibility="{Binding IsFaceMaterial,Converter={StaticResource BooleanToVisibilityConverter}}"
+                  SelectedIndex="{Binding SelectedFaceMaterialIndex}"/>
+        </Grid>
+    </Grid>
+</UserControl>
