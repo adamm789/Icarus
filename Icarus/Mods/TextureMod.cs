@@ -27,6 +27,7 @@ namespace Icarus.Mods
         {
             XivTex = tex;
             Path = tex.TextureTypeAndPath.Path;
+            TexType = tex.TextureTypeAndPath.Type;
         }
 
         public TextureMod(ITextureGameFile gameFile, ImportSource source = ImportSource.Vanilla) : base(gameFile, source)

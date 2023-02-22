@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using TeximpNet.Compression;
 using TeximpNet.DDS;
 using xivModdingFramework.General.Enums;
+using xivModdingFramework.Helpers;
+using xivModdingFramework.SqPack.FileTypes;
 using xivModdingFramework.Textures.DataContainers;
 using xivModdingFramework.Textures.Enums;
 using xivModdingFramework.Textures.FileTypes;
@@ -148,7 +150,7 @@ namespace Icarus.Util.Extensions
                         {
                             newTex.AddRange(DatExtensions.MakeType4DatHeader(texFormat, DDSInfo.mipPartOffsets, DDSInfo.mipPartCounts, (int)uncompressedLength, newMipCount, newWidth, newHeight));
                         }
-                        
+
                         newTex.AddRange(Tex.MakeTextureInfoHeader(texFormat, newWidth, newHeight, newMipCount));
                         newTex.AddRange(DDSInfo.dds);
 
@@ -177,5 +179,112 @@ namespace Icarus.Util.Extensions
             // TODO: Extract GetImageData so that it does not depend on game directory (?)
             return await tex.GetImageData(xivTex, layer);
         }
+
+        public static async Task<XivTex> GetXivTex(byte[] data)
+        {
+            var xivTex = new XivTex();
+            var decompressedData = new List<byte>();
+
+            using var br = new BinaryReader(new MemoryStream(data));
+            var mipMapInfoOffset = 24;
+
+            br.BaseStream.Seek(4, SeekOrigin.Begin);
+            var val = br.ReadInt32();
+            xivTex.TextureFormat = Dat.TextureTypeDictionary[val];
+            xivTex.Width = br.ReadInt16();
+            xivTex.Height = br.ReadInt16();
+            var pos = br.BaseStream.Position;
+            xivTex.Layers = br.ReadInt16();
+            var imageCount2 = br.ReadInt16();
+
+            for (int i = 0, j = 0; i < xivTex.MipMapCount; i++)
+            {
+                br.BaseStream.Seek(mipMapInfoOffset + j, SeekOrigin.Begin);
+
+                var offsetFromHeaderEnd = br.ReadInt32();
+                var mipMapLength = br.ReadInt32();
+                var mipMapSize = br.ReadInt32();
+                var mipMapStart = br.ReadInt32();
+                var mipMapParts = br.ReadInt32();
+
+                var mipMapPartOffset = offsetFromHeaderEnd;
+
+                br.BaseStream.Seek(mipMapPartOffset, SeekOrigin.Begin);
+
+                br.ReadBytes(8);
+                var compressedSize = br.ReadInt32();
+                var uncompressedSize = br.ReadInt32();
+
+                if (mipMapParts > 1)
+                {
+                    var compressedData = br.ReadBytes(compressedSize);
+
+                    var decompressedPartData = await IOUtil.Decompressor(compressedData, uncompressedSize);
+
+                    decompressedData.AddRange(decompressedPartData);
+
+                    for (var k = 1; k < mipMapParts; k++)
+                    {
+                        var check = br.ReadByte();
+                        while (check != 0x10)
+                        {
+                            check = br.ReadByte();
+                        }
+
+                        br.ReadBytes(7);
+                        compressedSize = br.ReadInt32();
+                        uncompressedSize = br.ReadInt32();
+
+                        // When the compressed size of a data block shows 32000, it is uncompressed.
+                        if (compressedSize != 32000)
+                        {
+                            compressedData = br.ReadBytes(compressedSize);
+                            decompressedPartData =
+                                await IOUtil.Decompressor(compressedData, uncompressedSize);
+
+                            decompressedData.AddRange(decompressedPartData);
+                        }
+                        else
+                        {
+                            decompressedPartData = br.ReadBytes(uncompressedSize);
+                            decompressedData.AddRange(decompressedPartData);
+                        }
+                    }
+                }
+                else
+                {
+                    // When the compressed size of a data block shows 32000, it is uncompressed.
+                    if (compressedSize != 32000)
+                    {
+                        var compressedData = br.ReadBytes(compressedSize);
+
+                        var uncompressedData = await IOUtil.Decompressor(compressedData, uncompressedSize);
+
+                        decompressedData.AddRange(uncompressedData);
+                    }
+                    else
+                    {
+                        var decompressedPartData = br.ReadBytes(uncompressedSize);
+                        decompressedData.AddRange(decompressedPartData);
+                    }
+                }
+
+                j = j + 20;
+            }
+
+            /*
+            if (decompressedData.Count < uncompressedFileSize)
+            {
+                var difference = uncompressedFileSize - decompressedData.Count;
+                var padding = new byte[difference];
+                Array.Clear(padding, 0, difference);
+                decompressedData.AddRange(padding);
+            }
+            */
+            xivTex.TexData = decompressedData.ToArray();
+
+            return xivTex;
+        }
     }
 }
+
