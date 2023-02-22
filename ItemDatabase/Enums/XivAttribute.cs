@@ -96,21 +96,31 @@ namespace ItemDatabase.Enums
         Ears,
 
         // Hair
+        [Description("atr_hv_{variant}")]
         HairVariantParts,
+        [Description("atr_kam")]
         Scalp,
 
         // Monsters/Demihumans
-        //OtherVariantParts,
+        [Description("atr_bv_x")]
+        OtherVariantParts,
+        [Description("atr_parts_x")]
         MonsterSpecificParts,
 
         // Extreme Rare/Unknown
+        [Description("atr_showhide")]
         WeaponModels,
+        [Description("atr_blt")]
         BodyModels,
 
         // Connectory Attributes
+        [Description("atr_cn_neck")]
         NeckConnector,
+        [Description("atr_cn_wrist")]
         WristConnector,
+        [Description("atr_cn_ankle")]
         AnkleConnector,
+        [Description("atr_cn_waist")]
         WaistConnector
     }
 }

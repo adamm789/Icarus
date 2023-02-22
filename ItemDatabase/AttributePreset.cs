@@ -162,6 +162,11 @@ namespace ItemDatabase
             return retVal;
         }
 
+        public static List<XivAttribute> GetAllAttributes()
+        {
+            return ((XivAttribute[])Enum.GetValues(typeof(XivAttribute))).ToList();
+        }
+
         /// <summary>
         /// Returns a dictionary:
         /// key=arbitrary header/identifier, value=another dictionary:
