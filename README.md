@@ -11,7 +11,7 @@ Currently supports:
 
 Do note: **Just because Icarus allows something does not necessarily mean it will work in-game. Once you start messing with paths beyond changing variants, the risk of a game crash may increase.**  
 
-As a side note: yes, you should be able to export model, material, and texture mods in .ttmp2 files as described above.  
+Additionally: **I can test Icarus only so much. Use at your own risk.**  
 
 # Usage
 Set game path in settings  
