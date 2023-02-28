@@ -2,13 +2,16 @@
 using Icarus.Mods.DataContainers;
 using Icarus.Mods.Interfaces;
 using Icarus.Mods.Penumbra;
+using Icarus.Penumbra.GameData;
 using Icarus.Util.Extensions;
 using Ionic.Zip;
 using ItemDatabase.Paths;
 using Lumina;
+using Lumina.Excel.GeneratedSheets;
 using Newtonsoft.Json;
 using Serilog;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,8 +19,9 @@ using xivModdingFramework.Materials.DataContainers;
 using xivModdingFramework.Materials.FileTypes;
 using xivModdingFramework.Models.DataContainers;
 using xivModdingFramework.Models.FileTypes;
-using xivModdingFramework.SqPack.FileTypes;
+using xivModdingFramework.Mods.FileTypes;
 using xivModdingFramework.Textures.DataContainers;
+using xivModdingFramework.Variants.DataContainers;
 
 namespace Icarus.Util.Import
 {
@@ -35,10 +39,12 @@ namespace Icarus.Util.Import
 
         // TODO: Asynchronous import
 
-        public bool IsValidPenumbraDirectory(DirectoryInfo dir)
+        public bool IsValidPenumbraDirectory(string dirPath)
         {
-            if (dir.Exists)
+
+            if (Directory.Exists(dirPath))
             {
+                var dir = new DirectoryInfo(dirPath);
                 var files = dir.EnumerateFiles();
                 var defaultMod = files.Where(x => x.Name.Contains("default_mod.json")).FirstOrDefault();
                 var meta = files.Where(x => x.Name.Contains("meta.json")).FirstOrDefault();
@@ -62,10 +68,10 @@ namespace Icarus.Util.Import
 
                     if (contents != null)
                     {
+                        var ret = new ModPack();
+
                         if (contents.Files.Count > 0)
                         {
-                            var ret = new ModPack();
-
                             foreach (var kvp in contents.Files)
                             {
                                 var gameFilePath = kvp.Key;
@@ -78,8 +84,18 @@ namespace Icarus.Util.Import
                                     ret.SimpleModsList.Add(mod);
                                 }
                             }
-                            return ret;
                         }
+
+                        if (contents.Manipulations.Count > 0) { 
+                            // TODO: Shouldn't this return a list of metadata mods?
+                            var mod = await TryImportMetadata(contents.Manipulations);
+                            if (mod != null)
+                            {
+                                ret.SimpleModsList.Add(mod);
+                            }
+                        }
+
+                        return ret;
                     }
                     else
                     {
@@ -141,9 +157,12 @@ namespace Icarus.Util.Import
                                     }
                                 }
 
-                                foreach (var manipulation in option.Manipulations)
+                                var metadataMod = await TryImportMetadata(option.Manipulations);
+                                if (metadataMod != null && metadataMod.ItemMetadata != null)
                                 {
-                                    // TODO: MetadataMod
+                                    metadataMod.ModFileName = $"metadataMod.ModFileName - {option.Name}";
+                                    ret.SimpleModsList.Add(metadataMod);
+                                    modOption.AddMod(metadataMod);
                                 }
 
                                 if (modOption.Mods.Count > 0)
@@ -397,6 +416,127 @@ namespace Icarus.Util.Import
                 Log.Error(ex.Message);
             }
             return null;
+        }
+
+        public async Task<MetadataMod?> TryImportMetadata(List<MetaManipulation> manipulations)
+        {
+            try
+            {
+                Dictionary<(ushort id, string slot), ItemMetadata> dict = new();
+                var metadataMod = new MetadataMod(ImportSource.PenumbraModPack);
+                ItemMetadata? itemMetadata = null;
+                List<XivImc>? imcs = null;
+                EquipmentParameter? eqpEntry = null;
+                foreach (var manipulation in manipulations)
+                {
+                    // TODO: MetadataMod
+                    // TODO: e.g. one manipulation that manipulates two different items simultaneously (e.g. body item and shoe item)
+                    Log.Error($"Metadata import not currently implemented.");
+                    if (manipulation.Type == "Imc")
+                    {
+                        var imcManipulation = JsonConvert.DeserializeObject<ImcManipulation>(manipulation.Manipulation.ToString());
+                        var imcEntry = imcManipulation.Entry;
+                        var imc = new XivImc()
+                        {
+                            MaterialSet = imcEntry.MaterialId,
+                            Decal = imcEntry.DecalId,
+                            Mask = imcEntry.AttributeAndSound,
+                            Vfx = imcEntry.VfxId,
+                            Animation = imcEntry.MaterialAnimationId
+                        };
+
+                        if (itemMetadata == null)
+                        {
+                            itemMetadata = await TryGetItemMetadata(imcManipulation);
+                        }
+
+                        if (imcs == null)
+                        {
+                            imcs = new();
+                        }
+                        imcs.Add(imc);
+                    }
+                    if (manipulation.Type == "Eqp")
+                    {
+                        var eqpManipulation = JsonConvert.DeserializeObject<EqpManipulation>(manipulation.Manipulation.ToString());
+                        if (eqpManipulation != null)
+                        {
+                            var bytes = BitConverter.GetBytes((byte)eqpManipulation.Entry);
+                            // TODO: EqpEntry, get bytes[] for EquipmentParamenter
+                            eqpEntry = new EquipmentParameter(EquipSlotToShort(eqpManipulation.Slot), bytes);
+                        }
+                    }
+                } // end for
+
+                if (itemMetadata == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    metadataMod.ItemMetadata = itemMetadata;
+                    metadataMod.ModFileName = itemMetadata.Root.ToRawItem().Name;
+                    metadataMod.ModFilePath = itemMetadata.Root.ToString();
+                    metadataMod.Path = itemMetadata.Root.ToString();
+                    metadataMod.Slot = itemMetadata.Root.Info.Slot;
+                }
+
+                if (imcs != null)
+                {
+                    metadataMod.ImcEntries = imcs;
+                }
+                if (eqpEntry != null)
+                {
+                    metadataMod.EqpEntry = eqpEntry;
+                }
+
+                return metadataMod;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"Could not import metadata.");
+                return null;
+            }
+        }
+
+        private async Task<ItemMetadata?> TryGetItemMetadata(MetaManipulation manipulation)
+        {
+            ItemMetadata? itemMetadata = null;
+            string slot = "";
+            ushort? id = null;
+            if (manipulation is ImcManipulation imcManipulation)
+            {
+                if (imcManipulation.ObjectType == "Equipment")
+                {
+                    slot = EquipSlotToShort(imcManipulation.EquipSlot);
+                    id = imcManipulation.PrimaryId;
+                }
+            }
+            else if (manipulation is EqpManipulation eqpManipulation)
+            {
+                slot = EquipSlotToShort(eqpManipulation.Slot);
+                id = eqpManipulation.SetId;
+            }
+
+            if (!String.IsNullOrWhiteSpace(slot) && id != null)
+            {
+                var path = $"chara/equipment/e{id}_{slot}.meta";
+                itemMetadata = await ItemMetadata.GetMetadata(path);
+            }
+            return itemMetadata;
+        }
+
+        private string EquipSlotToShort(string slot)
+        {
+            return slot switch
+            {
+                "Head" => "met",
+                "Body" => "top",
+                "Hands" => "glv",
+                "Legs" => "dwn",
+                "Feet" => "sho",
+                _ => ""
+            };
         }
 
         public ReadOnlyMod TryImportReadOnlyMod(string filePath, string gamePath)

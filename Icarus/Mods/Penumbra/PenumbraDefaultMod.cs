@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Icarus.Penumbra.GameData;
+using System.Collections.Generic;
 
 namespace Icarus.Mods.Penumbra
 {
@@ -14,6 +15,6 @@ namespace Icarus.Mods.Penumbra
         public Dictionary<string, string> Files = new();
         public Dictionary<string, string> FileSwaps = new();
         // TODO: File swaps?
-        List<PenumbraManipulation> Manipulations = new(); // TODO: meta manipulations
+        public List<MetaManipulation> Manipulations = new(); // TODO: meta manipulations
     }
 }

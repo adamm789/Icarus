@@ -45,6 +45,11 @@ namespace Icarus.Mods
             set { ItemMetadata.ImcEntries = value; }
         }
 
+        public MetadataMod(ImportSource source) : base(source)
+        {
+
+        }
+
         public MetadataMod(IMetadataFile file, ImportSource source = ImportSource.Vanilla) : base(file, source)
         {
             ItemMetadata = file.ItemMetadata;
