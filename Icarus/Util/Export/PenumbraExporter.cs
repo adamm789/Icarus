@@ -175,6 +175,7 @@ namespace Icarus.Util
             }
             else
             {
+                // TODO: How to handle if this directory already exists?
                 if (Directory.Exists(outputPath))
                 {
                     _logService.Debug($"Deleting {outputPath}.");
@@ -186,6 +187,7 @@ namespace Icarus.Util
 
             if (Directory.Exists(tempDir))
             {
+                _logService.Debug($"Deleting temporary directory: {tempDir}");
                 Directory.Delete(tempDir, true);
             }
             return ret;

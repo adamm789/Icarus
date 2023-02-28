@@ -22,7 +22,7 @@ namespace Icarus.Mods
 
         public bool ShouldExportRawMaterials { get; set; } = true;
 
-
+        // TODO: Mesh Groups cannot reference more than 64 bones
         public ModelMod(IModelGameFile modelGameFile, ImportSource source = ImportSource.Vanilla) : base(modelGameFile, source)
         {
             ImportedModel = modelGameFile.TTModel;

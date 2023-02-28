@@ -232,6 +232,7 @@ namespace Icarus.Services.GameFiles
             {
                 var skinRacePath = XivPathParser.ChangeToSkinRace(path);
                 var midlanderPath = XivPathParser.ChangeToRace(path, XivRace.Hyur_Midlander_Male);
+                var midlanderFemalePath = XivPathParser.ChangeToRace(path, XivRace.Hyur_Highlander_Female);
 
                 if (_lumina.FileExists(skinRacePath))
                 {
@@ -247,6 +248,12 @@ namespace Icarus.Services.GameFiles
                     var mdlFile = _lumina.GetFile<MdlFile>(midlanderPath);
                     //return MdlWithFramework.GetRawMdlDataFramework(midlanderPath, mdlFile.Data, mdlFile.ModelHeader.MeshCount);
 
+                    return mdlFile.GetXivMdl();
+                }
+                else if (_lumina.FileExists(midlanderFemalePath))
+                {
+                    _logService.Information($"Using midlander female path: {midlanderFemalePath}");
+                    var mdlFile = _lumina.GetFile<MdlFile>(midlanderFemalePath);
                     return mdlFile.GetXivMdl();
                 }
             }

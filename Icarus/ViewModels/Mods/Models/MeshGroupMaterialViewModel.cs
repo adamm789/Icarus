@@ -42,7 +42,7 @@ namespace Icarus.ViewModels.Models
                 group.Material = "";
             }
 
-            MtrlPathViewModel = new(ref group.Material, userPreferences, model.ImportSource);
+            MtrlPathViewModel = new(group.Material, userPreferences, model.ImportSource);
             MtrlPathViewModel.ChangeRace(model.TargetRace);
             MtrlPathViewModel.PropertyChanged += new PropertyChangedEventHandler(OnMaterialChanged);
 

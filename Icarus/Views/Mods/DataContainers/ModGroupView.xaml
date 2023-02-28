@@ -15,6 +15,8 @@
         <Grid>
             <Grid.Resources>
                 <ui:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+                <ui:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"
+                                                 True="Visible" False="Collapsed"/>
                 <DataTemplate DataType="{x:Type datacontainers:ModOptionViewModel}">
                     <local:GeneralModOptionView/>
                 </DataTemplate>
@@ -34,10 +36,12 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
+                <Label Grid.ColumnSpan="4" Background="Red" Visibility="{Binding HasZeroOptions, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
                 <!-- TODO: Temp element for a re-order tab thingy -->
                 <Label Grid.Column="0" Width="25"/>
 
-                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding GroupName}" TextWrapping="WrapWithOverflow"/>
+                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding GroupName}" TextWrapping="WrapWithOverflow" Background="Red"/>
                 <Button Grid.Row="0" Grid.Column="2" Command="{Binding RemoveCommand}" Content="Remove" IsTabStop="False" Focusable="False"/>
             </Grid>
 

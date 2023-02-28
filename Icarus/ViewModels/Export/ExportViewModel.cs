@@ -12,8 +12,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+// TODO: Individual mesh groups cannoy reerence more than 64 bones
 namespace Icarus.ViewModels.Export
 {
+    // TODO: Prevent user from exporting after selecting which mods to export
+    // i.e. allow incomplete mods to be the list, which allowing complete mods to still export
     public class ExportViewModel : ViewModelBase
     {
         readonly IMessageBoxService _messageBoxService;

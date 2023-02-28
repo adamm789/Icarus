@@ -41,6 +41,11 @@ namespace Icarus.ViewModels.Mods
         readonly ModelMod _modelMod;
         readonly IModelFileService _modelFileService;
 
+        public IModelGameFile ModelFile
+        {
+            get; protected set;
+        }
+
         #region Constructors
 
         public ModelModViewModel(ModelMod modelMod, ViewModelService viewModelService, IModelFileService modelFileService, ILogService logService)
@@ -54,14 +59,10 @@ namespace Icarus.ViewModels.Mods
             OptionsViewModel = new(modelMod.Options);
             if (modelMod.IsComplete())
             {
-                //DisplayedHeader = $"{FileName} ({modelMod.Name})";
-
-                //DestinationItem = modelMod.Item;
                 if (HasSkin)
                 {
                     TargetRace = modelMod.TargetRace;
                 }
-                UpdateAttributes(modelMod.TTModel, modelMod.Path);
             }
 
             if (importedModel != null)
@@ -71,6 +72,11 @@ namespace Icarus.ViewModels.Mods
                     var meshGroupViewModel = viewModelService.GetMeshGroupViewModel(meshGroup, this);
                     MeshGroups.Add(meshGroupViewModel);
                 }
+            }
+
+            if (modelMod.IsComplete())
+            {
+                UpdateAttributes(modelMod.TTModel, modelMod.Path);
             }
 
             SetCanExport();
@@ -130,6 +136,7 @@ namespace Icarus.ViewModels.Mods
         {
             if (gameFile is IModelGameFile modelGameFile)
             {
+                ModelFile = modelGameFile;
                 var ttModel = modelGameFile.TTModel;
                 UpdateAttributes(ttModel, modelGameFile.Path);
 
@@ -195,6 +202,11 @@ namespace Icarus.ViewModels.Mods
                 {
                     slotAttributes.Add(new AttributeViewModel(attr));
                 }
+            }
+
+            if (MeshGroups.Count == 0)
+            {
+                _logService?.Warning($"This model has no mesh groups: {_modelMod.Name}");
             }
 
             foreach (var group in MeshGroups)

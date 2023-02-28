@@ -9,7 +9,7 @@
         xmlns:editor="clr-namespace:Icarus.ViewModels.Editor"
         d:DataContext="{d:DesignInstance Type=viewmodels:MainWindowViewModel}"
         mc:Ignorable="d"
-        Title="Icarus" 
+        Title="{Binding Version}" 
         MinWidth="1400" Width="1400" 
         MinHeight="700" Height="700" 
         FontSize="16"

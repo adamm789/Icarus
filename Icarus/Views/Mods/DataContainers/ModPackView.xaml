@@ -57,17 +57,19 @@
                             <Setter.Value>
                                 <ControlTemplate TargetType="{x:Type ListViewItem}">
                                     <Border x:Name="PageBorder">
-                                        <Grid>
-                                            <Label Background="Red" Visibility="{Binding HasZeroOptions, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                                            <TextBlock x:Name="Presenter" Text="{Binding PageIndex}" Padding ="5"/>
+                                        <Grid x:Name="PageGrid" HorizontalAlignment="Center">
+                                            <TextBlock x:Name="PageText" Text="{Binding PageIndex}" Padding="5"/>
                                         </Grid>
                                     </Border>
                                     <ControlTemplate.Triggers>
                                         <Trigger Property="IsSelected" Value="True">
                                             <Setter TargetName="PageBorder" Property="BorderBrush" Value="Black"/>
                                             <Setter TargetName="PageBorder" Property="BorderThickness" Value="2"/>
-                                            <Setter TargetName="Presenter" Property="FontWeight" Value="Bold"/>
+                                            <Setter TargetName="PageText" Property="FontWeight" Value="Bold"/>
                                         </Trigger>
+                                        <DataTrigger Binding="{Binding HasZeroOptions}" Value="True">
+                                            <Setter TargetName="PageGrid" Property="Background" Value="Red"/>
+                                        </DataTrigger>
                                     </ControlTemplate.Triggers>
                                 </ControlTemplate>
                             </Setter.Value>
@@ -79,11 +81,6 @@
                         <StackPanel Orientation="Horizontal"/>
                     </ItemsPanelTemplate>
                 </ListView.ItemsPanel>
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding PageIndex}" MinWidth="20"/>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
             </ListView>
             <Button Command="{Binding AddPageCommand}" Content="Add Page" Grid.Column="2"/>
         </Grid>

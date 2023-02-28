@@ -88,7 +88,7 @@ namespace Icarus.Services.Files
             set { _isImportingAdvanced = value; OnPropertyChanged(); }
         }
 
-        public bool IsValidPenumbraDirectory(string dirPath) => _pmpImporter.IsValidPenumbraDirectory(new DirectoryInfo(dirPath));
+        public bool IsValidPenumbraDirectory(string dirPath) => _pmpImporter.IsValidPenumbraDirectory(dirPath);
 
         public async Task<IcarusModPack> ImportDirectory(string dirPath)
         {

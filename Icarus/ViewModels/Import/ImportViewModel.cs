@@ -164,9 +164,13 @@ namespace Icarus.ViewModels.Import
             }
             else
             {
-                var errorMessage = "Directory deemed invalid. \nMake sure the directory contains both \"default_mod.json\" and \"meta.json\"";
+                var errorMessage = $"\"{dlg.SelectedPath}\" was deemed an invalid directory. \nMake sure the directory contains both \"default_mod.json\" and \"meta.json\"";
                 _logService?.Error(errorMessage);
-                _messageBoxService?.ShowMessage(errorMessage, "Invalid Penumbra Directory", MessageBoxButtons.OK);
+
+                if (!String.IsNullOrWhiteSpace(dlg.SelectedPath))
+                {
+                    _messageBoxService?.ShowMessage(errorMessage, "Invalid Penumbra Directory", MessageBoxButtons.OK);
+                }
             }
         }
 

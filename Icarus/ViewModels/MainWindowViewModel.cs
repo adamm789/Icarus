@@ -23,8 +23,11 @@ using IDropTarget = GongSolutions.Wpf.DragDrop.IDropTarget;
 [assembly: InternalsVisibleTo("UnitTests")]
 namespace Icarus.ViewModels
 {
+
     public class MainWindowViewModel : NotifyPropertyChanged, IDropTarget
     {
+        public string Version { get { return "Icarus 2023.2.22.1"; } }
+
         private LuminaService _luminaService;
         private IWindowService _windowService = ServiceManager.GetRequiredService<IWindowService>();
         private IMessageBoxService _messageBoxService = ServiceManager.GetRequiredService<IMessageBoxService>();
