@@ -1,4 +1,5 @@
-﻿using Icarus.Services.Interfaces;
+﻿using Icarus.Mods.Interfaces;
+using Icarus.Services.Interfaces;
 using Icarus.Util.Import;
 using Icarus.ViewModels.Util;
 using ItemDatabase.Paths;
@@ -19,12 +20,11 @@ namespace Icarus.ViewModels.Mods.Paths
         string _bodyNumber = "b0001";
         string _materialName;
 
-        // TODO: Consider import source and "default skin variant"
-        ImportSource _importSource;
 
+        ImportSource _importSource;
         IUserPreferencesService? _userPreferencesService;
 
-        public MtrlPathViewModel(ref string material, IUserPreferencesService userPreferencesService, ImportSource importSource)
+        public MtrlPathViewModel(string material, IUserPreferencesService userPreferencesService, ImportSource importSource)
         {
             _importSource = importSource;
             _userPreferencesService = userPreferencesService;
@@ -33,6 +33,8 @@ namespace Icarus.ViewModels.Mods.Paths
             _materialName = material;
 
             var skinMatches = Regex.Match(DisplayedMaterial, @"(c[0-9]{4})");
+            var skinVariantMatches = Regex.Match(DisplayedMaterial, @"c[0-9]{4}b[0-9]{4}_([a-z])");
+
             CanAssignSkin = skinMatches.Success;
             if (skinMatches.Success)
             {
@@ -42,18 +44,13 @@ namespace Icarus.ViewModels.Mods.Paths
             if (Regex.IsMatch(DisplayedMaterial, @"f[0-9]{4}"))
             {
                 IsFaceMaterial = true;
-                if (Regex.IsMatch(DisplayedMaterial, @"fac"))
-                {
-                    SelectedFaceMaterialIndex = 0;
-                }
-                else if (Regex.IsMatch(DisplayedMaterial, @"iri"))
-                {
-                    SelectedFaceMaterialIndex = 1;
-                }
-                else
-                {
-                    SelectedFaceMaterialIndex = 2;
-                }
+                SetSelectedFaceMaterialIndex();
+            }
+
+            if (skinVariantMatches.Success)
+            {
+                IsSkinMaterial = true;
+                SkinVariant = skinVariantMatches.Groups[1].Value;
             }
             else
             {
@@ -63,10 +60,20 @@ namespace Icarus.ViewModels.Mods.Paths
 
         string _destinationModelPath = "";
 
+        public void ChangeDestinationModel(IModelGameFile modelFile)
+        {
+            // TODO: Do it this way instead?
+        }
+
         public void ChangeDestinationModel(string model)
         {
             _destinationModelPath = model;
-            CanAssignSkin = Regex.IsMatch(_destinationModelPath, @"c[0-9]{4}");
+            var skin = Regex.Match(_destinationModelPath, @"(c[0-9]{4})");
+            CanAssignSkin = skin.Success;
+            if (CanAssignSkin)
+            {
+                _skinRace = skin.Value;
+            }
             SetFace();
             SetPath();
         }
@@ -94,24 +101,37 @@ namespace Icarus.ViewModels.Mods.Paths
             if (IsFaceMaterial)
             {
                 _faceNumber = faceMatch.Groups[1].Value;
-                if (Regex.IsMatch(DisplayedMaterial, @"fac"))
-                {
-                    SelectedFaceMaterialIndex = 0;
-                }
-                else if (Regex.IsMatch(DisplayedMaterial, @"_iri"))
-                {
-                    SelectedFaceMaterialIndex = 1;
-                }
-                else
-                {
-                    SelectedFaceMaterialIndex = 2;
-                }
+            }
+            SetSelectedFaceMaterialIndex();
+        }
+
+        private void SetSelectedFaceMaterialIndex()
+        {
+            CanParseFaceMaterial = IsFaceMaterial;
+            if (Regex.IsMatch(DisplayedMaterial, @"fac"))
+            {
+                SelectedFaceMaterialIndex = 0;
+            }
+            else if (Regex.IsMatch(DisplayedMaterial, @"_iri"))
+            {
+                SelectedFaceMaterialIndex = 1;
+            }
+            else if (Regex.IsMatch(DisplayedMaterial, @"_etc"))
+            {
+                SelectedFaceMaterialIndex = 2;
+            }
+            else
+            {
+                CanParseFaceMaterial = false;
             }
         }
 
         private void SetPath()
         {
-            if(XivPathParser.CanParsePath(_destinationModelPath))
+            // TODO: Furniture material shenanigans
+            // TODO?: Read material from the model file instead?
+
+            if (XivPathParser.CanParsePath(_destinationModelPath))
             {
                 _materialName = XivPathParser.GetMtrlFileName(_destinationModelPath, _materialVariant);
                 _materialName = XivPathParser.PathCorrectFileNameMtrl(_materialName);
@@ -123,9 +143,20 @@ namespace Icarus.ViewModels.Mods.Paths
                 _bodyNumber = bodyMatch.Groups[1].Value;
             }
 
+            if (_importSource == ImportSource.Raw)
+            {
+                var race = XivPathParser.GetRaceFromString(_skinRace);
+                var variant = _userPreferencesService?.GetDefaultSkinMaterialVariant(race);
+                if (variant != null)
+                {
+                    SkinVariant = variant;
+                }
+            }
+
             if (IsFaceMaterial)
             {
                 DisplayedMaterial = $"/mt_{_skinRace}{_faceNumber}_{FaceMaterials[SelectedFaceMaterialIndex]}_{FaceVariant}.mtrl";
+                SetSelectedFaceMaterialIndex();
             }
             else if (IsSkinMaterial)
             {
@@ -137,6 +168,15 @@ namespace Icarus.ViewModels.Mods.Paths
             }
             OnPropertyChanged(nameof(DisplayedMaterial));
         }
+
+
+        bool _canParseFaceMaterial;
+        public bool CanParseFaceMaterial
+        {
+            get { return _canParseFaceMaterial; }
+            set { _canParseFaceMaterial = value; OnPropertyChanged(); }
+        }
+
 
         List<string> _faceMaterials = new()
         {
@@ -153,7 +193,8 @@ namespace Icarus.ViewModels.Mods.Paths
         public int SelectedFaceMaterialIndex
         {
             get { return _selectedFaceMaterialIndex; }
-            set {
+            set
+            {
                 _selectedFaceMaterialIndex = value;
                 OnPropertyChanged();
                 var x = Regex.IsMatch(DisplayedMaterial, @"[iri|fac|etc]");
@@ -166,7 +207,8 @@ namespace Icarus.ViewModels.Mods.Paths
         public string DisplayedMaterial
         {
             get { return _displayedMaterial; }
-            set {
+            set
+            {
                 _displayedMaterial = value;
                 ChangeDisplayedMaterial();
             }
@@ -176,7 +218,8 @@ namespace Icarus.ViewModels.Mods.Paths
         public string MaterialVariant
         {
             get { return _materialVariant; }
-            set {
+            set
+            {
                 _materialVariant = value;
                 ChangeMaterialVariant(_materialVariant);
             }
@@ -184,17 +227,31 @@ namespace Icarus.ViewModels.Mods.Paths
 
         private void ChangeDisplayedMaterial()
         {
-            if (!IsSkinMaterial)
+            try
             {
-                try
+                var variant = XivPathParser.GetMtrlVariant(DisplayedMaterial);
+
+                if (IsSkinMaterial)
                 {
-                    _materialVariant = XivPathParser.GetMtrlVariant(DisplayedMaterial);
+                    _skinVariant = variant;
+                    OnPropertyChanged(nameof(SkinVariant));
+                }
+                else if (IsFaceMaterial)
+                {
+                    _faceVariant = variant;
+                    OnPropertyChanged(nameof(FaceVariant));
+                    SetSelectedFaceMaterialIndex();
+                }
+                else
+                {
+                    _materialVariant = variant;
                     OnPropertyChanged(nameof(MaterialVariant));
                 }
-                catch (Exception ex)
-                {
-
-                }
+            }
+            catch (Exception ex)
+            {
+                _logService?.Error($"Could not get material variant from: {DisplayedMaterial}");
+                _logService?.Debug(ex);
             }
         }
 
@@ -220,7 +277,8 @@ namespace Icarus.ViewModels.Mods.Paths
         public string SkinVariant
         {
             get { return _skinVariant; }
-            set {
+            set
+            {
                 _skinVariant = value;
                 OnPropertyChanged();
                 ChangeMaterialVariant(value);
@@ -238,7 +296,8 @@ namespace Icarus.ViewModels.Mods.Paths
         public bool IsFaceMaterial
         {
             get { return _isFaceMaterial; }
-            set {
+            set
+            {
                 _isFaceMaterial = value;
                 OnPropertyChanged();
                 CanAssignSkin = CanAssignSkin && !_isFaceMaterial;
@@ -249,7 +308,8 @@ namespace Icarus.ViewModels.Mods.Paths
         public bool IsSkinMaterial
         {
             get { return _isSkinMaterial; }
-            set {
+            set
+            {
                 _isSkinMaterial = value;
                 OnPropertyChanged();
                 SetPath();

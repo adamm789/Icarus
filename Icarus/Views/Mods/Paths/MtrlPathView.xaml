@@ -24,19 +24,20 @@
 
         </Grid.Resources>
         <TextBox Grid.Column="0"  Text="{Binding DisplayedMaterial, UpdateSourceTrigger=PropertyChanged}"/>
-        <Grid Grid.Column="1" Margin="0 0 5 0" MinWidth="50">
+        <Grid Grid.Column="1">
+            <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding IsSkinMaterial, Mode=TwoWay}"
+                        Visibility="{Binding CanAssignSkin, Converter={StaticResource BooleanToVisibilityConverter}}">Is Skin?</CheckBox>
+            <ComboBox Grid.Column="3" ItemsSource="{Binding FaceMaterials}" Visibility="{Binding CanParseFaceMaterial, Converter={StaticResource BooleanToVisibilityConverter}}"
+                  SelectedIndex="{Binding SelectedFaceMaterialIndex}"/>
+        </Grid>
+
+        <Grid Grid.Column="2" Margin="0 0 5 0" MinWidth="50">
             <ui:ClickSelectTextBox Text="{Binding MaterialVariant, UpdateSourceTrigger=PropertyChanged}"
                                        MaxWidth="50"
                                        Visibility="{Binding IsSkinMaterial, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
             <ui:ClickSelectTextBox Text="{Binding SkinVariant, UpdateSourceTrigger=PropertyChanged}"
                                        MaxWidth="50"
                                        Visibility="{Binding IsSkinMaterial, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-        </Grid>
-        <Grid Grid.Column="2">
-            <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding IsSkinMaterial, Mode=TwoWay}"
-                        Visibility="{Binding CanAssignSkin, Converter={StaticResource BooleanToVisibilityConverter}}">Is Skin?</CheckBox>
-            <ComboBox Grid.Column="3" ItemsSource="{Binding FaceMaterials}" Visibility="{Binding IsFaceMaterial,Converter={StaticResource BooleanToVisibilityConverter}}"
-                  SelectedIndex="{Binding SelectedFaceMaterialIndex}"/>
         </Grid>
     </Grid>
 </UserControl>
