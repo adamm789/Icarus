@@ -10,6 +10,6 @@ namespace Icarus.Mods.Penumbra
         public Dictionary<string, string> Files = new();
         // FileSwaps
         //public List<PenumbraManipulation> Manipulations = new();
-        public List<MetaManipulation> Manipulations = new();
+        public List<MetaManipulationContainer> Manipulations = new();
     }
 }

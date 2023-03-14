@@ -15,7 +15,5 @@ namespace Icarus.Penumbra.GameData
 {
     public class MetaManipulation
     {
-        public string Type;
-        public object? Manipulation;        
     }
 }

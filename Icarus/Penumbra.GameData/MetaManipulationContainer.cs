@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace Icarus.Penumbra.GameData
 {
-    public class ImcManipulation : MetaManipulation
+    public class MetaManipulationContainer
     {
-        public ImcEntry Entry;
+        public string Type;
+        public object? Manipulation;
     }
 }

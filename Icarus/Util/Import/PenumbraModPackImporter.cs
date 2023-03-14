@@ -14,7 +14,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
+using xivModdingFramework.General.Enums;
 using xivModdingFramework.Materials.DataContainers;
 using xivModdingFramework.Materials.FileTypes;
 using xivModdingFramework.Models.DataContainers;
@@ -86,12 +89,13 @@ namespace Icarus.Util.Import
                             }
                         }
 
-                        if (contents.Manipulations.Count > 0) { 
+                        if (contents.Manipulations.Count > 0)
+                        {
                             // TODO: Shouldn't this return a list of metadata mods?
-                            var mod = await TryImportMetadata(contents.Manipulations);
-                            if (mod != null)
+                            var mods = await TryImportMetadata(contents.Manipulations);
+                            if (mods != null)
                             {
-                                ret.SimpleModsList.Add(mod);
+                                ret.SimpleModsList.AddRange(mods);
                             }
                         }
 
@@ -112,6 +116,51 @@ namespace Icarus.Util.Import
                 Log.Error($"Could not find default_mod.json");
             }
             return null;
+        }
+
+        private byte[] ConvertToTexTools(IEnumerable<MetaManipulation> manips)
+        {
+            var bytes = new List<byte>();
+            foreach (var meta in manips)
+            {
+                using var ms = new MemoryStream();
+                using var bw = new BinaryWriter(ms);
+
+                bw.Write(2u);
+                var path = GetPath(meta);
+                var utf8Path = Encoding.ASCII.GetBytes(path);
+                bw.Write(utf8Path);
+                bw.Write((byte)0);
+                bw.Write((uint)manips.Count());
+                bw.Write((uint)12);
+
+                var headerStart = bw.BaseStream.Position + 4;
+                bw.Write((uint)headerStart);
+
+            }
+
+            return bytes.ToArray();
+        }
+
+        private string GetPath(MetaManipulation meta)
+        {
+            /*
+             * if (meta is ImcManipulation imc)
+            {
+                switch (imc.ObjectType)
+                {
+                    case "Accessory":
+                        return $"chara/accessory/a{imc.PrimaryId:D4}_{EquipSlotToShort(imc.EquipSlot)}.meta";
+                    case "Equipment":
+                        return $"chara/equipment/e{imc.PrimaryId:D4}_{EquipSlotToShort(imc.EquipSlot)}.meta";
+                    case "Character":
+                        break;
+                    default:
+                        break;
+                }
+            }
+            */
+            return "";
         }
 
         private async Task<ModPack?> TryReadGroups(DirectoryInfo dir)
@@ -157,12 +206,15 @@ namespace Icarus.Util.Import
                                     }
                                 }
 
-                                var metadataMod = await TryImportMetadata(option.Manipulations);
-                                if (metadataMod != null && metadataMod.ItemMetadata != null)
+                                var metadataMods = await TryImportMetadata(option.Manipulations);
+                                if (metadataMods != null && metadataMods.Count > 0)
                                 {
-                                    metadataMod.ModFileName = $"metadataMod.ModFileName - {option.Name}";
-                                    ret.SimpleModsList.Add(metadataMod);
-                                    modOption.AddMod(metadataMod);
+                                    foreach (var metadataMod in metadataMods)
+                                    {
+                                        metadataMod.ModFileName = $"metadataMod.ModFileName - {option.Name}";
+                                        ret.SimpleModsList.Add(metadataMod);
+                                        modOption.AddMod(metadataMod);
+                                    }
                                 }
 
                                 if (modOption.Mods.Count > 0)
@@ -235,10 +287,9 @@ namespace Icarus.Util.Import
         public async Task<ModPack?> ImportPenumbraDirectory(DirectoryInfo dir)
         {
             // TODO: Read meta.json
-            ModPack? modPack = null;
-            modPack = await TryReadDefaultMod(dir);
+            ModPack? modPack = await TryReadDefaultMod(dir);
 
-            if (modPack == null)
+            if (modPack == null || modPack.SimpleModsList.Count == 0)
             {
                 modPack = await TryReadGroups(dir);
             }
@@ -418,23 +469,23 @@ namespace Icarus.Util.Import
             return null;
         }
 
-        public async Task<MetadataMod?> TryImportMetadata(List<MetaManipulation> manipulations)
+        public async Task<List<MetadataMod>?> TryImportMetadata(List<MetaManipulationContainer> manipulations)
         {
             try
             {
                 Dictionary<(ushort id, string slot), ItemMetadata> dict = new();
-                var metadataMod = new MetadataMod(ImportSource.PenumbraModPack);
-                ItemMetadata? itemMetadata = null;
-                List<XivImc>? imcs = null;
-                EquipmentParameter? eqpEntry = null;
                 foreach (var manipulation in manipulations)
                 {
-                    // TODO: MetadataMod
-                    // TODO: e.g. one manipulation that manipulates two different items simultaneously (e.g. body item and shoe item)
-                    Log.Error($"Metadata import not currently implemented.");
                     if (manipulation.Type == "Imc")
                     {
+                        var imcManipulationContainer = JsonConvert.DeserializeObject<ImcManipulationContainer>(manipulation.Manipulation.ToString());
                         var imcManipulation = JsonConvert.DeserializeObject<ImcManipulation>(manipulation.Manipulation.ToString());
+
+                        if (imcManipulationContainer == null || imcManipulation == null)
+                        {
+                            Log.Error($"Could not get imc manipulation");
+                            continue;
+                        }
                         var imcEntry = imcManipulation.Entry;
                         var imc = new XivImc()
                         {
@@ -445,52 +496,150 @@ namespace Icarus.Util.Import
                             Animation = imcEntry.MaterialAnimationId
                         };
 
-                        if (itemMetadata == null)
+                        var key = (imcManipulationContainer.PrimaryId, imcManipulationContainer.EquipSlot);
+                        if (!dict.ContainsKey(key))
                         {
-                            itemMetadata = await TryGetItemMetadata(imcManipulation);
+                            var item = await TryGetItemMetadata(imcManipulationContainer);
+                            if (item != null)
+                            {
+                                dict.Add(key, item);
+                                // TODO: Do I clear the imc entries?
+                                item.ImcEntries.Clear();
+                            }
                         }
 
-                        if (imcs == null)
+                        var found = dict.TryGetValue(key, out var im);
+                        if (found && im != null)
                         {
-                            imcs = new();
+                            var imcs = im.ImcEntries;
+                            imcs.Add(imc);
                         }
-                        imcs.Add(imc);
                     }
-                    if (manipulation.Type == "Eqp")
+                    else if (manipulation.Type == "Eqp")
                     {
                         var eqpManipulation = JsonConvert.DeserializeObject<EqpManipulation>(manipulation.Manipulation.ToString());
                         if (eqpManipulation != null)
                         {
-                            var bytes = BitConverter.GetBytes((byte)eqpManipulation.Entry);
-                            // TODO: EqpEntry, get bytes[] for EquipmentParamenter
-                            eqpEntry = new EquipmentParameter(EquipSlotToShort(eqpManipulation.Slot), bytes);
+                            var fullBytes = BitConverter.GetBytes((UInt64)eqpManipulation.Entry);
+                            byte[]? bytes = null;
+
+                            if (eqpManipulation.Slot == "Body")
+                            {
+                                bytes = new byte[] { fullBytes[0], fullBytes[1] };
+                            }
+                            else if (eqpManipulation.Slot == "Legs")
+                            {
+                                bytes = new byte[] { fullBytes[2] };
+                            }
+                            else if (eqpManipulation.Slot == "Hands")
+                            {
+                                bytes = new byte[] { fullBytes[3] };
+                            }
+                            else if (eqpManipulation.Slot == "Feet")
+                            {
+                                bytes = new byte[] { fullBytes[4] };
+                            }
+                            else if (eqpManipulation.Slot == "Head")
+                            {
+                                bytes = new byte[] { fullBytes[5], fullBytes[6] };
+                            }
+
+                            EquipmentParameter? eqpEntry = null;
+                            if (bytes != null)
+                            {
+                                eqpEntry = new EquipmentParameter(EquipSlotToShort(eqpManipulation.Slot), bytes);
+                            }
+
+                            var key = (eqpManipulation.SetId, eqpManipulation.Slot);
+                            if (!dict.ContainsKey(key))
+                            {
+                                var item = await TryGetItemMetadata(eqpManipulation);
+                                if (item != null && eqpEntry != null)
+                                {
+                                    dict.Add(key, item);
+                                }
+                            }
+                            var found = dict.TryGetValue(key, out var im);
+                            if (found && eqpEntry != null && im != null)
+                            {
+                                im.EqpEntry = eqpEntry;
+                            }
                         }
+                    }
+                    else if (manipulation.Type == "Eqdp")
+                    {
+                        // TODO: Eqdp penumbra metadata mods
+                        var eqdpManipulation = JsonConvert.DeserializeObject<EqdpManipulation>(manipulation.Manipulation.ToString());
+                        if (eqdpManipulation != null)
+                        {
+                            var key = (eqdpManipulation.SetId, eqdpManipulation.Slot);
+                            if (!dict.ContainsKey(key))
+                            {
+                                var item = await TryGetItemMetadata(eqdpManipulation);
+                                if (item != null)
+                                {
+                                    dict.Add(key, item);
+                                }
+                            }
+                            var im = dict[key];
+                            var race = GetRace(eqdpManipulation.Race, eqdpManipulation.Gender);
+                            var eqdp = EquipmentDeformationParameter.FromByte(eqdpManipulation.Entry);
+                            im.EqdpEntries[race] = eqdp;
+                        }
+                    }
+                    else if (manipulation.Type == "Est")
+                    {
+                        // TODO: EST penumbra metadata mods
+                        var estManipulation = JsonConvert.DeserializeObject<EstManipulation>(manipulation.Manipulation.ToString());
+                        if (estManipulation != null)
+                        {
+                            var key = (estManipulation.SetId, estManipulation.Slot);
+
+                            if (!dict.ContainsKey(key))
+                            {
+                                var item = await TryGetItemMetadata(estManipulation);
+                                if (item != null)
+                                {
+                                    dict.Add(key, item);
+                                }
+                            }
+
+                            var im = dict[key];
+
+                            var race = GetRace(estManipulation.Race, estManipulation.Gender);
+                            var est = new ExtraSkeletonEntry(race, estManipulation.SetId, estManipulation.Entry);
+                            im.EstEntries[race] = est;
+                        }
+                    }
+                    else if (manipulation.Type == "Gmp")
+                    {
+                        // TODO: Gmp penumbra metadata mods
+                    }
+                    else if (manipulation.Type == "Rsp")
+                    {
+                        // TODO: Rsp penumbra metadata mods?
+                        // TODO: Add rsp to metadatamod?
+                    }
+                    else
+                    {
+                        Log.Error($"Unknown manipulation type: {manipulation.Type}");
                     }
                 } // end for
 
-                if (itemMetadata == null)
+                List<MetadataMod>? ret = new();
+                foreach (var kvp in dict)
                 {
-                    return null;
-                }
-                else
-                {
+                    var itemMetadata = kvp.Value;
+                    var metadataMod = new MetadataMod(ImportSource.PenumbraModPack);
                     metadataMod.ItemMetadata = itemMetadata;
                     metadataMod.ModFileName = itemMetadata.Root.ToRawItem().Name;
                     metadataMod.ModFilePath = itemMetadata.Root.ToString();
                     metadataMod.Path = itemMetadata.Root.ToString();
                     metadataMod.Slot = itemMetadata.Root.Info.Slot;
+                    ret.Add(metadataMod);
                 }
 
-                if (imcs != null)
-                {
-                    metadataMod.ImcEntries = imcs;
-                }
-                if (eqpEntry != null)
-                {
-                    metadataMod.EqpEntry = eqpEntry;
-                }
-
-                return metadataMod;
+                return ret;
             }
             catch (Exception ex)
             {
@@ -499,28 +648,51 @@ namespace Icarus.Util.Import
             }
         }
 
+        private async Task<ItemMetadata?> TryGetItemMetadata(ImcManipulationContainer container)
+        {
+            ItemMetadata? itemMetadata = null;
+
+            string slot = "";
+            ushort? id = null;
+
+            if (container.ObjectType == "Equipment")
+            {
+                slot = EquipSlotToShort(container.EquipSlot);
+                id = container.PrimaryId;
+            }
+            if (!String.IsNullOrWhiteSpace(slot) && id != null)
+            {
+                var path = $"chara/equipment/e{id.ToString().PadLeft(4, '0')}_{slot}.meta";
+                itemMetadata = await ItemMetadata.GetMetadata(path);
+            }
+            return itemMetadata;
+        }
+
         private async Task<ItemMetadata?> TryGetItemMetadata(MetaManipulation manipulation)
         {
             ItemMetadata? itemMetadata = null;
             string slot = "";
             ushort? id = null;
-            if (manipulation is ImcManipulation imcManipulation)
-            {
-                if (imcManipulation.ObjectType == "Equipment")
-                {
-                    slot = EquipSlotToShort(imcManipulation.EquipSlot);
-                    id = imcManipulation.PrimaryId;
-                }
-            }
-            else if (manipulation is EqpManipulation eqpManipulation)
+
+            if (manipulation is EqpManipulation eqpManipulation)
             {
                 slot = EquipSlotToShort(eqpManipulation.Slot);
                 id = eqpManipulation.SetId;
             }
+            else if (manipulation is EstManipulation estManipulation)
+            {
+                slot = EquipSlotToShort(estManipulation.Slot);
+                id = estManipulation.SetId;
+            }
+            else if (manipulation is EqdpManipulation eqdpManipulation)
+            {
+                slot = EquipSlotToShort(eqdpManipulation.Slot);
+                id = eqdpManipulation.SetId;
+            }
 
             if (!String.IsNullOrWhiteSpace(slot) && id != null)
             {
-                var path = $"chara/equipment/e{id}_{slot}.meta";
+                var path = $"chara/equipment/e{id.ToString().PadLeft(4, '0')}_{slot}.meta";
                 itemMetadata = await ItemMetadata.GetMetadata(path);
             }
             return itemMetadata;
@@ -537,6 +709,42 @@ namespace Icarus.Util.Import
                 "Feet" => "sho",
                 _ => ""
             };
+        }
+
+        private XivRace GetRace(string race, string gender)
+        {
+            switch (race)
+            {
+                case "Midlander":
+                    if (gender == "Male") return XivRace.Hyur_Midlander_Male;
+                    else return XivRace.Hyur_Midlander_Female;
+                case "Highlander":
+                    if (gender == "Male") return XivRace.Hyur_Highlander_Male;
+                    else return XivRace.Hyur_Highlander_Female;
+                case "Elezen":
+                    if (gender == "Male") return XivRace.Elezen_Male;
+                    else return XivRace.Elezen_Female;
+                case "Miqote":
+                    if (gender == "Male") return XivRace.Miqote_Male;
+                    else return XivRace.Miqote_Female;
+                case "Lalafell":
+                    if (gender == "Male") return XivRace.Lalafell_Male;
+                    else return XivRace.Lalafell_Female;
+                case "Roegadyn":
+                    if (gender == "Male") return XivRace.Roegadyn_Male;
+                    else return XivRace.Roegadyn_Female;
+                case "AuRa":
+                    if (gender == "Male") return XivRace.AuRa_Male;
+                    else return XivRace.AuRa_Female;
+                case "Viera":
+                    if (gender == "Male") return XivRace.Viera_Male;
+                    else return XivRace.Viera_Female;
+                case "Hrothgar":
+                    if (gender == "Male") return XivRace.Hrothgar_Male;
+                    else return XivRace.Hrothgar_Female;
+                default:
+                    throw new ArgumentException($"Could not determine XivRace from: {race}, {gender}");
+            }
         }
 
         public ReadOnlyMod TryImportReadOnlyMod(string filePath, string gamePath)
