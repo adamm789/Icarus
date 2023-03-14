@@ -14,7 +14,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <Label Grid.Row="0" Content="Visibility Settings" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" FontSize="14"/>
+            <Label Grid.Row="0" Content="Visibility Settings (Eqp)" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" FontSize="14"/>
             <Grid Grid.Row="1" Margin="5">
                 <Grid.Resources>
                     <DataTemplate DataType="{x:Type metadata:EqpEntryViewModel}">

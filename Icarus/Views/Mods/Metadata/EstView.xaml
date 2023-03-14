@@ -24,7 +24,7 @@
                     </Grid>
                 </DataTemplate>
             </StackPanel.Resources>
-            <Label Content="Extra Skeleton Settings" HorizontalAlignment="Center" FontSize="14"/>
+            <Label Content="Extra Skeleton Settings (Est)" HorizontalAlignment="Center" FontSize="14"/>
             <UniformGrid Columns="2">
                 <ListView ItemsSource="{Binding MaleEstEntries}" HorizontalContentAlignment="Stretch" BorderBrush="Transparent"/>
                 <ListView ItemsSource="{Binding FemaleEstEntries}" HorizontalContentAlignment="Stretch" BorderBrush="Transparent"/>

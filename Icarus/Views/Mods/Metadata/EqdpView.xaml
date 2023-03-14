@@ -16,7 +16,7 @@
                     <local:EqdpEntryView/>
                 </DataTemplate>
             </StackPanel.Resources>
-            <Label Content="Racial Models" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" FontSize="14" />
+            <Label Content="Racial Models (Eqdp)" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" FontSize="14" />
             <UniformGrid Columns="2">
                 <ListView ItemsSource="{Binding MaleEqdpEntries}" HorizontalContentAlignment="Stretch" BorderBrush="Transparent"/>
                 <ListView ItemsSource="{Binding FemaleEqdpEntries}" HorizontalContentAlignment="Stretch" BorderBrush="Transparent"/>
