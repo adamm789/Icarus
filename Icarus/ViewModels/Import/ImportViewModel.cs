@@ -25,17 +25,19 @@ namespace Icarus.ViewModels.Import
     public class ImportViewModel : ViewModelBase
     {
         readonly string _filter =
-            "Valid Files | *.ttmp2; *.fbx; *.dds; *.png; *.bmp; *.pmp; *.mdl" +
+            "Valid Files | *.ttmp2; *.fbx; *.dds; *.png; *.bmp; *.pmp; *.mdl; *.meta" +
             "|.ttmp2 | *.ttmp2" +
             "|.fbx | *.fbx" +
             "|.dds | *.dds" +
             "|.png | *.png" +
             "|.bmp | *.bmp" +
             "|.pmp | *.pmp" +
-            "|.mdl | *.mdl";
+            "|.mdl | *.mdl" +
+            "|.meta | *.meta";
+        // TODO: .meta
         readonly List<string> _extensions = new List<string>()
         {
-            ".ttmp2", ".fbx", ".dds", ".png", ".bmp", ".pmp", ".mdl"
+            ".ttmp2", ".fbx", ".dds", ".png", ".bmp", ".pmp", ".mdl", ".meta"
         };
 
         readonly IModPackViewModel _modPackViewModel;
@@ -220,7 +222,7 @@ namespace Icarus.ViewModels.Import
 
         private bool AddModPack(ModPack modPack)
         {
-            _logService.Verbose($"Adding mod pack");
+            _logService?.Verbose($"Adding mod pack");
             if (modPack.SimpleModsList.Count == 0)
             {
                 return false;
@@ -231,7 +233,7 @@ namespace Icarus.ViewModels.Import
                 _modPackListViewModel.Add(modPack);
             }
 
-            if (modPack.SimpleModsList.Count == 1 && modPack.SimpleModsList[0].ImportSource == ImportSource.Raw || modPack.ModPackPages.Count > 0)
+            if (modPack.SimpleModsList.Count == 1 && modPack.SimpleModsList[0].ImportSource == ImportSource.Raw || modPack.SimpleModsList[0].ImportSource == ImportSource.RawGameFile || modPack.ModPackPages.Count > 0)
             {
                 _modPackViewModel.Add(modPack);
             }

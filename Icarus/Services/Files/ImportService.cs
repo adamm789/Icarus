@@ -31,6 +31,8 @@ using TeximpNet.DDS;
 using xivModdingFramework.Models.FileTypes;
 using Lumina.Data;
 using xivModdingFramework.Materials.FileTypes;
+using xivModdingFramework.Mods.FileTypes;
+using System.Text.RegularExpressions;
 
 namespace Icarus.Services.Files
 {
@@ -158,6 +160,13 @@ namespace Icarus.Services.Files
                     break;
                 case ".mdl":
                     mod = await Task.Run(() => _pmpImporter.TryImportMdl(filePath));
+                    if (mod != null)
+                    {
+                        CompleteMod(mod);
+                    }
+                    break;
+                case ".meta":
+                    mod = await ImportMetadata(filePath);
                     break;
                 default:
                     _logService.Error($"Unsupported extension: {ext}");
@@ -333,7 +342,7 @@ namespace Icarus.Services.Files
 
         public TextureMod? ImportTexture(string filePath)
         {
-            _logService.Information($"Trying to import {filePath} as texture.");
+            _logService?.Information($"Trying to import {filePath} as texture.");
 
             // TODO: Some sort of check for the file?
             // TODO: Store some actual data as opposed to just the file path?
@@ -345,6 +354,23 @@ namespace Icarus.Services.Files
             return texMod;
         }
 
+        public async Task<MetadataMod?> ImportMetadata(string filePath)
+        {
+            try
+            {
+                // TODO: Import Metadata (.meta)
+                var data = File.ReadAllBytes(filePath);
+                var itemMetadata = await ItemMetadata.Deserialize(data);
+                var metadataMod = new MetadataMod(itemMetadata, ImportSource.PenumbraModPack);
+                return metadataMod;
+            }
+            catch (Exception ex)
+            {
+                _logService?.Error($"Could not import metadata: {filePath}");
+            }
+            return null;
+        }
+
         /// <summary>
         /// Fills out the rest of any mod's "FileData"
         /// Currently only changes ModelMods
@@ -354,16 +380,56 @@ namespace Icarus.Services.Files
         {
             if (mod is ModelMod mdlMod)
             {
-                var gameFile = _modelFileService.TryGetModelFileData(mdlMod.Path);
-                if (gameFile == null)
+                IModelGameFile? gameFile = null;
+                if (!String.IsNullOrEmpty(mdlMod.Path))
                 {
-                    _logService.Error($"Could not get vanilla information of {mdlMod.Path}.");
-                    _logService.Error("Skipping TTModel and XivMdl assignment.");
-                    return;
+                    gameFile = _modelFileService.TryGetModelFileData(mdlMod.Path);
                 }
 
-                mdlMod.TTModel = gameFile.TTModel;
-                mdlMod.XivMdl = gameFile.XivMdl;
+                if (gameFile == null)
+                {
+                    // Try to get the game file based on the model's assigned materials
+                    foreach (var mtrl in mdlMod.ImportedModel.Materials)
+                    {
+                        if (!String.IsNullOrEmpty(mtrl))
+                        {
+                            var matches = Regex.Matches(mtrl, @"([a,e][0-9]{4}_[a-z]*)");
+                            if (matches.Count > 0)
+                            {
+                                var match = matches.First().Value;
+                                var items = _itemListService.Search(match);
+                                if (items.Count == 1)
+                                {
+                                    gameFile = _modelFileService.GetModelFileData(items[0]);
+                                }
+                                else if (items.Count > 1)
+                                {
+                                    gameFile = _modelFileService.GetModelFileData(items[0]);
+                                    if (gameFile != null)
+                                    {
+                                        gameFile.Name = $"{gameFile.Name} (???)";
+                                    }
+                                }
+
+                                if (gameFile != null)
+                                {
+                                    //mdlMod.Path = gameFile.Path;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (gameFile != null)
+                {
+                    mdlMod.SetModData(gameFile);
+                }
+                else
+                {
+                    _logService?.Error($"Could not get vanilla information of {mdlMod.Path}.");
+                    _logService?.Error("Skipping ModData assignment.");
+                }
             }
         }
 
