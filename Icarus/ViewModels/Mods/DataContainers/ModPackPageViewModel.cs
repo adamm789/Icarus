@@ -139,6 +139,10 @@ namespace Icarus.ViewModels.Mods.DataContainers
 
         public void AddGroup(ModGroupViewModel group)
         {
+            if (_selectedOptionsDict.ContainsKey(group))
+            {
+                group = new ModGroupViewModel(group, this);
+            }
             ModGroups.Add(group);
             _modPackPage.AddGroup(group.GetGroup());
             group.RemoveCommand = new(o => RemoveGroup(group));
