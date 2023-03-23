@@ -2,6 +2,7 @@
 using Icarus.Services.Interfaces;
 using Icarus.ViewModels.Mods.DataContainers.Interfaces;
 using Icarus.ViewModels.Util;
+using System.Collections.ObjectModel;
 using System.Text.RegularExpressions;
 
 namespace Icarus.ViewModels.Mods.DataContainers
@@ -78,6 +79,8 @@ namespace Icarus.ViewModels.Mods.DataContainers
             get { return ModPack.Url; }
             set { ModPack.Url = value; OnPropertyChanged(); }
         }
+
+        public ObservableCollection<string> ModTags { get; set; }
 
         #endregion
     }

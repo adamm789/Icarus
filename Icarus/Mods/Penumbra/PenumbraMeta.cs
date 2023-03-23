@@ -1,4 +1,6 @@
 ﻿using Icarus.Mods.DataContainers;
+using System.Collections.Generic;
+using System.Windows.Documents;
 
 namespace Icarus.Mods.Penumbra
 {
@@ -11,6 +13,7 @@ namespace Icarus.Mods.Penumbra
         public string Website = "";
         public int FileVersion = 1;
         public ulong ImportDate = 0;
+        public List<string> ModTags = new();
 
         public PenumbraMeta()
         {
@@ -24,6 +27,7 @@ namespace Icarus.Mods.Penumbra
             Version = m.Version;
             Description = m.Description;
             Website = m.Url;
+            ModTags = m.ModTags;
         }
     }
 }

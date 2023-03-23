@@ -138,5 +138,6 @@ namespace Icarus.Mods.DataContainers
 
         public List<IMod> SimpleModsList = new();
         public List<ModPackPage> ModPackPages = new();
+        public List<string> ModTags = new();
     }
 }
