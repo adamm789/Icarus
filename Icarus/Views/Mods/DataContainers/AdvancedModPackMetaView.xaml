@@ -14,6 +14,7 @@
     <Grid Margin="2,2,2,2">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid Grid.Row="0">
@@ -26,6 +27,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="1*"/>
                 <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
             <Grid.Resources>
                 <Style TargetType="{x:Type TextBlock}">
@@ -36,7 +38,7 @@
                     <Setter Property="Margin" Value="0 0 0 3"/>
                 </Style>
             </Grid.Resources>
-            
+
             <TextBlock Grid.Row="0" Grid.Column="0" Text="Name"/>
             <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Name}" IsReadOnly="{Binding IsReadOnly}"/>
             <TextBlock Grid.Row="0" Grid.Column="2" Text="Author"/>
@@ -46,9 +48,16 @@
             <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Version}" IsReadOnly="{Binding IsReadOnly}"/>
             <TextBlock Grid.Row="1" Grid.Column="2" Text="Website"/>
             <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding Url}" IsReadOnly="{Binding IsReadOnly}"/>
-        </Grid>
 
-        <xtk1:WatermarkTextBox Grid.Row="1" Watermark="Description" Text="{Binding Description}" TextWrapping="Wrap"
+            <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Vertical"
+                        ToolTip="Only visible on Penumbra mods and will be ignored if exported to ttmp2">
+                <TextBlock Text="Penumbra"/>
+                <TextBlock Text="Mod Tags"/>
+            </StackPanel>
+            <ListView Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" ItemsSource="{Binding ModTags}"/>
+
+        </Grid>
+        <xtk1:WatermarkTextBox Grid.Row="2" Watermark="Description" Text="{Binding Description}" TextWrapping="Wrap"
                                AcceptsReturn="True" IsReadOnly="{Binding IsReadOnly}"/>
     </Grid>
 </UserControl>

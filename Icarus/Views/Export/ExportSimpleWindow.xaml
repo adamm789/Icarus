@@ -14,6 +14,7 @@
         Title="SimpleExportSelectionWindow"
         MinHeight="500" MinWidth="650"
         Height="500" Width="650"
+        WindowStartupLocation="CenterScreen"
         FontSize="14">
     <Window.Resources>
         <DataTemplate DataType="{x:Type mods:ModViewModel}">

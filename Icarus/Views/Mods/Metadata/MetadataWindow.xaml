@@ -8,7 +8,8 @@
         xmlns:modviewmodels="clr-namespace:Icarus.ViewModels.Mods.Metadata"
         d:DataContext="{d:DesignInstance Type=mods:MetadataModViewModel}"
         mc:Ignorable="d"
-        Title="{Binding DestinationPath}" Height="450" Width="800">
+        Title="{Binding DestinationPath}" Height="450" Width="800"
+        WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.Resources>
             <DataTemplate DataType="{x:Type modviewmodels:EqdpViewModel}">

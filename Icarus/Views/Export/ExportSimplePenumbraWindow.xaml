@@ -12,7 +12,8 @@
         xmlns:ui="clr-namespace:Icarus.UI"
         d:DataContext="{d:DesignInstance Type=export:ExportSimplePenumbraViewModel}"
         mc:Ignorable="d"
-        Title="ExportSimplePenumbraWindow" Height="450" Width="800">
+        Title="ExportSimplePenumbraWindow" Height="450" Width="800"
+        WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.Resources>
             <DataTemplate DataType="{x:Type mods:ModViewModel}">
