@@ -16,6 +16,11 @@ using System.Threading.Tasks;
 
 using ModPack = Icarus.Mods.DataContainers.ModPack;
 using GameData = Lumina.GameData;
+using Icarus.Penumbra.GameData;
+using xivModdingFramework.General.Enums;
+using xivModdingFramework.Models.FileTypes;
+using xivModdingFramework.Mods.FileTypes;
+using xivModdingFramework.Variants.FileTypes;
 
 namespace Icarus.Util
 {
@@ -62,28 +67,34 @@ namespace Icarus.Util
             _logService?.Information("Starting export to simple penumbra modpack.");
             var tempDir = GetTempDirectory(outputDir);
 
-            if (toFileStructure)
-            {
-                var metaJson = GetMetaJson(modPack);
-                var defaultJson = GetDefaultModJson(modPack.SimpleModsList, true);
-
-                File.WriteAllText(Path.Combine(tempDir, "meta.json"), metaJson);
-                File.WriteAllText(Path.Combine(tempDir, "default_mod.json"), defaultJson);
-            }
-
             var exportEntries = modPack.SimpleModsList.FindAll(m => m.ShouldExport);
             if (exportEntries.Count == 0)
             {
                 _logService?.Information($"No entries were selected for export");
                 return "";
             }
-            var tasks = new Task<byte[]>[exportEntries.Count];
+
+
+            if (toFileStructure)
+            {
+                var metaJson = GetMetaJson(modPack);
+                var defaultJson = await GetDefaultModJson(exportEntries, true);
+
+                File.WriteAllText(Path.Combine(tempDir, "meta.json"), metaJson);
+                File.WriteAllText(Path.Combine(tempDir, "default_mod.json"), defaultJson);
+            }
+
+
+            var nonMetadataEntries = exportEntries.FindAll(m => m is not MetadataMod);
+            var metadataEntries = exportEntries.FindAll(m => m is MetadataMod);
+
+            var tasks = new Task<byte[]>[nonMetadataEntries.Count];
             var byteList = new List<byte[]>();
 
-            for (var i = 0; i < exportEntries.Count; i++)
+            for (var i = 0; i < nonMetadataEntries.Count; i++)
             {
                 var j = i;
-                tasks[j] = WriteToBytes(exportEntries[j], false);
+                tasks[j] = WriteToBytes(nonMetadataEntries[j], false);
             }
 
             await Task.WhenAll(tasks);
@@ -91,7 +102,7 @@ namespace Icarus.Util
             var numFiles = 0;
             var numWritten = 0;
 
-            for (var i = 0; i < exportEntries.Count; i++)
+            for (var i = 0; i < nonMetadataEntries.Count; i++)
             {
                 try
                 {
@@ -132,7 +143,12 @@ namespace Icarus.Util
                 }
             }
 
-            _logService.Information($"Wrote {numWritten} out of {numFiles} mods.");
+            foreach (var meta in metadataEntries)
+            {
+
+            }
+
+            _logService?.Information($"Wrote {numWritten} out of {numFiles} mods.");
             var outputPath = GetOutputPath(modPack, outputDir);
             var finalOutputPath = WriteFiles(tempDir, outputPath, toPmp);
 
@@ -145,12 +161,12 @@ namespace Icarus.Util
             var tempDir = Path.Combine(outputDir, "temp");
 
             var metaJson = GetMetaJson(modPack);
-            var defaultJson = GetDefaultModJson(modPack.SimpleModsList, false);
+            var defaultJson = await GetDefaultModJson(modPack.SimpleModsList, false);
 
             File.WriteAllText(Path.Combine(tempDir, "meta.json"), metaJson);
             File.WriteAllText(Path.Combine(tempDir, "default_mod.json"), defaultJson);
 
-            WriteGroups(modPack, tempDir);
+            await WriteGroups(modPack, tempDir);
             var outputPath = GetOutputPath(modPack, outputDir);
             var finalOutputPath = WriteFiles(tempDir, outputPath, toPmp);
 
@@ -193,7 +209,7 @@ namespace Icarus.Util
             return ret;
         }
 
-        private void WriteGroups(ModPack modPack, string modDir)
+        private async Task WriteGroups(ModPack modPack, string modDir)
         {
             _logService.Verbose("Writing groups.");
             var groupIndex = 1;
@@ -221,8 +237,6 @@ namespace Icarus.Util
                         foreach (var mods in option.Mods)
                         {
                             var optionPath = Path.Combine(group.GroupName.ToLower(), mods.Path);
-                            //if (!penumbraOption.Files.ContainsKey(mods.Path))
-                            //{
                             penumbraOption.Files.Add(mods.Path, optionPath);
                             if (mods is MetadataMod meta)
                             {
@@ -231,25 +245,10 @@ namespace Icarus.Util
                                 {
                                     continue;
                                 }
-                                var matches = primaryIdRegex.Matches(mods.Path);
-                                var item = new PenumbraManipulation()
-                                {
-                                    Type = "Imc"
-                                };
-                                //penumbraOption.Manipulations.Add(item);
-                                // TODO: Put into "Manipulations"
-                                foreach (var imc in meta.ImcEntries)
-                                {
-                                    var entry = new PenumbraImcEntry()
-                                    {
-                                        MaterialId = imc.MaterialSet,
-                                        DecalId = imc.Decal,
-                                        VfxId = imc.Vfx
-                                    };
-                                }
+                                var manips = await GetManipulations(meta);
+                                penumbraOption.Manipulations.AddRange(manips);
 
                             }
-                            //}
                         }
                         penumbraGroup.Options.Add(penumbraOption);
                     }
@@ -265,7 +264,7 @@ namespace Icarus.Util
             throw new NotImplementedException();
         }
 
-        private string GetDefaultModJson(IEnumerable<IGameFile> entries, bool isSimple)
+        private async Task<string> GetDefaultModJson(IEnumerable<IGameFile> entries, bool isSimple)
         {
             // TODO: If Advanced Penumbra mod, seems like default_mod is essentially blank
             // TODO: If Simple Penumbra mod, meta goes into Manipulations here
@@ -291,7 +290,17 @@ namespace Icarus.Util
                         }
                         else
                         {
-                            def.Files.Add(entry.Path, entry.Path);
+                            if (entry is MetadataMod meta)
+                            {
+#if DEBUG
+                                var manips = await GetManipulations(meta);
+                                def.Manipulations.AddRange(manips);
+#endif
+                            }
+                            else
+                            {
+                                def.Files.Add(entry.Path, entry.Path);
+                            }
                         }
                     }
 
@@ -307,6 +316,255 @@ namespace Icarus.Util
             var meta = new PenumbraMeta(modPack); ;
             var json = JsonConvert.SerializeObject(meta);
             return json;
+        }
+
+        private async Task<IList<MetaManipulationContainer>> GetManipulations(MetadataMod meta)
+        {
+            var ret = new List<MetaManipulationContainer>();
+            if (meta.ItemMetadata == null)
+            {
+                return ret;
+            }
+            var vanillaMetadata = await ItemMetadata.GetMetadata(meta.Path);
+            var setId = meta.ItemMetadata.Root.Info.PrimaryId;
+            var slot = meta.Category;
+
+            if (meta.ImcEntries != null)
+            {
+                for (int i = 0; i < meta.ImcEntries.Count; i++)
+                {
+                    var imc = meta.ImcEntries[i];
+
+                    var add = true;
+                    if (vanillaMetadata != null && vanillaMetadata.ImcEntries != null)
+                    {
+                        if (i < vanillaMetadata.ImcEntries.Count && i >= 0)
+                        {
+                            var vanillaImc = vanillaMetadata.ImcEntries[i];
+                            if (imc.MaterialSet == vanillaImc.MaterialSet &&
+                                imc.Decal == vanillaImc.Decal &&
+                                imc.Mask == vanillaImc.Mask &&
+                                imc.Vfx == vanillaImc.Vfx &&
+                                imc.Animation == vanillaImc.Animation)
+                            {
+                                add = false;
+                                break;
+                            }
+                        }
+                    }
+
+                    /*
+                    foreach (var imc in meta.ImcEntries)
+                    {
+                        var isVanilla = false;
+                        if (vanillaMetadata != null && vanillaMetadata.ImcEntries != null)
+                        {
+                            foreach (var vanillaImc in vanillaMetadata.ImcEntries)
+                            {
+                                if (imc.MaterialSet == vanillaImc.MaterialSet &&
+                                    imc.Decal == vanillaImc.Decal &&
+                                    imc.Mask == vanillaImc.Mask &&
+                                    imc.Vfx == vanillaImc.Vfx &&
+                                    imc.Animation == vanillaImc.Animation &&
+                                    (ushort)(imc.Mask & 0x3ff) == (ushort)(vanillaImc.Mask & 0x3ff) &&
+                                    (byte)(imc.Mask >> 10) == (byte)(vanillaImc.Mask >> 10))
+                                {
+                                    isVanilla = true;
+                                    break;
+                                }
+                            }
+                        }
+                    */
+                    if (!add) continue;
+                    var secondaryId = meta.ItemMetadata.Root.Info.SecondaryId != null ? (ushort)meta.ItemMetadata.Root.Info.SecondaryId : (ushort)0;
+
+                    var imcEntry = new ImcEntry()
+                    {
+                        MaterialId = imc.MaterialSet,
+                        DecalId = imc.Decal,
+                        VfxId = imc.Vfx,
+                        MaterialAnimationId = imc.Animation,
+
+                        AttributeMask = (ushort)(imc.Mask & 0x3ff),
+                        SoundId = (byte)(imc.Mask >> 10)
+                    };
+                    var manip = new ImcManipulationContainer()
+                    {
+                        Type = "Imc",
+                        PrimaryId = (ushort)setId,
+                        Variant = imc.MaterialSet,
+                        SecondaryId = secondaryId,
+                        ObjectType = "Equipment",   // TODO: ImcManipulation.ObjectType?
+                        EquipSlot = slot,
+                        BodySlot = "Unknown",    // TODO: ImcManipulation.BodySlot?
+                        Manipulation = new ImcManipulation()
+                        {
+                            Entry = imcEntry
+                        }
+                    };
+
+                    ret.Add(manip);
+                }
+            }
+
+            if (meta.EqdpEntries != null)
+            {
+                foreach (var eqdp in meta.EqdpEntries)
+                {
+                    try
+                    {
+                        var manip = new MetaManipulationContainer()
+                        {
+                            Type = "Eqdp"
+                        };
+                        var race = GetRaceString(eqdp.Key);
+                        var gender = GetGenderString(eqdp.Key);
+
+                        if (eqdp.Value.b != 0)
+                        {
+                            var eqdpManip = new EqdpManipulation()
+                            {
+                                // TODO: Currently eqdp loses accuracies because XivModdingFramework keeps track of two bools, while EqdpEntry keeps track of a ushort and its bits
+                                Entry = eqdp.Value.b,
+                                Gender = gender,
+                                Race = race,
+                                SetId = (ushort)setId,
+                                Slot = slot
+                            };
+                            manip.Manipulation = eqdpManip;
+                            ret.Add(manip);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+
+                    }
+                }
+            }
+
+            if (meta.EstEntries != null)
+            {
+                foreach (var est in meta.EstEntries)
+                {
+                    try
+                    {
+                        var manip = new MetaManipulationContainer()
+                        {
+                            Type = "Est"
+                        };
+
+                        var race = GetRaceString(est.Key);
+                        var gender = GetGenderString(est.Key);
+
+                        if (est.Value.SkelId != 0)
+                        {
+                            var estManip = new EstManipulation()
+                            {
+                                Entry = est.Value.SkelId,
+                                Gender = gender,
+                                Race = race,
+                                SetId = est.Value.SetId,
+                                Slot = slot
+                            };
+
+                            manip.Manipulation = estManip;
+                            ret.Add(manip);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+
+                    }
+                }
+            }
+
+            if (meta.GmpEntry != null)
+            {
+
+            }
+
+            if (meta.EqpEntry != null)
+            {
+
+            }
+
+            return ret;
+        }
+
+        private string GetRaceString(XivRace race)
+        {
+            switch (race)
+            {
+                case XivRace.Hyur_Midlander_Male:
+                case XivRace.Hyur_Midlander_Female:
+                    return "Midlander";
+                case XivRace.Hyur_Highlander_Male:
+                case XivRace.Hyur_Highlander_Female:
+                    return "Highlander";
+                case XivRace.Elezen_Male:
+                case XivRace.Elezen_Female:
+                    return "Elezen";
+                case XivRace.Miqote_Male:
+                case XivRace.Miqote_Female:
+                    return "Miqote";
+                case XivRace.Roegadyn_Male:
+                case XivRace.Roegadyn_Female:
+                    return "Roegadyn";
+                case XivRace.Lalafell_Male:
+                case XivRace.Lalafell_Female:
+                    return "Lalafell";
+                case XivRace.AuRa_Male:
+                case XivRace.AuRa_Female:
+                    return "AuRa";
+                case XivRace.Hrothgar_Male:
+                case XivRace.Hrothgar_Female:
+                    return "Hrothgar";
+                case XivRace.Viera_Male:
+                case XivRace.Viera_Female:
+                    return "Viera";
+                default:
+                    throw new ArgumentException($"Could not determine race of: {race}");
+            }
+        }
+
+        private string GetGenderString(XivRace race)
+        {
+            switch (race)
+            {
+                case XivRace.Hyur_Midlander_Male:
+                case XivRace.Hyur_Highlander_Male:
+                case XivRace.Elezen_Male:
+                case XivRace.Miqote_Male:
+                case XivRace.Roegadyn_Male:
+                case XivRace.Lalafell_Male:
+                case XivRace.AuRa_Male:
+                case XivRace.Hrothgar_Male:
+                case XivRace.Viera_Male:
+                    return "Male";
+
+                case XivRace.Hyur_Midlander_Female:
+                case XivRace.Hyur_Highlander_Female:
+                case XivRace.Elezen_Female:
+                case XivRace.Miqote_Female:
+                case XivRace.Roegadyn_Female:
+                case XivRace.Lalafell_Female:
+                case XivRace.AuRa_Female:
+                case XivRace.Hrothgar_Female:
+                case XivRace.Viera_Female:
+                    return "Female";
+                default:
+                    throw new ArgumentException($"Could not determine gender of: {race}");
+            }
+        }
+
+        private string GetSlot(string s)
+        {
+            switch(s)
+            {
+                case "top": return "Body";
+                default:
+                    return s;
+            }
         }
     }
 }
