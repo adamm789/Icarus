@@ -60,7 +60,7 @@ namespace Icarus.ViewModels.Mods
         public EstViewModel EstViewModel { get; }
         public EqpViewModel EqpViewModel { get; }
         public GmpViewModel GmpViewModel { get; }
-        public ImcViewModel ImcViewModel { get; }
+        public ImcViewModel ImcViewModel { get; set; }
 
 
         DelegateCommand _openMetadataEditorCommand;
@@ -76,17 +76,29 @@ namespace Icarus.ViewModels.Mods
 
         public override bool SetModData(IGameFile gameFile)
         {
+            // TODO: What to do when assigning Metadata a new path
             if (gameFile is IMetadataFile metaFile)
             {
                 if (_metadataMod.ItemMetadata.Root.Info.Slot != metaFile.Slot)
                 {
-                    _logService.Error($"Unable to assign metadata to a different slot.");
+                    _logService?.Error($"Unable to assign metadata to a different slot.");
                     return false;
                 }
                 var ret = base.SetModData(gameFile);
 
                 // TODO: Figure out EstEntries...
-                EstViewModel.SetAllSkelId(metaFile.ItemMetadata.EstEntries);
+                if (EstViewModel != null)
+                {
+                    EstViewModel.SetAllSkelId(metaFile.ItemMetadata.EstEntries);
+                }
+
+                if (ImcViewModel != null)
+                {
+                    // TODO: I think I need to do more to set imc entries
+                    // Copy variant parts to each?
+                    _metadataMod.ImcEntries = metaFile.ItemMetadata.ImcEntries;
+                    ImcViewModel = new ImcViewModel(metaFile.ItemMetadata.ImcEntries, metaFile.ItemMetadata.Root);
+                }
                 return ret;
             }
             return false;
