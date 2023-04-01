@@ -60,6 +60,12 @@ namespace Icarus.ViewModels.Editor
             }
         }
 
+        public void Reset()
+        {
+            DisplayedOption = null;
+            SelectedTabIndex = 0;
+        }
+
         ModOptionViewModel? _displayedOption;
         public ModOptionViewModel? DisplayedOption
         {

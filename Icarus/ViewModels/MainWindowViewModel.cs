@@ -195,6 +195,7 @@ namespace Icarus.ViewModels
             if (result == System.Windows.Forms.DialogResult.Yes)
             {
                 ModsListViewModel.Reset();
+                AdvancedEditorViewModel.Reset();
             }
         }
 
