@@ -424,6 +424,7 @@ namespace Icarus.Services.Files
                 if (gameFile != null)
                 {
                     mdlMod.SetModData(gameFile);
+                    mdlMod.ImportedModel.Source = gameFile.Path;
                 }
                 else
                 {
