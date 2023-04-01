@@ -143,6 +143,7 @@ namespace Icarus.ViewModels.Mods.DataContainers
             {
                 group = new ModGroupViewModel(group, this);
             }
+            HasZeroOptions = HasZeroOptions && group.HasZeroOptions;
             ModGroups.Add(group);
             _modPackPage.AddGroup(group.GetGroup());
             group.RemoveCommand = new(o => RemoveGroup(group));
