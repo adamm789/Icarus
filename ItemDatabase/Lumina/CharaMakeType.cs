@@ -1,5 +1,4 @@
 ﻿using Lumina.Data;
-using Lumina.Excel.GeneratedSheets;
 using Lumina.Excel;
 using Lumina;
 using System;
@@ -7,10 +6,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Lumina.Excel.GeneratedSheets;
 
 namespace ItemDatabase.Lumina
 {
-    [Sheet("CharaMakeType", columnHash: 0xf395e2a3)]
+    [Sheet("CharaMakeType", columnHash: 0x80d7db6d)]
     public class CharaMakeType : ExcelRow
     {
         public LazyRow<Race> Race { get; set; }
